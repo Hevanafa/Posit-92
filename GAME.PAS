@@ -19,12 +19,12 @@ var
 
   particles: array [0..99] of TParticle;
 
-function int2str(value: longInt): string;
+function i32str(value: longInt): string;
 var
   result: string;
 begin
   str(value, result);
-  int2str := result
+  i32str := result
 end;
 
 function f32str(value: double): string;
@@ -79,12 +79,6 @@ begin
 end;
 
 
-
-function Rnd: single;
-begin
-  Rnd := random / 32767.0
-end;
-
 procedure initParticle(var p: TParticle);
 begin
   p.alive := true;
@@ -110,7 +104,7 @@ end;
 
 procedure drawFPS;
 begin
-  print('FPS:' + int2str(lastFPS), 240, 0, $0E);
+  print('FPS:' + i32str(lastFPS), 240, 0, $0E);
 end;
 
 
