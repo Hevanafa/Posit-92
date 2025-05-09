@@ -1,0 +1,136 @@
+unit vga;
+
+interface
+
+procedure initVGAMode;
+procedure initTextMode;
+procedure loadFont;
+procedure cls(colour: byte);
+procedure print(text: string; x, y: integer; colour: byte);
+procedure pset(x, y: word; colour: byte);
+procedure flush;
+procedure initBuffer;
+procedure freeBuffer;
+
+implementation
+
+uses dos;
+
+type
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..63999] of byte;
+
+const
+  bufferSize = 64000;
+var
+  a, b: integer;
+  font8x8: array[0..127, 0..7] of byte;
+  surface: PByteArray;
+  bufferInitialised: boolean;
+
+
+procedure initVGAMode; assembler;
+asm
+  mov ax, 0013h
+  int 10h
+end;
+
+procedure initTextMode; assembler;
+asm
+  mov ax, 0003h
+  int 10h
+end;
+
+{ Load 8x8 font }
+procedure loadFont;
+var
+  Regs: Registers;
+begin
+  { Get the 8x8 font pointer }
+  regs.ah := $11;
+  regs.al := $30;
+  regs.bh := 3; { 8x8 font }
+  Intr($10, Regs);
+
+  { Copy font data to buffer }
+  Move(Mem[Regs.ES:Regs.BP], font8x8, sizeOf(font8x8));
+end;
+
+
+procedure cls(colour: byte);
+begin
+  { Important: dereference buffer! }
+  fillChar(surface^, bufferSize, colour)
+end;
+
+procedure print(text: string; x, y: integer; colour: byte);
+var
+  row, col, idx: integer;
+  pos: integer;
+  mask: byte;
+begin
+  { getMem(buffer, bufferSize); }
+
+  for idx := 1 to length(text) do begin
+    if (idx < 0) or (idx > 127) then continue;
+
+    for row := 0 to 7 do begin
+      mask := font8x8[ord(text[idx]), row];
+      for col := 0 to 7 do
+        if (mask and (1 shl (7 - col))) <> 0 then begin
+          pos := (y+row) * 320 + (idx-1)*8 + (x+col);
+          surface^[pos] := colour;
+          end;
+    end;
+  end;
+
+  { freeMem(buffer, bufferSize); }
+end;
+
+
+procedure pset(x, y: word; colour: byte);
+begin
+  if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
+  surface^[y * 320 + x] := colour;
+end;
+
+{
+  Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
+  lds si, surface: loads DS:SI from surface
+  mov es, $a000: targets the VGA framebuffer
+  xor di, di: start writing at offset 0000
+  rep movsw: fast string move; copies 2 bytes per iteration
+  push/pop: preserves segment registers to avoid corruption
+}
+procedure flush;
+begin
+  asm
+    push ds
+    push es
+
+    lds si, surface { Load DS:SI with source pointer }
+    mov ax, $a000
+    mov es, ax      { Set ES to VGA segment }
+    xor di, di      { DI = 0 (Destination offset) }
+
+    mov cx, 32000   { 64000 bytes / 2 = 32000 words }
+    rep movsw       { Copy CX words from DS:SI to ES:DI }
+
+    pop es
+    pop ds
+  end;
+end;
+
+procedure initBuffer;
+begin
+  if not bufferInitialised then
+    getMem(surface, bufferSize);
+end;
+
+procedure freeBuffer;
+begin
+  if bufferInitialised then
+    freeMem(surface, bufferSize);
+end;
+
+end.
