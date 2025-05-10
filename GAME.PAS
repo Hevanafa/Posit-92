@@ -10,6 +10,7 @@ type
     vx, vy: single; { pixels per second }
   end;
 
+
 var
   done: boolean;
   fps, lastFPS: integer;
