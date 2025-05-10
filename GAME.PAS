@@ -1,8 +1,6 @@
-{ TODO: Separate delta time & FPS each to their own units }
-
 uses
-  crt, dos,
-  conv, fps, timing, vga;
+  CRT, DOS,
+  Conv, FPS, Mouse, Timing, VGA;
 
 type
   TParticle = record
@@ -48,6 +46,8 @@ begin
   initBuffer;
   initDeltaTime;
   initFPSCounter;
+
+  initMouse;
 end;
 
 
@@ -59,6 +59,8 @@ begin
     if readKey = #27 then
       done := true;
   end;
+
+  updateMouse;
 
   { dt := deltaMS / 1000; }
 
@@ -73,6 +75,7 @@ begin
   end;
 end;
 
+
 procedure draw;
 var
   a: integer;
@@ -85,13 +88,13 @@ begin
 
   { print('Alive: ' + int2str(countAlive), 0, 16, 15); }
 
-  { for a:=0 to 9 do }
-  { print(int2str(a) + ': [' +
-  int2str(trunc(particles[a].x)) + ',' + int2str(trunc(particles[a].y)) + ']', 0, 24 + a * 8, 15); }
+  drawMouse;
+  { debugMouse; }
 
-  { print(f32str(rnd), 0, 0, 15); }
+
   print('Delta t: ' + f32str(dt), 0, 0, 15);
   print(f32str(getTimer), 0, 8, 15);
+
   { print('delta ms: ' + int2str(deltaMS), 0, 0, 15); }
   { print(int2str(TimerMS), 0, 8, 15); }
 
@@ -120,6 +123,7 @@ begin
     draw;
   until done;
 
+  resetMouse;
   freeBuffer;
   initTextMode
 end.

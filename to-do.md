@@ -1,5 +1,5 @@
 Basic controls
-- Mouse
+- [x] Mouse
 - Keyboard
 - Optional: Joystick
 
