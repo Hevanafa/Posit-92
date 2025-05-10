@@ -4,8 +4,8 @@ My goal is to create something like a fantasy computer such as PICO-8 and TIC-80
 
 Included unit files:
 
-`GAME.PAS`: Program starting point
-`BITMAP.PAS`: Utility for BMP files
-`CONV.PAS`: Common conversion features
-`LOGGER.PAS`: Debug logger
-`VGA.PAS`: Utility for VGA access
+- `GAME.PAS`: Program starting point
+- `BITMAP.PAS`: Utility for BMP files
+- `CONV.PAS`: Common conversion features
+- `LOGGER.PAS`: Debug logger
+- `VGA.PAS`: Utility for VGA access

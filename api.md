@@ -1,4 +1,6 @@
 
+This file documents all of the available API's in this game framework
+
 
 ### Bitmap
 
@@ -19,16 +21,30 @@ Blits a `PBitmap` ignoring any transparency.
 Frees a `PBitmap`, also assigns `image` to `nil`.
 
 
-`spr(image: PBitmap; x, y: integer; transparencyKey: byte);`
+- `spr(image: PBitmap; x, y: integer; transparencyKey: byte);`
 
 Blits a `PBitmap` with the transparency key.
 
 The transparency key is one of the 256 colours supported by the VGA display.
 
 
-`bitmapInfo(image: PBitmap);`
+- `bitmapInfo(image: PBitmap);`
 
 Used for debugging -- prints out `PBitmap` information
+
+
+### Conv
+
+Common conversion utility unit
+
+- `function i32str(value: Longint): string;`
+
+Converts a 32-bit integer to string
+
+
+- `function f32str(value: double): string;`
+
+Converts a number to string with 4 decimals
 
 
 ### Logger
