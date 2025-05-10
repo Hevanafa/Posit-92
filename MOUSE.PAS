@@ -20,7 +20,7 @@ procedure resetMouse;
 
 implementation
 
-uses DOS, Conv, VGA;
+uses DOS, Conv, Logger, VGA;
 
 var
   mouseInitialised: boolean;
@@ -44,11 +44,11 @@ begin
   regs.ax := 0;
   Intr($33, regs);
   if regs.ax = 0 then begin
-    print('No mouse driver is found!', 0, 0, 15);
+    writeLog('No mouse driver is found!');
     readLn;
     halt
   end else
-    print('Mouse initialised.', 0, 0, 15);
+    writeLog('Mouse initialised.');
 
   loadCursor;
   mouseInitialised := true

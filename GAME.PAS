@@ -1,6 +1,6 @@
 uses
   CRT, DOS,
-  Conv, FPS, Mouse, Timing, VGA;
+  Conv, FPS, Logger, Mouse, Timing, VGA;
 
 type
   TParticle = record
@@ -41,12 +41,12 @@ end;
 procedure INIT;
 begin
   randomize;
+  initLogger;
   initVGAMode;
   loadFont;
   initBuffer;
   initDeltaTime;
   initFPSCounter;
-
   initMouse;
 end;
 
@@ -125,5 +125,6 @@ begin
 
   resetMouse;
   freeBuffer;
+  closeLogger;
   initTextMode
 end.

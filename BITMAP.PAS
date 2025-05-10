@@ -68,7 +68,9 @@ begin
   for b := 0 to h-1 do begin
     seek(f, start + (b * (w + padding)));
     blockRead(f, buffer, w);
-    writeLog('Finished reading line ' + i32str(b));
+
+    if debug then
+      writeLog('Finished reading line ' + i32str(b));
 
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }

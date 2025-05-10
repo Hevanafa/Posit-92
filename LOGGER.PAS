@@ -22,8 +22,11 @@ begin
   rewrite(logFile);
   {$I+}
   logOpened := (IOResult = 0);
-  if not logOpened then
-    writeLn('Failed to create "log.txt" file!')
+  if not logOpened then begin
+    writeLn('Failed to create "log.txt" file!');
+    readLn;
+    halt
+  end;
 end;
 
 procedure writeLog(const msg: string);
