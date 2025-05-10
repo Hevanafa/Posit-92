@@ -64,6 +64,17 @@ Writes a line of message into the log file.
 
 ### Mouse
 
+- `mouseX, mouseY: word`
+
+- `mouseButton: byte`
+
+Contains either one of these values:
+- 0: No mouse button is pressed
+- 1: Left button is pressed
+- 2: Right button is pressed
+- 3: Both buttons
+
+
 - `procedure initMouse`
 
 Must be called first before using the mouse.
