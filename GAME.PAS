@@ -1,3 +1,4 @@
+
 uses
   CRT, DOS,
   Conv, FPS, Logger, Mouse, Timing, VGA;
@@ -9,10 +10,47 @@ type
     vx, vy: single; { pixels per second }
   end;
 
+const
+  NUM_KEYS = 128;
 
 var
   done: boolean;
   particles: array [0..99] of TParticle;
+
+  keyDown: array[0..NUM_KEYS - 1] of boolean;
+  oldKeyHandler: pointer;
+
+procedure keyHandler; interrupt;
+var
+  scancode: byte;
+  isBreak: boolean;
+begin
+  scancode := Port[$60];
+  isBreak := (scancode and $80) <> 0;
+  scancode := scancode and $7F; { mask break bit }
+
+  if scancode < NUM_KEYS then
+    keyDown[scancode] := not isBreak;
+
+  { acknowledge interrupt }
+  Port[$20] := $20
+end;
+
+procedure initKeyHandler;
+begin
+  getIntVec($09, oldKeyHandler);
+  setIntVec($09, @keyHandler)
+end;
+
+procedure resetKeyHandler;
+begin
+  setIntVec($09, oldKeyHandler)
+end;
+
+function isKeyDown(scancode: byte): boolean;
+begin
+  isKeyDown := keyDown[scancode]
+end;
 
 procedure initParticle(var p: TParticle);
 begin
@@ -46,8 +84,9 @@ begin
   loadFont;
   initBuffer;
   initDeltaTime;
-  initFPSCounter;
+  initKeyHandler;
   initMouse;
+  initFPSCounter;
 end;
 
 
@@ -55,12 +94,10 @@ procedure update;
 var
   a: integer;
 begin
-  if keyPressed then begin
-    if readKey = #27 then
-      done := true;
-  end;
-
   updateMouse;
+
+  if isKeyDown($01) then
+    done := true;
 
   { dt := deltaMS / 1000; }
 
@@ -91,6 +128,8 @@ begin
   drawMouse;
   { debugMouse; }
 
+  if isKeyDown($11) then
+    print('W key is down', 0, 32, 15);
 
   print('Delta t: ' + f32str(dt), 0, 0, 15);
   print(f32str(getTimer), 0, 8, 15);
@@ -124,6 +163,7 @@ begin
   until done;
 
   resetMouse;
+  resetKeyHandler;
   freeBuffer;
   closeLogger;
   initTextMode
