@@ -9,6 +9,11 @@ interface
 
 procedure initKeyHandler;
 procedure resetKeyHandler;
+{
+  Scancode lists:
+  https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
+  https://www.freebasic.net/wiki/GfxScancodes
+}
 function isKeyDown(scancode: byte): boolean;
 
 

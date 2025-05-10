@@ -1,6 +1,6 @@
-Basic controls
+Controls
 - [x] Mouse
-- Keyboard
+- [x] Keyboard
 - Optional: Joystick
 
 Graphics

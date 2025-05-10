@@ -11,8 +11,12 @@ My goal is to create something like a fantasy computer such as PICO-8 and TIC-80
 - `BITMAP.PAS`: Utility for BMP files
 - `CONV.PAS`: Common conversion features
 - `FPS.PAS`: FPS counter utility
+- `KEYBOARD.PAS`: Keyboard utility
 - `LOGGER.PAS`: Debug logger
 - `MOUSE.PAS`: Mouse utility
 - `TIMING.PAS`: Time-related utility
 - `VGA.PAS`: Utility for VGA access
 
+If you want the scancodes for the keyboard, you can refer to these lists:
+- https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
+- https://www.freebasic.net/wiki/GfxScancodes

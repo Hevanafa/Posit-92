@@ -93,6 +93,8 @@ begin
 
   if isKeyDown($11) then
     print('W key is down', 0, 32, 15);
+  if isKeyDown($39) then
+    print('Spacebar!', 0, 32, 15);
 
   print('Delta t: ' + f32str(dt), 0, 0, 15);
   print(f32str(getTimer), 0, 8, 15);
