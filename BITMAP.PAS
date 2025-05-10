@@ -82,6 +82,7 @@ procedure drawBMP(image: PBitmap);
 var
   a, b: integer;
 begin
+  if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
     pset(a, b, image^.data[a + b * image^.width]);
@@ -89,13 +90,16 @@ end;
 
 procedure freeBMP(var image: PBitmap);
 begin
-  freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1)
+  if image = nil then exit;
+  freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1);
+  image := nil  { avoids dangling pointer }
 end;
 
 procedure spr(image: PBitmap; x, y: integer; transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
+  if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
@@ -107,6 +111,11 @@ end;
 
 procedure bitmapInfo(image: PBitmap);
 begin
+  if image = nil then begin
+    print('image is nil!', 10, 168, 15);
+    exit
+  end;
+
   { print('File name:' + name, 10, 160, 15); }
   print('Width: ' + i32str(image^.width), 10, 168, 15);
   print('Height: ' + i32str(image^.height), 10, 176, 15);
