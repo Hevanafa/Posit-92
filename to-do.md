@@ -8,6 +8,7 @@ Graphics
 - [V] PSET to a graphics buffer
 - [V] Fast buffer flush with assembly
 - [V] Support for (indexed) BMP file format
+- Drawing primitives
 
 Sounds
 - PC speaker
