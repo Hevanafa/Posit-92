@@ -129,8 +129,10 @@ end;
 
 procedure freeBuffer;
 begin
-  if bufferInitialised then
+  if bufferInitialised then begin
     freeMem(surface, bufferSize);
+    surface := nil
+  end;
 end;
 
 end.
