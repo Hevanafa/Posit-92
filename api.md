@@ -62,3 +62,28 @@ Writes a line of message into the log file.
 - `procedure closeLogger`
 
 
+### Mouse
+
+- `procedure initMouse`
+
+Must be called first before using the mouse.
+
+
+- `procedure updateMouse`
+
+Updates the mouse position & button by interrupts.
+
+
+- `procedure debugMouse`
+
+Shows the mouse coordinates on screen and the buttons pressed.
+
+
+- `procedure drawMouse`
+
+Draws the mouse cursor. You can change it in `loadCursor` in `MOUSE.PAS`.  The bitmap has to be an indexed bitmap that uses the VGA colour table.
+
+
+- `procedure resetMouse`
+
+Must be called before returning to screen mode 00h, otherwise the mouse control will be stuck & Runtime error 20302 happens.
