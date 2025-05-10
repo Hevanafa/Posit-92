@@ -28,6 +28,7 @@ var
   { pressed keys }
   keys: array[0..NUM_KEYS - 1] of boolean;
   oldKeyHandler: pointer;
+  keyboardInitialised: boolean;
 
 procedure keyHandler; interrupt;
 var
@@ -47,20 +48,27 @@ end;
 
 procedure initKeyHandler;
 begin
+  if keyboardInitialised then exit;
   getIntVec($09, oldKeyHandler);
-  setIntVec($09, @keyHandler)
+  setIntVec($09, @keyHandler);
+  keyboardInitialised := true
 end;
 
 procedure resetKeyHandler;
 begin
-  setIntVec($09, oldKeyHandler)
+  if not keyboardInitialised then exit;
+  setIntVec($09, oldKeyHandler);
+  keyboardInitialised := false
 end;
 
 function isKeyDown(scancode: byte): boolean;
 begin
+  if not keyboardInitialised then begin
+    isKeyDown := false;
+    exit
+  end;
   isKeyDown := keys[scancode]
 end;
-
 
 end.
 
