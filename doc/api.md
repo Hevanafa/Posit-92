@@ -50,6 +50,20 @@ Converts a number to string with 4 decimals
 
 ### FPS
 
+`procedure initFPSCounter`
+
+Initialises the FPS counter variables.
+
+
+`procedure incrementFPS`
+
+This procedure is called within the `update` function to update both the last FPS time and the FPS counter itself.
+
+
+`procedure drawFPS`
+
+Renders the last recorded FPS count
+
 
 ### Keyboard
 
@@ -90,6 +104,8 @@ Writes a line of message into the log file.
 
 ### Mouse
 
+#### Global Variables
+
 `mouseX, mouseY: word`
 
 `mouseButton: byte`
@@ -100,6 +116,7 @@ Contains either one of these values:
 - 2: Right button is pressed
 - 3: Both buttons
 
+#### Procedures
 
 `procedure initMouse`
 
@@ -127,5 +144,45 @@ Must be called before returning to screen mode 00h, otherwise the mouse control 
 
 
 ### Timing
+
+#### Global Variables
+
+`dt: double`
+
+This is the delta time in seconds. The value must be updated in `updateDeltaTime`
+
+#### Procedures & Functions
+
+`function Timer: real`
+
+Gets the timer in seconds since midnight, similar to QuickBASIC's `TIMER`
+
+The precision is around 1 / 18th of a second
+
+
+`function GetTimer: real`
+
+Gets the timer in seconds since midnight. It's better to use this instead of `Timer` because the precision is better
+
+
+`function GetTimerMS: Longint`
+
+Gets the timer in milliseconds since midnight. The implementation is similar to `GetTimer`
+
+
+`procedure Limit(fps: integer)`
+
+Limits the loop to a certain amount within a second. Similar to QB64's `_LIMIT`. This has to be used inside a loop.
+
+
+`procedure initDeltaTime`
+
+Initialises delta time values
+
+
+`procedure updateDeltaTime`
+
+Updates delta time and the internal timer diff
+
 
 ### VGA
