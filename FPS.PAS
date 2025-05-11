@@ -2,10 +2,6 @@ unit FPS;
 
 interface
 
-var
-  nowFPS, lastFPS: integer;
-  lastFPSTime: double; { in seconds }
-
 procedure initFPSCounter;
 procedure incrementFPS;
 procedure drawFPS;
@@ -14,6 +10,10 @@ procedure drawFPS;
 implementation
 
 uses Timing, Conv, VGA;
+
+var
+  nowFPS, lastFPS: integer;
+  lastFPSTime: double; { in seconds }
 
 procedure initFPSCounter;
 begin
