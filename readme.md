@@ -4,6 +4,8 @@ My goal is to create something like a fantasy computer such as PICO-8 and TIC-80
 
 ![preview](./preview.png)
 
+I'm also inspired by [LoveDOS](https://github.com/rxi/lovedos) (also, the working fork with the audio working: https://github.com/SuperIlu/lovedos)
+
 
 ## Included units
 
