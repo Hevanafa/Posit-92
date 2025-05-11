@@ -57,12 +57,14 @@ procedure update;
 var
   a: integer;
 begin
+  updateDeltaTime;
+  incrementFPS;
   updateMouse;
+
+  { TODO: Your update code here }
 
   if isKeyDown($01) then
     done := true;
-
-  { dt := deltaMS / 1000; }
 
   for a:=0 to high(particles) do begin
     if particles[a].alive then begin
@@ -96,8 +98,17 @@ begin
   if isKeyDown($39) then
     print('Spacebar!', 0, 32, 15);
 
-  print('Delta t: ' + f32str(dt), 0, 0, 15);
-  print(f32str(getTimer), 0, 8, 15);
+  { Debug delta time }
+  {
+  print('Delta t: ' + f32str(dt), 0, 0, 7);
+  print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
+  }
+
+  { Debug heap allocation }
+  {
+  print('Free heap: ' + i32str(MemAvail) + 'B', 0, 0, 15);
+  print('Max mem: ' + i32str(MaxAvail) + 'B', 0, 8, 7);
+  }
 
   { print('delta ms: ' + int2str(deltaMS), 0, 0, 15); }
   { print(int2str(TimerMS), 0, 8, 15); }
@@ -119,9 +130,6 @@ begin
 
   repeat
     { limit(60); }
-
-    updateDeltaTime;
-    incrementFPS;
 
     update;
     draw;
