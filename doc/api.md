@@ -186,3 +186,56 @@ Updates delta time and the internal timer diff
 
 
 ### VGA
+
+This unit handles the screen mode switch, the double buffering and some rudimentary tasks
+
+
+`procedure initVGAMode`
+
+Sets the screen mode to mode 13h. This is required to use the 64K screen buffer features
+
+
+`procedure initTextMode`
+
+Sets the screen mode back to text mode
+
+
+`procedure loadFont`
+
+Copies 128 characters of the 8x8 font from BIOS ROM to be used later with `print`.
+
+The capacity can be changed in `VGA.PAS` up to 256 like this:
+
+```pascal
+font8x8: array[0..255, 0..7] of byte;
+```
+
+
+`procedure cls(colour: byte)`
+
+Fills the active screen buffer to a certain colour
+
+
+`procedure print(text: string; x, y: integer; colour: byte)`
+
+Requires `loadFont` call, otherwise it doesn't output anything to the active screen buffer
+
+
+`procedure pset(x, y: word; colour: byte)`
+
+Sets a pixel on screen to a certain colour. Similar to PICO-8's `PSET`
+
+
+`procedure flush`
+
+Copies the current buffer to the VGA RAM. Ideally called at the end of a drawing routine
+
+
+`procedure initBuffer`
+
+Initialises the 64KB graphics buffer
+
+
+`procedure freeBuffer`
+
+Frees the 64KB graphics buffer
