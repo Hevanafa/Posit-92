@@ -11,6 +11,8 @@ Graphics
 - [x] Deterministic delta time unit
 - [x] FPS-related unit
 - Drawing primitives
+- BMFont font support
+- Support for 1-bit BMP file format
 
 Sounds
 - PC speaker
