@@ -95,7 +95,7 @@ Draws a triangle outline
 
 Example:
 
-```
+```pascal
 cls(1);
 tri(10, 15, 80, 80, 65, 40, 15);
 tri(50, 50, 100, 20, 150, 75, 15);
