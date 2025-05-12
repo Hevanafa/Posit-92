@@ -10,10 +10,15 @@ type
     durationMS: word; { in ms }
   end;
 
-procedure playBeep(freq, durationMs: word);
-procedure initPCS;
-procedure startMelody;
-procedure updateMelody;
+  TPCSpeaker = object
+    procedure init;
+    procedure playBeep(freq, durationMs: word);
+    procedure startMelody;
+    procedure updateMelody;
+  end;
+
+var
+  PCSpeaker: TPCSpeaker;
 
 
 implementation
@@ -21,10 +26,10 @@ implementation
 uses crt, dos, Timing;
 
 var
-  PCS_currentNote: integer;
-  PCS_noteEndTick: longint;
-  PCS_playing: boolean;
-  PCS_toneEnd: longint;
+  currentNote: integer;
+  noteEndTick: longint;
+  playing: boolean;
+  toneEnd: longint;
 
 const
   { TODO: Add more of your sounds here }
@@ -36,44 +41,44 @@ const
   );
 
 
-procedure playBeep(freq, durationMs: word);
+procedure TPCSpeaker.playBeep(freq, durationMs: word);
 begin
   sound(freq);
-  PCS_toneEnd := getTicks + (durationMs div 55);
-  PCS_playing := true
+  toneEnd := getTicks + (durationMs div 55);
+  playing := true
 end;
 
 
 procedure playNextNote;
 begin
-  inc(PCS_currentNote);
-  if PCS_currentNote > high(melody) then begin
+  inc(currentNote);
+  if currentNote > high(melody) then begin
     noSound;
-    PCS_playing := false;
+    playing := false;
     exit;
   end;
 
-  sound(melody[PCS_currentNote].freq);
-  PCS_noteEndTick := getTicks + (melody[PCS_currentNote].durationMS div 55)
+  sound(melody[currentNote].freq);
+  noteEndTick := getTicks + (melody[currentNote].durationMS div 55)
 end;
 
-procedure initPCS;
+procedure TPCSpeaker.init;
 begin
-  PCS_currentNote := -1;
-  PCS_playing := false;
+  currentNote := -1;
+  playing := false;
 end;
 
-procedure startMelody;
+procedure TPCSpeaker.startMelody;
 begin
-  if PCS_playing then exit;
-  PCS_currentNote := -1;
-  PCS_playing := true;
+  if playing then exit;
+  currentNote := -1;
+  playing := true;
   playNextNote;
 end;
 
-procedure updateMelody;
+procedure TPCSpeaker.updateMelody;
 begin
-  if PCS_playing and (getTicks >= PCS_noteEndTick) then
+  if playing and (getTicks >= noteEndTick) then
     playNextNote;
 end;
 

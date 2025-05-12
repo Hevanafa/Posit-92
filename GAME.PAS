@@ -52,7 +52,7 @@ begin
   initKeyHandler;
   initMouse;
   initFPSCounter;
-  initPCS;
+  PCSpeaker.init;
 end;
 
 
@@ -65,7 +65,7 @@ begin
   updateMouse;
 
   { TODO: Your update code here }
-  updateMelody;
+  PCSpeaker.updateMelody;
 
   if isKeyDown($01) then
     done := true;
@@ -73,7 +73,7 @@ begin
   { B }
   if lastB <> isKeyDown($30) then begin
     lastB := isKeyDown($30);
-    if lastB then startMelody;
+    if lastB then PCSpeaker.startMelody;
   end;
 
   for a:=0 to high(particles) do begin
