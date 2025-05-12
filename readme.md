@@ -14,12 +14,15 @@ Rainfall demo:
 ## Included units
 
 - `GAME.PAS`: Program starting point
+- `DEMO.PAS`: Feature demonstration
 - `BITMAP.PAS`: Utility for BMP files
 - `CONV.PAS`: Common conversion features
 - `FPS.PAS`: FPS counter utility
+- `GRAPHICS.PAS`: Primitives drawing utility
 - `KEYBOARD.PAS`: Keyboard utility
 - `LOGGER.PAS`: Debug logger
 - `MOUSE.PAS`: Mouse utility
+- `PCS.PAS`: PC speaker utility
 - `TIMING.PAS`: Time-related utility
 - `VGA.PAS`: Utility for VGA access
 
