@@ -65,6 +65,39 @@ This procedure is called within the `update` function to update both the last FP
 Renders the last recorded FPS count
 
 
+### Graphics
+
+Primitive drawing unit
+
+`procedure circ(cx, cy, radius: integer; colour: byte)`
+
+Draws a circle outline
+
+`procedure circfill(cx, cy, radius: integer; colour: byte)`
+
+Draws a filled circle
+
+`procedure line(x1, y1, x2, y2: integer; colour: byte)`
+
+Draws a line segment
+
+`procedure rect(x0, y0, x1, y1: integer; colour: byte)`
+
+Draws a rectangle outline
+
+`procedure rectfill(x0, y0, x1, y1: integer; colour: byte)`
+
+Draws a filled rectangle
+
+`procedure tri(x0, y0, x1, y1, x2, y2: integer; colour: byte)`
+
+Draws a triangle outline
+
+`procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte)`
+
+Draws a filled triangle
+
+
 ### Keyboard
 
 `procedure initKeyHandler`
