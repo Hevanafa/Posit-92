@@ -93,9 +93,31 @@ Draws a filled rectangle
 
 Draws a triangle outline
 
+Example:
+
+```
+cls(1);
+tri(10, 15, 80, 80, 65, 40, 15);
+tri(50, 50, 100, 20, 150, 75, 15);
+```
+
+![tri](./tri.png)
+
 `procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte)`
 
 Draws a filled triangle
+
+Example:
+
+Draw a dark cyan and a green filled rectangles:
+
+```pascal
+cls(1);
+trifill(10, 15, 80, 80, 65, 40, 3);
+trifill(50, 50, 100, 20, 150, 75, 2);
+```
+
+![trifill](./trifill.png)
 
 
 ### Keyboard
@@ -196,6 +218,15 @@ The precision is around 1 / 18th of a second
 `function GetTimer: real`
 
 Gets the timer in seconds since midnight. It's better to use this instead of `Timer` because the precision is better
+
+Example:
+
+Render delta time and getTimer
+
+```pascal
+print('Delta t: ' + f32str(dt), 0, 0, 7);
+print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
+```
 
 
 `function GetTimerMS: Longint`

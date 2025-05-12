@@ -96,8 +96,6 @@ begin
 
   { TODO: Your drawing code here }
 
-  { print('Test VGA mode.', 0, 25, 15); }
-
   for a:=0 to high(particles) do
     pset(trunc(particles[a].x), trunc(particles[a].y), 15);
 
@@ -108,17 +106,10 @@ begin
   rect(50, 40, 120, 70, 15);
   rectfill(50, 80, 120, 110, 15);
   }
-  { line(50, 40, 120, 70, 15); }
-
-  trifill(10, 15, 80, 80, 65, 40, 3);
-  trifill(50, 50, 100, 20, 150, 75, 2);
-  tri(10, 15, 80, 80, 65, 40, 15);
-  tri(50, 50, 100, 20, 150, 75, 15);
-
 
   drawMouse;
 
-  print('Retro Programming 99', 0, 40, 15);
+  { print('Retro Programming 99', 0, 40, 15); }
 
   { debugMouse; }
 
@@ -126,12 +117,6 @@ begin
     print('W key is down', 0, 32, 15);
   if isKeyDown($39) then
     print('Spacebar!', 0, 32, 15);
-
-  { Debug delta time }
-  {
-  print('Delta t: ' + f32str(dt), 0, 0, 7);
-  print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
-  }
 
 
   { Debug heap allocation }
@@ -143,7 +128,7 @@ begin
   { print('delta ms: ' + int2str(deltaMS), 0, 0, 15); }
   { print(int2str(TimerMS), 0, 8, 15); }
 
-  drawFPS;
+  { drawFPS; }
   flush;
 end;
 
