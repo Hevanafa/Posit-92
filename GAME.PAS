@@ -1,7 +1,8 @@
 
 uses
   CRT, DOS,
-  Conv, FPS, Logger, Keyboard, Mouse, Timing, VGA;
+  Conv, FPS, Logger, Keyboard, Mouse, Timing, VGA,
+  Graphics;
 
 type
   TParticle = record
@@ -90,7 +91,13 @@ begin
 
   { print('Alive: ' + int2str(countAlive), 0, 16, 15); }
 
+  circ(50, 40, 10, 15);
+  circfill(50, 80, 10, 15);
+
   drawMouse;
+
+  print('Retro Programming 99', 0, 40, 15);
+
   { debugMouse; }
 
   if isKeyDown($11) then
@@ -103,6 +110,7 @@ begin
   print('Delta t: ' + f32str(dt), 0, 0, 7);
   print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
   }
+
 
   { Debug heap allocation }
   {
