@@ -6,6 +6,7 @@ var
   dt, newTime, lastTime: double; { in seconds }
   { deltaMS, lastMS: longint; }
 
+function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
@@ -16,6 +17,11 @@ procedure updateDeltaTime;
 implementation
 
 uses crt, dos;
+
+function GetTicks: Longint;
+begin
+  getTicks := MemL[$0040:$006C]
+end;
 
 function Timer: real;
 begin

@@ -15,7 +15,7 @@ Graphics
 - Support for 1-bit BMP file format
 
 Sounds
-- PC speaker
+- [x] PC speaker
 - AdLib
 - SoundBlaster
 

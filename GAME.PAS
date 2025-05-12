@@ -2,7 +2,7 @@
 uses
   CRT, DOS,
   Conv, FPS, Logger, Keyboard, Mouse, Timing, VGA,
-  Graphics;
+  Graphics, PCS;
 
 type
   TParticle = record
@@ -14,6 +14,7 @@ type
 var
   done: boolean;
   particles: array [0..99] of TParticle;
+  lastB: boolean;
 
 
 procedure initParticle(var p: TParticle);
@@ -51,6 +52,7 @@ begin
   initKeyHandler;
   initMouse;
   initFPSCounter;
+  initPCS;
 end;
 
 
@@ -63,9 +65,16 @@ begin
   updateMouse;
 
   { TODO: Your update code here }
+  updateMelody;
 
   if isKeyDown($01) then
     done := true;
+
+  { B }
+  if lastB <> isKeyDown($30) then begin
+    lastB := isKeyDown($30);
+    if lastB then startMelody;
+  end;
 
   for a:=0 to high(particles) do begin
     if particles[a].alive then begin
