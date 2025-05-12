@@ -6,6 +6,9 @@ interface
 
 procedure circ(cx, cy, radius: integer; colour: byte);
 procedure circfill(cx, cy, radius: integer; colour: byte);
+procedure rect(x0, y0, x1, y1: integer; colour: byte);
+procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
+
 
 implementation
 
@@ -68,5 +71,43 @@ begin
     inc(x)
   end;
 end;
+
+
+procedure rect(x0, y0, x1, y1: integer; colour: byte);
+var
+  a, b, temp: integer;
+begin
+  if x0 > x1 then begin
+    temp := x0; x0 := x1; x1 := temp
+  end;
+  if y0 > y1 then begin
+    temp := y0; y0 := y1; y1 := temp
+  end;
+  for b:=y0 to y1 do begin
+    pset(x0, b, colour);
+    pset(x1, b, colour)
+  end;
+  for a:=x0 to x1 do begin
+    pset(a, y0, colour);
+    pset(a, y1, colour)
+  end;
+end;
+
+
+procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
+var
+  a, b, temp: integer;
+begin
+  if x0 > x1 then begin
+    temp := x0; x0 := x1; x1 := temp
+  end;
+  if y0 > y1 then begin
+    temp := y0; y0 := y1; y1 := temp
+  end;
+  for b:=y0 to y1 do
+    for a:=x0 to x1 do
+      pset(a, b, colour);
+end;
+
 
 end.

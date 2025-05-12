@@ -91,8 +91,11 @@ begin
 
   { print('Alive: ' + int2str(countAlive), 0, 16, 15); }
 
-  circ(50, 40, 10, 15);
+  { circ(50, 40, 10, 15);
   circfill(50, 80, 10, 15);
+  }
+  rect(50, 40, 120, 70, 15);
+  rectfill(50, 80, 120, 110, 15);
 
   drawMouse;
 
