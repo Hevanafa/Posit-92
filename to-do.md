@@ -10,7 +10,7 @@ Graphics
 - [x] Support for (indexed) BMP file format
 - [x] Deterministic delta time unit
 - [x] FPS-related unit
-- Drawing primitives
+- [x] Drawing primitives: circle, rectangle, line, triangle
 - BMFont font support
 - Support for 1-bit BMP file format
 
@@ -19,5 +19,5 @@ Sounds
 - AdLib
 - SoundBlaster
 
-Export for web
-- [js-dos](https://js-dos.com/)
+Docs: Building
+Docs: Export for web [js-dos](https://js-dos.com/)

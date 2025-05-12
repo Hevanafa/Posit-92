@@ -9,6 +9,8 @@ procedure circfill(cx, cy, radius: integer; colour: byte);
 procedure line(x1, y1, x2, y2: integer; colour: byte);
 procedure rect(x0, y0, x1, y1: integer; colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
+procedure tri(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte);
 
 
 implementation
@@ -140,6 +142,70 @@ begin
     for a:=x0 to x1 do
       pset(a, b, colour);
 end;
+
+
+procedure tri(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+begin
+  line(x0, y0, x1, y1, colour);
+  line(x1, y1, x2, y2, colour);
+  line(x2, y2, x0, y0, colour);
+end;
+
+
+procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+const
+  FIX_SHIFT = 8;
+  FIX_SCALE = 1 shl FIX_SHIFT;
+var
+  y, tmp, dx1, dx2, sx1, sx2, dy1, dy2: integer;
+  xStart, xEnd: integer;
+begin
+  { Sort vertices }
+  if y0>y1 then begin
+    tmp:=y0; y0:=y1; y1:=tmp;
+    tmp:=x0; x0:=x1; x1:=tmp
+  end;
+  if y0>y2 then begin
+    tmp:=y0; y0:=y2; y2:=tmp;
+    tmp:=x0; x0:=x2; x2:=tmp
+  end;
+  if y1>y2 then begin
+    tmp:=y1; y1:=y2; y2:=tmp;
+    tmp:=x1; x1:=x2; x2:=tmp
+  end;
+
+  { First half }
+  dy1:=y1 - y0; dy2:=y2 - y0;
+  if dy1 > 0 then dx1:=((x1-x0) * FIX_SCALE) div dy1 else dx1 := 0;
+  if dy2 > 0 then dx2:=((x2-x0) * FIX_SCALE) div dy2 else dx2 := 0;
+  sx1:=x0 * FIX_SCALE; sx2:=x0*FIX_SCALE;
+  for y:=y0 to y1-1 do begin
+    xStart := sx1 shr FIX_SHIFT;
+    xEnd := sx2 shr FIX_SHIFT;
+    if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
+    while xStart <= xEnd do begin
+      pset(xStart, y, colour);
+      inc(xStart);
+    end;
+    inc(sx1, dx1); inc(sx2, dx2)
+  end;
+
+  { Second half }
+  dy1:=y2-y1;
+  if dy1 > 0 then dx1:=((x2-x1) * FIX_SCALE) div dy1 else dx1:=0;
+  sx1:=x1 * FIX_SCALE;
+  for y:=y1 to y2 do begin
+    xStart := sx1 shr FIX_SHIFT;
+    xEnd := sx2 shr FIX_SHIFT;
+    if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
+    while xStart <= xEnd do begin
+      pset(xStart, y, colour);
+      inc(xStart);
+    end;
+    inc(sx1, dx1); inc(sx2, dx2)
+  end;
+end;
+
 
 
 end.
