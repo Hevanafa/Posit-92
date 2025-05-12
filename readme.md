@@ -1,10 +1,14 @@
 # Game framework for Turbo Pascal 7.0
 
-My goal is to create something like a fantasy computer such as PICO-8 and TIC-80 but uses Turbo Pascal because I believe it's fast enough & easier than C
-
 ![preview](./preview.png)
 
+My goal is to create something like a fantasy computer such as PICO-8 and TIC-80 but uses Turbo Pascal because I believe it's fast enough & easier than C
+
 I'm also inspired by [LoveDOS](https://github.com/rxi/lovedos) (also, the working fork with the audio working: https://github.com/SuperIlu/lovedos)
+
+Rainfall demo:
+
+![demo preview](./demo_preview.png)
 
 
 ## Included units
