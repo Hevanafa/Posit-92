@@ -6,6 +6,7 @@ interface
 
 procedure circ(cx, cy, radius: integer; colour: byte);
 procedure circfill(cx, cy, radius: integer; colour: byte);
+procedure line(x1, y1, x2, y2: integer; colour: byte);
 procedure rect(x0, y0, x1, y1: integer; colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
 
@@ -70,6 +71,37 @@ begin
 
     inc(x)
   end;
+end;
+
+
+procedure line(x1, y1, x2, y2: integer; colour: byte);
+var
+  dx, dy, sx, sy, err, e2: integer;
+begin
+  dx := abs(x2 - x1);
+  dy := abs(y2 - y1);
+
+  if x1 < x2 then sx := 1 else sx := -1;
+  if y1 < y2 then sy := 1 else sy := -1;
+
+  err := dx - dy;
+
+  while (x1 <> x2) or (y1 <> y2) do begin
+    pset(x1, y1, colour);
+    e2 := 2 * err;
+
+    if e2 > -dy then begin
+      err := err - dy;
+      x1 := x1 + sx;
+    end;
+
+    if e2 < dx then begin
+      err := err + dx;
+      y1 := y1 + sy;
+    end;
+  end;
+
+  pset(x1, y1, colour)
 end;
 
 
