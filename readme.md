@@ -1,4 +1,4 @@
-# POSIT92
+![Posit-92](./posit-92_logo.png) **Posit-92**
 
 ![preview](./preview.png)
 
