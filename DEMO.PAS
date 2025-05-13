@@ -73,7 +73,7 @@ begin
   { B }
   if lastB <> isKeyDown($30) then begin
     lastB := isKeyDown($30);
-    if lastB then PCSpeaker.startMelody;
+    if lastB then PCSpeaker.playMelody(Melody1);
   end;
 
   for a:=0 to high(particles) do begin
