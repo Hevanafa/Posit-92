@@ -1,12 +1,14 @@
-# Game framework for Turbo Pascal 7.0
+# POSIT92
 
 ![preview](./preview.png)
 
-My goal is to create something like a fantasy computer such as PICO-8 and TIC-80 but uses Turbo Pascal because I believe it's fast enough & easier than C
+A game framework for Turbo Pascal 7.0. The name comes from **Positron** and **1992** (the year in which TP7 was released). I know it sounds kinda obscure, because it **is** an obscure piece of tech especially for game dev.
 
-I'm also inspired by [LoveDOS](https://github.com/rxi/lovedos) (also, the working fork with the audio working: https://github.com/SuperIlu/lovedos)
+My goal is to create something like a fantasy computer such as PICO-8 and TIC-80 but uses TP7 because I believe it's fast enough & easier than C.
 
-Rainfall demo:
+I'm also inspired by [LoveDOS](https://github.com/rxi/lovedos) (also, the working fork with the audio working: https://github.com/SuperIlu/lovedos).
+
+Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 
 ![demo preview](./demo_preview.png)
 
@@ -29,3 +31,4 @@ Rainfall demo:
 If you want the scancodes for the keyboard, you can refer to these lists:
 - https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
 - https://www.freebasic.net/wiki/GfxScancodes
+
