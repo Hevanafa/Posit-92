@@ -19,5 +19,5 @@ Sounds
 - AdLib
 - SoundBlaster
 
-Docs: Building
-Docs: Export for web [js-dos](https://js-dos.com/)
+- [x] Docs: Building
+- Docs: Export for web [js-dos](https://js-dos.com/)

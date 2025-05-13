@@ -15,8 +15,13 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 
 ## Included units
 
+### Primary units
+
 - `GAME.PAS`: Program starting point
 - `DEMO.PAS`: Feature demonstration
+
+### Utility units
+
 - `BITMAP.PAS`: Utility for BMP files
 - `CONV.PAS`: Common conversion features
 - `FPS.PAS`: FPS counter utility
