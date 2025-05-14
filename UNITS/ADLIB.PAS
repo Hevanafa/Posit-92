@@ -41,11 +41,14 @@ var
   activeMelody: TMelody;
 
 procedure AdlibWrite(reg, value: byte);
+var
+  a: byte;
 begin
+  { replaced delay with simulated delay }
   Port[AdlibStatus] := reg;
-  delay(1);
+  for a:=1 to 10 do;
   Port[AdlibData] := value;
-  delay(1)
+  for a:=1 to 10 do;
 end;
 
 procedure setupInstruments;
