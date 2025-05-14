@@ -11,12 +11,14 @@ Graphics
 - [x] Deterministic delta time unit
 - [x] FPS-related unit
 - [x] Drawing primitives: circle, rectangle, line, triangle
+- [x] Draw a rotated sprite
+- [x] Draw a rotated sprite + scale
 - BMFont font support
 - Support for 1-bit BMP file format
 
 Sounds
 - [x] PC speaker
-- AdLib
+- [x] AdLib
 - SoundBlaster
 
 - [x] Docs: Building

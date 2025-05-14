@@ -1,4 +1,6 @@
 
+{ Game implementation with PCSpeaker }
+
 uses
   CRT, DOS,
   Logger, Keyboard, Timing, VGA,
