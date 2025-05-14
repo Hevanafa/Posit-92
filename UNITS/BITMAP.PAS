@@ -13,7 +13,10 @@ procedure loadBMP(var output: PBitmap; filename: string);
 procedure drawBMP(image: PBitmap);
 procedure freeBMP(var image: PBitmap);
 procedure spr(image: PBitmap; x, y: integer; transparencyKey: byte);
-procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte);
+procedure sprTint(image: PBitmap; x, y: integer; transparencyKey, tint: byte);
+procedure initSinCosTables;
+procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte); { in degrees }
+procedure sprPro2(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte);
 procedure bitmapInfo(image: PBitmap);
 
 
@@ -22,6 +25,9 @@ implementation
 uses Logger, Conv, vga;
 
 const DEBUG = false;
+
+var
+  sinTable, cosTable: array[0..255] of integer;
 
 { var makes it pass-by-reference }
 procedure loadBMP(var output: PBitmap; filename: string);
@@ -111,6 +117,39 @@ begin
   end;
 end;
 
+procedure sprTint(image: PBitmap; x, y: integer; transparencyKey, tint: byte);
+var
+  a, b, pos: integer;
+begin
+  if image = nil then exit;
+  for b := 0 to image^.height-1 do
+  for a := 0 to image^.width-1 do begin
+    pos := a + b * image^.width;
+    if image^.data[pos] <> transparencyKey then
+      pset(x+a, y+b, tint);
+  end;
+end;
+
+function deg2rad(deg: double): double;
+begin
+  deg2rad := deg / 180 * pi
+end;
+
+procedure initSinCosTables;
+const
+  FIX_SHIFT = 8;
+  FIX_SCALE = 1 shl FIX_SHIFT;
+var
+  i: integer;
+begin
+  { Generate sine/cosine lookup table }
+  for i := 0 to 255 do begin
+    sinTable[i] := round(sin(i * 2 * Pi / 256) * FIX_SCALE);
+    cosTable[i] := round(cos(i * 2 * Pi / 256) * FIX_SCALE);
+    writeLog(i32str(i) + ' - ' + f32str(sinTable[i]))
+  end;
+end;
+
 procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
@@ -133,6 +172,8 @@ begin
   ca:=cos(-angle);
 
   { bounding box }
+  { for iy:=0 to sh-1 do
+  for ix:=0 to sw-1 do begin }
   for iy:=trunc(cy-sh * halfsqr2) to trunc(cy+sh * halfsqr2) do
   for ix:=trunc(cx-sw * halfsqr2) to trunc(cx+sw * halfsqr2) do begin
     dx:=ix-cx;
@@ -149,6 +190,55 @@ begin
     end;
   end;
 end;
+
+
+{ Laggy }
+procedure sprPro2(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte);
+var
+  sw, sh, cx, cy: integer;
+  sa, ca: double;
+  ix, iy: integer; { offset from image centre }
+  srcX, srcY: integer;
+  hw, hh: integer;
+  colour: byte;
+begin
+  if image = nil then exit;
+
+  sw:=image^.width;
+  sh:=image^.height;
+  cx:=sw div 2;
+  cy:=sh div 2;
+
+  angle:=angle/180*pi;
+  sa:=sin(-angle); { inverse rotation }
+  ca:=cos(-angle);
+
+  hw:=trunc(sw*scaleX*abs(ca) + sh*scaleY*abs(sa));
+  hh:=trunc(sw*scaleX*abs(sa) + sh*scaleY*abs(ca));
+
+  { Debug bounding box }
+  {
+  pset(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  pset( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  pset( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  pset(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  }
+
+  { bounding box }
+  for iy:=-hh to hh do
+  for ix:=-hw to hw do begin
+    { scaling, then inverse rotation }
+    srcX:=round((ix*ca - iy*sa) / scaleX + cx);
+    srcY:=round((ix*sa + iy*ca) / scaleY + cy);
+
+    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
+      colour := image^.data[srcY*sw + srcX];
+      if colour <> transparencyKey then
+        pset(x+ix, y+iy, colour);
+    end;
+  end;
+end;
+
 
 procedure bitmapInfo(image: PBitmap);
 begin
