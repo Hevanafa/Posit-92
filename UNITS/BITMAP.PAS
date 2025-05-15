@@ -9,10 +9,10 @@ type
     data: array[0..0] of byte;
   end;
 
-procedure loadBMP(var output: PBitmap; filename: string);
-procedure drawBMP(image: PBitmap);
+procedure loadBMP(var output: PBitmap; const filename: string);
+procedure drawBMP(const image: PBitmap);
 procedure freeBMP(var image: PBitmap);
-procedure spr(image: PBitmap; x, y: integer; transparencyKey: byte);
+procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure sprTint(image: PBitmap; x, y: integer; transparencyKey, tint: byte);
 procedure initTrigLUT;
 procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte); { in degrees }
@@ -24,7 +24,7 @@ procedure bitmapInfo(image: PBitmap);
 
 implementation
 
-uses Logger, Conv, vga;
+uses Logger, Conv, Panic, VGA;
 
 const DEBUG = false;
 
@@ -32,7 +32,7 @@ var
   sinLUT, cosLUT: array[0..35] of double;
 
 { var makes it pass-by-reference }
-procedure loadBMP(var output: PBitmap; filename: string);
+procedure loadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -43,7 +43,10 @@ var
 
 begin
   assign(f, filename);
-  reset(f, 1); { record size is 1 --> binary mode }
+  {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
+  if IOResult <> 0 then
+    panicHalt('loadBMP: Couldn''t find "' + filename + '"!');
+
   { blockRead(f, buffer, sizeOf(buffer), bytesRead); }
   { writeLn('Read ', bytesRead, ' bytes from sample.bmp'); }
   seek(f, 18); blockRead(f, w, 2);
@@ -89,7 +92,7 @@ begin
   close(f);
 end;
 
-procedure drawBMP(image: PBitmap);
+procedure drawBMP(const image: PBitmap);
 var
   a, b: integer;
 begin
@@ -106,7 +109,7 @@ begin
   image := nil  { avoids dangling pointer }
 end;
 
-procedure spr(image: PBitmap; x, y: integer; transparencyKey: byte);
+procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin

@@ -12,7 +12,6 @@ var
   lastB: boolean;
   font: TBMFont;
 
-
 procedure INIT;
 begin
   randomize;

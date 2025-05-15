@@ -27,7 +27,7 @@ procedure freeBMFont(var font: TBMFont);
 
 implementation
 
-uses Conv, Logger, Strings, VGA;
+uses Conv, Logger, Panic, Strings, VGA;
 
 procedure loadBMFont(const filename: string; var output: TBMFont);
 var
@@ -46,7 +46,10 @@ begin
     output.glyphs[a] := nil;
 
   assign(f, filename);
-  reset(f);
+  {$I-} reset(f); {$I+}
+  if IOResult <> 0 then
+    panicHalt('loadBMFont: Couldn''t find "' + filename + '"!');
+
   a := 0;
   skipLine := false;
 
