@@ -2,7 +2,7 @@
 uses
   CRT, DOS,
   Logger, Keyboard, Timing, VGA,
-  Bitmap, Conv, FPS, BMFread;
+  Bitmap, Conv, FPS, BMFont;
 
 type
   TRect = object
