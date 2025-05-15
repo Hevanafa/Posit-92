@@ -14,6 +14,8 @@ type
 
 var
   font: TBMFont;
+  iLineHeight: integer;
+  sFilename: string;
 
 
 {
@@ -140,7 +142,11 @@ begin
 end;
 
 
-procedure loadBMFont(filename: string; var output: TBMFont);
+procedure loadBMFont(
+  const filename: string;
+  var output: TBMFont;
+  var outputFilename: string;
+  var outputLineHeight: integer);
 var
   a, b: integer;
   f: text;
@@ -148,8 +154,8 @@ var
   skipLine: boolean;
   pairs: array[0..11] of string;
   pairCount: word;
-  kv: array[0..1] of string;
-  key, value: string;
+  kv: array[0..1] of string; { key-value pair }
+  key, value: string;  { separated key-value pair }
   g: PBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
@@ -169,6 +175,23 @@ begin
 
     while contains(line, '  ') do
       line := replaceAll(line, '  ', ' ');
+
+    if startsWith(line, 'common') then begin
+      pairCount := split(line, ' ', pairs);
+      for b:=0 to pairCount-1 do begin
+        split(pairs[b], '=', kv);
+        if kv[0] = 'lineHeight' then
+          outputLineHeight := parseInt(kv[1]);
+      end;
+    end;
+
+    if startsWith(line, 'page') then begin
+      pairCount := split(line, ' ', pairs);
+      for b:=0 to pairCount-1 do begin
+        split(pairs[b], '=', kv);
+        if kv[0] = 'file' then outputFilename := kv[1];
+      end;
+    end;
 
     if startsWith(line, 'char') then begin
       { assign glyph info }
@@ -217,10 +240,16 @@ var
   a: integer;
   source: string;
 begin
-  loadBMFont('COMMOD64.FNT', font);
+  loadBMFont('COMMOD64.FNT', font, sFilename, iLineHeight);
+  writeLn('Filename:', sFilename);
+  writeLn('Line height:', iLineHeight);
+  {
   for a := low(font) to high(font) do
     if font[a] <> nil then
       writeLn('id:',font[a]^.id);
+  }
+
+
   {
   source := 'hello world    a     b       c';
   writeLn(source);
