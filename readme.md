@@ -18,7 +18,9 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 ### Primary units
 
 - `GAME.PAS`: Program starting point
-- `DEMO.PAS`: Feature demonstration
+
+All the demonstrations are placed in `DEMOS`
+
 
 ### Utility units
 
@@ -40,4 +42,5 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 If you want the scancodes for the keyboard, you can refer to these lists:
 - https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
 - https://www.freebasic.net/wiki/GfxScancodes
+
 
