@@ -4,24 +4,6 @@ uses
   Logger, Keyboard, Timing, VGA,
   Bitmap, Conv, FPS, BMFont;
 
-type
-  TRect = object
-    x, y, width, height: integer;
-    function intersects(other: TRect): boolean;
-  end;
-  TCoin = record
-    hitbox: TRect
-  end;
-
-function TRect.intersects(other: TRect): boolean;
-begin
-  intersects :=
-    (other.x < self.x + self.width) and
-    (self.x < other.x + other.width) and
-    (other.y < self.y + self.height) and
-    (self.y < other.y + other.height)
-end;
-
 const
   K_ESC = $01;
 var
@@ -79,7 +61,7 @@ begin
 
   { TODO: Your drawing code here }
 
-  print('BMFont test', 160-48, 120, 15);
+  font.print('BMFont test', 160-48, 120, 15);
 
   { print('B - beep', 160-32, 130, 15); }
 

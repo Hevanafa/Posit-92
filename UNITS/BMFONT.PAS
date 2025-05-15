@@ -1,8 +1,8 @@
-{ TODO: Rename this file to BMFONT }
-
-unit BMFRead;
+unit BMFont;
 
 interface
+
+uses Bitmap;
 
 type
   PBMFontGlyph = ^TBMFontGlyph;
@@ -17,8 +17,8 @@ type
     glyphs: array[32..127] of PBMFontGlyph;
     filename: string;
     lineHeight: word;
-    { TODO: add the TBitmap }
-    { TODO: add the print method }
+    bitmap: PBitmap;
+    procedure print(const text: string; x, y: integer; const colour: byte);
   end;
 
 procedure loadBMFont(const filename: string; var output: TBMFont);
@@ -113,7 +113,9 @@ begin
     inc(a)
     { if a>=10 then break; }
   end;
-  close(f)
+  close(f);
+
+  loadBMP(output.bitmap, output.filename)
 end;
 
 procedure freeBMFont(var font: TBMFont);
@@ -131,5 +133,9 @@ begin
   writeLn('Freed ', count, ' glyphs')
 end;
 
+procedure TBMFont.print(const text: string; x, y: integer; const colour: byte);
+begin
+  { TODO: Implement this }
+end;
 
 end.
