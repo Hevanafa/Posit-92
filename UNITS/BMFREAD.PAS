@@ -10,13 +10,14 @@ type
     xadvance: integer;
     { page, chnl: byte; }
   end;
-  TBMFont = array[32..127] of PBMFontGlyph;
+  TBMFont = object
+    glyphs: array[32..127] of PBMFontGlyph;
+    filename: string;
+    lineHeight: word;
+  end;
 
 var
   font: TBMFont;
-  iLineHeight: integer;
-  sFilename: string;
-
 
 {
 function replaceAll(const source, searchStr, replaceStr: string): string;
@@ -133,20 +134,16 @@ procedure freeBMFont(var font: TBMFont);
 var
   a: word;
 begin
-  for a:=low(font) to high(font) do begin
-    if font[a] <> nil then begin
-      dispose(font[a]);
-      font[a] := nil
+  for a:=low(font.glyphs) to high(font.glyphs) do begin
+    if font.glyphs[a] <> nil then begin
+      dispose(font.glyphs[a]);
+      font.glyphs[a] := nil
     end;
   end;
 end;
 
 
-procedure loadBMFont(
-  const filename: string;
-  var output: TBMFont;
-  var outputFilename: string;
-  var outputLineHeight: integer);
+procedure loadBMFont(const filename: string; var output: TBMFont);
 var
   a, b: integer;
   f: text;
@@ -160,8 +157,8 @@ var
   glyphID, parseResult, tempI32: integer;
 begin
   freeBMFont(output);
-  for a:=low(output) to high(output) do
-    output[a] := nil;
+  for a:=low(output.glyphs) to high(output.glyphs) do
+    output.glyphs[a] := nil;
 
   assign(f, filename);
   reset(f);
@@ -181,7 +178,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'lineHeight' then
-          outputLineHeight := parseInt(kv[1]);
+          font.lineHeight := parseInt(kv[1]);
       end;
     end;
 
@@ -189,7 +186,7 @@ begin
       pairCount := split(line, ' ', pairs);
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
-        if kv[0] = 'file' then outputFilename := kv[1];
+        if kv[0] = 'file' then font.filename := kv[1];
       end;
     end;
 
@@ -204,11 +201,11 @@ begin
         if key = 'id' then begin
           glyphID := parseInt(value);
 
-          if (low(font) <= glyphID) and (glyphID <= high(font)) then begin
+          if (low(font.glyphs) <= glyphID) and (glyphID <= high(font.glyphs)) then begin
             { writeLn('ID:', glyphID); }
             New(g);
             g^.id := glyphID;
-            font[glyphID] := g
+            font.glyphs[glyphID] := g
           end else begin
             { writeLn('Skipped glyph ', glyphID); }
             { when out of bounds }
@@ -216,13 +213,13 @@ begin
             break
           end;
         end
-        else if key = 'x' then font[glyphID]^.x := parseInt(value)
-        else if key = 'y' then font[glyphID]^.y := parseInt(value)
-        else if key = 'width' then font[glyphID]^.width := parseInt(value)
-        else if key = 'height' then font[glyphID]^.height := parseInt(value)
-        else if key = 'xoffset' then font[glyphID]^.xoffset := parseInt(value)
-        else if key = 'yoffset' then font[glyphID]^.yoffset := parseInt(value)
-        else if key = 'xadvance' then font[glyphID]^.xadvance := parseInt(value);
+        else if key = 'x' then font.glyphs[glyphID]^.x := parseInt(value)
+        else if key = 'y' then font.glyphs[glyphID]^.y := parseInt(value)
+        else if key = 'width' then font.glyphs[glyphID]^.width := parseInt(value)
+        else if key = 'height' then font.glyphs[glyphID]^.height := parseInt(value)
+        else if key = 'xoffset' then font.glyphs[glyphID]^.xoffset := parseInt(value)
+        else if key = 'yoffset' then font.glyphs[glyphID]^.yoffset := parseInt(value)
+        else if key = 'xadvance' then font.glyphs[glyphID]^.xadvance := parseInt(value);
       end;
 
       { writeLn(line); }
@@ -240,9 +237,9 @@ var
   a: integer;
   source: string;
 begin
-  loadBMFont('COMMOD64.FNT', font, sFilename, iLineHeight);
-  writeLn('Filename:', sFilename);
-  writeLn('Line height:', iLineHeight);
+  loadBMFont('COMMOD64.FNT', font);
+  writeLn('Filename:', font.filename);
+  writeLn('Line height:', font.lineHeight);
   {
   for a := low(font) to high(font) do
     if font[a] <> nil then
