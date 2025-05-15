@@ -13,7 +13,8 @@ Graphics
 - [x] Drawing primitives: circle, rectangle, line, triangle
 - [x] Draw a rotated sprite
 - [x] Draw a rotated sprite + scale
-- BMFont font support
+- Draw a segment of a sprite (required for BMFont)
+- BMFont support
 - Support for 1-bit BMP file format
 
 Sounds
