@@ -22,14 +22,18 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 
 ### Utility units
 
+- `ADLIB.PAS`: AdLib utility
 - `BITMAP.PAS`: Utility for BMP files
+- `BMFONT.PAS`: BMFont support utility
 - `CONV.PAS`: Common conversion features
 - `FPS.PAS`: FPS counter utility
 - `GRAPHICS.PAS`: Primitives drawing utility
 - `KEYBOARD.PAS`: Keyboard utility
-- `LOGGER.PAS`: Debug logger
+- `LOGGER.PAS`: Debug logger utility
 - `MOUSE.PAS`: Mouse utility
+- `PANIC.PAS`: Panic halt utility
 - `PCS.PAS`: PC speaker utility
+- `STRINGS.PAS`: String operation utility
 - `TIMING.PAS`: Time-related utility
 - `VGA.PAS`: Utility for VGA access
 
