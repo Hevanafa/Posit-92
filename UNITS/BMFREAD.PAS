@@ -127,6 +127,19 @@ begin
 end;
 
 
+procedure freeBMFont(var font: TBMFont);
+var
+  a: word;
+begin
+  for a:=low(font) to high(font) do begin
+    if font[a] <> nil then begin
+      dispose(font[a]);
+      font[a] := nil
+    end;
+  end;
+end;
+
+
 procedure loadBMFont(filename: string; var output: TBMFont);
 var
   a, b: integer;
@@ -137,15 +150,12 @@ var
   pairCount: word;
   kv: array[0..1] of string;
   key, value: string;
+  g: PBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
-{ TODO: initialise the output array }
-  for a:=low(output) to high(output) do begin
-    if output[a] <> nil then begin
-      freeMem(output[a], sizeOf(TBMFont));
-      output[a] := nil;
-    end;
-  end;
+  freeBMFont(output);
+  for a:=low(output) to high(output) do
+    output[a] := nil;
 
   assign(f, filename);
   reset(f);
@@ -170,10 +180,12 @@ begin
         { case-of can't be used with strings in TP7 }
         if key = 'id' then begin
           glyphID := parseInt(value);
-          New(font[tempI32]);
+
           if (low(font) <= glyphID) and (glyphID <= high(font)) then begin
             { writeLn('ID:', glyphID); }
-            font[glyphID]^.id := glyphID
+            New(g);
+            g^.id := glyphID;
+            font[glyphID] := g
           end else begin
             { writeLn('Skipped glyph ', glyphID); }
             { when out of bounds }
@@ -198,6 +210,7 @@ begin
   end;
   close(f)
 end;
+
 
 var
   f: file;
