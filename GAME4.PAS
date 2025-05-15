@@ -9,7 +9,6 @@ const
 var
   done: boolean;
   t: double;
-  score: integer;
   lastB: boolean;
   font: TBMFont;
 
@@ -25,7 +24,8 @@ begin
   initKeyHandler;
   initFPSCounter;
 
-  loadBMFont('COMMOD64.FNT', font);
+  { loadBMFont('COMMOD64.FNT', font); }
+  loadBMFont('FR12.FNT', font);
 end;
 
 
@@ -40,13 +40,6 @@ begin
   { TODO: Your update code here }
 
   if isKeyDown(K_ESC) then done := true;
-
-  if lastB <> isKeydown($30) then begin
-    lastB := isKeydown($30);
-    { if lastB then
-      PCSpeaker.playMelody(Melody1); }
-    inc(score)
-  end;
 
   t:=t+dt;
 end;
@@ -66,8 +59,8 @@ begin
   { print('B - beep', 160-32, 130, 15); }
 
   { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
-  scoreStr := i32str(score);
-  print(scoreStr, (320 - length(scoreStr) * 8) div 2, 8, 15);
+  scoreStr := f32str(t);
+  font.print(scoreStr, 160, 8, 15);
 
   { drawMouse; }
   drawFPS;
