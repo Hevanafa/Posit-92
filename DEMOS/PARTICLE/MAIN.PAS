@@ -1,8 +1,13 @@
 
+{
+  13-05-2025
+  Particles demo
+}
+
 uses
   CRT, DOS,
   Conv, FPS, Logger, Keyboard, Mouse, Timing, VGA,
-  Graphics, PCS;
+  Graphics;
 
 type
   TParticle = record
@@ -52,7 +57,6 @@ begin
   initKeyHandler;
   initMouse;
   initFPSCounter;
-  PCSpeaker.init;
 end;
 
 
@@ -65,16 +69,8 @@ begin
   updateMouse;
 
   { TODO: Your update code here }
-  PCSpeaker.updateMelody;
 
-  if isKeyDown($01) then
-    done := true;
-
-  { B }
-  if lastB <> isKeyDown($30) then begin
-    lastB := isKeyDown($30);
-    if lastB then PCSpeaker.playMelody(Melody1);
-  end;
+  if isKeyDown($01) then done := true;
 
   for a:=0 to high(particles) do begin
     if particles[a].alive then begin
@@ -101,18 +97,7 @@ begin
 
   { print('Alive: ' + int2str(countAlive), 0, 16, 15); }
 
-  {
-  circ(50, 40, 10, 15);
-  circfill(50, 80, 10, 15);
-  rect(50, 40, 120, 70, 15);
-  rectfill(50, 80, 120, 110, 15);
-  }
-
   drawMouse;
-
-  { print('Retro Programming 99', 0, 40, 15); }
-
-  { debugMouse; }
 
   if isKeyDown($11) then
     print('W key is down', 0, 32, 15);
@@ -126,11 +111,11 @@ begin
   print('Max mem: ' + i32str(MaxAvail) + 'B', 0, 8, 7);
   }
 
-  { print('delta ms: ' + int2str(deltaMS), 0, 0, 15); }
-  { print(int2str(TimerMS), 0, 8, 15); }
+  print('Delta t : ' + f32str(dt), 0, 0, 7);
+  print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
 
-  { drawFPS; }
-  flush;
+  drawFPS;
+  flush
 end;
 
 
