@@ -1,4 +1,3 @@
-{ AdLib implementation demo }
 
 uses
   CRT, DOS,
