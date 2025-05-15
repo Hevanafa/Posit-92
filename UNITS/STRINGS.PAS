@@ -1,5 +1,16 @@
 unit Strings;
 
+interface
+
+function split(text, delim: string; var output: array of string): word;
+function contains(const source, searchStr: string): boolean;
+function startsWith(const source, searchStr: string): boolean;
+function endsWith(const source, searchStr: string): boolean;
+function replaceAll(const source, searchStr, replaceStr: string): string;
+
+
+implementation
+
 { returns the number of elements }
 function split(text, delim: string; var output: array of string): word;
 var
@@ -73,5 +84,6 @@ begin
 
   replaceAll := result
 end;
+
 
 end.
