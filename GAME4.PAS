@@ -34,7 +34,6 @@ var
   a: integer;
 begin
   updateDeltaTime;
-  { updateMouse; }
   incrementFPS;
 
   { TODO: Your update code here }
@@ -47,22 +46,23 @@ end;
 
 procedure draw;
 var
-  a: integer;
-  scoreStr: string;
+  a, w: integer;
+  s, scoreStr: string;
 begin
   cls($7D);
 
   { TODO: Your drawing code here }
 
-  font.print('BMFont test', 160-48, 120, 15);
+  s := 'BMFont test';
+  w := font.textWidth(s);
+  font.print(s, 160 - w div 2, 120, 15);
 
   { print('B - beep', 160-32, 130, 15); }
-
   { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
   scoreStr := f32str(t);
-  font.print(scoreStr, 160, 8, 15);
+  w := font.textWidth(scoreStr);
+  font.print(scoreStr, 160 - w div 2, 8, 15);
 
-  { drawMouse; }
   drawFPS;
   flush
 end;

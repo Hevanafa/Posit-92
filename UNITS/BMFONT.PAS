@@ -19,6 +19,7 @@ type
     lineHeight: word;
     bitmap: PBitmap;
     procedure print(const text: string; x, y: integer; const colour: byte);
+    function textWidth(const text: string): integer;
   end;
 
 procedure loadBMFont(const filename: string; var output: TBMFont);
@@ -164,6 +165,27 @@ begin
 
     inc(dx, g^.xadvance)
   end;
+end;
+
+function TBMFont.textWidth(const text: string): integer;
+var
+  a: integer;
+  ch: char;
+  glyph: PBMFontGlyph;
+  result: integer;
+begin
+  result := 0;
+
+  for a:=1 to length(text) do begin
+    ch := text[a];
+    if (low(glyphs) <= ord(ch)) and (ord(ch) <= high(glyphs)) then begin
+      glyph := glyphs[ord(ch)];
+      if glyph <> nil then
+        inc(result, glyph^.xadvance);
+    end;
+  end;
+
+  textWidth := result
 end;
 
 end.
