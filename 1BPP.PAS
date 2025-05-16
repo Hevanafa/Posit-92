@@ -32,8 +32,7 @@ end;
 
 procedure drawMouseMono;
 begin
-  { sprMono(cursor, mouseX, mouseY); }
-  sprMonoTint(cursor, mouseX, mouseY, $0C)
+  sprMono(cursor, mouseX, mouseY, $0C)
 end;
 
 
@@ -55,8 +54,9 @@ var
   a: integer;
 begin
   cls($7D);
-  sprMono(playdate, 9, 4);
+  { sprMono(playdate, 9, 4, 15); }
   print('Hello world!', 160-48, 136, $7D);
+  debugMouse;
   drawMouseMono;
   drawFPS;
   flush

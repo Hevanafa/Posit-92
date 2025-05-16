@@ -316,5 +316,4 @@ begin
   print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
 end;
 
-
 end.
