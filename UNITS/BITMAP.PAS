@@ -349,6 +349,10 @@ begin
   output^.height := h;
   { Should've been ceil instead of round }
   output^.bytesWidth := round((w div 8) / 4 + 0.5) * 4;
+  { Assuming the bitmap always has a size }
+  if (w <= 4) and (output^.bytesWidth = 0) then
+    output^.bytesWidth := 4;
+
   size := sizeOf(TMonoBitmap) + (output^.bytesWidth * h) - 1;
 
   start := $3E;
@@ -393,7 +397,6 @@ begin
   if image = nil then exit;
   for row:=0 to image^.height - 1 do begin
     byteIndex := row * image^.bytesWidth;
-
     for col:=0 to image^.width - 1 do begin
       bitIndex:=7-(col mod 8);
       b := image^.data[byteIndex + (col div 8)];
