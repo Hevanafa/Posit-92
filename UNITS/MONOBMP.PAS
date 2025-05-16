@@ -33,6 +33,9 @@ var
   bytesW, bytesRead: word;
   a, b: integer;
   w, h, size: integer;
+  { Sanitisation }
+  lastUsedByte, unusedBits: integer;
+  { Used in debugging }
   s: string;
 
 begin
@@ -72,18 +75,32 @@ begin
     seek(f, start + (b * output^.bytesWidth));
     blockRead(f, buffer, output^.bytesWidth);
 
-    { TODO: Sanitise the padding bits }
+    { Sanitise the padding bits }
+    lastUsedByte := output^.width div 8;
+    unusedBits := 8 - (output^.width mod 8);
+
+    { Sanitise the partial byte }
+    if unusedBits <> 8 then
+      buffer[lastUsedByte + 1] := buffer[lastUsedByte + 1] and ($FF shl unusedBits);
+
+    { Zero out full padding bytes }
+    for a:=lastUsedByte+2 to output^.bytesWidth do
+      buffer[a] := 0;
+
 
     { debug last bytes of buffer }
+    {
     writeLog('Buffer on line ' + i32str(b));
     s:='';
     for a:=(output^.width div 8)+1 to output^.bytesWidth do begin
       s:=s+i8hexStr(buffer[a])+' '
     end;
     writeLog(s);
+    }
 
     if debug then
       writeLog('Finished reading line ' + i32str(b));
+    
 
     { debug buffer lines }
     {

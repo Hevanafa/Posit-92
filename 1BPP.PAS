@@ -55,8 +55,7 @@ var
   a: integer;
 begin
   cls($7D);
-  { sprMono(playdate, 9, 4); }
-  sprMono(playdate, -20, 4);
+  sprMono(playdate, 9, 4);
   print('Hello world!', 160-48, 136, $7D);
   drawMouseMono;
   drawFPS;
