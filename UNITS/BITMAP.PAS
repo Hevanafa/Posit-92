@@ -381,9 +381,21 @@ begin
 end;
 
 procedure sprMono(const image: PMonoBitmap; const x, y: integer; const transparencyKey: byte);
+var
+  row, col, bitIndex: integer;
+  byteIndex: integer;
+  b: byte;
 begin
-  { TODO: Implement this }
-  panicHalt('sprMono: not implemented!')
+  if image = nil then exit;
+  for row:=0 to image^.height - 1 do begin
+    byteIndex := row * 4; { 4-byte padding per row }
+    for col:=0 to image^.width - 1 do begin
+      bitIndex:=7-(col mod 8);
+      b := image^.data[byteIndex + (col div 8)];
+      if ((b shr bitIndex) and 1) = 1 then
+        pset(x + col, y + row, 15);
+    end;
+  end;
 end;
 
 procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const transparencyKey, tint: byte);
