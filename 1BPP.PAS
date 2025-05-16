@@ -2,7 +2,7 @@
 uses
   CRT, DOS,
   Logger, FPS, Keyboard, Mouse, Timing, VGA,
-  Bitmap;
+  MonoBMP;
 
 const
   K_ESC = $01;
