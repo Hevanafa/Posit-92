@@ -408,9 +408,21 @@ end;
 
 { Assume bit value of 0 is transparent }
 procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
+var
+  row, col, bitIndex: integer;
+  byteIndex: integer;
+  b: byte;
 begin
-  { TODO: Implement this }
-  panicHalt('sprMonoTint: not implemented!')
+  if image = nil then exit;
+  for row:=0 to image^.height - 1 do begin
+    byteIndex := row * image^.bytesWidth;
+    for col:=0 to image^.width - 1 do begin
+      bitIndex:=7-(col mod 8);
+      b := image^.data[byteIndex + (col div 8)];
+      if ((b shr bitIndex) and 1) = 1 then
+        pset(x + col, y + row, tint);
+    end;
+  end;
 end;
 
 procedure freeMonoBMP(var image: PMonoBitmap);
