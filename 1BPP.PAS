@@ -56,7 +56,7 @@ var
 begin
   cls($7D);
   { sprMono(playdate, 9, 4); }
-  sprMono2(playdate, -20, 4);
+  sprMono(playdate, -20, 4);
   print('Hello world!', 160-48, 136, $7D);
   drawMouseMono;
   drawFPS;

@@ -12,8 +12,8 @@ type
   end;
 
 procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
+procedure sprMonoSlow(const image: PMonoBitmap; const x, y: integer);
 procedure sprMono(const image: PMonoBitmap; const x, y: integer);
-procedure sprMono2(const image: PMonoBitmap; const x, y: integer);
 procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
 procedure freeMonoBMP(var image: PMonoBitmap);
 
@@ -116,7 +116,7 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure sprMono(const image: PMonoBitmap; const x, y: integer);
+procedure sprMonoSlow(const image: PMonoBitmap; const x, y: integer);
 var
   row, col, bitIndex: integer;
   byteIndex: integer;
@@ -134,8 +134,9 @@ begin
   end;
 end;
 
+
 { Assume bit value of 0 is transparent }
-procedure sprMono2(const image: PMonoBitmap; const x, y: integer);
+procedure sprMono(const image: PMonoBitmap; const x, y: integer);
 var
   row, byteCol, w: integer;
   screenX: integer;
