@@ -8,19 +8,39 @@ type
     width, height, palsize: word;
     data: array[0..0] of byte;
   end;
+  PMonoBitmap = ^TMonoBitmap;
+  TMonoBitmap = record
+    width, height: word;
+    data: array[0..0] of byte;
+  end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
 procedure drawBMP(const image: PBitmap);
 procedure freeBMP(var image: PBitmap);
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure sprTint(image: PBitmap; x, y: integer; transparencyKey, tint: byte);
+procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 procedure initTrigLUT;
-procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte); { in degrees }
-procedure sprPro2(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte);
+procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
+procedure sprPro2(
+  const image: PBitmap;
+  const x, y: integer;
+  const scaleX, scaleY: double;
+  angle: double;
+  const transparencyKey: byte);
 { procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte); }
-procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY: double; angle10: integer; transparencyKey: byte);
-procedure bitmapInfo(image: PBitmap);
+procedure sprProLUT(
+  const image: PBitmap;
+  const x, y: integer;
+  const scaleX, scaleY: double;
+  const angle10: integer;
+  const transparencyKey: byte);
+procedure bitmapInfo(const image: PBitmap);
 
+{ 1-bit BMP support }
+procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
+procedure sprMono(const image: PMonoBitmap; const x, y: integer; const transparencyKey: byte);
+procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure freeMonoBMP(var image: PMonoBitmap);
 
 implementation
 
@@ -89,7 +109,7 @@ begin
     Move(buffer[1], output^.data[(h-b-1) * w], w);
   end;
 
-  close(f);
+  close(f)
 end;
 
 procedure drawBMP(const image: PBitmap);
@@ -122,7 +142,7 @@ begin
   end;
 end;
 
-procedure sprTint(image: PBitmap; x, y: integer; transparencyKey, tint: byte);
+procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin
@@ -152,7 +172,7 @@ begin
   end;
 end;
 
-procedure sprPro(image: PBitmap; x, y: integer; angle: double; transparencyKey: byte);
+procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -195,7 +215,12 @@ end;
 
 
 { Laggy }
-procedure sprPro2(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte);
+procedure sprPro2(
+  const image: PBitmap;
+  const x, y: integer;
+  const scaleX, scaleY:
+  double; angle: double;
+  const transparencyKey: byte);
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
@@ -242,7 +267,12 @@ begin
 end;
 
 { Laggy despite with lookup tables }
-procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY: double; angle10: integer; transparencyKey: byte);
+procedure sprProLUT(
+  const image: PBitmap;
+  const x, y: integer;
+  const scaleX, scaleY: double;
+  const angle10: integer;
+  const transparencyKey: byte);
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
@@ -283,7 +313,7 @@ begin
 end;
 
 
-procedure bitmapInfo(image: PBitmap);
+procedure bitmapInfo(const image: PBitmap);
 begin
   if image = nil then begin
     print('image is nil!', 10, 168, 15);
@@ -295,5 +325,78 @@ begin
   print('Height: ' + i32str(image^.height), 10, 176, 15);
   print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
 end;
+
+procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
+var
+  f: file;
+  buffer: array[1..256] of byte;
+  bytesRead: word;
+  a, b: integer;
+  w, h, size: integer;
+  start, padding: integer;
+
+begin
+  assign(f, filename);
+  {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
+  if IOResult <> 0 then
+    panicHalt('loadBMP: Couldn''t find "' + filename + '"!');
+
+  seek(f, $12); blockRead(f, w, 2);
+  seek(f, $16); blockRead(f, h, 2);
+
+  size := sizeOf(TMonoBitmap) + (w * h) - 1;
+  getMem(output, size);
+  output^.width := w;
+  output^.height := h;
+
+  if debug then begin
+    writeLog('Width:' + i32str(output^.width));
+    writeLog('Height:' + i32str(output^.height));
+  end;
+
+  start := $3E;
+  if w mod 4 = 0 then
+    padding := 0
+  else
+    padding := 4 - w mod 4;
+
+  if debug then begin
+    writeLog('Start:' + i32str(start));
+    writeLog('Padding:' + i32str(padding));
+  end;
+
+  for b := 0 to h-1 do begin
+    seek(f, start + (b * (w + padding)));
+    blockRead(f, buffer, w);
+
+    if debug then
+      writeLog('Finished reading line ' + i32str(b));
+
+    { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
+    { bottom to top }
+    Move(buffer[1], output^.data[(h-b-1) * w], w);
+  end;
+
+  close(f)
+end;
+
+procedure sprMono(const image: PMonoBitmap; const x, y: integer; const transparencyKey: byte);
+begin
+  { TODO: Implement this }
+  panicHalt('sprMono: not implemented!')
+end;
+
+procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const transparencyKey, tint: byte);
+begin
+  { TODO: Implement this }
+  panicHalt('sprMonoTint: not implemented!')
+end;
+
+procedure freeMonoBMP(var image: PMonoBitmap);
+begin
+  { TODO: Implement this }
+  panicHalt('freeMonoBMP: not implemented!')
+end;
+
 
 end.
