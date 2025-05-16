@@ -15,7 +15,7 @@ Graphics
 - [x] Draw a rotated sprite + scale
 - [x] BMFont support
   - (under BMFont unit) Draw a segment of a sprite
-- Support for 1-bit BMP file format
+- [x] Support for 1-bit BMP file format
 
 Sounds
 - [x] PC speaker
