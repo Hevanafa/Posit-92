@@ -39,6 +39,7 @@ procedure bitmapInfo(const image: PBitmap);
 { 1-bit BMP support }
 procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
 procedure sprMono(const image: PMonoBitmap; const x, y: integer);
+procedure sprMono2(const image: PMonoBitmap; const x, y: integer);
 procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
 procedure freeMonoBMP(var image: PMonoBitmap);
 
@@ -327,13 +328,15 @@ begin
 end;
 
 procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
+const
+  start = $3E;
 var
   f: file;
   buffer: array[1..256] of byte;
-  bytesRead: word;
+  bytesW, bytesRead: word;
   a, b: integer;
   w, h, size: integer;
-  start: integer;
+  s: string;
 
 begin
   assign(f, filename);
@@ -344,18 +347,20 @@ begin
   seek(f, $12); blockRead(f, w, 2);
   seek(f, $16); blockRead(f, h, 2);
 
-  getMem(output, size);
-  output^.width := w;
-  output^.height := h;
   { Should've been ceil instead of round }
-  output^.bytesWidth := round((w div 8) / 4 + 0.5) * 4;
+  bytesW := round((w div 8) / 4 + 0.5) * 4;
   { Assuming the bitmap always has a size }
-  if (w <= 4) and (output^.bytesWidth = 0) then
+  if (w <= 4) and (bytesW = 0) then
     output^.bytesWidth := 4;
 
-  size := sizeOf(TMonoBitmap) + (output^.bytesWidth * h) - 1;
+  size := sizeOf(TMonoBitmap) + (bytesW * h) - 1;
+  getMem(output, size);
 
-  start := $3E;
+  output^.width := w;
+  output^.height := h;
+  output^.bytesWidth := bytesW;
+
+  { TODO: Sanitise the padding bits }
 
   if debug then begin
     with output^ do begin
@@ -366,22 +371,53 @@ begin
     writeLog('Start:' + i32str(start));
   end;
 
+  s := '';
+
   for b := 0 to h-1 do begin
+    { Reset buffer to prevent garbage bitmap data }
+    fillChar(buffer, output^.bytesWidth, 0);
+
     seek(f, start + (b * output^.bytesWidth));
     blockRead(f, buffer, output^.bytesWidth);
 
     if debug then
       writeLog('Finished reading line ' + i32str(b));
 
-    { if debug and (b = 0 or b = 1) then
-      writeLog(); }
+    { debug buffer lines }
+    writeLog('Buffer line ' + i32str(b));
+    s:='';
+    if debug then begin
+      for a:=low(buffer) to low(buffer) + output^.bytesWidth - 1 do
+        s:=s + i8hexStr(buffer[a]) + ' ';
+      writeLog(s);
+    end;
 
-    { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
+    fillChar(
+      output^.data[(h-b-1) * output^.bytesWidth],
+      output^.bytesWidth, 0);
+
+    {
+    s:='';
+    if debug then begin
+      for a:=0 to output^.bytesWidth do
+        s := s + i8hexStr(output^.data[(h-b-1) * output^.bytesWidth + a]) + ' ';
+      writeLog(s);
+    end;
+    }
+
     { bottom to top }
     Move(
       buffer[1],
       output^.data[(h-b-1) * output^.bytesWidth],
       output^.bytesWidth);
+
+    writeLog('After move row ' + i32str(b));
+    s:='';
+    if debug then begin
+      for a:=0 to output^.bytesWidth do
+        s := s + i8hexStr(output^.data[(h-b-1) * output^.bytesWidth + a]) + ' ';
+      writeLog(s);
+    end;
   end;
 
   close(f)
@@ -407,6 +443,59 @@ begin
 end;
 
 { Assume bit value of 0 is transparent }
+procedure sprMono2(const image: PMonoBitmap; const x, y: integer);
+var
+  row, byteCol, w: integer;
+  screenX: integer;
+  b: byte;
+  { s: string; }
+begin
+  if image = nil then exit;
+  { ceil isn't available }
+  { w := round(image^.width / 8 + 0.5); }
+  w := image^.bytesWidth;
+
+  for row := 0 to image^.height - 1 do begin
+    screenX := x;
+    {
+    s:='';
+    }
+
+    { Should skip broken bytes }
+    for byteCol := 0 to w - 1 do begin
+      b := image^.data[row * image^.bytesWidth + byteCol];
+
+      {
+      s:=s+i8HexStr(image^.data[row * image^.bytesWidth + byteCol]);
+      }
+
+      {
+      if row * image^.bytesWidth + byteCol >= image^.bytesWidth * image^.height then
+        writeLog('sprMono: overflow (' + i32str(image^.bytesWidth * image^.height) + ')');
+      }
+
+      if b <> 0 then begin
+        if (b and $80) <> 0 then pset(screenX + 0, y + row, 15);
+        if (b and $40) <> 0 then pset(screenX + 1, y + row, 15);
+        if (b and $20) <> 0 then pset(screenX + 2, y + row, 15);
+        if (b and $10) <> 0 then pset(screenX + 3, y + row, 15);
+
+        if (b and $08) <> 0 then pset(screenX + 4, y + row, 15);
+        if (b and $04) <> 0 then pset(screenX + 5, y + row, 15);
+        if (b and $02) <> 0 then pset(screenX + 6, y + row, 15);
+        if (b and $01) <> 0 then pset(screenX + 7, y + row, 15);
+      end;
+
+      inc(screenX, 8)
+    end;
+
+    {
+    writeLog('Line ' + i32str(row) + ': ' + s);
+    }
+  end;
+end;
+
+{ Assume bit value of 0 is transparent }
 procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
 var
   row, col, bitIndex: integer;
@@ -424,6 +513,7 @@ begin
     end;
   end;
 end;
+
 
 procedure freeMonoBMP(var image: PMonoBitmap);
 begin

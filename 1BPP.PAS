@@ -1,9 +1,8 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Mouse, Timing, VGA,
+  Logger, FPS, Keyboard, Mouse, Timing, VGA,
   Bitmap;
-  { Conv, FPS, Graphics, PCS; }
 
 const
   K_ESC = $01;
@@ -24,6 +23,7 @@ begin
   initDeltaTime;
   initKeyHandler;
   initMouse;
+  initFPSCounter;
 
   loadMonoBMP(cursor, 'CUR1BPP.BMP');
   loadMonoBMP(playdate, 'PLAYDATE.BMP');
@@ -43,8 +43,7 @@ var
 begin
   updateDeltaTime;
   updateMouse;
-
-  { TODO: Your update code here }
+  incrementFPS;
 
   if isKeyDown(K_ESC) then done := true;
   t:=t+dt
@@ -56,9 +55,11 @@ var
   a: integer;
 begin
   cls($7D);
-  sprMono(playdate, 9, 4);
+  { sprMono(playdate, 9, 4); }
+  sprMono2(playdate, -20, 4);
   print('Hello world!', 160-48, 136, $7D);
   drawMouseMono;
+  drawFPS;
   flush
 end;
 
