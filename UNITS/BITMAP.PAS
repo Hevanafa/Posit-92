@@ -10,7 +10,7 @@ type
   end;
   PMonoBitmap = ^TMonoBitmap;
   TMonoBitmap = record
-    width, height: word;
+    width, height, bytesWidth: word;
     data: array[0..0] of byte;
   end;
 
@@ -38,15 +38,15 @@ procedure bitmapInfo(const image: PBitmap);
 
 { 1-bit BMP support }
 procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
-procedure sprMono(const image: PMonoBitmap; const x, y: integer; const transparencyKey: byte);
-procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure sprMono(const image: PMonoBitmap; const x, y: integer);
+procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
 procedure freeMonoBMP(var image: PMonoBitmap);
 
 implementation
 
 uses Logger, Conv, Panic, VGA;
 
-const DEBUG = false;
+const DEBUG = true;
 
 var
   sinLUT, cosLUT: array[0..35] of double;
@@ -333,7 +333,7 @@ var
   bytesRead: word;
   a, b: integer;
   w, h, size: integer;
-  start, padding: integer;
+  start: integer;
 
 begin
   assign(f, filename);
@@ -344,43 +344,47 @@ begin
   seek(f, $12); blockRead(f, w, 2);
   seek(f, $16); blockRead(f, h, 2);
 
-  size := sizeOf(TMonoBitmap) + (w * h) - 1;
   getMem(output, size);
   output^.width := w;
   output^.height := h;
-
-  if debug then begin
-    writeLog('Width:' + i32str(output^.width));
-    writeLog('Height:' + i32str(output^.height));
-  end;
+  { Should've been ceil instead of round }
+  output^.bytesWidth := round((w div 8) / 4 + 0.5) * 4;
+  size := sizeOf(TMonoBitmap) + (output^.bytesWidth * h) - 1;
 
   start := $3E;
-  if w mod 4 = 0 then
-    padding := 0
-  else
-    padding := 4 - w mod 4;
 
   if debug then begin
+    with output^ do begin
+      writeLog('Width:' + i32str(width));
+      writeLog('Height:' + i32str(height));
+      writeLog('Bytes width:' + i32str(bytesWidth));
+    end;
     writeLog('Start:' + i32str(start));
-    writeLog('Padding:' + i32str(padding));
   end;
 
   for b := 0 to h-1 do begin
-    seek(f, start + (b * (w + padding)));
-    blockRead(f, buffer, w);
+    seek(f, start + (b * output^.bytesWidth));
+    blockRead(f, buffer, output^.bytesWidth);
 
     if debug then
       writeLog('Finished reading line ' + i32str(b));
 
+    { if debug and (b = 0 or b = 1) then
+      writeLog(); }
+
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }
-    Move(buffer[1], output^.data[(h-b-1) * w], w);
+    Move(
+      buffer[1],
+      output^.data[(h-b-1) * output^.bytesWidth],
+      output^.bytesWidth);
   end;
 
   close(f)
 end;
 
-procedure sprMono(const image: PMonoBitmap; const x, y: integer; const transparencyKey: byte);
+{ Assume bit value of 0 is transparent }
+procedure sprMono(const image: PMonoBitmap; const x, y: integer);
 var
   row, col, bitIndex: integer;
   byteIndex: integer;
@@ -388,7 +392,8 @@ var
 begin
   if image = nil then exit;
   for row:=0 to image^.height - 1 do begin
-    byteIndex := row * 4; { 4-byte padding per row }
+    byteIndex := row * image^.bytesWidth;
+
     for col:=0 to image^.width - 1 do begin
       bitIndex:=7-(col mod 8);
       b := image^.data[byteIndex + (col div 8)];
@@ -398,7 +403,8 @@ begin
   end;
 end;
 
-procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const transparencyKey, tint: byte);
+{ Assume bit value of 0 is transparent }
+procedure sprMonoTint(const image: PMonoBitmap; const x, y: integer; const tint: byte);
 begin
   { TODO: Implement this }
   panicHalt('sprMonoTint: not implemented!')
