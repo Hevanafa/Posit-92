@@ -25,6 +25,8 @@ begin
   initKeyHandler;
   initMouse;
 
+  { TODO: Your init code here }
+
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
@@ -76,6 +78,10 @@ begin
     update;
     draw;
   until done;
+
+  { TODO: Your cleanup code here }
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
 
   resetMouse;
   resetKeyHandler;

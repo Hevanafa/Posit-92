@@ -415,8 +415,9 @@ end;
 
 procedure freeMonoBMP(var image: PMonoBitmap);
 begin
-  { TODO: Implement this }
-  panicHalt('freeMonoBMP: not implemented!')
+  if image = nil then exit;
+  freeMem(image, sizeOf(TMonoBitmap) + (image^.bytesWidth * image^.height) - 1);
+  image := nil  { avoids dangling pointer }
 end;
 
 

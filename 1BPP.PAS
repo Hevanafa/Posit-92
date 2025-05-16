@@ -85,6 +85,9 @@ begin
     draw;
   until done;
 
+  freeMonoBMP(cursor);
+  freeMonoBMP(playdate);
+
   resetMouse;
   resetKeyHandler;
   freeBuffer;
