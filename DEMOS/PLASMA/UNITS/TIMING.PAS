@@ -2,7 +2,6 @@ unit Timing;
 
 interface
 
-{ Note: dt doesn't handle delta time past midnight }
 var
   dt, newTime, lastTime: double; { in seconds }
   { deltaMS, lastMS: longint; }
