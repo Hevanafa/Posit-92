@@ -1,3 +1,11 @@
-backup/
 latest/
+
+# Debugging stuff
+backup/
+*.BAK
+*.BK1
 LOG.TXT
+
+# Compiled files
+*.EXE
+*.TPU
