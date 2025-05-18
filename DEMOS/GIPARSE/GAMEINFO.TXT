@@ -1,0 +1,9 @@
+(Gameinfo example file)
+Title: game title
+Author: game developer, email, and so on
+Site: website link
+License: MIT License (change this to your choice)
+Version: 0.1
+Date: 17-05-2025
+Screenshot: PREVIEW.BMP
+Executable: GAME.EXE
