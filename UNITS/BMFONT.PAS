@@ -22,14 +22,14 @@ type
     function textWidth(const text: string): integer;
   end;
 
-procedure loadBMFont(const filename: string; var output: TBMFont);
+procedure loadBMFont(var output: TBMFont; const filename: string);
 procedure freeBMFont(var font: TBMFont);
 
 implementation
 
 uses Conv, Logger, Panic, Strings, VGA;
 
-procedure loadBMFont(const filename: string; var output: TBMFont);
+procedure loadBMFont(var output: TBMFont; const filename: string);
 var
   a, b: integer;
   f: text;
