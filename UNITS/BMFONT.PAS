@@ -74,7 +74,8 @@ begin
       pairCount := split(line, ' ', pairs);
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
-        if kv[0] = 'file' then output.filename := kv[1];
+        if kv[0] = 'file' then
+          output.filename := replaceAll(kv[1], '"', '');
       end;
     end;
 
@@ -109,12 +110,9 @@ begin
         else if key = 'yoffset' then output.glyphs[glyphID]^.yoffset := parseInt(value)
         else if key = 'xadvance' then output.glyphs[glyphID]^.xadvance := parseInt(value);
       end;
-
-      { writeLn(line); }
     end;
 
     inc(a)
-    { if a>=10 then break; }
   end;
   close(f);
 
