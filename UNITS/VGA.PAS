@@ -2,6 +2,13 @@ unit vga;
 
 interface
 
+type
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..63999] of byte;
+
+var
+  surface: PByteArray;
+
 procedure initVGAMode;
 procedure initTextMode;
 procedure loadFont;
@@ -16,16 +23,11 @@ implementation
 
 uses dos;
 
-type
-  PByteArray = ^TByteArray;
-  TByteArray = array[0..63999] of byte;
-
 const
   bufferSize = 64000;
 var
   a, b: integer;
   font8x8: array[0..127, 0..7] of byte;
-  surface: PByteArray;
   bufferInitialised: boolean;
 
 
