@@ -1,14 +1,13 @@
 
-uses CRT, Logger, Mouse, VGA;
+uses CRT, Logger, Maths, Mouse, VGA;
 
 const
   K_ESC = $01;
 var
   done: boolean;
-  { TODO: More of your game state here }
 
 
-procedure rectfillDither(x0, y0, x1, y1: integer; colour: byte);
+procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -18,10 +17,14 @@ begin
   if y0 > y1 then begin
     temp := y0; y0 := y1; y1 := temp
   end;
+
+  x0:=trunc(max(x0, 0));   y0:=trunc(max(y0,0));
+  x1:=trunc(min(x1, 319)); y1:=trunc(min(y1,199));
+
   for b:=y0 to y1 do
     for a:=x0 to x1 do
       if (a+b) and 1 = 1 then
-        pset(a, b, colour);
+        surface^[b*320+a] := colour;
 end;
 
 procedure INIT;
