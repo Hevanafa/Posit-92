@@ -13,6 +13,15 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 ![demo preview](./demo_preview.png)
 
 
+## Getting started
+
+1. `cd` to boilerplate,
+2. Call `copy_units.ps1`,
+3. Copy all the `PAS` files inside the boilerplate to your DOS drive
+
+Then, you can use `GAME.PAS` as the primary file
+
+
 ## Included units
 
 ### Primary units
