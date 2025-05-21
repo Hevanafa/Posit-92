@@ -4,20 +4,21 @@ unit Graphics;
 
 interface
 
-procedure circ(cx, cy, radius: integer; colour: byte);
-procedure circfill(cx, cy, radius: integer; colour: byte);
-procedure line(x1, y1, x2, y2: integer; colour: byte);
-procedure rect(x0, y0, x1, y1: integer; colour: byte);
-procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
-procedure tri(x0, y0, x1, y1, x2, y2: integer; colour: byte);
-procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+procedure circ(const cx, cy, radius: integer; const colour: byte);
+procedure circfill(const cx, cy, radius: integer; const colour: byte);
+procedure hline(x0, x1, y: integer; const colour: byte);
+procedure line(x1, y1, x2, y2: integer; const colour: byte);
+procedure rect(x0, y0, x1, y1: integer; const colour: byte);
+procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure tri(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 
 implementation
 
 uses VGA;
 
-procedure circ(cx, cy, radius: integer; colour: byte);
+procedure circ(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -45,7 +46,7 @@ begin
   end;
 end;
 
-procedure circfill(cx, cy, radius: integer; colour: byte);
+procedure circfill(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   a: integer;
@@ -76,7 +77,7 @@ begin
 end;
 
 
-procedure line(x1, y1, x2, y2: integer; colour: byte);
+procedure line(x1, y1, x2, y2: integer; const colour: byte);
 var
   dx, dy, sx, sy, err, e2: integer;
 begin
@@ -107,7 +108,19 @@ begin
 end;
 
 
-procedure rect(x0, y0, x1, y1: integer; colour: byte);
+procedure hline(x0, x1, y: integer; const colour: byte);
+var
+  x: integer;
+begin
+  if x1 < x0 then begin
+    x := x0; x0 := x1; x1 := x
+  end;
+
+  for x := x0 to x1 do
+    pset(x, y, colour);
+end;
+
+procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -128,7 +141,7 @@ begin
 end;
 
 
-procedure rectfill(x0, y0, x1, y1: integer; colour: byte);
+procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -144,7 +157,7 @@ begin
 end;
 
 
-procedure tri(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+procedure tri(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 begin
   line(x0, y0, x1, y1, colour);
   line(x1, y1, x2, y2, colour);
@@ -152,7 +165,7 @@ begin
 end;
 
 
-procedure trifill(x0, y0, x1, y1, x2, y2: integer; colour: byte);
+procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 const
   FIX_SHIFT = 8;
   FIX_SCALE = 1 shl FIX_SHIFT;
