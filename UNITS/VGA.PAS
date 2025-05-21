@@ -15,6 +15,7 @@ procedure loadFont;
 procedure cls(const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
 procedure pset(const x, y: word; const colour: byte);
+procedure pset_legacy(const x, y: word; const colour: byte);
 procedure flush;
 procedure initBuffer;
 procedure freeBuffer;
@@ -71,8 +72,6 @@ var
   pos: integer;
   mask: byte;
 begin
-  { getMem(buffer, bufferSize); }
-
   for idx := 1 to length(text) do begin
     if (idx < 0) or (idx > 127) then continue;
 
@@ -80,21 +79,47 @@ begin
       mask := font8x8[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
-          pos := (y+row) * 320 + (idx-1)*8 + (x+col);
-          surface^[pos] := colour;
+          pset((idx-1) * 8 + x + col, y + row, colour);
+          { pos := (y+row) * 320 + (idx-1)*8 + (x+col);
+          surface^[pos] := colour; }
+          { pset_legacy((idx-1) * 8 + x + col, y + row, colour); }
           end;
     end;
   end;
-
-  { freeMem(buffer, bufferSize); }
 end;
 
 
-procedure pset(const x, y: word; const colour: byte);
+procedure pset_legacy(const x, y: word; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
+
+procedure PSET(const x, y: word; const colour: byte); assembler;
+asm
+  { Bounds check }
+  cmp x, 320
+  jae @@done
+  cmp y, 200
+  jae @@done
+
+  { Calculate offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { DX:AX = y * 320 --> result in AX }
+  add ax, x   { AX = y * 320 + x }
+
+  { Copy AX to BX because ES:[BX] is valid, not ES:[DI+AX] }
+  mov bx, ax
+
+  { Write byte to the `surface` array }
+  les di, surface { ES:DI = surface^ }
+  mov al, colour
+  { mov es:[di+ax], colour } { <-- Invalid register combination }
+  mov es:[di+bx], al
+@@done:
+end;
+
 
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS

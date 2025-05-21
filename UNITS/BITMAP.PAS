@@ -129,6 +129,7 @@ begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
       pset(x+a, y+b, image^.data[pos]);
+      { pset_legacy(x+a, y+b, image^.data[pos]); }
   end;
 end;
 
