@@ -12,9 +12,9 @@ var
 procedure initVGAMode;
 procedure initTextMode;
 procedure loadFont;
-procedure cls(colour: byte);
-procedure print(text: string; x, y: integer; colour: byte);
-procedure pset(x, y: word; colour: byte);
+procedure cls(const colour: byte);
+procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure pset(const x, y: word; const colour: byte);
 procedure flush;
 procedure initBuffer;
 procedure freeBuffer;
@@ -59,13 +59,13 @@ begin
 end;
 
 
-procedure cls(colour: byte);
+procedure cls(const colour: byte);
 begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
 end;
 
-procedure print(text: string; x, y: integer; colour: byte);
+procedure print(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -90,7 +90,7 @@ begin
 end;
 
 
-procedure pset(x, y: word; colour: byte);
+procedure pset(const x, y: word; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
