@@ -1,5 +1,5 @@
 {
-  Graphics stress test
+  Frame skip demonstration
 }
 
 uses
@@ -71,16 +71,17 @@ begin
   startTime := getTimer;
   done := false;
   nextGameTick := getTimer;
-  
+
   repeat
     loops := 0;
-    update;
-    
+
     while (getTimer > nextGameTick) and (loops < MAX_FRAME_SKIP) do begin
-      draw;
+      update;
       nextGameTick := nextGameTick + (1 / TARGET_FPS);
       inc(loops)
     end;
+
+    draw
   until done;
 
   freeBMP(dosuEXE[0]);
