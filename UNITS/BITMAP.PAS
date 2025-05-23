@@ -170,11 +170,6 @@ begin
   end;
 end;
 
-function deg2rad(deg: double): double;
-begin
-  deg2rad := deg / 180 * pi
-end;
-
 procedure initTrigLUT;
 var
   i: integer;
