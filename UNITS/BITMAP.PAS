@@ -14,6 +14,11 @@ procedure drawBMP(const image: PBitmap);
 procedure freeBMP(var image: PBitmap);
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure spr2(
+  const image: PBitmap;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const transparencyKey: byte);
 procedure initTrigLUT;
 procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
 procedure sprPro2(
@@ -143,6 +148,25 @@ begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
       pset(x+a, y+b, tint);
+  end;
+end;
+
+{ Improved version of spr with partial sprite drawing }
+procedure spr2(
+  const image: PBitmap;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const transparencyKey: byte);
+var
+  a, b, pos: integer;
+begin
+  if image = nil then exit;
+  
+  for b := 0 to srcH - 1 do
+  for a := 0 to srcW - 1 do begin
+    pos := (srcX + a) + ((srcY + b) * image^.width);
+    if image^.data[pos] <> transparencyKey then
+      pset(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 
@@ -302,7 +326,6 @@ begin
     end;
   end;
 end;
-
 
 procedure bitmapInfo(const image: PBitmap);
 begin
