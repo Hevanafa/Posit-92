@@ -2,6 +2,8 @@
 
 This is a demo that emulates a different screen size while still in VGA mode
 
+![preview](./preview.png)
+
 If you want a different screen size, change these in `VGA.PAS`:
 - `TByteArray` high bound
 - `bufferSize` depending on the pixel density
