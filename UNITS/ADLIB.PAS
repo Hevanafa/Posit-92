@@ -4,9 +4,11 @@ interface
 
 type
   TAdlib = object
+    var
+	  isInitialised: boolean;
     procedure init;
     procedure startMelody;
-    procedure playNote(freq: word; octave: byte);
+    procedure playNote(const freq: word; const octave: byte);
     procedure update;
   end;
 
@@ -18,6 +20,27 @@ implementation
 uses crt, timing;
 
 type
+  TInstrument = record
+    modulator: TInstParams;
+	carrier: TInstParams;
+	feedback: byte;
+	algorithm: byte;  { 0 = FM, 1 = Additive }
+  end;
+  TInstParams = record
+    tremolo: boolean;
+	vibrato: boolean;
+	sustain: boolean;
+	keyScale: boolean;
+	multiplier, totalLevel, sustainLevel: byte;
+	attack, decay, release, waveform: byte;
+  end;
+  TSFX = record
+    notes: array[0..15] of TNote;
+	count: byte;
+	instrument: byte;
+	priority: byte;
+  end;
+  
   TNote = record
     freq: word;
     octave: byte;
@@ -35,20 +58,55 @@ const
   AdLibData = $389;
 
 var
+  PianoInstrument: TInstrument;
   currentNoteIndex: byte;
   melodyEndTick: longint;
   isPlaying: boolean;
   activeMelody: TMelody;
+  
 
-procedure AdlibWrite(reg, value: byte);
+procedure AdLibWrite(const reg, value: byte);
 var
   a: byte;
 begin
-  { replaced delay with simulated delay }
   Port[AdlibStatus] := reg;
-  for a:=1 to 10 do;
+  for a:=1 to 10 do;  { simulated delay }
   Port[AdlibData] := value;
-  for a:=1 to 10 do;
+  for a:=1 to 10 do;  { simulated delay }
+end;
+
+procedure initInstruments;
+begin
+  with PianoInstrument do begin
+    modulator.tremolo := false;
+	modulator.vibrato := false;
+	modulator.sustain := false;
+	modulator.keyScale := false;
+	modulator.multiplier := false;
+	modulator.totalLevel := 25; { octaves ? }
+	modulator.attack := 15;
+	modulator.decay := 4;
+	modulator.sustainLevel := 6;
+	modulator.release := 7;
+	modulator.waveform := 0;
+	
+	carrier.tremolo := false;
+	carrier.vibrato := false;
+	carrier.sustain := false;
+	carrier.keyScale := false;
+	carrier.multiplier := 1;
+	carrier.totalLevel := 0;
+	carrier.attack := 15;
+	carrier.decay := 4; 
+	carrier.sustainLevel := 6;
+	carrier.release := 7;
+	carrier.waveform := 0;
+	
+	feedback := 6;
+	algorithm := 0
+  end;
+  
+  { NOTE: Add more of your instruments here }
 end;
 
 procedure setupInstruments;
@@ -75,7 +133,8 @@ begin
   for i := $20 to $f5 do
     AdlibWrite(i, 0);
 
-  setupInstruments;
+  { setupInstruments; }
+  initInstruments;
 end;
 
 procedure keyOn(channel: byte; freqLow, freqHigh: byte);
