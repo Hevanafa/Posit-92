@@ -7,6 +7,7 @@ type
     freq: word;
     octave: byte;
     duration: double;  { in seconds }
+    velocity: byte  { 0..127 }
   end;
   TSFX = record
     notes: array[0..15] of TNote;
@@ -30,17 +31,21 @@ type
   end;
   TAdLib = object
     procedure init;
+    procedure update;
     procedure shutdown;
     
-    procedure loadInstrument(const slot: byte; var instrument: TInstrument);
+    procedure loadInstrument(const slot: byte; var instr: TInstrument);
+    procedure selectInstrument(const channel, slot: byte);
     
     { procedure startMelody; }
     { Playback }
     procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
-	procedure stopNote(const channel: byte);
+    procedure stopNote(const channel: byte);
     
     procedure playSFX(var sfx: TSFX);
-    procedure update;
+    procedure stopAllSFX;
+    
+    
   end;
 
 var
@@ -148,8 +153,55 @@ begin
 end;
 
 procedure setupInstrument(const channel: byte; var instr: TInstrument);
+var
+  { modulator & carrier offsets }
+  modOffset, carOffset: byte;
 begin
-  panicHalt('Not implemented!')
+  { Calculate operator offsets }
+  case channel of
+    0: begin modOffset := $00; carOffset := $03; end;
+    1: begin modOffset := $01; carOffset := $04; end;
+    2: begin modOffset := $02; carOffset := $05; end;
+    
+    3: begin modOffset := $08; carOffset := $0b; end;
+    4: begin modOffset := $09; carOffset := $0c; end;
+    5: begin modOffset := $0A; carOffset := $0d; end;
+    
+    6: begin modOffset := $10; carOffset := $13; end;
+    7: begin modOffset := $11; carOffset := $14; end;
+    8: begin modOffset := $12; carOffset := $15; end;
+  end;
+  
+  { Set up modulator }
+  with instr.modulator do begin
+    AdLibWrite($20 + modOffset,
+      (ord(tremolo) shl 7) or
+      (ord(vibrato) shl 6) or
+      (ord(sustain) shl 5) or
+      (ord(keyScale) shl 4) or multiplier);
+      
+    AdLibWrite($40 + modOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
+    AdLibWrite($60 + modOffset, (attack shl 4) or decay);
+    AdLibWrite($80 + modOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($e0 + modOffset, waveform)
+  end;
+  
+  { Set up carrier }
+  with instr.modulator do begin
+    AdLibWrite($20 + carOffset,
+      (ord(tremolo) shl 7) or
+      (ord(vibrato) shl 6) or
+      (ord(sustain) shl 5) or
+      (ord(keyScale) shl 4) or multiplier);
+      
+    AdLibWrite($40 + carOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
+    AdLibWrite($60 + carOffset, (attack shl 4) or decay);
+    AdLibWrite($80 + carOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($e0 + carOffset, waveform)
+  end;
+  
+  { Set algorithm and feedback }
+  AdLibWrite($C0 + channel, (instr.feedback shl 1) or instr.algorithm)
 end;
 
 procedure setupInstruments;
@@ -166,6 +218,19 @@ begin
   adlibWrite($63, $F0);
   adlibWrite($83, $77);
   adlibWrite($E3, $00);
+end;
+
+procedure TAdLib.loadInstrument(const slot: byte; var instr: TInstrument);
+begin
+  if slot >= MAX_INSTRUMENTS then exit;
+  instruments[slot] := instr
+end;
+
+procedure TAdLib.selectInstrument(const channel, slot: byte);
+begin
+  if (channel >= MAX_CHANNELS) or (slot >= MAX_INSTRUMENTS) then exit;
+  channels[channel].instrument := slot;
+  setupInstrument(channel, instruments[slot])
 end;
 
 
