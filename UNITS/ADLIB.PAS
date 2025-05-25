@@ -384,13 +384,31 @@ end;
 procedure TAdLib.update;
 var
   a: integer;
-  now: longint;
+  now: double;
 begin
   if not isInitialised then exit;
-  now := getTimerMS;
+  
+  now := getTimer;
   
   for a:=0 to MAX_CHANNELS-1 do begin
-    { TODO: Update channels }
+    if not channels[a].active then continue;
+    
+    if now >= channels[a].endTime then begin
+      stopNote(a);
+      inc(channels[a].noteIndex);
+      
+      if channels[a].isSFX then begin
+        if channels[a].noteIndex >= channels[a].sfx.count then begin
+          channels[a].active := false;
+          continue
+        end;
+        
+        with channels[a].sfx.notes[channels[a].noteIndex] do begin
+          playNote(a, freq, octave, velocity);
+          channels[a].endTime := now + duration
+        end;
+      end;
+    end;
   end;
 end;
 
