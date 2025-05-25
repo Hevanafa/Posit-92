@@ -63,6 +63,8 @@ If you want the scancodes for the keyboard, you can refer to these lists:
 All Mode X units are prefixed by an X to differentiate from Mode Y (mode 13h) operations
 
 - `MODEX.PAS`: Base Mode X unit
+- `XBITMAP.PAS`
+- `XMOUSE.PAS`
 
-
+Some units have Mode X implementation, which can be activated with the `{$DEFINE MODEX}` directive, such as `FPS.PAS`
 
