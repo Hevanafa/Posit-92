@@ -5,15 +5,24 @@ interface
 procedure initVGAMode;
 procedure initModeX;
 procedure initTextMode;
+procedure loadFont;
 procedure cls(const colour: byte);
 procedure PSET(const x, y: integer; const colour: byte);
+procedure print(const text: string; const x, y: integer; const colour: byte);
 procedure setDisplayPage(const page: byte);
+procedure setActivePage(const page: byte);
 procedure flipPages;
 
 implementation
 
+uses DOS;
+
+const
+  pageSize = $4b00; { 19200 bytes }
+
 var
   drawPage, displayedPage: byte;
+  font8x8: array[0..127, 0..7] of byte;
 
 procedure initVGAMode; assembler;
 asm
@@ -32,6 +41,9 @@ begin
   
   drawPage := 0;
   displayedPage := 1;
+  
+  setDisplayPage(displayedPage);
+  setActivePage(drawPage);
 end;
 
 procedure initTextMode; assembler;
@@ -40,9 +52,32 @@ asm
   int 10h
 end;
 
-procedure cls(const colour: byte);
+{ Load 8x8 font }
+procedure loadFont;
+var
+  Regs: Registers;
 begin
-  fillChar(Mem[$A000:drawPage * $4000], 64000, colour)
+  { Get the 8x8 font pointer }
+  regs.ah := $11;
+  regs.al := $30;
+  regs.bh := 3; { 8x8 font }
+  Intr($10, Regs);
+
+  { Copy font data to buffer }
+  Move(Mem[Regs.ES:Regs.BP], font8x8, sizeOf(font8x8));
+end;
+
+procedure cls(const colour: byte);
+{ var
+  startOffset: integer; }
+begin
+  { startOffset := drawPage * $4b00; }
+  { Set all 4 planes }
+  port[$3C4] := $02;
+  port[$3C5] := $0f;
+  
+  { fillChar(Mem[$A000:startOffset], 19200, colour) }
+  fillChar(Mem[$A000:drawPage * pageSize], 19200, colour)
 end;
 
 procedure PSET(const x, y: integer; const colour: byte);
@@ -50,27 +85,67 @@ var
   offset: integer;
   plane: byte;
 begin
-  offset := (drawPage * $4000) + y * 80 + (x shr 2);  { x div 4 }
+  { Bounds check }
+  if (x < 0) or (x >= 320) or (y < 0) or (y >= 240) then exit;
+  
+  offset := (drawPage * pageSize) + y * 80 + (x shr 2);   { x div 4 }
   plane := 1 shl (x and 3);
+  
+  { Set write page }
+  {
+  port[$3D4] := $0C;
+  port[$3D5] := hi(drawPage * $4b00);
+  port[$3D4] := $0D;
+  port[$3D5] := lo(drawPage * $4b00);
+  }
 
   port[$3C4] := $02;
   port[$3C5] := plane;
   Mem[$A000:offset] := colour
 end;
 
+{ Based on the print procedure from VGA unit }
+procedure print(const text: string; const x, y: integer; const colour: byte);
+var
+  row, col, idx: integer;
+  pos: integer;
+  mask: byte;
+begin
+  for idx := 1 to length(text) do begin
+    if (idx < 0) or (idx > 127) then continue;
+
+    for row := 0 to 7 do begin
+      mask := font8x8[ord(text[idx]), row];
+      for col := 0 to 7 do
+        if (mask and (1 shl (7 - col))) <> 0 then
+          pset((idx-1) * 8 + x + col, y + row, colour);
+    end;
+  end;
+end;
+
+procedure setActivePage(const page: byte);
+begin
+  port[$3D4] := $0C;
+  port[$3D5] := hi(page * pageSize);
+  port[$3D4] := $0D;
+  port[$3D5] := lo(page * pageSize);
+end;
+
 procedure setDisplayPage(const page: byte);
 begin
   port[$3D4] := $0C;
-  port[$3D5] := hi(page * $4000);
+  port[$3D5] := hi(page * pageSize);
   port[$3D4] := $0D;
-  port[$3D5] := lo(page * $4000);
+  port[$3D5] := lo(page * pageSize);
 end;
 
 procedure flipPages;
 begin
   drawPage := 1 - drawPage;
   displayedPage := 1 - displayedPage;
-  setDisplayPage(displayedPage)
+  
+  setDisplayPage(displayedPage);
+  setActivePage(drawPage)
 end;
 
 
