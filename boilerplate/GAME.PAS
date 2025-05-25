@@ -1,9 +1,7 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Mouse, Timing, VGA,
-  Bitmap;
-  { Conv, FPS, Graphics, PCS; }
+  Bitmap, Logger, Keyboard, Mouse, Timing, VGA;
 
 const
   K_ESC = $01;
@@ -16,7 +14,6 @@ var
 
 procedure INIT;
 begin
-  randomize;
   initLogger;
   initVGAMode;
   loadFont;
@@ -27,14 +24,13 @@ begin
 
   { TODO: Your init code here }
 
+  randomize;
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 
 procedure update;
-var
-  a: integer;
 begin
   updateDeltaTime;
   updateMouse;
@@ -47,8 +43,6 @@ end;
 
 
 procedure draw;
-var
-  a: integer;
 begin
   cls($7D);
 
@@ -60,15 +54,10 @@ begin
     spr(dosuEXE[1], 148, 76, 13);
 
   print('Hello world!', 160-48, 120, 15);
-
   drawMouse;
-
   flush
 end;
 
-
-var
-  a: integer;
 
 begin
   INIT;
@@ -76,7 +65,7 @@ begin
 
   repeat
     update;
-    draw;
+    draw
   until done;
 
   { TODO: Your cleanup code here }
