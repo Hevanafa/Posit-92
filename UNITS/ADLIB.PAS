@@ -2,6 +2,23 @@ unit AdLib;
 
 interface
 
+const
+  { Internal chip values for notes }
+  NOTE_C  = $157;
+  NOTE_CS = $16B;
+  NOTE_D  = $181;
+  NOTE_DS = $198;
+  NOTE_E  = $1B0;
+  
+  NOTE_F  = $1CA;
+  NOTE_FS = $1E5;
+  NOTE_G = $202;
+  NOTE_GS = $220;
+  NOTE_A = $241;
+  NOTE_AS = $263;
+  NOTE_B = $287;
+
+  
 type
   TNote = record
     freq: word;
@@ -44,12 +61,12 @@ type
     
     procedure playSFX(var sfx: TSFX);
     procedure stopAllSFX;
-    
-    
   end;
 
 var
   AdLibDrv: TAdLib;
+
+procedure initNote(var result: TNote; const freq: word; const octave: byte; const duration: double; const velocity: byte);
 
 implementation
 
@@ -80,21 +97,6 @@ const
   MAX_CHANNELS = 9;
   MAX_INSTRUMENTS = 16;
   
-  { Internal chip values for notes }
-  NOTE_C  = $157;
-  NOTE_CS = $16B;
-  NOTE_D  = $181;
-  NOTE_DS = $198;
-  NOTE_E  = $1B0;
-  
-  NOTE_F  = $1CA;
-  NOTE_FS = $1E5;
-  NOTE_G = $202;
-  NOTE_GS = $220;
-  NOTE_A = $241;
-  NOTE_AS = $263;
-  NOTE_B = $287;
-  
 
 var
   PianoInstrument: TInstrument;
@@ -116,6 +118,20 @@ begin
   for a:=1 to 10 do;  { simulated delay }
   Port[AdlibData] := value;
   for a:=1 to 10 do;  { simulated delay }
+end;
+
+{
+  freq uses NOTE_ prefix
+  octave is the same as "block" in AdLib
+  duration is in seconds
+  velocity: 0..127
+}
+procedure initNote(var result: TNote; const freq: word; const octave: byte; const duration: double; const velocity: byte);
+begin
+  result.freq := freq;
+  result.octave := octave;
+  result.duration := duration;
+  result.velocity := velocity;
 end;
 
 procedure initInstruments;
