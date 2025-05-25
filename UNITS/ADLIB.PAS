@@ -14,7 +14,7 @@ type
     instrument: byte;
     priority: byte;
   end;
-  TInstParams = record
+  TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
     sustain: boolean;
@@ -23,8 +23,8 @@ type
     attack, decay, release, waveform: byte;
   end;
   TInstrument = record
-    modulator: TInstParams;
-    carrier: TInstParams;
+    modulator: TInstrParams;
+    carrier: TInstrParams;
     feedback: byte;
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
@@ -37,6 +37,7 @@ type
     { procedure startMelody; }
     { Playback }
     procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+	procedure stopNote(const channel: byte);
     
     procedure playSFX(var sfx: TSFX);
     procedure update;
@@ -95,13 +96,12 @@ var
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
   instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
-  {
+
   currentNoteIndex: byte;
   melodyEndTick: longint;
   isPlaying: boolean;
   activeMelody: TMelody;
-  }
-  
+
 
 procedure AdLibWrite(const reg, value: byte);
 var
@@ -145,6 +145,11 @@ begin
   end;
   
   { NOTE: Add more of your instruments here }
+end;
+
+procedure setupInstrument(const channel: byte; var instr: TInstrument);
+begin
+  panicHalt('Not implemented!')
 end;
 
 procedure setupInstruments;
@@ -206,9 +211,12 @@ end;
 
 
 procedure TAdlib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+var
+  volume: byte;
 begin
   if channel >= MAX_CHANNELS then exit;
   
+  volume := (velocity * channels[channel].volume) div 127;
   { TODO: Implement master volume }
   
   with instruments[channels[channel].instrument].carrier do
@@ -240,24 +248,31 @@ begin}
 end;}
 
 { TODO: Update this considering the channels }
-procedure TAdlib.startMelody;
+procedure {TAdLib.}startMelody;
 begin
   { C D E }
   activeMelody.count := 3;
   with activeMelody.notes[0] do begin
-    freq := $157; octave := 4; durationMS := 50;
+    freq := $157; octave := 4; duration := 0.050;
   end;
   with activeMelody.notes[1] do begin
-    freq := $181; octave := 4; durationMS := 50;
+    freq := $181; octave := 4; duration := 0.050;
   end;
   with activeMelody.notes[2] do begin
-    freq := $1AB; octave := 4; durationMS := 50;
+    freq := $1AB; octave := 4; duration := 0.050;
   end;
 
   currentNoteIndex := 0;
   isPlaying := true;
+  {
+    Disabled because it doesn't work with the
+    latest version, which uses seconds instead of
+    milliseconds
+  }
+  {
   melodyEndTick := trunc(timer) + (activeMelody.notes[0].durationMS div 55);
   playNote(activeMelody.notes[0].freq, activeMelody.notes[0].octave)
+  }
 end;
 
 
@@ -287,7 +302,6 @@ begin
   channels[channel].instrument := sfx.instrument;
   channels[channel].endTime := getTimer + sfx.notes[0].duration;
   
-  { TODO: Play the first note }
   setupInstrument(channel, instruments[sfx.instrument]);
   playNote(channel, sfx.notes[0].freq, sfx.notes[0].octave, sfx.notes[0].velocity)
 end;
