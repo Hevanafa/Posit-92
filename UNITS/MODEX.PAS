@@ -119,8 +119,17 @@ begin
   port[$3D5] := lo(page * pageSize); { Write low byte of start address }
 end;
 
+procedure waitForVSync;
+begin
+  { Wait for the end of current retrace (if in one) }
+  while (port[$3DA] and $08) <> 0 do;
+  { Wait for the start of next retrace }
+  while (port[$3DA] and $08) = 0 do;
+end;
+
 procedure flipPages;
 begin
+  waitForVSync;
   drawPage := 1 - drawPage;
   setVisiblePage(1 - drawPage)
 end;
