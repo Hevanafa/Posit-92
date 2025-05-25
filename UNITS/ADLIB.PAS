@@ -3,19 +3,42 @@ unit AdLib;
 interface
 
 type
+  TNote = record
+    freq: word;
+    octave: byte;
+    duration: double;  { in seconds }
+  end;
+  TSFX = record
+    notes: array[0..15] of TNote;
+    count: byte;
+    instrument: byte;
+    priority: byte;
+  end;
+  TInstParams = record
+    tremolo: boolean;
+    vibrato: boolean;
+    sustain: boolean;
+    keyScale: boolean;
+    multiplier, totalLevel, sustainLevel: byte;
+    attack, decay, release, waveform: byte;
+  end;
+  TInstrument = record
+    modulator: TInstParams;
+    carrier: TInstParams;
+    feedback: byte;
+    algorithm: byte;  { 0 = FM, 1 = Additive }
+  end;
   TAdLib = object
-    var
-	  isInitialised: boolean;
     procedure init;
-	procedure shutdown;
-	
-	procedure loadInstrument(const slot: byte; var instrument: TInstrument);
-	
-    procedure startMelody;
-	{ Playback }
-    procedure playNote(const freq: word; const octave: byte);
-	
-	procedure playSFX(var sfx: TSFX);
+    procedure shutdown;
+    
+    procedure loadInstrument(const slot: byte; var instrument: TInstrument);
+    
+    { procedure startMelody; }
+    { Playback }
+    procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+    
+    procedure playSFX(var sfx: TSFX);
     procedure update;
   end;
 
@@ -27,33 +50,6 @@ implementation
 uses crt, timing;
 
 type
-  TInstrument = record
-    modulator: TInstParams;
-	carrier: TInstParams;
-	feedback: byte;
-	algorithm: byte;  { 0 = FM, 1 = Additive }
-  end;
-  TInstParams = record
-    tremolo: boolean;
-	vibrato: boolean;
-	sustain: boolean;
-	keyScale: boolean;
-	multiplier, totalLevel, sustainLevel: byte;
-	attack, decay, release, waveform: byte;
-  end;
-  TSFX = record
-    notes: array[0..15] of TNote;
-	count: byte;
-	instrument: byte;
-	priority: byte;
-  end;
-  
-  TNote = record
-    freq: word;
-    octave: byte;
-    durationMS: word;
-  end;
-
   PMelody = ^TMelody;
   TMelody = record
     notes: array[0..15] of TNote;
@@ -62,13 +58,13 @@ type
   
   TChannelState = record
     active: boolean;
-	noteIndex: byte;
-	endTime: double; { in seconds }
-	{ melody: PMelody; }
-	isSFX: boolean;
-	sfx: TSFX;
-	instrument: byte;
-	volume: byte; { 0..127 }
+    noteIndex: byte;
+    endTime: double; { in seconds }
+    { melody: PMelody; }
+    isSFX: boolean;
+    sfx: TSFX;
+    instrument: byte;
+    volume: byte; { 0..127 }
   end;
 
 const
@@ -98,6 +94,7 @@ var
   PianoInstrument: TInstrument;
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
+  instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
   {
   currentNoteIndex: byte;
   melodyEndTick: longint;
@@ -120,31 +117,31 @@ procedure initInstruments;
 begin
   with PianoInstrument do begin
     modulator.tremolo := false;
-	modulator.vibrato := false;
-	modulator.sustain := false;
-	modulator.keyScale := false;
-	modulator.multiplier := false;
-	modulator.totalLevel := 25; { octaves ? }
-	modulator.attack := 15;
-	modulator.decay := 4;
-	modulator.sustainLevel := 6;
-	modulator.release := 7;
-	modulator.waveform := 0;
-	
-	carrier.tremolo := false;
-	carrier.vibrato := false;
-	carrier.sustain := false;
-	carrier.keyScale := false;
-	carrier.multiplier := 1;
-	carrier.totalLevel := 0;
-	carrier.attack := 15;
-	carrier.decay := 4; 
-	carrier.sustainLevel := 6;
-	carrier.release := 7;
-	carrier.waveform := 0;
-	
-	feedback := 6;
-	algorithm := 0
+    modulator.vibrato := false;
+    modulator.sustain := false;
+    modulator.keyScale := false;
+    modulator.multiplier := 1;
+    modulator.totalLevel := 25; { octaves ? }
+    modulator.attack := 15;
+    modulator.decay := 4;
+    modulator.sustainLevel := 6;
+    modulator.release := 7;
+    modulator.waveform := 0;
+    
+    carrier.tremolo := false;
+    carrier.vibrato := false;
+    carrier.sustain := false;
+    carrier.keyScale := false;
+    carrier.multiplier := 1;
+    carrier.totalLevel := 0;
+    carrier.attack := 15;
+    carrier.decay := 4; 
+    carrier.sustainLevel := 6;
+    carrier.release := 7;
+    carrier.waveform := 0;
+    
+    feedback := 6;
+    algorithm := 0
   end;
   
   { NOTE: Add more of your instruments here }
@@ -175,16 +172,16 @@ begin
   
   { Reset all registers }
   for a := $20 to $F5 do
-    AdlibWrite(i, 0);
-	
+    AdlibWrite(a, 0);
+    
   for a := 0 to MAX_CHANNELS-1 do begin
     channels[a].active := false;
-	channels[a].noteIndex := 0;
-	channels[a].endTime := 0;
-	{ channels[a].melody := nil; }
-	channels[a].isSFX := false;
-	channels[a].instrument := 0;
-	channels[a].volume := 127
+    channels[a].noteIndex := 0;
+    channels[a].endTime := 0;
+    { channels[a].melody := nil; }
+    channels[a].isSFX := false;
+    channels[a].instrument := 0;
+    channels[a].volume := 127
   end;
 
   { setupInstruments; }
@@ -208,14 +205,21 @@ begin
 end;
 
 
-procedure TAdlib.playNote(freq: word; octave: byte);
-var
-  freqLow, freqHigh: byte;
+procedure TAdlib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
 begin
-  freqLow := lo(freq);
-  freqHigh := (hi(freq) and $03) or (octave shl 2);
-  keyOn(0, freqLow, freqHigh);
-  { TODO: Update this with channels }
+  if channel >= MAX_CHANNELS then exit;
+  
+  { TODO: Implement master volume }
+  
+  with instruments[channels[channel].instrument].carrier do
+    AdLibWrite($40 + channel + 3, (63 - (volume div 2)) and $3F);
+
+  { keyOn(0, freqLow, freqHigh); }
+  
+  AdLibWrite($a0 + channel, lo(freq));
+  AdLibWrite(
+    $b0 + channel,
+    (hi(freq) and $03) or (octave shl 2) or $20); { Key-on flag }
 end;
 
 procedure TAdLib.stopNote(const channel: byte);
@@ -225,6 +229,8 @@ begin
   channels[channel].active := false
 end;
 
+{ TODO: set volume }
+
 {procedure TAdlib.playMelody;
 begin}
   { F-number base with block=4 (middle octave) }
@@ -233,6 +239,7 @@ begin}
   playNote($1ab, 4);
 end;}
 
+{ TODO: Update this considering the channels }
 procedure TAdlib.startMelody;
 begin
   { C D E }
@@ -251,6 +258,47 @@ begin
   isPlaying := true;
   melodyEndTick := trunc(timer) + (activeMelody.notes[0].durationMS div 55);
   playNote(activeMelody.notes[0].freq, activeMelody.notes[0].octave)
+end;
+
+
+procedure TAdLib.playSFX(var sfx: TSFX);
+var
+  channel: byte;
+  found: boolean;
+begin
+  { Find an available channel }
+  found := false;
+  { This can be changed to use the last 3 channels }
+  for channel := 0 to 2 do begin
+    if not channels[channel].active then begin
+      found := true;
+      break
+    end;
+  end;
+  
+  if not found then exit;
+  
+  stopNote(channel);
+  
+  channels[channel].isSFX := true;
+  channels[channel].sfx := sfx;
+  channels[channel].noteIndex := 0;
+  channels[channel].active := true;
+  channels[channel].instrument := sfx.instrument;
+  channels[channel].endTime := getTimer + sfx.notes[0].duration;
+  
+  { TODO: Play the first note }
+  setupInstrument(channel, instruments[sfx.instrument]);
+  playNote(channel, sfx.notes[0].freq, sfx.notes[0].octave, sfx.notes[0].velocity)
+end;
+
+
+procedure TAdLib.stopAllSFX;
+var
+  a: integer;
+begin
+  for a:=0 to 2 do
+    if channels[a].isSFX then stopNote(a);
 end;
 
 
