@@ -3,13 +3,15 @@ Controls
 - [x] Keyboard
 - Optional: Joystick
 
+Timing
+- [x] Deterministic delta time
+- [x] FPS-related unit
+
 Graphics
 - [x] VGA with double buffering
 - [x] PSET to a graphics buffer
 - [x] Fast buffer flush with assembly
 - [x] Support for (indexed) BMP file format
-- [x] Deterministic delta time unit
-- [x] FPS-related unit
 - [x] Drawing primitives: circle, rectangle, line, triangle
 - [x] Draw a rotated sprite
 - [x] Draw a rotated sprite + scale
@@ -17,9 +19,19 @@ Graphics
   - (under BMFont unit) Draw a segment of a sprite
 - [x] Support for 1-bit BMP file format
 
+Mode X Graphics
+- [x] Access to Mode X
+- [x] Stable Mode X page flipping
+- [x] PSET to the active page
+- [x] PBitmap support
+- [ ] Drawing primitives
+- [ ] BMFont support
+- [ ] 1-bit bitmap support
+
 Sounds
 - [x] PC speaker
-- [x] AdLib
+- [x] Basic AdLib driver
+- [x] AdLib with instruments & channels
 - SoundBlaster
 
 - [x] Docs: Building
