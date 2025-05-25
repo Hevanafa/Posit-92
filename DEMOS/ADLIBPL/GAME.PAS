@@ -16,8 +16,6 @@ var
 
 
 procedure INIT;
-var
-  tempNote: TNote;
 begin
   initLogger;
   initVGAMode;
@@ -37,11 +35,8 @@ begin
   with sfxCoin do begin
     count := 2;
     instrument := 0;
-    
-    initNote(tempNote, NOTE_C, 5, 0.1, 127);
-    notes[0] := tempNote;
-    initNote(tempNote, NOTE_E, 5, 0.1, 127);
-    notes[1] := tempNote
+    initNote(notes[0], NOTE_C, 5, 0.1, 127);
+    initNote(notes[1], NOTE_E, 5, 0.1, 127)
   end;
 end;
 
