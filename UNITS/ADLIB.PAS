@@ -54,7 +54,6 @@ type
     procedure loadInstrument(const slot: byte; var instr: TInstrument);
     procedure selectInstrument(const channel, slot: byte);
     
-    { procedure startMelody; }
     { Playback }
     procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
     procedure stopNote(const channel: byte);
@@ -73,12 +72,6 @@ implementation
 uses crt, timing;
 
 type
-  PMelody = ^TMelody;
-  TMelody = record
-    notes: array[0..15] of TNote;
-    count: byte;
-  end;
-  
   TChannelState = record
     active: boolean;
     noteIndex: byte;
@@ -103,11 +96,6 @@ var
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
   instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
-
-  currentNoteIndex: byte;
-  melodyEndTick: longint;
-  isPlaying: boolean;
-  activeMelody: TMelody;
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -220,22 +208,6 @@ begin
   AdLibWrite($C0 + channel, (instr.feedback shl 1) or instr.algorithm)
 end;
 
-procedure setupInstruments;
-begin
-  adlibWrite($20, $01);  { tremolo off, vibrato off, sustain off, key scale off, mult = 1 }
-  adlibWrite($40, $10);   { total level = 16 }
-  adlibWrite($60, $F0);  { attack = F, decay = 0 }
-  adlibWrite($80, $77);  { sustain 7, release 7 }
-  adlibWrite($E0, $00);    { waveform select = 0 }
-
-  { Carrier (actual sound) -- operator 3 for channel 0 }
-  adlibWrite($23, $01);
-  adlibWrite($43, $00);
-  adlibWrite($63, $F0);
-  adlibWrite($83, $77);
-  adlibWrite($E3, $00);
-end;
-
 procedure TAdLib.loadInstrument(const slot: byte; var instr: TInstrument);
 begin
   if slot >= MAX_INSTRUMENTS then exit;
@@ -270,8 +242,6 @@ begin
     channels[a].volume := 127
   end;
 
-  { setupInstruments; }
-  
   initInstruments;
   loadInstrument(0, PianoInstrument);
   { Load more of your instruments here }
@@ -319,42 +289,6 @@ begin
 end;
 
 { TODO: set volume }
-
-{procedure TAdlib.playMelody;
-begin}
-  { F-number base with block=4 (middle octave) }
-  {playNote($157, 4);
-  playNote($181, 4);
-  playNote($1ab, 4);
-end;}
-
-{ TODO: Update this considering the channels }
-procedure {TAdLib.}startMelody;
-begin
-  { C D E }
-  activeMelody.count := 3;
-  with activeMelody.notes[0] do begin
-    freq := $157; octave := 4; duration := 0.050;
-  end;
-  with activeMelody.notes[1] do begin
-    freq := $181; octave := 4; duration := 0.050;
-  end;
-  with activeMelody.notes[2] do begin
-    freq := $1AB; octave := 4; duration := 0.050;
-  end;
-
-  currentNoteIndex := 0;
-  isPlaying := true;
-  {
-    Disabled because it doesn't work with the
-    latest version, which uses seconds instead of
-    milliseconds
-  }
-  {
-  melodyEndTick := trunc(timer) + (activeMelody.notes[0].durationMS div 55);
-  playNote(activeMelody.notes[0].freq, activeMelody.notes[0].octave)
-  }
-end;
 
 
 procedure TAdLib.playSFX(var sfx: TSFX);
