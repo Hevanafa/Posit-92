@@ -58,3 +58,11 @@ If you want the scancodes for the keyboard, you can refer to these lists:
 - https://www.freebasic.net/wiki/GfxScancodes
 
 
+#### Mode X units
+
+All Mode X units are prefixed by an X to differentiate from Mode Y (mode 13h) operations
+
+- `MODEX.PAS`: Base Mode X unit
+
+
+
