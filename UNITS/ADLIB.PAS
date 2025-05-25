@@ -1,19 +1,26 @@
-unit Adlib;
+unit AdLib;
 
 interface
 
 type
-  TAdlib = object
+  TAdLib = object
     var
 	  isInitialised: boolean;
     procedure init;
+	procedure shutdown;
+	
+	procedure loadInstrument(const slot: byte; var instrument: TInstrument);
+	
     procedure startMelody;
+	{ Playback }
     procedure playNote(const freq: word; const octave: byte);
+	
+	procedure playSFX(var sfx: TSFX);
     procedure update;
   end;
 
 var
-  AdlibDrv: TAdlib;
+  AdLibDrv: TAdLib;
 
 implementation
 
@@ -52,17 +59,51 @@ type
     notes: array[0..15] of TNote;
     count: byte;
   end;
+  
+  TChannelState = record
+    active: boolean;
+	noteIndex: byte;
+	endTime: double; { in seconds }
+	{ melody: PMelody; }
+	isSFX: boolean;
+	sfx: TSFX;
+	instrument: byte;
+	volume: byte; { 0..127 }
+  end;
 
 const
   AdLibStatus = $388;
   AdLibData = $389;
+  
+  MAX_CHANNELS = 9;
+  MAX_INSTRUMENTS = 16;
+  
+  { Internal chip values for notes }
+  NOTE_C  = $157;
+  NOTE_CS = $16B;
+  NOTE_D  = $181;
+  NOTE_DS = $198;
+  NOTE_E  = $1B0;
+  
+  NOTE_F  = $1CA;
+  NOTE_FS = $1E5;
+  NOTE_G = $202;
+  NOTE_GS = $220;
+  NOTE_A = $241;
+  NOTE_AS = $263;
+  NOTE_B = $287;
+  
 
 var
   PianoInstrument: TInstrument;
+  isInitialised: boolean;
+  channels: array[0..MAX_CHANNELS-1] of TChannelState;
+  {
   currentNoteIndex: byte;
   melodyEndTick: longint;
   isPlaying: boolean;
   activeMelody: TMelody;
+  }
   
 
 procedure AdLibWrite(const reg, value: byte);
@@ -128,13 +169,31 @@ end;
 
 procedure TAdlib.init;
 var
-  i: byte;
+  a: integer;
 begin
-  for i := $20 to $f5 do
+  if isInitialised then exit;
+  
+  { Reset all registers }
+  for a := $20 to $F5 do
     AdlibWrite(i, 0);
+	
+  for a := 0 to MAX_CHANNELS-1 do begin
+    channels[a].active := false;
+	channels[a].noteIndex := 0;
+	channels[a].endTime := 0;
+	{ channels[a].melody := nil; }
+	channels[a].isSFX := false;
+	channels[a].instrument := 0;
+	channels[a].volume := 127
+  end;
 
   { setupInstruments; }
+  
   initInstruments;
+  loadInstrument(0, PianoInstrument);
+  { Load more of your instruments here }
+  
+  isInitialised := true
 end;
 
 procedure keyOn(channel: byte; freqLow, freqHigh: byte);
@@ -156,6 +215,14 @@ begin
   freqLow := lo(freq);
   freqHigh := (hi(freq) and $03) or (octave shl 2);
   keyOn(0, freqLow, freqHigh);
+  { TODO: Update this with channels }
+end;
+
+procedure TAdLib.stopNote(const channel: byte);
+begin
+  if channel >= MAX_CHANNELS then exit;
+  AdLibWrite($B0 + channel, 0);
+  channels[channel].active := false
 end;
 
 {procedure TAdlib.playMelody;
@@ -186,26 +253,36 @@ begin
   playNote(activeMelody.notes[0].freq, activeMelody.notes[0].octave)
 end;
 
-procedure TAdlib.update;
+
+procedure TAdLib.update;
 var
+  a: integer;
   now: longint;
 begin
-  if not isPlaying then exit;
-  now := trunc(timer);
-
-  if now >= melodyEndTick then
-  begin
-    keyOff(0);
-    inc(currentNoteIndex);
-    if currentNoteIndex >= activeMelody.count then begin
-      isPlaying := false;
-      exit
-    end;
-    with activeMelody.notes[currentNoteIndex] do begin
-      playNote(freq, octave);
-      melodyEndTick := now + (durationMS div 55)
-    end;
+  if not isInitialised then exit;
+  now := getTimerMS;
+  
+  for a:=0 to MAX_CHANNELS-1 do begin
+    { TODO: Update channels }
   end;
+end;
+
+
+procedure TAdlib.shutdown;
+var
+  a: byte;
+begin
+  if not isInitialised then exit;
+  
+  { Stop all channels }
+  for a:=0 to MAX_CHANNELS-1 do
+    stopNote(a);
+  
+  { Reset AdLib }
+  for a := $20 to $F5 do
+    AdLibWrite(a, 0);
+
+  isInitialised := false
 end;
 
 end.
