@@ -9,7 +9,7 @@ type
     data: array[0..0] of byte;
   end;
 
-procedure loadBMP(var output: PBitmap; const filename: string);
+procedure loadBMP(var output: PBitmap; filename: string);
 procedure drawBMP(const image: PBitmap);
 procedure freeBMP(var image: PBitmap);
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -34,7 +34,7 @@ procedure bitmapInfo(const image: PBitmap);
 
 implementation
 
-uses Logger, Conv, Panic, VGA;
+uses Logger, Conv, Panic, Strings, VGA;
 
 const DEBUG = true;
 
@@ -42,7 +42,7 @@ var
   sinLUT, cosLUT: array[0..35] of double;
 
 { var makes it pass-by-reference }
-procedure loadBMP(var output: PBitmap; const filename: string);
+procedure loadBMP(var output: PBitmap; filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -52,6 +52,7 @@ var
   start, padding: integer;
 
 begin
+  replaceAll(filename, '"', '');
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
