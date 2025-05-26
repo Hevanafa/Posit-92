@@ -7,6 +7,11 @@ function contains(const source, searchStr: string): boolean;
 function startsWith(const source, searchStr: string): boolean;
 function endsWith(const source, searchStr: string): boolean;
 function replaceAll(const source, searchStr, replaceStr: string): string;
+function trimStart(const txt: string): string;
+function trimEnd(const txt: string): string;
+function trim(const txt: string): string;
+function lower(const txt: string): string;
+function upper(const txt: string): string;
 
 
 implementation
@@ -85,5 +90,57 @@ begin
   replaceAll := result
 end;
 
+
+function trimStart(const txt: string): string;
+var
+  a, len: integer;
+begin
+  len := length(txt);
+  a:=1;
+  while (a <= len) and (txt[a] = ' ') do
+    inc(a);
+  trimStart := copy(txt, a, len - a + 1)
+end;
+
+function trimEnd(const txt: string): string;
+var
+  a: integer;
+begin
+  a := length(txt);
+  while (a>0) and (txt[a] = ' ') do
+    dec(a);
+  trimEnd := copy(txt, 1, a)
+end;
+
+function trim(const txt: string): string;
+begin
+  trim := trimEnd(trimStart(txt));
+end;
+
+{ Similar to Lua & Python's str.lower() }
+function lower(const txt: string): string;
+var
+  a: integer;
+  result: string;
+begin
+  result := txt;
+  for a:=1 to length(result) do
+    if ('A' <= result[a]) and (result[a] <= 'Z') then
+      result[a] := chr(ord(result[a]) + 32);
+  lower := result
+end;
+
+{ Similar to Lua & Python's str.lower() }
+function upper(const txt: string): string;
+var
+  a: integer;
+  result: string;
+begin
+  result := txt;
+  for a:=1 to length(result) do
+    if ('a' <= result[a]) and (result[a] <= 'z') then
+      result[a] := chr(ord(result[a]) - 32);
+  upper := result
+end;
 
 end.
