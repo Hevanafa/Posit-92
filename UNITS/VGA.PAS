@@ -14,7 +14,7 @@ procedure initTextMode;
 procedure loadFont;
 procedure cls(const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure pset(const x, y: word; const colour: byte);
+procedure PSET(const x, y: integer; const colour: byte);
 procedure pset_legacy(const x, y: word; const colour: byte);
 procedure flush;
 procedure initBuffer;
@@ -95,13 +95,17 @@ begin
   surface^[y * 320 + x] := colour;
 end;
 
-procedure PSET(const x, y: word; const colour: byte); assembler;
+procedure PSET(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
+  cmp x, 0
+  jl @skip
   cmp x, 320
-  jae @@done
+  jge @skip
+  cmp y, 0
+  jl @skip
   cmp y, 200
-  jae @@done
+  jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -117,7 +121,8 @@ asm
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
-@@done:
+  
+@skip:
 end;
 
 
