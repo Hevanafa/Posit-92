@@ -125,7 +125,6 @@ end;
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
   lds si, surface: loads DS:SI from surface
   mov es, $a000: targets the VGA framebuffer
-  xor di, di: start writing at offset 0000
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
@@ -135,10 +134,10 @@ begin
     push ds
     push es
 
-    lds si, surface { Load DS:SI with source pointer }
+    lds si, surface { Point DS:SI to back buffer }
     mov ax, $a000
-    mov es, ax      { Set ES to VGA segment }
-    xor di, di      { DI = 0 (Destination offset) }
+    mov es, ax      { Set ES:DI to VGA segment }
+    mov di, 0
 
     mov cx, 32000   { 64000 bytes / 2 = 32000 words }
     rep movsw       { Copy CX words from DS:SI to ES:DI }
