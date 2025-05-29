@@ -18,6 +18,7 @@ Graphics
 - [x] BMFont support
   - (under BMFont unit) Draw a segment of a sprite
 - [x] Support for 1-bit BMP file format
+- [x] Draw a sprite with assembly
 
 Mode X Graphics
 - [x] Access to Mode X
