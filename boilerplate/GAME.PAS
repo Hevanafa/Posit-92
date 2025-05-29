@@ -49,9 +49,9 @@ begin
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76, 13)
+    asmSpr(dosuEXE[0], 148, 76, 13)
   else
-    spr(dosuEXE[1], 148, 76, 13);
+    asmSpr(dosuEXE[1], 148, 76, 13);
 
   print('Hello world!', 160-48, 120, 15);
   drawMouse;
