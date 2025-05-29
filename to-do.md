@@ -32,6 +32,8 @@ Sounds
 - [x] PC speaker
 - [x] Basic AdLib driver
 - [x] AdLib with instruments & channels
+- [x] AdLib sound effects setup
+- [ ] AdLib music setup: melody & more extensive use of channels & timers
 - SoundBlaster
 
 - [x] Docs: Building
