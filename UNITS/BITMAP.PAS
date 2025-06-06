@@ -59,6 +59,9 @@ var
   start, padding: integer;
 
 begin
+  if output <> nil then
+    writeLog('Warning: loadBMP output isn''t nil! Loading "' + filename + '"');
+  
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
