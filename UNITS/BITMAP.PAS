@@ -44,7 +44,7 @@ var
   buffer: array[1..512] of byte;
   { bytesRead: word; }
   a, b: integer;
-  w, h: integer;
+  w, h: word;
   palsize, padding: word;
   size, start: longint;
 

@@ -16,7 +16,7 @@ procedure cls(const colour: byte);
 procedure asmCls(const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
 procedure asmPset(const x, y: word; const colour: byte);
-procedure pset_legacy(const x, y: word; const colour: byte);
+procedure pset(const x, y: word; const colour: byte);
 procedure asmFlush;
 procedure initBuffer;
 procedure freeBuffer;
