@@ -17,6 +17,7 @@ procedure freeBMP(var image: PBitmap);
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 { Taken from asmSprSafe from SPRTEST demo }
 procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 procedure spr2(
@@ -245,6 +246,104 @@ end;
 
 end;
 
+
+{ Based on asmSpr with the difference being not using bounds checks
+  Use with caution!
+}
+procedure asmSprUnsafe(
+  const image: PBitmap;
+  const x, y: integer;
+  const transparencyKey: byte);
+var
+  srcX, srcY, imgWidth, imgHeight: word;
+  destX, destY: integer;
+  transKey, colour: byte;
+  imageDataPtr: pointer; { Cache the data pointer }
+begin
+  destX := x;
+  destY := y;
+  imgWidth := image^.width;
+  imgHeight := image^.height;
+  transKey := transparencyKey;
+  colour := 0;
+
+asm
+  les di, [image]
+
+  { Check if image is nil }
+  mov ax, es
+  or ax, di
+  je @skip
+
+  add di, 6
+  mov word ptr imageDataPtr, di   { store offset }
+  mov word ptr imageDataPtr+2, es { store segment }
+
+  mov srcY, 0  { init row counter }
+
+@row_start:
+  mov ax, imgHeight
+  cmp srcY, ax
+  jge @row_end
+
+  mov srcX, 0  { init col counter }
+
+@col_start:
+  mov ax, imgWidth
+  cmp srcX, ax
+  jge @col_end
+
+  { Get pixel }
+  { Obtain the `data` offset }
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+
+  les di, imageDataPtr
+  add di, ax
+
+  { Check if transparent }
+  mov al, es:[di]
+  cmp al, 13
+  je @skip_draw
+
+  mov colour, al
+  
+  { Screen dest }
+  mov bx, destY
+  add bx, srcY
+  mov cx, 320
+  mov ax, bx
+  mul cx
+
+  add ax, destX
+  add ax, srcX
+  mov bx, ax
+
+  { PSET }
+  push es
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+  pop es
+
+
+@skip_draw:
+  inc srcX
+  jmp @col_start
+
+@col_end:
+  inc srcY
+  jmp @row_start
+
+@row_end:
+@skip:
+end;
+
+end;
+
+
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
@@ -288,7 +387,7 @@ begin
   { print('File name:' + name, 10, 160, 15); }
   print('Width: ' + i32str(image^.width), 10, 168, 15);
   print('Height: ' + i32str(image^.height), 10, 176, 15);
-  print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+  { print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
 
