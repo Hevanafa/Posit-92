@@ -4,7 +4,7 @@ uses
   Bitmap, Logger, Keyboard, Mouse, Timing, VGA;
 
 const
-  K_ESC = $01;
+  SC_ESC = $01;
 var
   done: boolean;
   t: double;
@@ -37,7 +37,8 @@ begin
 
   { TODO: Your update code here }
 
-  if isKeyDown(K_ESC) then done := true;
+  if isKeyDown(SC_ESC) then done := true;
+  
   t:=t+dt
 end;
 
