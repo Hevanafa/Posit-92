@@ -107,7 +107,7 @@ begin
   if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    pset(a, b, image^.data[a + b * image^.width]);
+    asmPset(a, b, image^.data[a + b * image^.width]);
 end;
 
 procedure freeBMP(var image: PBitmap);
@@ -126,7 +126,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, image^.data[pos]);
+      asmPset(x+a, y+b, image^.data[pos]);
       { pset_legacy(x+a, y+b, image^.data[pos]); }
   end;
 end;
@@ -353,7 +353,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, tint);
+      asmPset(x+a, y+b, tint);
   end;
 end;
 
@@ -372,7 +372,7 @@ begin
   for a := 0 to srcW - 1 do begin
     pos := (srcX + a) + ((srcY + b) * image^.width);
     if image^.data[pos] <> transparencyKey then
-      pset(destX + a, destY + b, image^.data[pos]);
+      asmPset(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 
