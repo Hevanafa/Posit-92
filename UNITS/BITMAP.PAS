@@ -7,6 +7,7 @@ type
   TBitmap = record
     width, height, palsize: word;
     data: array[0..0] of byte;
+    { size: longint; }
   end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
@@ -37,11 +38,12 @@ const DEBUG = true;
 procedure loadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
-  buffer: array[1..256] of byte;
-  bytesRead: word;
+  buffer: array[1..512] of byte;
+  { bytesRead: word; }
   a, b: integer;
-  w, h, palsize, size: integer;
-  start, padding: integer;
+  w, h: integer;
+  palsize, padding: word;
+  size, start: longint;
 
 begin
   if output <> nil then
@@ -190,18 +192,23 @@ asm
 
   { Check if transparent }
   mov al, es:[di]
-  mov colour, al
   cmp al, 13
   je @skip_draw
+
+  mov colour, al
 
   { Check bounds }
   mov ax, destY
   add ax, srcY
+  cmp ax, 0
+  jl @skip_draw
   cmp ax, 200
   jge @skip_draw
 
   mov ax, destX
   add ax, srcX
+  cmp ax, 0
+  jl @skip_draw
   cmp ax, 320
   jge @skip_draw
 
