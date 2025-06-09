@@ -2,7 +2,7 @@
 
 uses
   CRT, DOS,
-  Bitmap, Logger, Keyboard, Mouse, PCS, Timing, VGA;
+  Bitmap, Logger, PCS, Timing, VGA;
 
 const
   SC_ESC = $01;
@@ -20,16 +20,17 @@ const
   F5 = 698;
   G5 = 784;
 
-  quart = 0.5;
-  threeEighth = 0.75;
-  half = 1.0;
-  threeFourth = 1.5;
-  full = 2.0;
+  quart = 0.25;
+  threeEighth = 0.375;
+  half = 0.5;
+  threeFourth = 0.75;
+  full = 1.0;
 
 var
   done: boolean;
   t: double;
   DosuEXE: array[0..1] of PBitmap;
+  imgPiano: PBitmap;
   hymn: TMelody;
   { TODO: More of your game state here }
 
@@ -41,14 +42,17 @@ begin
   loadFont;
   initBuffer;
   initDeltaTime;
-  initKeyHandler;
-  initMouse;
+  { initKeyHandler; }
+  { initMouse; }
 
   { TODO: Your init code here }
 
   randomize;
+  loadBMP(imgPiano, 'IMG\PIANO.BMP');
+  {
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  }
   PCSpeaker.init;
 end;
 
@@ -197,12 +201,13 @@ end;
 procedure update;
 begin
   updateDeltaTime;
-  updateMouse;
+  { updateMouse; }
   PCSpeaker.update;
 
   { TODO: Your update code here }
 
-  if isKeyDown(SC_ESC) then done := true;
+  { if isKeyDown(SC_ESC) then done := true; }
+  if keyPressed then if readKey = #27 then done := true;
   
   t:=t+dt
 end;
@@ -214,13 +219,19 @@ begin
 
   { TODO: Your drawing code here }
 
+  asmSpr(imgPiano, 148, 76, 13);
+
+  {
   if (trunc(t * 1.5) and 1) = 0 then
     asmSpr(dosuEXE[0], 148, 76, 13)
   else
     asmSpr(dosuEXE[1], 148, 76, 13);
+  }
 
-  print('Hello world!', 160-48, 120, 15);
-  drawMouse;
+  print('Playing "Jerusalem" hymn', 160-96, 120, 15);
+  print('by Sir Charles Hubert', 160-84, 130, 15);
+  print('Hastings Parry', 160-56, 140, 15);
+  { drawMouse; }
 
   asmFlush
 end;
@@ -238,13 +249,16 @@ begin
   until done;
 
   { TODO: Your cleanup code here }
+  freeBMP(imgPiano);
+  {
   freeBMP(dosuEXE[0]);
   freeBMP(dosuEXE[1]);
+  }
 
   PCSpeaker.stop;
 
-  resetMouse;
-  resetKeyHandler;
+  { resetMouse; }
+  { resetKeyHandler; }
   freeBuffer;
   closeLogger;
   initTextMode
