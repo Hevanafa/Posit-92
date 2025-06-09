@@ -27,14 +27,14 @@ begin
   p := 3 - 2 * radius;
 
   while x <= y do begin
-    pset(cx + x, cy + y, colour);
-    pset(cx - x, cy + y, colour);
-    pset(cx + x, cy - y, colour);
-    pset(cx - x, cy - y, colour);
-    pset(cx + y, cy + x, colour);
-    pset(cx - y, cy + x, colour);
-    pset(cx + y, cy - x, colour);
-    pset(cx - y, cy - x, colour);
+    asmPset(cx + x, cy + y, colour);
+    asmPset(cx - x, cy + y, colour);
+    asmPset(cx + x, cy - y, colour);
+    asmPset(cx - x, cy - y, colour);
+    asmPset(cx + y, cy + x, colour);
+    asmPset(cx - y, cy + x, colour);
+    asmPset(cx + y, cy - x, colour);
+    asmPset(cx - y, cy - x, colour);
 
     if p < 0 then
       p := p+4 * x+6
@@ -57,12 +57,12 @@ begin
 
   while x <= y do begin
     for a:=cx-x to cx+x do begin
-      pset(a, cy + y, colour);
-      pset(a, cy - y, colour)
+      asmPset(a, cy + y, colour);
+      asmPset(a, cy - y, colour)
     end;
     for a:=cx-y to cx+y do begin
-      pset(a, cy + x, colour);
-      pset(a, cy - x, colour)
+      asmPset(a, cy + x, colour);
+      asmPset(a, cy - x, colour)
     end;
 
     if p < 0 then
@@ -90,7 +90,7 @@ begin
   err := dx - dy;
 
   while (x1 <> x2) or (y1 <> y2) do begin
-    pset(x1, y1, colour);
+    asmPset(x1, y1, colour);
     e2 := 2 * err;
 
     if e2 > -dy then begin
@@ -104,7 +104,7 @@ begin
     end;
   end;
 
-  pset(x1, y1, colour)
+  asmPset(x1, y1, colour)
 end;
 
 
@@ -117,7 +117,7 @@ begin
   end;
 
   for x := x0 to x1 do
-    pset(x, y, colour);
+    asmPset(x, y, colour);
 end;
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
@@ -131,12 +131,12 @@ begin
     temp := y0; y0 := y1; y1 := temp
   end;
   for b:=y0 to y1 do begin
-    pset(x0, b, colour);
-    pset(x1, b, colour)
+    asmPset(x0, b, colour);
+    asmPset(x1, b, colour)
   end;
   for a:=x0 to x1 do begin
-    pset(a, y0, colour);
-    pset(a, y1, colour)
+    asmPset(a, y0, colour);
+    asmPset(a, y1, colour)
   end;
 end;
 
@@ -153,7 +153,7 @@ begin
   end;
   for b:=y0 to y1 do
     for a:=x0 to x1 do
-      pset(a, b, colour);
+      asmPset(a, b, colour);
 end;
 
 
@@ -197,7 +197,7 @@ begin
     xEnd := sx2 shr FIX_SHIFT;
     if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
     while xStart <= xEnd do begin
-      pset(xStart, y, colour);
+      asmPset(xStart, y, colour);
       inc(xStart);
     end;
     inc(sx1, dx1); inc(sx2, dx2)
@@ -212,7 +212,7 @@ begin
     xEnd := sx2 shr FIX_SHIFT;
     if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
     while xStart <= xEnd do begin
-      pset(xStart, y, colour);
+      asmPset(xStart, y, colour);
       inc(xStart);
     end;
     inc(sx1, dx1); inc(sx2, dx2)

@@ -159,7 +159,7 @@ begin
       bitIndex:=7-(col mod 8);
       b := image^.data[byteIndex + (col div 8)];
       if ((b shr bitIndex) and 1) = 1 then
-        pset(x + col, y + row, 15);
+        asmPset(x + col, y + row, 15);
     end;
   end;
 end;
@@ -184,15 +184,15 @@ begin
       b := image^.data[row * image^.bytesWidth + byteCol];
 
       if b <> 0 then begin
-        if (b and $80) <> 0 then pset(screenX + 0, y + row, tint);
-        if (b and $40) <> 0 then pset(screenX + 1, y + row, tint);
-        if (b and $20) <> 0 then pset(screenX + 2, y + row, tint);
-        if (b and $10) <> 0 then pset(screenX + 3, y + row, tint);
+        if (b and $80) <> 0 then asmPset(screenX + 0, y + row, tint);
+        if (b and $40) <> 0 then asmPset(screenX + 1, y + row, tint);
+        if (b and $20) <> 0 then asmPset(screenX + 2, y + row, tint);
+        if (b and $10) <> 0 then asmPset(screenX + 3, y + row, tint);
 
-        if (b and $08) <> 0 then pset(screenX + 4, y + row, tint);
-        if (b and $04) <> 0 then pset(screenX + 5, y + row, tint);
-        if (b and $02) <> 0 then pset(screenX + 6, y + row, tint);
-        if (b and $01) <> 0 then pset(screenX + 7, y + row, tint);
+        if (b and $08) <> 0 then asmPset(screenX + 4, y + row, tint);
+        if (b and $04) <> 0 then asmPset(screenX + 5, y + row, tint);
+        if (b and $02) <> 0 then asmPset(screenX + 6, y + row, tint);
+        if (b and $01) <> 0 then asmPset(screenX + 7, y + row, tint);
       end;
 
       inc(screenX, 8)

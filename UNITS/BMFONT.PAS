@@ -160,7 +160,7 @@ begin
         srcY := g^.y + row;
 
         if bitmap^.data[srcY * bitmap^.width + srcX] <> 0 then
-          pset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
+          asmPset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
       end;
     end;
 
