@@ -5,60 +5,52 @@ unit PCS;
 interface
 
 type
-  SoundIDs = (
-    Melody1,
-    Melody2,
-    Melody3
-  );
   TNote = record
     freq: word; { in Hz }
-    durationMS: word; { in ms }
+    rest: boolean;
+    duration: double; { in seconds }
+  end;
+  TMelody = record
+    notes: array[0..15] of TNote;
+    noteCount: byte;
   end;
 
   TPCSpeaker = object
     procedure init;
-    procedure playBeep(freq, durationMs: word);
-    procedure playMelody(id: SoundIDs);
-    procedure updateMelody;
+    procedure playBeep(const freq, durationMs: word);
+    procedure playMelody(const melody: TMelody);
+    procedure stop;
+    procedure update;
   end;
 
 var
   PCSpeaker: TPCSpeaker;
 
+procedure initNote(var output: TNote; const freq: word; const duration: double);
+
 
 implementation
 
-uses crt, dos, Timing;
+uses CRT, DOS, Timing;
 
 var
   currentNote: integer;
-  currentID: SoundIDs;
-  noteEndTick: longint;
+  currentMelody: TMelody;
+  noteEndTick: double;
   playing: boolean;
   toneEnd: longint;
 
-const
-  { TODO: Add more of your sounds here }
-  { C4 E4 G4 }
-  mel1: array[0..2] of TNote = (
-    (freq: 261; durationMS: 100),
-    (freq: 329; durationMS: 100),
-    (freq: 392; durationMS: 100)
-  );
-  { D4 F#4 A4 }
-  mel2: array[0..2] of TNote = (
-    (freq: 293; durationMS: 100),
-    (freq: 370; durationMS: 100),
-    (freq: 440; durationMS: 100)
-  );
-  mel3: array[0..2] of TNote = (
-    (freq: 329; durationMS: 100),
-    (freq: 415; durationMS: 100),
-    (freq: 494; durationMS: 100)
-  );
+
+procedure initNote(var output: TNote; const freq: word; const duration: double);
+begin
+  output.rest := freq = 0;
+  if not output.rest then
+    output.freq := freq;
+  output.duration := duration
+end;
 
 
-procedure TPCSpeaker.playBeep(freq, durationMs: word);
+procedure TPCSpeaker.playBeep(const freq, durationMs: word);
 begin
   sound(freq);
   toneEnd := getTicks + (durationMs div 55);
@@ -69,26 +61,18 @@ end;
 procedure playNextNote;
 begin
   inc(currentNote);
-  if currentNote > high(mel1) then begin
-    noSound;
-    playing := false;
-    exit;
+
+  if currentNote >= currentMelody.noteCount then begin
+    PCSpeaker.stop;
+    exit
   end;
 
-  case currentID of
-    Melody1: begin
-      sound(mel1[currentNote].freq);
-      noteEndTick := getTicks + (mel1[currentNote].durationMS div 55)
-      end;
-    Melody2: begin
-      sound(mel2[currentNote].freq);
-      noteEndTick := getTicks + (mel2[currentNote].durationMS div 55)
-      end;
-    Melody3: begin
-      sound(mel3[currentNote].freq);
-      noteEndTick := getTicks + (mel3[currentNote].durationMS div 55)
-      end;
-  end;
+  if currentMelody.notes[currentNote].rest then
+    noSound
+  else
+    sound(currentMelody.notes[currentNote].freq);
+
+  noteEndTick := getTimer + currentMelody.notes[currentNote].duration;
 end;
 
 procedure TPCSpeaker.init;
@@ -97,20 +81,26 @@ begin
   playing := false;
 end;
 
-procedure TPCSpeaker.playMelody(id: SoundIDs);
+procedure TPCSpeaker.playMelody(const melody: TMelody);
 begin
   if playing then exit;
+
   currentNote := -1;
+  currentMelody := melody;
   playing := true;
-  currentID := id;
   playNextNote
 end;
 
-procedure TPCSpeaker.updateMelody;
+procedure TPCSpeaker.update;
 begin
-  if playing and (getTicks >= noteEndTick) then
+  if playing and (getTimer >= noteEndTick) then
     playNextNote;
 end;
 
+procedure TPCSpeaker.stop;
+begin
+  noSound;
+  playing := false;
+end;
 
 end.
