@@ -1,3 +1,4 @@
+{$DEFINE DEBUG}
 
 uses
   CRT, DOS,

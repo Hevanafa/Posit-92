@@ -33,7 +33,9 @@ implementation
 
 uses Logger, Conv, Panic, VGA;
 
-const DEBUG = true;
+{$IFDEF DEBUG}
+const DEBUG_READ_LINES = false;
+{$ENDIF}
 
 { var makes it pass-by-reference }
 procedure loadBMP(var output: PBitmap; const filename: string);
@@ -68,11 +70,11 @@ begin
   output^.palsize := palsize;
   { output^.size := w * h; }
 
-  if debug then begin
-    writeLog('Width:' + i32str(output^.width));
-    writeLog('Height:' + i32str(output^.height));
-    writeLog('Palette:' + i32str(output^.palsize));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Width:' + i32str(output^.width));
+  writeLog('Height:' + i32str(output^.height));
+  writeLog('Palette:' + i32str(output^.palsize));
+{$ENDIF}
 
   start := 54 + palsize * 4;
   if w mod 4 = 0 then
@@ -80,17 +82,19 @@ begin
   else
     padding := 4 - w mod 4;
 
-  if debug then begin
-    writeLog('Start:' + i32str(start));
-    writeLog('Padding:' + i32str(padding));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Start:' + i32str(start));
+  writeLog('Padding:' + i32str(padding));
+{$ENDIF}
 
   for b := 0 to h-1 do begin
     seek(f, start + (b * (w + padding)));
     blockRead(f, buffer, w);
 
-    if debug then
+{$IFDEF DEBUG}
+    if DEBUG_READ_LINES then
       writeLog('Finished reading line ' + i32str(b));
+{$ENDIF}
 
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }
