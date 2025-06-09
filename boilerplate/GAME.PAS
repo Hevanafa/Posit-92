@@ -46,7 +46,7 @@ end;
 
 procedure draw;
 begin
-  cls($7D);
+  asmCls($7D);
 
   { TODO: Your drawing code here }
 
@@ -57,7 +57,8 @@ begin
 
   print('Hello world!', 160-48, 120, 15);
   drawMouse;
-  flush
+
+  asmFlush
 end;
 
 
