@@ -74,7 +74,13 @@ type
 var
   AdLibDrv: TAdLib;
 
-procedure initNote(var result: TNote; const freq: word; const octave: byte; const duration: double; const velocity: byte);
+procedure initNote(
+  var note: TNote;
+  const freq: word;
+  const octave: byte;
+  const duration: double;
+  const velocity: byte);
+
 
 implementation
 
@@ -98,10 +104,8 @@ const
   
   MAX_CHANNELS = 9;
   MAX_INSTRUMENTS = 16;
-  
 
 var
-  PianoInstrument: TInstrument;
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
   instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
@@ -123,46 +127,17 @@ end;
   duration is in seconds
   velocity: 0..127
 }
-procedure initNote(var result: TNote; const freq: word; const octave: byte; const duration: double; const velocity: byte);
+procedure initNote(
+  var note: TNote;
+  const freq: word;
+  const octave: byte;
+  const duration: double;
+  const velocity: byte);
 begin
-  result.freq := freq;
-  result.octave := octave;
-  result.duration := duration;
-  result.velocity := velocity;
-end;
-
-procedure initInstruments;
-begin
-  with PianoInstrument do begin
-    modulator.tremolo := false;
-    modulator.vibrato := false;
-    modulator.sustain := false;
-    modulator.keyScale := false;
-    modulator.multiplier := 1;
-    modulator.totalLevel := 25; { octaves ? }
-    modulator.attack := 15;
-    modulator.decay := 4;
-    modulator.sustainLevel := 6;
-    modulator.release := 7;
-    modulator.waveform := 0;
-    
-    carrier.tremolo := false;
-    carrier.vibrato := false;
-    carrier.sustain := false;
-    carrier.keyScale := false;
-    carrier.multiplier := 1;
-    carrier.totalLevel := 0;
-    carrier.attack := 15;
-    carrier.decay := 4; 
-    carrier.sustainLevel := 6;
-    carrier.release := 7;
-    carrier.waveform := 0;
-    
-    feedback := 6;
-    algorithm := 0
-  end;
-  
-  { NOTE: Add more of your instruments here }
+  note.freq := freq;
+  note.octave := octave;
+  note.duration := duration;
+  note.velocity := velocity;
 end;
 
 procedure setupInstrument(const channel: byte; var instr: TInstrument);
@@ -243,17 +218,13 @@ begin
     
   for a := 0 to MAX_CHANNELS-1 do begin
     channels[a].active := false;
+    channels[a].melody := nil;
     channels[a].noteIndex := 0;
     channels[a].noteEndTick := 0;
-    channels[a].melody := nil;
     { channels[a].isSFX := false; }
     channels[a].instrument := 0;
     channels[a].volume := 127
   end;
-
-  initInstruments;
-  loadInstrument(0, PianoInstrument);
-  { Load more of your instruments here }
   
   isInitialised := true
 end;
