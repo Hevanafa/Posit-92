@@ -191,7 +191,7 @@ begin
   end;
   
   { Set up carrier }
-  with instr.modulator do begin
+  with instr.carrier do begin
     AdLibWrite($20 + carOffset,
       (ord(tremolo) shl 7) or
       (ord(vibrato) shl 6) or
