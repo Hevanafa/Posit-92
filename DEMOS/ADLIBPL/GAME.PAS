@@ -78,9 +78,9 @@ begin
   with sfxCoin do begin
     noteCount := 3;
     instrument := 0;
-    initNote(notes[0], NOTE_C, 5, 0.1, 127);
-    initNote(notes[1], NOTE_E, 5, 0.1, 127);
-    initNote(notes[2], NOTE_C, 5, 0.1, 127)
+    initNote(notes[0], NOTE_C, 5, 0.3, 127);
+    initNote(notes[1], NOTE_E, 5, 0.3, 127);
+    initNote(notes[2], NOTE_F, 5, 0.3, 127)
   end;
 
 

@@ -244,14 +244,23 @@ end;
 procedure TAdLib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
 var
   volume: byte;
+  carrierOffset: byte;
 begin
   if channel >= MAX_CHANNELS then exit;
+
+  { Calculate carrier offset }
+  case channel of
+    0..2: carrierOffset := $03 + channel;
+    3..5: carrierOffset := $0B + (channel - 3);
+    6..8: carrierOffset := $13 + (channel - 6);
+  end;
   
   volume := (velocity * channels[channel].volume) div 127;
+
   { TODO: Implement master volume }
   
   with instruments[channels[channel].instrument].carrier do
-    AdLibWrite($40 + channel + 3, (63 - (volume div 2)) and $3F);
+    AdLibWrite($40 + carrierOffset, (63 - (volume div 2)) and $3F);
 
   { keyOn(0, freqLow, freqHigh); }
   
@@ -260,6 +269,7 @@ begin
     $b0 + channel,
     (hi(freq) and $03) or (octave shl 2) or $20); { Key-on flag }
 end;
+
 
 procedure TAdLib.stopNote(const channel: byte);
 begin
@@ -314,7 +324,9 @@ begin
     if not channels[a].active then continue;
     
     if now >= channels[a].noteEndTick then begin
-      stopNote(a);
+      { Key off current note }
+      AdLibWrite($B0 + a, 0);
+      { stopNote(a); }
       inc(channels[a].noteIndex);
       
       if channels[a].noteIndex >= channels[a].melody^.noteCount then begin
