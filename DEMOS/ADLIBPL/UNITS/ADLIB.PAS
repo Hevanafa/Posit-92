@@ -34,13 +34,6 @@ type
     instrument: byte;
   end;
 
-  { TSFX = record
-    notes: array[0..15] of TNote;
-    noteCount: byte;
-    instrument: byte;
-    priority: byte;
-  end;
-  }
   TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
@@ -49,6 +42,7 @@ type
     multiplier, totalLevel, sustainLevel: byte;
     attack, decay, release, waveform: byte;
   end;
+  PInstrument = ^TInstrument;
   TInstrument = record
     modulator: TInstrParams;
     carrier: TInstrParams;
@@ -60,7 +54,7 @@ type
     procedure update;
     procedure shutdown;
     
-    procedure loadInstrument(const slot: byte; var instr: TInstrument);
+    procedure loadInstrument(const slot: byte; const instr: PInstrument);
     procedure selectInstrument(const channel, slot: byte);
     
     { Playback }
@@ -92,8 +86,6 @@ type
     melody: PMelody;
     noteIndex: byte;
     noteEndTick: double; { in seconds }
-    { isSFX: boolean; }
-    { sfx: TSFX; }
     instrument: byte;
     volume: byte; { 0..127 }
   end;
@@ -108,7 +100,7 @@ const
 var
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
-  instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
+  instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -140,7 +132,7 @@ begin
   note.velocity := velocity;
 end;
 
-procedure setupInstrument(const channel: byte; var instr: TInstrument);
+procedure setupInstrument(const channel: byte; var instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
@@ -159,9 +151,11 @@ begin
     7: begin modOffset := $11; carOffset := $14; end;
     8: begin modOffset := $12; carOffset := $15; end;
   end;
+
+  if instr = nil then panicHalt('setupInstrument: instr is nil!');
   
   { Set up modulator }
-  with instr.modulator do begin
+  with instr^.modulator do begin
     AdLibWrite($20 + modOffset,
       (ord(tremolo) shl 7) or
       (ord(vibrato) shl 6) or
@@ -175,7 +169,7 @@ begin
   end;
   
   { Set up carrier }
-  with instr.carrier do begin
+  with instr^.carrier do begin
     AdLibWrite($20 + carOffset,
       (ord(tremolo) shl 7) or
       (ord(vibrato) shl 6) or
@@ -189,18 +183,21 @@ begin
   end;
   
   { Set algorithm and feedback }
-  AdLibWrite($C0 + channel, (instr.feedback shl 1) or instr.algorithm)
+  AdLibWrite($C0 + channel, (instr^.feedback shl 1) or instr^.algorithm)
 end;
 
-procedure TAdLib.loadInstrument(const slot: byte; var instr: TInstrument);
+procedure TAdLib.loadInstrument(const slot: byte; const instr: PInstrument);
 begin
+  if instr = nil then panicHalt('TAdLib.loadInstrument: Attempting to load a nil instrument');
   if slot >= MAX_INSTRUMENTS then exit;
+
   instruments[slot] := instr
 end;
 
 procedure TAdLib.selectInstrument(const channel, slot: byte);
 begin
-  if (channel >= MAX_CHANNELS) or (slot >= MAX_INSTRUMENTS) then exit;
+  if channel >= MAX_CHANNELS then exit;
+  if slot >= MAX_INSTRUMENTS then exit;
   channels[channel].instrument := slot;
   setupInstrument(channel, instruments[slot])
 end;
@@ -228,7 +225,6 @@ begin
     channels[a].melody := nil;
     channels[a].noteIndex := 0;
     channels[a].noteEndTick := 0;
-    { channels[a].isSFX := false; }
     channels[a].instrument := 0;
     channels[a].volume := 127
   end;
@@ -238,6 +234,7 @@ end;
 
 procedure keyOn(const channel, freqLow, freqHigh: byte);
 begin
+  if channel >= MAX_CHANNELS then exit;
   AdLibWrite($A0 + channel, freqLow); { low byte of frequency }
   AdLibWrite($B0 + channel, freqHigh or $20) { high byte + key-on flag }
 end;
@@ -267,7 +264,7 @@ begin
 
   { TODO: Implement master volume }
   
-  with instruments[channels[channel].instrument].carrier do
+  with instruments[channels[channel].instrument]^.carrier do
     AdLibWrite($40 + carrierOffset, (63 - (volume div 2)) and $3F);
 
   keyOn(
@@ -303,8 +300,6 @@ begin
 
   if melody = nil then panicHalt('TAdLib.playMelody: Attempting to play a nil melody!');
   
-  { channels[channel].isSFX := true; }
-  { channels[channel].sfx := sfx; }
   channels[channel].active := true;
   channels[channel].melody := melody;
   channels[channel].noteIndex := 0;
@@ -330,7 +325,6 @@ begin
     
     if now >= channels[a].noteEndTick then begin
       keyOff(a);
-      { stopChannel(a); }
       inc(channels[a].noteIndex);
       
       if channels[a].noteIndex >= channels[a].melody^.noteCount then begin

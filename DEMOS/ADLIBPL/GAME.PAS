@@ -98,7 +98,7 @@ begin
   
   AdLibDrv.init;
   initInstruments;
-  AdLibDrv.loadInstrument(0, PianoInstrument);
+  AdLibDrv.loadInstrument(0, @PianoInstrument);
   setupOdeToJoy;
 
   with sfxCoin do begin
@@ -129,8 +129,10 @@ begin
     lastSpace := isKeyDown(SC_SPACE);
     { if lastSpace then
       AdLibDrv.playMelody(@sfxCoin, 0); }
-    if lastSpace then
+    if lastSpace then begin
+      AdLibDrv.selectInstrument(0, 0);
       AdLibDrv.playMelody(@odeToJoy, 0);
+    end;
   end;
   
   t:=t+dt
