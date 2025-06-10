@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>[Your Game Title]</title>
+
+  <!-- js-dos style sheet -->
+  <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+  <!-- js-dos -->
+  <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+</head>
+
+<body>
+  <div id="dos" style="width: 640px; height: 400px;"></div>
+  <script>
+    const emulator = Dos(document.getElementById("dos"), {
+      // url: "https://v8.js-dos.com/bundles/digger.jsdos",
+      url: "./[your js-dos bundle].jsdos",  // LID_07-06-2025.jsdos
+      volume: 0.5,
+      thinSidebar: true
+    });
+    emulator.setAutoStart(true);
+  </script>
+</body>
+</html>
