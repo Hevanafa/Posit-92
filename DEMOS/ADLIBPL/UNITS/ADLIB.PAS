@@ -65,7 +65,7 @@ type
     
     { Playback }
     procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
-    procedure stopNote(const channel: byte);
+    procedure stopChannel(const channel: byte);
     
     procedure playMelody(const melody: PMelody; const channel: byte);
     procedure stopAllChannels;
@@ -115,9 +115,9 @@ procedure AdLibWrite(const reg, value: byte);
 var
   a: byte;
 begin
-  Port[AdlibStatus] := reg;
+  Port[AdLibStatus] := reg;
   for a:=1 to 10 do;  { simulated delay }
-  Port[AdlibData] := value;
+  Port[AdLibData] := value;
   for a:=1 to 10 do;  { simulated delay }
 end;
 
@@ -206,16 +206,23 @@ begin
 end;
 
 
+procedure resetAllRegisters;
+var
+  a: byte;
+begin
+  for a := $20 to $F5 do
+    AdLibWrite(a, 0);
+end;
+
+
 procedure TAdLib.init;
 var
-  a: integer;
+  a: byte;
 begin
   if isInitialised then exit;
+
+  resetAllRegisters;
   
-  { Reset all registers }
-  for a := $20 to $F5 do
-    AdlibWrite(a, 0);
-    
   for a := 0 to MAX_CHANNELS-1 do begin
     channels[a].active := false;
     channels[a].melody := nil;
@@ -229,15 +236,16 @@ begin
   isInitialised := true
 end;
 
-procedure keyOn(channel: byte; freqLow, freqHigh: byte);
+procedure keyOn(const channel, freqLow, freqHigh: byte);
 begin
-  adlibWrite($A0 + channel, freqLow); { low byte of frequency }
-  adlibWrite($B0 + channel, freqHigh or $20) { high byte + key-on flag }
+  AdLibWrite($A0 + channel, freqLow); { low byte of frequency }
+  AdLibWrite($B0 + channel, freqHigh or $20) { high byte + key-on flag }
 end;
 
-procedure keyOff(channel: byte);
+procedure keyOff(const channel: byte);
 begin
-  adlibWrite($B0 + channel, 0)
+  if channel >= MAX_CHANNELS then exit;
+  AdLibWrite($B0 + channel, 0)
 end;
 
 
@@ -262,20 +270,26 @@ begin
   with instruments[channels[channel].instrument].carrier do
     AdLibWrite($40 + carrierOffset, (63 - (volume div 2)) and $3F);
 
-  { keyOn(0, freqLow, freqHigh); }
-  
-  AdLibWrite($a0 + channel, lo(freq));
-  AdLibWrite(
-    $b0 + channel,
-    (hi(freq) and $03) or (octave shl 2) or $20); { Key-on flag }
+  keyOn(
+    channel,
+    lo(freq),
+    (hi(freq) and $03) or (octave shl 2))
 end;
 
 
-procedure TAdLib.stopNote(const channel: byte);
+procedure TAdLib.stopChannel(const channel: byte);
 begin
   if channel >= MAX_CHANNELS then exit;
   AdLibWrite($B0 + channel, 0);
   channels[channel].active := false
+end;
+
+procedure TAdLib.stopAllChannels;
+var
+  a: byte;
+begin
+  for a:=0 to MAX_CHANNELS - 1 do
+    stopChannel(a);
 end;
 
 { TODO: set volume }
@@ -285,7 +299,7 @@ procedure TAdLib.playMelody(const melody: PMelody; const channel: byte);
 var
   found: boolean;
 begin
-  stopNote(channel);
+  stopChannel(channel);
 
   if melody = nil then panicHalt('TAdLib.playMelody: Attempting to play a nil melody!');
   
@@ -302,18 +316,9 @@ begin
 end;
 
 
-procedure TAdLib.stopAllChannels;
-var
-  a: integer;
-begin
-  for a:=0 to MAX_CHANNELS - 1 do
-    stopNote(a);
-end;
-
-
 procedure TAdLib.update;
 var
-  a: integer;
+  a: byte;
   now: double;
 begin
   if not isInitialised then exit;
@@ -324,9 +329,8 @@ begin
     if not channels[a].active then continue;
     
     if now >= channels[a].noteEndTick then begin
-      { Key off current note }
-      AdLibWrite($B0 + a, 0);
-      { stopNote(a); }
+      keyOff(a);
+      { stopChannel(a); }
       inc(channels[a].noteIndex);
       
       if channels[a].noteIndex >= channels[a].melody^.noteCount then begin
@@ -344,18 +348,11 @@ end;
 
 
 procedure TAdLib.shutdown;
-var
-  a: byte;
 begin
   if not isInitialised then exit;
   
-  { Stop all channels }
-  for a:=0 to MAX_CHANNELS-1 do
-    stopNote(a);
-  
-  { Reset AdLib }
-  for a := $20 to $F5 do
-    AdLibWrite(a, 0);
+  stopAllChannels;
+  resetAllRegisters;
 
   isInitialised := false
 end;
