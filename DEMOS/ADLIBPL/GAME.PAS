@@ -51,6 +51,34 @@ begin
   { NOTE: Add more of your instruments here }
 end;
 
+
+procedure setupOdeToJoy;
+begin
+  odeToJoy.noteCount := 16;
+  odeToJoy.instrument := 0;
+
+  initNote(odeToJoy.notes[0], NOTE_E, 4, 0.5, 120);
+  initNote(odeToJoy.notes[1], NOTE_E, 4, 0.5, 120);
+  initNote(odeToJoy.notes[2], NOTE_F, 4, 0.5, 120);
+  initNote(odeToJoy.notes[3], NOTE_G, 4, 0.5, 120);
+  
+  initNote(odeToJoy.notes[4], NOTE_G, 4, 0.5, 120);
+  initNote(odeToJoy.notes[5], NOTE_F, 4, 0.5, 120);
+  initNote(odeToJoy.notes[6], NOTE_E, 4, 0.5, 120);
+  initNote(odeToJoy.notes[7], NOTE_D, 4, 0.5, 120);
+
+  initNote(odeToJoy.notes[8], NOTE_C, 4, 0.5, 120);
+  initNote(odeToJoy.notes[9], NOTE_C, 4, 0.5, 120);
+  initNote(odeToJoy.notes[10], NOTE_D, 4, 0.5, 120);
+  initNote(odeToJoy.notes[11], NOTE_E, 4, 0.5, 120);
+
+  initNote(odeToJoy.notes[12], NOTE_E, 4, 0.75, 120);
+  initNote(odeToJoy.notes[13], NOTE_D, 4, 0.25, 120);
+  initNote(odeToJoy.notes[14], NOTE_D, 4, 1.0, 120);
+  initNote(odeToJoy.notes[15], NOTE_D, 4, 0.5, 80);
+end;
+
+
 procedure INIT;
 var
   tempNote: TNote;
@@ -69,11 +97,9 @@ begin
   lastSpace := false;
   
   AdLibDrv.init;
-
-  { Required }
   initInstruments;
   AdLibDrv.loadInstrument(0, PianoInstrument);
-  { Load more of your instruments here }
+  setupOdeToJoy;
 
   with sfxCoin do begin
     noteCount := 3;
@@ -101,8 +127,10 @@ begin
   
   if lastSpace <> isKeyDown(SC_SPACE) then begin
     lastSpace := isKeyDown(SC_SPACE);
+    { if lastSpace then
+      AdLibDrv.playMelody(@sfxCoin, 0); }
     if lastSpace then
-      AdLibDrv.playMelody(@sfxCoin, 0);
+      AdLibDrv.playMelody(@odeToJoy, 0);
   end;
   
   t:=t+dt
@@ -122,8 +150,10 @@ begin
   else
     spr(dosuEXE[1], 148, 76, 13);
 
-  print('Press Space to play chime', 160-100, 120, 15);
-  { debugAdLib; }
+  { print('Press Space to play chime', 160-100, 120, 15); }
+  print('Press Space to play', 160-76, 120, 15);
+  print('Ode to Joy', 160-40, 128, 15);
+
   drawMouse;
   asmFlush
 end;
