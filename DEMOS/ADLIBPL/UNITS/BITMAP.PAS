@@ -7,33 +7,25 @@ type
   TBitmap = record
     width, height, palsize: word;
     data: array[0..0] of byte;
+    { size: longint; }
   end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
 procedure drawBMP(const image: PBitmap);
 procedure freeBMP(var image: PBitmap);
+
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+{ Taken from asmSprSafe from SPRTEST demo }
+procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 procedure spr2(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
   const transparencyKey: byte);
-procedure initTrigLUT;
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
-procedure sprPro2(
-  const image: PBitmap;
-  const x, y: integer;
-  const scaleX, scaleY: double;
-  angle: double;
-  const transparencyKey: byte);
-{ procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte); }
-procedure sprProLUT(
-  const image: PBitmap;
-  const x, y: integer;
-  const scaleX, scaleY: double;
-  const angle10: integer;
-  const transparencyKey: byte);
+
 procedure bitmapInfo(const image: PBitmap);
 
 
@@ -41,22 +33,25 @@ implementation
 
 uses Logger, Conv, Panic, VGA;
 
-const DEBUG = true;
-
-var
-  sinLUT, cosLUT: array[0..35] of double;
+{$IFDEF DEBUG}
+const DEBUG_READ_LINES = false;
+{$ENDIF}
 
 { var makes it pass-by-reference }
 procedure loadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
-  buffer: array[1..256] of byte;
-  bytesRead: word;
+  buffer: array[1..512] of byte;
+  { bytesRead: word; }
   a, b: integer;
-  w, h, palsize, size: integer;
-  start, padding: integer;
+  w, h: word;
+  palsize, padding: word;
+  size, start: longint;
 
 begin
+  if output <> nil then
+    writeLog('Warning: loadBMP output isn''t nil! Loading "' + filename + '"');
+  
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
@@ -75,11 +70,11 @@ begin
   output^.palsize := palsize;
   { output^.size := w * h; }
 
-  if debug then begin
-    writeLog('Width:' + i32str(output^.width));
-    writeLog('Height:' + i32str(output^.height));
-    writeLog('Palette:' + i32str(output^.palsize));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Width:' + i32str(output^.width));
+  writeLog('Height:' + i32str(output^.height));
+  writeLog('Palette:' + i32str(output^.palsize));
+{$ENDIF}
 
   start := 54 + palsize * 4;
   if w mod 4 = 0 then
@@ -87,17 +82,19 @@ begin
   else
     padding := 4 - w mod 4;
 
-  if debug then begin
-    writeLog('Start:' + i32str(start));
-    writeLog('Padding:' + i32str(padding));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Start:' + i32str(start));
+  writeLog('Padding:' + i32str(padding));
+{$ENDIF}
 
   for b := 0 to h-1 do begin
     seek(f, start + (b * (w + padding)));
     blockRead(f, buffer, w);
 
-    if debug then
+{$IFDEF DEBUG}
+    if DEBUG_READ_LINES then
       writeLog('Finished reading line ' + i32str(b));
+{$ENDIF}
 
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }
@@ -114,7 +111,7 @@ begin
   if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    pset(a, b, image^.data[a + b * image^.width]);
+    asmPset(a, b, image^.data[a + b * image^.width]);
 end;
 
 procedure freeBMP(var image: PBitmap);
@@ -133,10 +130,223 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, image^.data[pos]);
+      asmPset(x+a, y+b, image^.data[pos]);
       { pset_legacy(x+a, y+b, image^.data[pos]); }
   end;
 end;
+
+
+procedure asmSpr(
+  const image: PBitmap;
+  const x, y: integer;
+  const transparencyKey: byte);
+var
+  srcX, srcY, imgWidth, imgHeight: word;
+  destX, destY: integer;
+  transKey, colour: byte;
+  imageDataPtr: pointer; { Cache the data pointer }
+begin
+  destX := x;
+  destY := y;
+  imgWidth := image^.width;
+  imgHeight := image^.height;
+  transKey := transparencyKey;
+  colour := 0;
+
+{
+  writeLog('dest x and y:' + i32str(destX) + ', ' + i32str(destY));
+  writeLog('img width & height: ' + i32str(imgWidth) + ', ' + i32str(imgHeight));
+  writeLog('transparency key' + i32str(transKey));
+}
+
+asm
+  les di, [image]
+
+  { Check if image is nil }
+  mov ax, es
+  or ax, di
+  je @skip
+
+  add di, 6
+  mov word ptr imageDataPtr, di   { store offset }
+  mov word ptr imageDataPtr+2, es { store segment }
+
+  mov srcY, 0  { init row counter }
+
+@row_start:
+  mov ax, imgHeight
+  cmp srcY, ax
+  jge @row_end
+
+  mov srcX, 0  { init col counter }
+
+@col_start:
+  mov ax, imgWidth
+  cmp srcX, ax
+  jge @col_end
+
+  { Get pixel }
+  { Obtain the `data` offset }
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+
+  les di, imageDataPtr
+  add di, ax
+
+  { Check if transparent }
+  mov al, es:[di]
+  cmp al, 13
+  je @skip_draw
+
+  mov colour, al
+
+  { Check bounds }
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @skip_draw
+  cmp ax, 200
+  jge @skip_draw
+
+  mov ax, destX
+  add ax, srcX
+  cmp ax, 0
+  jl @skip_draw
+  cmp ax, 320
+  jge @skip_draw
+
+  { Screen dest }
+  mov bx, destY
+  add bx, srcY
+  mov cx, 320
+  mov ax, bx
+  mul cx
+
+  add ax, destX
+  add ax, srcX
+  mov bx, ax
+
+  { PSET }
+  push es
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+  pop es
+
+
+@skip_draw:
+  inc srcX
+  jmp @col_start
+
+@col_end:
+  inc srcY
+  jmp @row_start
+
+@row_end:
+@skip:
+end;
+
+end;
+
+
+{ Based on asmSpr with the difference being not using bounds checks
+  Use with caution!
+}
+procedure asmSprUnsafe(
+  const image: PBitmap;
+  const x, y: integer;
+  const transparencyKey: byte);
+var
+  srcX, srcY, imgWidth, imgHeight: word;
+  destX, destY: integer;
+  transKey, colour: byte;
+  imageDataPtr: pointer; { Cache the data pointer }
+begin
+  destX := x;
+  destY := y;
+  imgWidth := image^.width;
+  imgHeight := image^.height;
+  transKey := transparencyKey;
+  colour := 0;
+
+asm
+  les di, [image]
+
+  { Check if image is nil }
+  mov ax, es
+  or ax, di
+  je @skip
+
+  add di, 6
+  mov word ptr imageDataPtr, di   { store offset }
+  mov word ptr imageDataPtr+2, es { store segment }
+
+  mov srcY, 0  { init row counter }
+
+@row_start:
+  mov ax, imgHeight
+  cmp srcY, ax
+  jge @row_end
+
+  mov srcX, 0  { init col counter }
+
+@col_start:
+  mov ax, imgWidth
+  cmp srcX, ax
+  jge @col_end
+
+  { Get pixel }
+  { Obtain the `data` offset }
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+
+  les di, imageDataPtr
+  add di, ax
+
+  { Check if transparent }
+  mov al, es:[di]
+  cmp al, 13
+  je @skip_draw
+
+  mov colour, al
+  
+  { Screen dest }
+  mov bx, destY
+  add bx, srcY
+  mov cx, 320
+  mov ax, bx
+  mul cx
+
+  add ax, destX
+  add ax, srcX
+  mov bx, ax
+
+  { PSET }
+  push es
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+  pop es
+
+
+@skip_draw:
+  inc srcX
+  jmp @col_start
+
+@col_end:
+  inc srcY
+  jmp @row_start
+
+@row_end:
+@skip:
+end;
+
+end;
+
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
@@ -147,7 +357,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, tint);
+      asmPset(x+a, y+b, tint);
   end;
 end;
 
@@ -166,161 +376,10 @@ begin
   for a := 0 to srcW - 1 do begin
     pos := (srcX + a) + ((srcY + b) * image^.width);
     if image^.data[pos] <> transparencyKey then
-      pset(destX + a, destY + b, image^.data[pos]);
+      asmPset(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 
-procedure initTrigLUT;
-var
-  i: integer;
-begin
-  { Generate sine/cosine lookup table }
-  for i := 0 to 35 do begin
-    sinLUT[i] := sin(i * 10 * Pi / 180);
-    cosLUT[i] := cos(i * 10 * Pi / 180);
-    writeLog(i32str(i) + ' - ' + f32str(sinLUT[i]))
-  end;
-end;
-
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
-const
-  halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
-var
-  sw, sh, cx, cy: integer;
-  sa, ca, dx, dy: double;
-  ix, iy: integer;
-  srcX, srcY: integer;
-  colour: byte;
-begin
-  if image = nil then exit;
-
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
-
-  angle:=angle/180*pi;
-  sa:=sin(-angle); { inverse rotation }
-  ca:=cos(-angle);
-
-  { bounding box }
-  { for iy:=0 to sh-1 do
-  for ix:=0 to sw-1 do begin }
-  for iy:=trunc(cy-sh * halfsqr2) to trunc(cy+sh * halfsqr2) do
-  for ix:=trunc(cx-sw * halfsqr2) to trunc(cx+sw * halfsqr2) do begin
-    dx:=ix-cx;
-    dy:=iy-cy;
-
-    { inverse rotation }
-    srcX:=round(dx*ca - dy*sa + cx);
-    srcY:=round(dx*sa + dy*ca + cy);
-
-    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
-      if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
-    end;
-  end;
-end;
-
-
-{ Laggy }
-procedure sprPro2(
-  const image: PBitmap;
-  const x, y: integer;
-  const scaleX, scaleY:
-  double; angle: double;
-  const transparencyKey: byte);
-var
-  sw, sh, cx, cy: integer;
-  sa, ca: double;
-  ix, iy: integer; { offset from image centre }
-  srcX, srcY: integer;
-  hw, hh: integer;
-  colour: byte;
-begin
-  if image = nil then exit;
-
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
-
-  angle:=angle/180*pi;
-  sa:=sin(-angle); { inverse rotation }
-  ca:=cos(-angle);
-
-  hw:=trunc(sw*scaleX*abs(ca) + sh*scaleY*abs(sa));
-  hh:=trunc(sw*scaleX*abs(sa) + sh*scaleY*abs(ca));
-
-  { Debug bounding box }
-  {
-  pset(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
-  pset(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
-  }
-
-  { bounding box }
-  for iy:=-hh to hh do
-  for ix:=-hw to hw do begin
-    { scaling, then inverse rotation }
-    srcX:=round((ix*ca - iy*sa) / scaleX + cx);
-    srcY:=round((ix*sa + iy*ca) / scaleY + cy);
-
-    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
-      if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
-    end;
-  end;
-end;
-
-{ Laggy despite with lookup tables }
-procedure sprProLUT(
-  const image: PBitmap;
-  const x, y: integer;
-  const scaleX, scaleY: double;
-  const angle10: integer;
-  const transparencyKey: byte);
-var
-  sw, sh, cx, cy: integer;
-  sa, ca: double;
-  ix, iy: integer; { offset from image centre }
-  srcX, srcY: integer;
-  hw, hh: integer;
-  angleI32: integer;
-  colour: byte;
-begin
-  if image = nil then exit;
-
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
-
-  { inverse rotation }
-  angleI32:=angle10 mod 36;
-  sa:=sinLUT[35-angleI32];
-  ca:=cosLUT[35-angleI32];
-
-  hw:=trunc(sw*scaleX*abs(ca) + sh*scaleY*abs(sa));
-  hh:=trunc(sw*scaleX*abs(sa) + sh*scaleY*abs(ca));
-
-  { bounding box }
-  for iy:=-hh to hh do
-  for ix:=-hw to hw do begin
-    { scaling, then inverse rotation }
-    srcX:=round((ix*ca - iy*sa) / scaleX + cx);
-    srcY:=round((ix*sa + iy*ca) / scaleY + cy);
-
-    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
-      if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
-    end;
-  end;
-end;
 
 procedure bitmapInfo(const image: PBitmap);
 begin
@@ -332,7 +391,7 @@ begin
   { print('File name:' + name, 10, 160, 15); }
   print('Width: ' + i32str(image^.width), 10, 168, 15);
   print('Height: ' + i32str(image^.height), 10, 176, 15);
-  print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+  { print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
 

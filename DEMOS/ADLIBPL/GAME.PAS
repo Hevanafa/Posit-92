@@ -10,12 +10,15 @@ var
   done: boolean;
   t: double;
   DosuEXE: array[0..1] of PBitmap;
-  sfxCoin: TSFX;
+  sfxCoin: TMelody;
   lastSpace: boolean;
+  odeToJoy: TMelody;
   { TODO: More of your game state here }
 
 
 procedure INIT;
+var
+  tempNote: TNote;
 begin
   initLogger;
   initVGAMode;
@@ -33,10 +36,11 @@ begin
   
   AdLibDrv.init;
   with sfxCoin do begin
-    count := 2;
+    noteCount := 3;
     instrument := 0;
     initNote(notes[0], NOTE_C, 5, 0.1, 127);
-    initNote(notes[1], NOTE_E, 5, 0.1, 127)
+    initNote(notes[1], NOTE_E, 5, 0.1, 127);
+    initNote(notes[2], NOTE_C, 5, 0.1, 127)
   end;
 end;
 
@@ -56,7 +60,7 @@ begin
   if lastSpace <> isKeyDown(SC_SPACE) then begin
     lastSpace := isKeyDown(SC_SPACE);
     if lastSpace then
-      AdLibDrv.playSFX(sfxCoin);
+      AdLibDrv.playMelody(@sfxCoin, 0);
   end;
   
   t:=t+dt
@@ -67,7 +71,7 @@ procedure draw;
 var
   a: integer;
 begin
-  cls($7D);
+  asmCls($7D);
 
   { TODO: Your drawing code here }
 
@@ -76,9 +80,10 @@ begin
   else
     spr(dosuEXE[1], 148, 76, 13);
 
-  print('Press Space to play chime', 160-48, 120, 15);
+  print('Press Space to play chime', 160-100, 120, 15);
+  { debugAdLib; }
   drawMouse;
-  flush
+  asmFlush
 end;
 
 

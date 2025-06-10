@@ -26,12 +26,21 @@ type
     duration: double;  { in seconds }
     velocity: byte  { 0..127 }
   end;
-  TSFX = record
+
+  PMelody = ^TMelody;
+  TMelody = record
     notes: array[0..15] of TNote;
-    count: byte;
+    noteCount: byte;
+    instrument: byte;
+  end;
+
+  { TSFX = record
+    notes: array[0..15] of TNote;
+    noteCount: byte;
     instrument: byte;
     priority: byte;
   end;
+  }
   TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
@@ -54,13 +63,12 @@ type
     procedure loadInstrument(const slot: byte; var instr: TInstrument);
     procedure selectInstrument(const channel, slot: byte);
     
-    { procedure startMelody; }
     { Playback }
     procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
     procedure stopNote(const channel: byte);
     
-    procedure playSFX(var sfx: TSFX);
-    procedure stopAllSFX;
+    procedure playMelody(const melody: PMelody; const channel: byte);
+    procedure stopAllChannels;
   end;
 
 var
@@ -70,22 +78,16 @@ procedure initNote(var result: TNote; const freq: word; const octave: byte; cons
 
 implementation
 
-uses crt, timing;
+uses CRT, Panic, Timing;
 
 type
-  PMelody = ^TMelody;
-  TMelody = record
-    notes: array[0..15] of TNote;
-    count: byte;
-  end;
-  
   TChannelState = record
     active: boolean;
+    melody: PMelody;
     noteIndex: byte;
-    endTime: double; { in seconds }
-    { melody: PMelody; }
-    isSFX: boolean;
-    sfx: TSFX;
+    noteEndTick: double; { in seconds }
+    { isSFX: boolean; }
+    { sfx: TSFX; }
     instrument: byte;
     volume: byte; { 0..127 }
   end;
@@ -103,11 +105,6 @@ var
   isInitialised: boolean;
   channels: array[0..MAX_CHANNELS-1] of TChannelState;
   instruments: array[0..MAX_INSTRUMENTS-1] of TInstrument;
-
-  currentNoteIndex: byte;
-  melodyEndTick: longint;
-  isPlaying: boolean;
-  activeMelody: TMelody;
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -203,7 +200,7 @@ begin
   end;
   
   { Set up carrier }
-  with instr.modulator do begin
+  with instr.carrier do begin
     AdLibWrite($20 + carOffset,
       (ord(tremolo) shl 7) or
       (ord(vibrato) shl 6) or
@@ -220,22 +217,6 @@ begin
   AdLibWrite($C0 + channel, (instr.feedback shl 1) or instr.algorithm)
 end;
 
-procedure setupInstruments;
-begin
-  adlibWrite($20, $01);  { tremolo off, vibrato off, sustain off, key scale off, mult = 1 }
-  adlibWrite($40, $10);   { total level = 16 }
-  adlibWrite($60, $F0);  { attack = F, decay = 0 }
-  adlibWrite($80, $77);  { sustain 7, release 7 }
-  adlibWrite($E0, $00);    { waveform select = 0 }
-
-  { Carrier (actual sound) -- operator 3 for channel 0 }
-  adlibWrite($23, $01);
-  adlibWrite($43, $00);
-  adlibWrite($63, $F0);
-  adlibWrite($83, $77);
-  adlibWrite($E3, $00);
-end;
-
 procedure TAdLib.loadInstrument(const slot: byte; var instr: TInstrument);
 begin
   if slot >= MAX_INSTRUMENTS then exit;
@@ -250,7 +231,7 @@ begin
 end;
 
 
-procedure TAdlib.init;
+procedure TAdLib.init;
 var
   a: integer;
 begin
@@ -263,15 +244,13 @@ begin
   for a := 0 to MAX_CHANNELS-1 do begin
     channels[a].active := false;
     channels[a].noteIndex := 0;
-    channels[a].endTime := 0;
-    { channels[a].melody := nil; }
-    channels[a].isSFX := false;
+    channels[a].noteEndTick := 0;
+    channels[a].melody := nil;
+    { channels[a].isSFX := false; }
     channels[a].instrument := 0;
     channels[a].volume := 127
   end;
 
-  { setupInstruments; }
-  
   initInstruments;
   loadInstrument(0, PianoInstrument);
   { Load more of your instruments here }
@@ -291,7 +270,7 @@ begin
 end;
 
 
-procedure TAdlib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+procedure TAdLib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
 var
   volume: byte;
 begin
@@ -320,80 +299,34 @@ end;
 
 { TODO: set volume }
 
-{procedure TAdlib.playMelody;
-begin}
-  { F-number base with block=4 (middle octave) }
-  {playNote($157, 4);
-  playNote($181, 4);
-  playNote($1ab, 4);
-end;}
 
-{ TODO: Update this considering the channels }
-procedure {TAdLib.}startMelody;
-begin
-  { C D E }
-  activeMelody.count := 3;
-  with activeMelody.notes[0] do begin
-    freq := $157; octave := 4; duration := 0.050;
-  end;
-  with activeMelody.notes[1] do begin
-    freq := $181; octave := 4; duration := 0.050;
-  end;
-  with activeMelody.notes[2] do begin
-    freq := $1AB; octave := 4; duration := 0.050;
-  end;
-
-  currentNoteIndex := 0;
-  isPlaying := true;
-  {
-    Disabled because it doesn't work with the
-    latest version, which uses seconds instead of
-    milliseconds
-  }
-  {
-  melodyEndTick := trunc(timer) + (activeMelody.notes[0].durationMS div 55);
-  playNote(activeMelody.notes[0].freq, activeMelody.notes[0].octave)
-  }
-end;
-
-
-procedure TAdLib.playSFX(var sfx: TSFX);
+procedure TAdLib.playMelody(const melody: PMelody; const channel: byte);
 var
-  channel: byte;
   found: boolean;
 begin
-  { Find an available channel }
-  found := false;
-  { This can be changed to use the last 3 channels }
-  for channel := 0 to 2 do begin
-    if not channels[channel].active then begin
-      found := true;
-      break
-    end;
-  end;
-  
-  if not found then exit;
-  
   stopNote(channel);
+
+  if melody = nil then panicHalt('TAdLib.playMelody: Attempting to play a nil melody!');
   
-  channels[channel].isSFX := true;
-  channels[channel].sfx := sfx;
-  channels[channel].noteIndex := 0;
+  { channels[channel].isSFX := true; }
+  { channels[channel].sfx := sfx; }
   channels[channel].active := true;
-  channels[channel].instrument := sfx.instrument;
-  channels[channel].endTime := getTimer + sfx.notes[0].duration;
-  
-  setupInstrument(channel, instruments[sfx.instrument]);
-  playNote(channel, sfx.notes[0].freq, sfx.notes[0].octave, sfx.notes[0].velocity)
+  channels[channel].melody := melody;
+  channels[channel].noteIndex := 0;
+  channels[channel].noteEndTick := getTimer + melody^.notes[0].duration;
+  channels[channel].instrument := melody^.instrument;
+
+  setupInstrument(channel, instruments[melody^.instrument]);
+  playNote(channel, melody^.notes[0].freq, melody^.notes[0].octave, melody^.notes[0].velocity)
 end;
 
 
-procedure TAdLib.stopAllSFX;
+procedure TAdLib.stopAllChannels;
 var
   a: integer;
 begin
-  for a:=0 to 2 do
-    if channels[a].isSFX then stopNote(a);
+  for a:=0 to MAX_CHANNELS - 1 do
+    stopNote(a);
 end;
 
 
@@ -409,27 +342,25 @@ begin
   for a:=0 to MAX_CHANNELS-1 do begin
     if not channels[a].active then continue;
     
-    if now >= channels[a].endTime then begin
+    if now >= channels[a].noteEndTick then begin
       stopNote(a);
       inc(channels[a].noteIndex);
       
-      if channels[a].isSFX then begin
-        if channels[a].noteIndex >= channels[a].sfx.count then begin
-          channels[a].active := false;
-          continue
-        end;
-        
-        with channels[a].sfx.notes[channels[a].noteIndex] do begin
-          playNote(a, freq, octave, velocity);
-          channels[a].endTime := now + duration
-        end;
+      if channels[a].noteIndex >= channels[a].melody^.noteCount then begin
+        channels[a].active := false;
+        continue
+      end;
+      
+      with channels[a].melody^.notes[channels[a].noteIndex] do begin
+        playNote(a, freq, octave, velocity);
+        channels[a].noteEndTick := now + duration
       end;
     end;
   end;
 end;
 
 
-procedure TAdlib.shutdown;
+procedure TAdLib.shutdown;
 var
   a: byte;
 begin
