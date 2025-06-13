@@ -11,6 +11,7 @@ procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure hline(x0, x1, y: integer; const colour: byte);
+procedure asmHline(x0, x1, y: integer; const colour: byte);
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
@@ -157,6 +158,40 @@ begin
 
   for x := x0 to x1 do
     asmPset(x, y, colour);
+end;
+
+procedure asmHline(x0, x1, y: integer; const colour: byte);
+var
+  x: integer;
+begin
+  if y < 0 then exit;
+  if y >= 200 then exit;
+
+  if x1 < x0 then begin
+    x := x0; x0 := x1; x1 := x
+  end;
+
+  for x := x0 to x1 do
+asm
+  { Bounds check }
+  cmp x, 0
+  jl @skip
+  cmp x, 320
+  jge @skip
+
+  { Calculate offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip:
+end;
 end;
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
