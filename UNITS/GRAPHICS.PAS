@@ -171,13 +171,18 @@ begin
     x := x0; x0 := x1; x1 := x
   end;
 
-  for x := x0 to x1 do
+  
 asm
+  { for x := x0 to x1 }
+  mov ax, x0
+  mov x, ax
+
+@loop_begin:
   { Bounds check }
   cmp x, 0
-  jl @skip
+  jl @loop_end
   cmp x, 320
-  jge @skip
+  jge @done
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -190,7 +195,14 @@ asm
   mov al, colour
   mov es:[di+bx], al
 
-@skip:
+@loop_end:
+  inc x
+  mov ax, x1
+  cmp x, ax
+  jg @done
+  jmp @loop_begin
+
+@done:
 end;
 end;
 
