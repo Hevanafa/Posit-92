@@ -12,6 +12,7 @@ type
 
 procedure loadBMP(var output: PBitmap; const filename: string);
 procedure drawBMP(const image: PBitmap);
+procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
 procedure freeBMP(var image: PBitmap);
 
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -112,6 +113,107 @@ begin
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
     asmPset(a, b, image^.data[a + b * image^.width]);
+end;
+
+procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
+var
+  srcX, srcY, imgWidth, imgHeight: word;
+  destX, destY: integer;
+  colour: byte;
+  imageDataPtr: pointer; { Cache the data pointer }
+begin
+  destX := x;
+  destY := y;
+  imgWidth := image^.width;
+  imgHeight := image^.height;
+  colour := 0;
+
+asm
+  les di, [image]
+
+  { Check if image is nil }
+  mov ax, es
+  or ax, di
+  je @skip
+
+  add di, 6
+  mov word ptr imageDataPtr, di   { store offset }
+  mov word ptr imageDataPtr+2, es { store segment }
+
+  mov srcY, 0  { init row counter }
+
+@row_start:
+  mov ax, imgHeight
+  cmp srcY, ax
+  jge @row_end
+
+  mov srcX, 0  { init col counter }
+
+@col_start:
+  mov ax, imgWidth
+  cmp srcX, ax
+  jge @col_end
+
+  { Get pixel }
+  { Obtain the `data` offset }
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+
+  les di, imageDataPtr
+  add di, ax
+
+  mov al, es:[di]
+  mov colour, al
+
+  { asmPset }
+  { Check bounds }
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @skip_draw
+  cmp ax, 200
+  jge @skip_draw
+
+  mov ax, destX
+  add ax, srcX
+  cmp ax, 0
+  jl @skip_draw
+  cmp ax, 320
+  jge @skip_draw
+
+  { Screen dest }
+  mov bx, destY
+  add bx, srcY
+  mov cx, 320
+  mov ax, bx
+  mul cx
+
+  add ax, destX
+  add ax, srcX
+  mov bx, ax
+
+  { PSET }
+  push es
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+  pop es
+
+
+@skip_draw:
+  inc srcX
+  jmp @col_start
+
+@col_end:
+  inc srcY
+  jmp @row_start
+
+@row_end:
+@skip:
+end;
+
 end;
 
 procedure freeBMP(var image: PBitmap);
