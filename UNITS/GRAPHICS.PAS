@@ -164,15 +164,23 @@ procedure asmHline(x0, x1, y: integer; const colour: byte);
 var
   x: integer;
 begin
-  if y < 0 then exit;
-  if y >= 200 then exit;
-
-  if x1 < x0 then begin
-    x := x0; x0 := x1; x1 := x
-  end;
-
-  
 asm
+  cmp y, 0
+  jl @done
+  cmp y, 200
+  jge @done
+
+  { Swap if x1 < x0 }
+  mov ax, x0
+  cmp x1, ax
+  jge @skip_swap
+
+  mov bx, x1
+  mov x0, bx
+  mov x1, ax
+
+@skip_swap:
+
   { for x := x0 to x1 }
   mov ax, x0
   mov x, ax
