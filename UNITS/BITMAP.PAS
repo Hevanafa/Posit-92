@@ -197,7 +197,7 @@ asm
 
   { Check if transparent }
   mov al, es:[di]
-  cmp al, 13
+  cmp al, transKey
   je @skip_draw
 
   mov colour, al
