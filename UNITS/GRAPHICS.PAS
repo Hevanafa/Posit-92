@@ -6,6 +6,7 @@ interface
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
+procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure hline(x0, x1, y: integer; const colour: byte);
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
@@ -76,6 +77,40 @@ begin
   end;
 end;
 
+procedure circfillDither(const cx, cy, radius: integer; const colour: byte);
+var
+  x, y, p: integer;
+  a: integer;
+begin
+  x := 0;
+  y := radius;
+  p := 3 - 2 * radius;
+
+  while x <= y do begin
+    for a:=cx-x to cx+x do begin
+      if ((a + cy + y) and 1) = 1 then
+        asmPset(a, cy + y, colour);
+
+      if ((a + cy - y) and 1) = 1 then
+        asmPset(a, cy - y, colour);
+    end;
+    for a:=cx-y to cx+y do begin
+      if ((a + cy + x) and 1) = 1 then
+        asmPset(a, cy + x, colour);
+      if ((a + cy - x) and 1) = 1 then
+        asmPset(a, cy - x, colour);
+    end;
+
+    if p < 0 then
+      p := p+4 * x+6
+    else begin
+      p := p+4 * (x-y)+10;
+      dec(y)
+    end;
+
+    inc(x)
+  end;
+end;
 
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 var
