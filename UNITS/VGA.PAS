@@ -15,8 +15,9 @@ procedure loadFont;
 procedure cls(const colour: byte);
 procedure asmCls(const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure asmPset(const x, y: word; const colour: byte);
+procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
 procedure pset(const x, y: word; const colour: byte);
+procedure asmPset(const x, y: word; const colour: byte);
 procedure asmFlush;
 procedure initBuffer;
 procedure freeBuffer;
@@ -101,6 +102,62 @@ begin
   end;
 end;
 
+
+procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+var
+  row, col, idx: integer;
+  offset: integer;
+  
+  mask: byte;
+  ch: char;
+begin
+  for idx := 1 to length(text) do begin
+    ch := text[idx];
+
+    for row := 0 to 7 do begin
+      mask := font8x8[ord(ch), row];
+      
+      for col := 0 to 7 do
+        if (mask and (1 shl (7 - col))) <> 0 then
+asm
+{ asmPset }
+  cmp x, 0
+  jl @skip_pixel
+  cmp x, 320
+  jge @skip_pixel
+  cmp y, 0
+  jl @skip_pixel
+  cmp y, 200
+  jge @skip_pixel
+
+  { Calculate pixel offset }
+  { y + row }
+  mov ax, y
+  add ax, row
+  mov bx, 320
+  mul bx
+  mov cx, ax
+
+  { (idx-1) * 8 + x + col }
+  xor ax, ax  { does the same as `mov ax, 0` }
+  add ax, idx
+  dec ax
+  mov bx, 8
+  mul bx
+  add ax, x
+  add ax, col
+  add ax, cx
+
+  mov bx, ax
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_pixel:
+end;
+    end;
+  end;
+end;
 
 procedure pset(const x, y: word; const colour: byte);
 begin
