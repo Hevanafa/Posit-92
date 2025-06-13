@@ -160,10 +160,9 @@ begin
     asmPset(x, y, colour);
 end;
 
-procedure asmHline(x0, x1, y: integer; const colour: byte);
+procedure asmHline(const x0, x1, y: integer; const colour: byte); assembler;
 var
   x: integer;
-begin
 asm
   cmp y, 0
   jl @done
@@ -211,7 +210,6 @@ asm
   jmp @loop_begin
 
 @done:
-end;
 end;
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
