@@ -250,7 +250,7 @@ end;
 
 procedure asmRectfill(x0, y0, x1, y1: integer; const colour: byte);
 var
-  b, temp: integer;
+  a, b, temp: integer;
 begin
   if x0 > x1 then begin
     temp := x0; x0 := x1; x1 := temp
@@ -258,8 +258,46 @@ begin
   if y0 > y1 then begin
     temp := y0; y0 := y1; y1 := temp
   end;
+  
   for b:=y0 to y1 do
-    asmHline(x0, x1, b, colour);
+asm
+  { asmHline }
+  cmp b, 0
+  jl @done
+  cmp b, 200
+  jge @done
+
+  { for a := x0 to x1 }
+  mov ax, x0
+  mov a, ax
+
+@a_loop_begin:
+  { Bounds check }
+  cmp a, 0
+  jl @loop_end
+  cmp a, 320
+  jge @done
+
+  { Calculate offset: y * 320 + x }
+  mov ax, b
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, a
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@a_loop_end:
+  inc a
+  mov ax, x1
+  cmp a, ax
+  jg @done
+  jmp @a_loop_begin
+
+@done:
+end;
 end;
 
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
