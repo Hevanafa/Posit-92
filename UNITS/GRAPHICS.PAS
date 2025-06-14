@@ -251,55 +251,72 @@ begin
     hline(x0, x1, b, colour);
 end;
 
-procedure asmRectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
 var
-  a, b, temp: integer;
+  x, y, startY, endY: integer;
 begin
-  if x0 > x1 then begin
-    temp := x0; x0 := x1; x1 := temp
-  end;
   if y0 > y1 then begin
-    temp := y0; y0 := y1; y1 := temp
+    startY := y1; endY := y0
+  end else begin
+    startY := y0; endY := y1
   end;
-  
-  for b:=y0 to y1 do
+
 asm
-  { asmHline }
-  cmp b, 0
-  jl @done
-  cmp b, 200
-  jge @done
+@y_init:
+  { for (y = y0; y <= y1; y++) }
+  mov ax, startY
+  mov y, ax
 
-  { for a := x0 to x1 }
+@y_condition:
+  mov ax, y
+  cmp ax, endY
+  jg @y_done
+
+@y_loop:
+  cmp y, 0
+  jl @y_next
+  cmp y, 200
+  jge @y_done
+
+  { for (x = x0; x <= x1; x++) }
+@x_init:
   mov ax, x0
-  mov a, ax
+  mov x, ax
 
-@a_loop_begin:
+@x_condition:
+  mov ax, x1
+  cmp x, ax
+  jg @x_done
+
+@x_loop:
   { Bounds check }
-  cmp a, 0
-  jl @loop_end
-  cmp a, 320
-  jge @done
+  cmp x, 0
+  jl @x_next
+  cmp x, 320
+  jge @x_done
 
   { Calculate offset: y * 320 + x }
-  mov ax, b
+  mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
-  add ax, a
+  add ax, x
   mov bx, ax
 
   les di, surface
   mov al, colour
   mov es:[di+bx], al
 
-@a_loop_end:
-  inc a
-  mov ax, x1
-  cmp a, ax
-  jg @done
-  jmp @a_loop_begin
+@x_next:
+  inc x
+  jmp @x_condition
 
-@done:
+@x_done:
+
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
 end;
 end;
 
