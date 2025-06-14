@@ -181,14 +181,20 @@ asm
 
 @skip_swap:
 
-  { for x := x0 to x1 }
+  { for (x = x0; x <= x1; x++) }
+@x_init:
   mov ax, x0
   mov x, ax
 
-@loop_begin:
+@x_condition:
+  mov ax, x1
+  cmp x, ax
+  jg @done
+
+@x_loop:
   { Bounds check }
   cmp x, 0
-  jl @loop_end
+  jl @x_next
   cmp x, 320
   jge @done
 
@@ -203,12 +209,9 @@ asm
   mov al, colour
   mov es:[di+bx], al
 
-@loop_end:
+@x_next:
   inc x
-  mov ax, x1
-  cmp x, ax
-  jg @done
-  jmp @loop_begin
+  jmp @x_cond
 
 @done:
 end;
