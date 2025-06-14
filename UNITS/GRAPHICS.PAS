@@ -253,12 +253,20 @@ end;
 
 procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
 var
-  x, y, startY, endY: integer;
+  x, y,
+  startX, endX,
+  startY, endY: integer;
 begin
   if y0 > y1 then begin
     startY := y1; endY := y0
   end else begin
     startY := y0; endY := y1
+  end;
+
+  if x0 > x1 then begin
+    startX := x1; endX := x0
+  end else begin
+    startX := x0; endX := x1
   end;
 
 asm
@@ -280,11 +288,11 @@ asm
 
   { for (x = x0; x <= x1; x++) }
 @x_init:
-  mov ax, x0
+  mov ax, startX
   mov x, ax
 
 @x_condition:
-  mov ax, x1
+  mov ax, endX
   cmp x, ax
   jg @x_done
 
