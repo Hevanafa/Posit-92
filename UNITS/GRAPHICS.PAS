@@ -15,6 +15,7 @@ procedure asmHline(x0, x1, y: integer; const colour: byte);
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure asmRectfill(x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -244,8 +245,21 @@ begin
     temp := y0; y0 := y1; y1 := temp
   end;
   for b:=y0 to y1 do
-    for a:=x0 to x1 do
-      asmPset(a, b, colour);
+    hline(x0, x1, b, colour);
+end;
+
+procedure asmRectfill(x0, y0, x1, y1: integer; const colour: byte);
+var
+  b, temp: integer;
+begin
+  if x0 > x1 then begin
+    temp := x0; x0 := x1; x1 := temp
+  end;
+  if y0 > y1 then begin
+    temp := y0; y0 := y1; y1 := temp
+  end;
+  for b:=y0 to y1 do
+    asmHline(x0, x1, b, colour);
 end;
 
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
