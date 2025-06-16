@@ -122,6 +122,10 @@ end;
 
 
 procedure parseFNT(const filename: string);
+var
+  charCount: word;
+  bytesPerChar: longInt;
+  totalBitmapSize: longInt;
 begin
   writeLn('Attempting to parse ' + filename + '...');
 
@@ -151,20 +155,14 @@ begin
   writeLn('Bitmap pointer: ', fontDir.bitsPointer);
   writeLn('Bitmap offset: ', fontDir.bitsOffset);
 
+  { Only applicable for monospaced fonts }
+  charCount := fontDir.lastChar - fontDir.firstChar + 1;
+  bytesPerChar := ((fontDir.pixWidth + 7) div 8) * fontDir.pixHeight;
+  totalBitmapSize := charCount * bytesPerChar;
 
+  writeLn('Bytes per char: ', bytesPerChar);
+  writeLn('Total bitmap size: ', totalBitmapSize);
 
-  { seek(fonFile, NEOffset + 36); }  { NEHdr.ne_rsrctab }
-  { blockRead(fonFile, rsrcOffset, 2); }
-
-  {
-  inc(rsrcOffset, NEOffset);
-  writeLn('rsrctab: ', rsrcOffset);
-  }
-  {
-  seek(fonFile, rsrcOffset + 16);
-  blockRead(fonFile, version, 2);
-  writeLn('Version: ', version);
-  }
   close(fntFile)
 end;
 
