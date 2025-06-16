@@ -166,9 +166,55 @@ begin
   close(fntFile)
 end;
 
+{ TODO: Improve the output }
+procedure extractChar(const filename: string; const ch: char);
+var
+  charIndex: byte;
+  bytesPerChar: word;
+  charOffset: longInt;
+  bitmapData: array[0..255] of byte;
+  currentByte, bitMask: byte;
+  a, b, byteIndex: word;
+begin
+  assign(fntFile, filename);
+  {$I-} reset(fntFile, 1); {$I+}
+  if IOResult <> 0 then exit;
 
+  bytesPerChar := ((fontDir.pixWidth + 7) div 8) * fontDir.pixHeight;
+  writeLn('Bytes per char: ', bytesPerChar);
+
+  charIndex := ord(ch);
+  charOffset := fontDir.bitsOffset + (charIndex - fontDir.firstChar) * bytesPerChar;
+  writeLn('Char offset: ', charOffset, ' (from ', fontDir.bitsOffset, ')');
+
+  seek(fntFile, charOffset);
+  blockRead(fntFile, bitmapData, bytesPerChar);
+
+  { Display }
+  byteIndex := 0;
+  for b:=0 to fontDir.pixHeight - 1 do begin
+    for a:=0 to fontDir.pixWidth - 1 do begin
+      if (a mod 8) = 0 then begin
+        currentByte := bitmapData[byteIndex];
+        inc(byteIndex)
+      end;
+
+      bitMask := $80 shr (a mod 8);
+      if (currentByte and bitMask) <> 0 then
+        write('#')
+      else
+        write('.');
+    end;
+    writeLn
+  end;
+  writeLn;
+
+  close(fntFile)
+end;
 
 begin
   parseFNT('8514OEM.FNT');
+  extractChar('8514OEM.FNT', 'A');
+
   readLn
 end.
