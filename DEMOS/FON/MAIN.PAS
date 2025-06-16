@@ -34,26 +34,26 @@ type
     avgWidth, maxWidth: word;
     firstChar, lastChar, defaultChar, breakChar: byte;
     widthBytes: word;  { This is always even ?? }
-    device, face: longInt;
+    device, face: longInt;  { the absolute location in the file }
     bitsPointer, bitsOffset: longInt;
     reserved: byte;
-    flags: longInt;
-    { deviceName, faceName: array[0..0] of char; }
   end;
 
 var
-  FONFile: File;
+  FONFile, FNTFile: File;
   NEHdr: TNEHeader;
   NEOffset, rsrcOffset: integer;
   version: word;
   fontDir: TFontDirEntry;
+  buffer: array[1..16] of char;
+  faceName: string;
 
 function CStrPas(const cstr: array of char): string;
 var
   a: word;
   result: string;
 begin
-  a := 0;
+  a := low(cstr);
   result := '';
 
   while a < 255 do begin
@@ -106,7 +106,6 @@ begin
   writeLn('Bitmap offset: ', fontDir.bitsOffset);
 
 
-
   { seek(fonFile, NEOffset + 36); }  { NEHdr.ne_rsrctab }
   { blockRead(fonFile, rsrcOffset, 2); }
 
@@ -122,7 +121,56 @@ begin
 end;
 
 
+procedure parseFNT(const filename: string);
 begin
-  parseFON('8514OEM.FON');
+  writeLn('Attempting to parse ' + filename + '...');
+
+  assign(fntFile, filename);
+  {$I-} reset(fntFile, 1); {$I+}
+  if IOResult <> 0 then begin
+    writeLn('parseFNT: Cannot open file ', filename);
+    exit
+  end;
+
+  { Read the font dir entry }
+  blockRead(fntFile, fontDir, sizeof(TFontDirEntry));
+
+  seek(fntFile, fontDir.face);
+  blockRead(fntFile, buffer, 8);
+  faceName := CStrPas(buffer);
+
+  writeLn('Version: ', fontDir.version);
+  writeLn('Width: ', fontDir.pixWidth, ', Height: ', fontDir.pixHeight);
+  writeLn(fontDir.firstChar, '..', fontDir.lastChar);
+  writeLn(chr(fontDir.firstChar) + ' - ' + chr(fontDir.lastChar));
+  writeLn('Bytes per row: ', fontDir.widthBytes);
+  writeLn('Face name offset: ', fontDir.face);
+  writeLn('Face name: "', faceName, '"');
+  writeLn('Copyright string: "', CStrPas(fontDir.copyright), '"');
+
+  writeLn('Bitmap pointer: ', fontDir.bitsPointer);
+  writeLn('Bitmap offset: ', fontDir.bitsOffset);
+
+
+
+  { seek(fonFile, NEOffset + 36); }  { NEHdr.ne_rsrctab }
+  { blockRead(fonFile, rsrcOffset, 2); }
+
+  {
+  inc(rsrcOffset, NEOffset);
+  writeLn('rsrctab: ', rsrcOffset);
+  }
+  {
+  seek(fonFile, rsrcOffset + 16);
+  blockRead(fonFile, version, 2);
+  writeLn('Version: ', version);
+  }
+  close(fntFile)
+end;
+
+
+
+begin
+  parseFNT('8514OEM.FNT');
   readLn
 end.
