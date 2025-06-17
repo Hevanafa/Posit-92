@@ -7,7 +7,8 @@ function max(const a, b: double): double;
 function deg2rad(const deg: double): double;
 function rad2deg(const rad: double): double;
 function i32power(const i, exp: longint): longint;
-
+function floor(const value: double): integer;
+function ceil(const value: double): integer;
 
 implementation
 
@@ -45,6 +46,19 @@ begin
   for a := 2 to exp do
     result := result * i;
   i32power := result
+end;
+
+function floor(const value: double): integer;
+begin
+  floor := trunc(value)
+end;
+
+function ceil(const value: double): integer;
+begin
+  if trunc(value) = value then
+    ceil := trunc(value)
+  else
+    ceil := trunc(value + 1);
 end;
 
 end.
