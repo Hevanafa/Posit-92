@@ -179,7 +179,6 @@ procedure extractChar(const filename: string; const ch: char);
 var
   charIndex: byte;
   bytesPerChar: word;
-  bytesPerRow: word;
   charOffset: longInt;
   bitmapData: array[0..255] of byte;
   currentByte, bitMask: byte;
@@ -194,33 +193,22 @@ begin
 
   charIndex := ord(ch);
   charOffset := fontDir.bitsOffset + (charIndex - fontDir.firstChar) * bytesPerChar;
-  writeLn('Char offset: ', charOffset, ' (from ', fontDir.bitsOffset, ')');
+  { writeLn('Char offset: ', charOffset, ' (from ', fontDir.bitsOffset, ')'); }
+  writeLn('Offsets: ', charOffset, ', ', charOffset + fontDir.pixHeight);
 
   seek(fntFile, charOffset);
   blockRead(fntFile, bitmapData, bytesPerChar);
 
   { Display }
   byteIndex := 0;
-  bytesPerRow := ceil(fontDir.pixWidth / 8);
+
   for b:=0 to fontDir.pixHeight - 1 do begin
-    {
-    byteIndex := b;
-    write('+', byteIndex, ': ');
-    }
+    for a:=0 to fontDir.pixWidth - 1 do begin
+      currentByte := bitmapData[
+        b +
+        fontDir.pixHeight * (a div 8)];
 
-    { for a:=0 to fontDir.pixWidth - 1 do begin }
-    for a:=0 to 7 do begin
-      currentByte := bitmapData[b + a div 8];
-
-      {
-      if (a mod 8) = 0 then begin
-        currentByte := bitmapData[byteIndex];
-        inc(byteIndex)
-      end;
-      }
-
-      { bitMask := $80 shr (a mod 8); }
-      bitMask := 1 shl (7 - a);
+      bitMask := 1 shl (7 - (a mod 8));
       if (currentByte and bitMask) <> 0 then
         write('#')
       else
@@ -235,7 +223,7 @@ end;
 
 begin
   parseFNT('8514OEM.FNT');
-  extractChar('8514OEM.FNT', 'B');
+  extractChar('8514OEM.FNT', 'Z');
 
   readLn
 end.
