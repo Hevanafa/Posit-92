@@ -182,7 +182,7 @@ var
   charIndex: byte;
   widthTable: array[0..255] of word;
   charWidth: word;
-  charOffset: longInt;
+  charOffset: word;
   bitmapData: array[0..255] of byte;
   currentByte, bitMask: byte;
   a, b, byteIndex, skip: word;
@@ -199,13 +199,20 @@ begin
   for a:=0 to high(widthTable) do
     widthTable[a] := 0;
 
+
+  { Read all char data }
+  {
   seek(fntFile, sizeof(TFNTHeader));
   writeLn('Seeking to ', sizeof(TFNTHeader));
   for a:=fntHeader.firstChar to fntHeader.lastChar do begin
-    { seek(fntFile, sizeof(TFNTHeader) + a * 4); }
     blockRead(fntFile, widthTable[a], 2);
-    blockRead(fntFile, skip, 2) { this is supposed to be where the bitmap is }
-  end;
+  }
+    { blockRead(fntFile, skip, 2) } { this is supposed to be where the bitmap is }
+  { end; }
+
+  seek(fntFile, sizeof(TFNTHeader) + (ord(ch) - fntHeader.firstChar + 2) * 4);
+  blockRead(fntFile, charWidth, 2);
+  blockRead(fntFile, charOffset, 2);
 
   { Print the first 20 character widths }
   {
@@ -214,10 +221,27 @@ begin
   }
 
   charIndex := ord(ch);
-  charWidth := widthTable[charIndex];
-  writeLn('Ch size: ', charWidth, 'x', fntHeader.pixHeight);
+  { charWidth := widthTable[charIndex]; }
+  writeLn('Ch size: ', charWidth, 'x', fntHeader.pixHeight, ' (Offset:', charOffset, ')');
+
+  seek(fntFile, charOffset);
+  blockRead(fntFile, bitmapData, ceil(charWidth / 8) * fntHeader.pixHeight);
 
   { TODO: Display the character }
+  for b:=0 to fntHeader.pixHeight-1 do begin
+    for a:=0 to charWidth-1 do begin
+      if a>=8 then break;
+
+      currentByte := bitmapData[b + a div 8];
+      bitMask := 1 shl (7 - a);
+      if (currentByte and bitMask) <> 0 then
+        write('#')
+      else
+        write('.');
+    end;
+    writeLn
+  end;
+  writeLn;
 
   close(fntFile)
 end;
@@ -234,7 +258,7 @@ begin
 }
   parseFNT('HVGASYS.FNT');
   { extractChar('HVGASYS.FNT', 'Z'); }
-  extractProportionalChar('HVGASYS.FNT', 'C');
+  extractProportionalChar('HVGASYS.FNT', 'A');
 
   readLn
 end.
