@@ -1,6 +1,5 @@
 {
-  This unit file can't be compiled yet
-	Requires the knowledge from FNT
+  Requires the knowledge from FNT
 }
 
 type
@@ -89,6 +88,24 @@ var
   NEOffset, rsrcOffset: integer;
   FNTHeader: TFNTHeader;
 
+function CStrPas(const cstr: array of char): string;
+var
+  a: word;
+  result: string;
+begin
+  a := low(cstr);
+  result := '';
+
+  while a < 255 do begin
+    if cstr[a] = #0 then break;
+    result := result + cstr[a];
+    inc(a)
+  end;
+
+  CStrPas := result
+end;
+
+
 procedure parseFON(const filename: string);
 begin
   writeLn('Attempting to parse ' + filename + '...');
@@ -114,46 +131,33 @@ begin
   seek(fonFile, NEOffset);
   blockRead(fonFile, NEHeader, sizeof(TNEHeader));
 
-  seek(fonFile, NEOffset);
-  blockRead(fonFile, NEHeader, sizeOf(TNEHeader));
-
-  writeLn('Magic: ', NEHeader.magic);
+  { writeLn('Magic: ', NEHeader.magic); }
   writeLn('Resource table offset:', NEOffset + NEHeader.rsrctab);
 
   rsrcOffset := NEOffset + NEHeader.rsrctab;
   seek(fonFile, rsrcOffset);
 
-  { Read the font dir entry }
-  seek(fonFile, 340);
-  blockRead(fonFile, fntHeader, sizeof(TFontDirEntry));
+  { TODO: Read the font dir entry }
+  writeLn('--- Begin reading the FNT header ---');
+  { seek(fonFile, 340); }
+  seek(fonFile, 464);
+  blockRead(fonFile, fntHeader, sizeof(TFNTHeader));
 
-  writeLn('Version: ', fontDir.version);
-  writeLn('Width: ', fontDir.pixWidth, ', Height: ', fontDir.pixHeight);
-  writeLn(fontDir.firstChar, '..', fontDir.lastChar);
-  writeLn(chr(fontDir.firstChar) + ' - ' + chr(fontDir.lastChar));
-  writeLn('Bytes per row: ', fontDir.widthBytes);
-  writeLn('Face name offset: ', fontDir.face);
+  writeLn('Version: ', fntHeader.version);
+  writeLn('Width: ', fntHeader.pixWidth, ', Height: ', fntHeader.pixHeight);
+  writeLn(fntHeader.firstChar, '..', fntHeader.lastChar);
+  writeLn(chr(fntHeader.firstChar) + ' - ' + chr(fntHeader.lastChar));
+  writeLn('Bytes per row: ', fntHeader.widthBytes);
+  writeLn('Face name offset: ', fntHeader.face);
 
-  writeLn('Copyright string: "', CStrPas(fontDir.copyright), '"');
+  writeLn('Copyright string: "', CStrPas(fntHeader.copyright), '"');
 
-  writeLn('Bitmap pointer: ', fontDir.bitsPointer);
-  writeLn('Bitmap offset: ', fontDir.bitsOffset);
-
-
-  { seek(fonFile, NEOffset + 36); }  { NEHdr.ne_rsrctab }
-  { blockRead(fonFile, rsrcOffset, 2); }
-
-  {
-  inc(rsrcOffset, NEOffset);
-  writeLn('rsrctab: ', rsrcOffset);
-  }
-  {
-  seek(fonFile, rsrcOffset + 16);
-  blockRead(fonFile, version, 2);
-  writeLn('Version: ', version);
-  }
+  writeLn('Bitmap pointer: ', fntHeader.bitsPointer);
+  writeLn('Bitmap offset: ', fntHeader.bitsOffset);
 end;
 
 begin
+  parseFON('8514OEM.FON');
 
+  readLn
 end.
