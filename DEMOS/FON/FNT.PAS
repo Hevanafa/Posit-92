@@ -227,13 +227,11 @@ begin
   seek(fntFile, charOffset);
   blockRead(fntFile, bitmapData, ceil(charWidth / 8) * fntHeader.pixHeight);
 
-  { TODO: Display the character }
+  { Display the character }
   for b:=0 to fntHeader.pixHeight-1 do begin
     for a:=0 to charWidth-1 do begin
-      if a>=8 then break;
-
-      currentByte := bitmapData[b + a div 8];
-      bitMask := 1 shl (7 - a);
+      currentByte := bitmapData[b + fntHeader.pixHeight * (a div 8)];
+      bitMask := 1 shl (7 - (a mod 8));
       if (currentByte and bitMask) <> 0 then
         write('#')
       else
