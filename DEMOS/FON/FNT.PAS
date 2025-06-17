@@ -1,24 +1,6 @@
 
 type
-  TNEHeader = record
-    magic, ver, rev, enttab,
-    cbenttab: word;
-    crc: longInt;
-
-    flags, autodata, heap, stack: word;
-
-    csip, sssp: longInt;
-
-    cseg, cmod, cbnrestab, segtab,
-    rsrctab, restab, modtab, imptab: word;
-
-    nrestab: longInt;
-
-    cmovent, align, cres: word;
-    exetype, flagsOthers: byte;
-  end;
-
-  TFontDirEntry = record
+  TFNTHeader = record
     version: word;
     size: longInt;
     copyright: array[0..59] of char;
@@ -40,11 +22,9 @@ type
   end;
 
 var
-  FONFile, FNTFile: File;
-  NEHdr: TNEHeader;
-  NEOffset, rsrcOffset: integer;
+  FNTFile: File;
   version: word;
-  fontDir: TFontDirEntry;
+  FNTHeader: TFNTHeader;
   buffer: array[1..16] of char;
   faceName: string;
 
@@ -65,61 +45,6 @@ begin
   CStrPas := result
 end;
 
-procedure parseFON(const filename: string);
-begin
-  writeLn('Attempting to parse ' + filename + '...');
-
-  assign(fonFile, filename);
-  {$I-} reset(fonFile, 1); {$I+}
-  if IOResult <> 0 then begin
-    writeLn('parseFON: Cannot open file ', filename);
-    exit
-  end;
-
-  seek(fonFile, 60);
-  blockRead(fonFile, NEOffset, 2);  { DOSHdr.e_lfanew, new EXE offset }
-  writeLn('NEOffset: ', NEOffset);
-
-  seek(fonFile, NEOffset);
-  blockRead(fonFile, NEHdr, sizeOf(TNEHeader));
-
-  writeLn('Magic: ', NEHdr.magic);
-  writeLn('Resource table offset:', NEOffset + NEHdr.rsrctab);
-
-  rsrcOffset := NEOffset + NEHdr.rsrctab;
-  seek(fonFile, rsrcOffset);
-
-  { Read the font dir entry }
-  seek(fonFile, 340);
-  blockRead(fonFile, fontDir, sizeof(TFontDirEntry));
-
-  writeLn('Version: ', fontDir.version);
-  writeLn('Width: ', fontDir.pixWidth, ', Height: ', fontDir.pixHeight);
-  writeLn(fontDir.firstChar, '..', fontDir.lastChar);
-  writeLn(chr(fontDir.firstChar) + ' - ' + chr(fontDir.lastChar));
-  writeLn('Bytes per row: ', fontDir.widthBytes);
-  writeLn('Face name offset: ', fontDir.face);
-
-  writeLn('Copyright string: "', CStrPas(fontDir.copyright), '"');
-
-  writeLn('Bitmap pointer: ', fontDir.bitsPointer);
-  writeLn('Bitmap offset: ', fontDir.bitsOffset);
-
-
-  { seek(fonFile, NEOffset + 36); }  { NEHdr.ne_rsrctab }
-  { blockRead(fonFile, rsrcOffset, 2); }
-
-  {
-  inc(rsrcOffset, NEOffset);
-  writeLn('rsrctab: ', rsrcOffset);
-  }
-  {
-  seek(fonFile, rsrcOffset + 16);
-  blockRead(fonFile, version, 2);
-  writeLn('Version: ', version);
-  }
-end;
-
 
 procedure parseFNT(const filename: string);
 var
@@ -136,28 +61,28 @@ begin
     exit
   end;
 
-  { Read the font dir entry }
-  blockRead(fntFile, fontDir, sizeof(TFontDirEntry));
+  { Read the font header entry }
+  blockRead(fntFile, fntHeader, sizeof(TFNTHeader));
 
-  seek(fntFile, fontDir.face);
+  seek(fntFile, fntHeader.face);
   blockRead(fntFile, buffer, 8);
   faceName := CStrPas(buffer);
 
-  writeLn('Version: ', fontDir.version);
-  writeLn('Width: ', fontDir.pixWidth, ', Height: ', fontDir.pixHeight);
-  writeLn(fontDir.firstChar, '..', fontDir.lastChar);
-  writeLn(chr(fontDir.firstChar) + ' - ' + chr(fontDir.lastChar));
-  writeLn('Bytes per row: ', fontDir.widthBytes);
-  writeLn('Face name offset: ', fontDir.face);
+  writeLn('Version: ', fntHeader.version);
+  writeLn('Width: ', fntHeader.pixWidth, ', Height: ', fntHeader.pixHeight);
+  writeLn(fntHeader.firstChar, '..', fntHeader.lastChar);
+  writeLn(chr(fntHeader.firstChar) + ' - ' + chr(fntHeader.lastChar));
+  writeLn('Bytes per row: ', fntHeader.widthBytes);
+  writeLn('Face name offset: ', fntHeader.face);
   writeLn('Face name: "', faceName, '"');
-  writeLn('Copyright string: "', CStrPas(fontDir.copyright), '"');
+  writeLn('Copyright string: "', CStrPas(fntHeader.copyright), '"');
 
-  writeLn('Bitmap pointer: ', fontDir.bitsPointer);
-  writeLn('Bitmap offset: ', fontDir.bitsOffset);
+  writeLn('Bitmap pointer: ', fntHeader.bitsPointer);
+  writeLn('Bitmap offset: ', fntHeader.bitsOffset);
 
   { Only applicable for monospaced fonts }
-  charCount := fontDir.lastChar - fontDir.firstChar + 1;
-  bytesPerChar := ((fontDir.pixWidth + 7) div 8) * fontDir.pixHeight;
+  charCount := fntHeader.lastChar - fntHeader.firstChar + 1;
+  bytesPerChar := ((fntHeader.pixWidth + 7) div 8) * fntHeader.pixHeight;
   totalBitmapSize := charCount * bytesPerChar;
 
   writeLn('Bytes per char: ', bytesPerChar);
@@ -188,13 +113,13 @@ begin
   {$I-} reset(fntFile, 1); {$I+}
   if IOResult <> 0 then exit;
 
-  bytesPerChar := ceil(fontDir.pixWidth / 8) * fontDir.pixHeight;
+  bytesPerChar := ceil(fntHeader.pixWidth / 8) * fntHeader.pixHeight;
   writeLn('Bytes per char: ', bytesPerChar);
 
   charIndex := ord(ch);
-  charOffset := fontDir.bitsOffset + (charIndex - fontDir.firstChar) * bytesPerChar;
-  { writeLn('Char offset: ', charOffset, ' (from ', fontDir.bitsOffset, ')'); }
-  writeLn('Offsets: ', charOffset, ', ', charOffset + fontDir.pixHeight);
+  charOffset := fntHeader.bitsOffset + (charIndex - fntHeader.firstChar) * bytesPerChar;
+  { writeLn('Char offset: ', charOffset, ' (from ', fntHeader.bitsOffset, ')'); }
+  writeLn('Offsets: ', charOffset, ', ', charOffset + fntHeader.pixHeight);
 
   seek(fntFile, charOffset);
   blockRead(fntFile, bitmapData, bytesPerChar);
@@ -202,11 +127,11 @@ begin
   { Display }
   byteIndex := 0;
 
-  for b:=0 to fontDir.pixHeight - 1 do begin
-    for a:=0 to fontDir.pixWidth - 1 do begin
+  for b:=0 to fntHeader.pixHeight - 1 do begin
+    for a:=0 to fntHeader.pixWidth - 1 do begin
       currentByte := bitmapData[
         b +
-        fontDir.pixHeight * (a div 8)];
+        fntHeader.pixHeight * (a div 8)];
 
       bitMask := 1 shl (7 - (a mod 8));
       if (currentByte and bitMask) <> 0 then
@@ -223,7 +148,7 @@ end;
 
 begin
   parseFNT('8514OEM.FNT');
-  extractChar('8514OEM.FNT', 'Z');
+  extractChar('8514OEM.FNT', 'A');
 
   readLn
 end.
