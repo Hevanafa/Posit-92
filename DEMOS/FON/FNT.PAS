@@ -1,5 +1,9 @@
 {
+  Microsoft FNT (Windows Bitmap Font) Parser
   Part of Posit-92 game framework
+
+  Supports both monospaced and proportional Microsoft FNT
+  files as used in Windows 95 and prior
 }
 
 type
@@ -32,7 +36,7 @@ type
 
     firstChar,  { first character in the font }
     lastChar,  { last charcode in the font }
-    defaultChar,
+    defaultChar,  { the default glyph if there's no available glyph }
     breakChar: byte;
 
     widthBytes: word;  { Width of row in bytes (This is always even ??) }
@@ -210,7 +214,7 @@ begin
     { blockRead(fntFile, skip, 2) } { this is supposed to be where the bitmap is }
   { end; }
 
-  seek(fntFile, sizeof(TFNTHeader) + (ord(ch) - fntHeader.firstChar + 2) * 4);
+  seek(fntFile, sizeof(TFNTHeader) + (ord(ch) - fntHeader.firstChar) * 4);
   blockRead(fntFile, charWidth, 2);
   blockRead(fntFile, charOffset, 2);
 
