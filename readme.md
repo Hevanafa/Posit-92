@@ -2,7 +2,11 @@
 
 ![preview](./preview.png)
 
-A game framework for Turbo Pascal 7.0. The name comes from **Positron** and **1992** (the year in which TP7 was released), combined to resemble an isotope like Uranium-235 because it sounds cool  `:D`
+_"Not retro for nostalgia. Retro for power."_
+
+A handcrafted game framework for Turbo Pascal 7.0.  Inspired by the raw speed, minimalism and creativity of pre-2000 tools.
+
+The name comes from **Positron** and **1992** (the year in which TP7 was released), combined to resemble an isotope like Uranium-235 because it sounds cool  `:D`
 
 My goal is to create something like a fantasy computer such as PICO-8 and TIC-80 but uses TP7 because I believe it's fast enough & easier than C.
 
@@ -23,7 +27,7 @@ More demos are inside `DEMOS` folder
 
 Then, you can use `GAME.PAS` as the primary file
 
-If you're using DOSBox or DOSBox-X, you can change the `cycles` setting to 32090 (emulating Pentium 60MHz), that's the setting that I usually use
+If you're using DOSBox or DOSBox-X, you can change the `cycles` setting to 32090 (emulating Pentium 60MHz), that's the setting that I usually use to develop
 
 When releasing a game made with this framework, I recommend you to change the `cycles` setting to `max`, and the `machine` to `vgaonly`
 
