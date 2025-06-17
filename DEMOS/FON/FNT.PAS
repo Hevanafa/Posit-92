@@ -23,8 +23,8 @@ type
     weight: word;
     charset: byte; { character set }
 
-    pixWidth,
-    pixHeight: word;  { only applicable to monospaced fonts }
+    pixWidth,  { 0 for proportional fonts }
+    pixHeight: word;
     pitchAndFamily: byte;
 
     avgWidth,
@@ -109,7 +109,10 @@ begin
   totalBitmapSize := charCount * bytesPerChar;
 
   writeLn('Bytes per char: ', bytesPerChar);
-  writeLn('Total bitmap size: ', totalBitmapSize);
+  if totalBitmapSize > 0 then
+    writeLn('Total bitmap size: ', totalBitmapSize, ' (monospaced)')
+  else
+    writeLn('Total bitmap size: ', totalBitmapSize, ' (proportional)');
 
   close(fntFile)
 end;
@@ -138,6 +141,11 @@ begin
 
   bytesPerChar := ceil(fntHeader.pixWidth / 8) * fntHeader.pixHeight;
   writeLn('Bytes per char: ', bytesPerChar);
+
+  if bytesPerChar = 0 then begin
+    writeLn('This is a proportional font (not monospaced)');
+    exit
+  end;
 
   charIndex := ord(ch);
   charOffset := fntHeader.bitsOffset + (charIndex - fntHeader.firstChar) * bytesPerChar;
@@ -169,14 +177,64 @@ begin
   close(fntFile)
 end;
 
+procedure extractProportionalChar(const filename: string; const ch: char);
+var
+  charIndex: byte;
+  widthTable: array[0..255] of word;
+  charWidth: word;
+  charOffset: longInt;
+  bitmapData: array[0..255] of byte;
+  currentByte, bitMask: byte;
+  a, b, byteIndex, skip: word;
+begin
+  assign(fntFile, filename);
+  {$I-} reset(fntFile, 1); {$I+}
+  if IOResult <> 0 then exit;
+
+  if fntheader.pixWidth > 0 then begin
+    writeLn('This is a monospaced font');
+    exit
+  end;
+
+  for a:=0 to high(widthTable) do
+    widthTable[a] := 0;
+
+  seek(fntFile, sizeof(TFNTHeader));
+  writeLn('Seeking to ', sizeof(TFNTHeader));
+  for a:=fntHeader.firstChar to fntHeader.lastChar do begin
+    { seek(fntFile, sizeof(TFNTHeader) + a * 4); }
+    blockRead(fntFile, widthTable[a], 2);
+    blockRead(fntFile, skip, 2) { this is supposed to be where the bitmap is }
+  end;
+
+  { Print the first 20 character widths }
+  {
+  for a:=fntHeader.firstChar to fntHeader.firstChar + 20 do
+    write(widthTable[a], ', ');
+  }
+
+  charIndex := ord(ch);
+  charWidth := widthTable[charIndex];
+  writeLn('Ch size: ', charWidth, 'x', fntHeader.pixHeight);
+
+  { TODO: Display the character }
+
+  close(fntFile)
+end;
+
+
 begin
 {
   parseFNT('8514OEM.FNT');
   extractChar('8514OEM.FNT', 'A');
 }
-
+{
   parseFNT('CGA80WOA.FNT');
-  extractChar('CGA80WOA.FNT', 'A');
+  extractChar('CGA80WOA.FNT', 'Z');
+}
+  parseFNT('HVGASYS.FNT');
+  { extractChar('HVGASYS.FNT', 'Z'); }
+  extractProportionalChar('HVGASYS.FNT', 'C');
 
   readLn
 end.
