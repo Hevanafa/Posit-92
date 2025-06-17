@@ -18,6 +18,8 @@ Rainfall demo ([YouTube](https://www.youtube.com/watch?v=GJOnGodk5AU)):
 
 More demos are inside `DEMOS` folder
 
+Games that I've made are available on my itch.io page: https://hevanafa.itch.io/
+
 
 ## Getting started
 
