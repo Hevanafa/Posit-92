@@ -1,23 +1,46 @@
+{
+  Part of Posit-92 game framework
+}
 
 type
   TFNTHeader = record
     version: word;
-    size: longInt;
-    copyright: array[0..59] of char;
+    size: longInt;  { size of file }
+    copyright: array[0..59] of char; { copyright notice }
 
-    typ, points, vertRes, horizRes,
-    ascent, internalLeading, externalLeading: word;
+    typ,  { type field (originally dfType) }
+    points, { point size }
+    vertRes, { vertical resolution }
+    horizRes, { horizontal resolution }
+    ascent,
+    internalLeading,
+    externalLeading: word;
 
-    italic, underline, strikeout: byte;
+    italic,
+    underline,
+    strikeout: byte;
+
     weight: word;
-    charset: byte;
-    pixWidth, pixHeight: word;  { only applicable to monospaced fonts }
+    charset: byte; { character set }
+
+    pixWidth,
+    pixHeight: word;  { only applicable to monospaced fonts }
     pitchAndFamily: byte;
-    avgWidth, maxWidth: word;
-    firstChar, lastChar, defaultChar, breakChar: byte;
-    widthBytes: word;  { This is always even ?? }
-    device, face: longInt;  { the absolute location in the file }
-    bitsPointer, bitsOffset: longInt;
+
+    avgWidth,
+    maxWidth: word;
+
+    firstChar,  { first character in the font }
+    lastChar,  { last charcode in the font }
+    defaultChar,
+    breakChar: byte;
+
+    widthBytes: word;  { Width of row in bytes (This is always even ??) }
+
+    device,  { unused }
+    face: longInt;  { face name, the absolute byte offset in the file }
+    bitsPointer,
+    bitsOffset: longInt; { where the bitmap data starts }
     reserved: byte;
   end;
 
@@ -147,8 +170,13 @@ begin
 end;
 
 begin
+{
   parseFNT('8514OEM.FNT');
   extractChar('8514OEM.FNT', 'A');
+}
+
+  parseFNT('CGA80WOA.FNT');
+  extractChar('CGA80WOA.FNT', 'A');
 
   readLn
 end.
