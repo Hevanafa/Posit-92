@@ -6,7 +6,7 @@ FNT is a font resource file
 
 In this demo, only the FNT format is usable. I still haven't solved the FON container format due to the lack of documentation out there
 
-Included in this demo are the `8514oem` and `CGA 8` font
+Included in this demo are the `8514oem`, `CGA8`, `Fixedsys` and `System` fonts from Windows 3.1
 
 
 ## How to extract an FNT from FON

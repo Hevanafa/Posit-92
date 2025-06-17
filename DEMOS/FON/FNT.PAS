@@ -254,9 +254,9 @@ begin
   parseFNT('CGA80WOA.FNT');
   extractChar('CGA80WOA.FNT', 'Z');
 }
-  parseFNT('HVGASYS.FNT');
-  { extractChar('HVGASYS.FNT', 'Z'); }
-  extractProportionalChar('HVGASYS.FNT', 'A');
+  parseFNT('VGASYS.FNT');
+  { extractChar('VGASYS.FNT', 'Z'); }
+  extractProportionalChar('VGASYS.FNT', 'A');
 
   readLn
 end.
