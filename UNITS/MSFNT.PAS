@@ -54,6 +54,7 @@ type
 
   PMSFontGlyph = ^TMSFontGlyph;
   TMSFontGlyph = record
+    width, height: byte;
     bitmapData: array[0..0] of byte;
   end;
 
@@ -69,10 +70,16 @@ procedure freeMSFont(var font: PMSFont);
 
 implementation
 
+uses Maths;
+
 procedure loadMSFont(var output: PMSFont; const filename: string);
 var
   fntFile: file;
-  a: word;
+  a, b, charIndex: word;
+  bitsWidth, charoffset: word;
+  charHeight: word;
+  size: integer;
+
 begin
   assign(fntFile, filename);
   {$I-} reset(fntFile, 1); {$I+}
@@ -88,8 +95,26 @@ begin
   end;
 
   blockRead(fntFile, output^.header, sizeof(TMSFontHeader));
-  writeLn('Test read');
+  { writeLn('Test read'); }
   writeLn('Copyright string: "', output^.header.copyright, '"');
+  writeLn('Pixel height: ', output^.header.pixHeight);
+  charHeight := output^.header.pixHeight;
+
+  for charIndex := output^.header.firstChar to output^.header.lastChar do begin
+    seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - output^.header.firstChar) * 4);
+    blockRead(fntFile, bitsWidth, 2);
+    blockRead(fntFile, charOffset, 2);
+
+    size := sizeof(TMSFontGlyph) + ceil(bitsWidth / 8) * charHeight - 1;
+    getMem(output^.glyphs[a], size);
+    with output^ do begin
+      glyphs[a]^.width := bitsWidth;
+      glyphs[a]^.height := charHeight;
+    end;
+
+    seek(fntFile, charOffset);
+    blockRead(fntFile, output^.glyphs[a]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
+  end;
 
   close(fntFile)
 end;
