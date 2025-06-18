@@ -67,11 +67,16 @@ type
 procedure loadMSFont(var output: PMSFont; const filename: string);
 procedure freeMSFont(var font: PMSFont);
 procedure testMSFontDisplay(const font: PMSFont; const ch: char);
+procedure printMSFont(
+  const font: PMSFont;
+  const text: string;
+  const x, y: integer;
+  const colour: byte);
 
 
 implementation
 
-uses Conv, Maths, Panic;
+uses Conv, Maths, Panic, VGA;
 
 procedure loadMSFont(var output: PMSFont; const filename: string);
 var
@@ -190,6 +195,40 @@ begin
 
   freeMem(font, sizeof(TMSFont));
   font := nil
+end;
+
+procedure printMSFont(
+  const font: PMSFont;
+  const text: string;
+  const x, y: integer;
+  const colour: byte);
+var
+  a, b, c, left: word;
+  charcode, currentByte, bitMask: byte;
+  glyph: PMSFontGlyph;
+begin
+  if font = nil then begin
+    panicHalt('printMSFont: font is nil!');
+    exit
+  end;
+
+  left := 0;
+  for c:=1 to length(text) do begin
+    charcode := ord(text[c]);
+    if font^.glyphs[charcode] = nil then continue; { TODO: use defaultChar }
+
+    glyph := font^.glyphs[charcode];
+    for b:=0 to glyph^.height - 1 do
+      for a:=0 to glyph^.width - 1 do begin
+        currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
+        bitMask := 1 shl (7 - (a mod 8));
+
+        if (currentByte and bitMask) <> 0 then
+          asmPset(x + left + a, y + b, colour);
+      end;
+      
+    inc(left, font^.glyphs[charcode]^.width + 1)
+  end;
 end;
 
 end.
