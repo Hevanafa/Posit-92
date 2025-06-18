@@ -90,10 +90,8 @@ var
 begin
   assign(fntFile, filename);
   {$I-} reset(fntFile, 1); {$I+}
-  if IOResult <> 0 then begin
-    writeLn('loadMSFont: Cannot open file ', filename);
-    exit
-  end;
+  if IOResult <> 0 then
+    panicHalt('loadMSFont: Cannot open file ' + filename);
 
   if output = nil then begin
     getMem(output, sizeof(TMSFont));
@@ -102,13 +100,15 @@ begin
   end;
 
   blockRead(fntFile, output^.header, sizeof(TMSFontHeader));
-  { writeLn('Test read'); }
-  writeLn('Copyright string: "', output^.header.copyright, '"');
-  writeLn('Pixel height: ', output^.header.pixHeight);
   charHeight := output^.header.pixHeight;
 
+{$IFDEF DEBUG}
+  writeLog('--- Begin loadMSFont "' + filename + '"');
+  writeLog('Copyright string: "', output^.header.copyright, '"');
+  writeLog('Pixel height: ', output^.header.pixHeight);
+{$ENDIF}
+
   for charIndex := output^.header.firstChar to output^.header.lastChar do begin
-  { for charIndex := output^.header.firstChar to output^.header.firstChar + 9 do begin }
     seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - output^.header.firstChar) * 4);
     blockRead(fntFile, bitsWidth, 2);
     blockRead(fntFile, charOffset, 2);
