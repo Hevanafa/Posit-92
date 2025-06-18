@@ -11,11 +11,11 @@ procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure hline(x0, x1, y: integer; const colour: byte);
-procedure asmHline(x0, x1, y: integer; const colour: byte);
+procedure asmHline(const x0, x1, y: integer; const colour: byte);
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
-procedure asmRectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -23,7 +23,7 @@ procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 implementation
 
-uses VGA;
+uses Maths, VGA;
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);
 var
@@ -211,7 +211,7 @@ asm
 
 @x_next:
   inc x
-  jmp @x_cond
+  jmp @x_condition
 
 @done:
 end;

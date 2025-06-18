@@ -10,7 +10,10 @@ function i32power(const i, exp: longint): longint;
 function floor(const value: double): integer;
 function ceil(const value: double): integer;
 
+
 implementation
+
+uses Panic;
 
 function min(const a, b: double): double;
 begin
