@@ -226,8 +226,8 @@ begin
         if (currentByte and bitMask) <> 0 then
           asmPset(x + left + a, y + b, colour);
       end;
-      
-    inc(left, font^.glyphs[charcode]^.width + 1)
+
+    inc(left, font^.glyphs[charcode]^.width)
   end;
 end;
 
