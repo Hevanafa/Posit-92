@@ -11,13 +11,16 @@ function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
-procedure Limit(fps: integer);
+procedure Limit(const fps: integer);
 procedure initDeltaTime;
 procedure updateDeltaTime;
 
 implementation
 
 uses crt, dos;
+
+var
+  nextGameTick: double; { Used in `Limit()` }
 
 { Ticks since the last boot }
 function GetTicks: Longint;
@@ -60,9 +63,14 @@ begin
 end;
 
 { Similar to QB64's _LIMIT }
-procedure Limit(fps: integer);
+procedure Limit(const fps: integer);
+var
+  startTick: double;
 begin
-  delay(1000 div fps)
+  { delay(1000 div fps) }
+  startTick := getTimer;
+  nextGameTick := startTick + 1.0 / fps;
+  while getTimer < nextGameTick do ;
 end;
 
 procedure initDeltaTime;
