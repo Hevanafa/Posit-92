@@ -66,16 +66,17 @@ type
 
 procedure loadMSFont(var output: PMSFont; const filename: string);
 procedure freeMSFont(var font: PMSFont);
+procedure testMSFontDisplay(const font: PMSFont; const ch: char);
 
 
 implementation
 
-uses Maths;
+uses Conv, Maths, Panic;
 
 procedure loadMSFont(var output: PMSFont; const filename: string);
 var
   fntFile: file;
-  a, b, charIndex: word;
+  c, charIndex: word;
   bitsWidth, charoffset: word;
   charHeight: word;
   size: integer;
@@ -90,8 +91,8 @@ begin
 
   if output = nil then begin
     getMem(output, sizeof(TMSFont));
-    for a:=0 to high(output^.glyphs) do
-      output^.glyphs[a] := nil;
+    for c:=0 to high(output^.glyphs) do
+      output^.glyphs[c] := nil;
   end;
 
   blockRead(fntFile, output^.header, sizeof(TMSFontHeader));
@@ -101,22 +102,64 @@ begin
   charHeight := output^.header.pixHeight;
 
   for charIndex := output^.header.firstChar to output^.header.lastChar do begin
+  { for charIndex := output^.header.firstChar to output^.header.firstChar + 9 do begin }
     seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - output^.header.firstChar) * 4);
     blockRead(fntFile, bitsWidth, 2);
     blockRead(fntFile, charOffset, 2);
 
+    { writeLn(charIndex, ' - width: ', bitsWidth, ' offset: ', charOffset); }
+
     size := sizeof(TMSFontGlyph) + ceil(bitsWidth / 8) * charHeight - 1;
-    getMem(output^.glyphs[a], size);
+    getMem(output^.glyphs[charIndex], size);
+    if output^.glyphs[charIndex] = nil then begin
+      writeLn('Unable to getMem with the size ', size, '!');
+      exit
+    end;
+
     with output^ do begin
-      glyphs[a]^.width := bitsWidth;
-      glyphs[a]^.height := charHeight;
+      glyphs[charIndex]^.width := bitsWidth;
+      glyphs[charIndex]^.height := charHeight;
     end;
 
     seek(fntFile, charOffset);
-    blockRead(fntFile, output^.glyphs[a]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
+    blockRead(fntFile, output^.glyphs[charIndex]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
   end;
 
   close(fntFile)
+end;
+
+procedure testMSFontDisplay(const font: PMSFont; const ch: char);
+var
+  a, b: word;
+begin
+  if font = nil then begin
+    panicHalt('testMSFontDisplay: font is nil!');
+    exit
+  end;
+
+  { Test char sizes }
+  {
+  for b:=0 to 15 do begin
+    for a:=0 to 15 do begin
+      if font^.glyphs[b * 15 + a] = nil then
+        write('nil ')
+      else
+        write('[' +
+          i32str(font^.glyphs[b * 15 + a]^.width) + ', ' +
+          i32str(font^.glyphs[b * 15 + a]^.height) + '] ');
+    end;
+    writeLn
+  end;
+  }
+
+  if font^.glyphs[ord(ch)] = nil then begin
+    panicHalt('testMSFontDisplay glyph ' + i32str(ord(ch)) + ' is nil!');
+    exit
+  end;
+
+  { TODO: display the char }
+
+
 end;
 
 procedure freeMSFont(var font: PMSFont);
