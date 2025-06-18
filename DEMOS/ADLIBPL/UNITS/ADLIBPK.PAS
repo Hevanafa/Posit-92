@@ -8,6 +8,13 @@ interface
 
 uses AdLib;
 
+const
+  PERC_BASS_BIT = $10;
+  PERC_SNARE_BIT = $08;
+  PERC_HIHAT_BIT = $01;
+  PERC_TOM_BIT = $04;
+  PERC_CYMBAL_BIT = $02;
+
 type
   TPercussionKit = record
     bassLevel,
@@ -18,7 +25,6 @@ type
   end;
 
   TAdLibPercussionDriver = object
-    parent: PAdLibDriver;
     procedure enable;
     procedure disable;
     procedure setupKit(const kit: TPercussionKit);
@@ -34,16 +40,10 @@ implementation
 
 const
   PERC_BASS_DRUM = 6;
-  PERC_BASS_BIT = $10;
   PERC_SNARE = 7;
-  PERC_SNARE_BIT = $08;
   PERC_HIHAT = 7;
-  PERC_HIHAT_BIT = $01;
   PERC_TOM = 8;
-  PERC_TOM_BIT = $04;
   PERC_CYMBAL = 8;
-  PERC_CYMBAL_BIT = $02;
-
 
 var
   percussionEnabled: boolean;
@@ -69,6 +69,8 @@ begin
   { Tom on channel 8 }
   AdLibWrite($A8, $0C);
   AdLibWrite($b8, $22);
+
+  writeLn('Enabled TAdLibPercussionDriver')
 end;
 
 procedure TAdLibPercussionDriver.disable;
@@ -77,7 +79,9 @@ begin
 
   AdLibWrite($BD, $00);
   percussionEnabled := false;
-  currentPercMask := 0
+  currentPercMask := 0;
+
+  writeLn('Disabled TAdLibPercussionDriver')
 end;
 
 procedure TAdLibPercussionDriver.setupKit(const kit: TPercussionKit);
@@ -124,6 +128,8 @@ procedure TAdLibPercussionDriver.play(const drums: byte);
 begin
   if not percussionEnabled then exit;
 
+  writeLn('Playing ', drums);
+
   { Clear previous percussion }
   AdLibWrite($BD, $20);
 
@@ -139,5 +145,7 @@ begin
   AdLibWrite($BD, $20);
   currentPercMask := 0
 end;
+
+{ TODO: Combine percussions function }
 
 end.
