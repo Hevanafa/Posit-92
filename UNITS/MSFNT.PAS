@@ -128,9 +128,12 @@ begin
   close(fntFile)
 end;
 
+{ This test can only be done in text mode }
 procedure testMSFontDisplay(const font: PMSFont; const ch: char);
 var
   a, b: word;
+  glyph: PMSFontGlyph;
+  currentByte, bitMask: byte;
 begin
   if font = nil then begin
     panicHalt('testMSFontDisplay: font is nil!');
@@ -157,9 +160,20 @@ begin
     exit
   end;
 
-  { TODO: display the char }
+  { Display the char }
+  glyph := font^.glyphs[ord(ch)];
+  for b:=0 to glyph^.height - 1 do begin
+    for a:=0 to glyph^.width - 1 do begin
+      currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
+      bitMask := 1 shl (7 - (a mod 8));
 
-
+      if (currentByte and bitMask) <> 0 then
+        write('#')
+      else
+        write('.');
+    end;
+    writeLn
+  end;
 end;
 
 procedure freeMSFont(var font: PMSFont);
