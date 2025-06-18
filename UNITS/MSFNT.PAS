@@ -216,6 +216,7 @@ begin
   left := 0;
   for c:=1 to length(text) do begin
     charcode := ord(text[c]);
+
     if font^.glyphs[charcode] = nil then
       glyph := font^.glyphs[font^.header.defaultChar]
     else
@@ -236,7 +237,7 @@ end;
 
 function measureMSFont(const font: PMSFont; const text: string): word;
 var
-  a, result: word;
+  a, result, width: word;
   charcode: byte;
 begin
   if font = nil then begin
@@ -247,8 +248,13 @@ begin
   result := 0;
   for a:=1 to length(text) do begin
     charcode := ord(text[a]);
-    if font^.glyphs[charcode] = nil then continue; { TODO: use defaultChar }
-    inc(result, font^.glyphs[charcode]^.width)
+
+    if font^.glyphs[charcode] = nil then
+      width := font^.glyphs[font^.header.defaultChar]^.width
+    else
+      width := font^.glyphs[charcode]^.width;
+
+    inc(result, width)
   end;
   
   measureMSFont := result
