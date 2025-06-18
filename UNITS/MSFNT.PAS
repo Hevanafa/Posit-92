@@ -241,7 +241,7 @@ var
   charcode: byte;
 begin
   if font = nil then begin
-    panicHalt('printMSFont: font is nil!');
+    panicHalt('measureMSFont: font is nil!');
     exit
   end;
 
