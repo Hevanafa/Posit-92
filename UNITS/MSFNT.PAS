@@ -63,30 +63,51 @@ type
     glyphs: array[0..255] of PMSFontGlyph;
   end;
 
-procedure loadFNT(var output: PMSFont; const filename: string);
+procedure loadMSFont(var output: PMSFont; const filename: string);
+procedure freeMSFont(var font: PMSFont);
 
 
 implementation
 
-procedure loadFNT(var output: PMSFont; const filename: string);
+procedure loadMSFont(var output: PMSFont; const filename: string);
 var
   fntFile: file;
+  a: word;
 begin
   assign(fntFile, filename);
   {$I-} reset(fntFile, 1); {$I+}
   if IOResult <> 0 then begin
-    writeLn('loadFNT: Cannot open file ', filename);
+    writeLn('loadMSFont: Cannot open file ', filename);
     exit
   end;
 
-  if output = nil then
+  if output = nil then begin
     getMem(output, sizeof(TMSFont));
+    for a:=0 to high(output^.glyphs) do
+      output^.glyphs[a] := nil;
+  end;
 
   blockRead(fntFile, output^.header, sizeof(TMSFontHeader));
   writeLn('Test read');
   writeLn('Copyright string: "', output^.header.copyright, '"');
 
   close(fntFile)
+end;
+
+procedure freeMSFont(var font: PMSFont);
+var
+  a: word;
+begin
+  if font = nil then exit;
+
+  for a:=0 to high(font^.glyphs) do
+    if font^.glyphs[a] <> nil then begin
+      freeMem(font^.glyphs[a], sizeof(font^.glyphs[a]));
+      font^.glyphs[a] := nil
+    end;
+
+  freeMem(font, sizeof(TMSFont));
+  font := nil
 end;
 
 end.
