@@ -48,7 +48,6 @@ end;
 
 procedure INIT;
 begin
-  randomize;
   initLogger;
   initVGAMode;
   loadFont;
@@ -57,6 +56,8 @@ begin
   initKeyHandler;
   initMouse;
   initFPSCounter;
+
+  randomize;
 end;
 
 
@@ -67,8 +68,6 @@ begin
   updateDeltaTime;
   incrementFPS;
   updateMouse;
-
-  { TODO: Your update code here }
 
   if isKeyDown($01) then done := true;
 
@@ -88,9 +87,7 @@ procedure draw;
 var
   a: integer;
 begin
-  cls(1);
-
-  { TODO: Your drawing code here }
+  asmCls($01);
 
   for a:=0 to high(particles) do
     pset(trunc(particles[a].x), trunc(particles[a].y), 15);
@@ -115,7 +112,7 @@ begin
   print('GetTimer: ' + f32str(getTimer), 0, 8, 7);
 
   drawFPS;
-  flush
+  asmFlush
 end;
 
 
@@ -130,10 +127,9 @@ begin
     initParticle(particles[a]);
 
   repeat
-    { limit(60); }
-
     update;
     draw;
+    { limit(60) }
   until done;
 
   resetMouse;
