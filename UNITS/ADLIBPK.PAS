@@ -14,7 +14,7 @@ type
     hihatLevel: byte
   end;
 
-  TAdLibPercussion = object
+  TAdLibPercussionDriver = object
     parent: PAdLibDriver;
     procedure enable;
     procedure disable;
@@ -24,7 +24,7 @@ type
   end;
 
 var
-  AdLibPercussionDrv: TAdLibPercussion;
+  AdLibPercussionDrv: TAdLibPercussionDriver;
 
 
 implementation
@@ -46,7 +46,7 @@ var
   percussionEnabled: boolean;
   currentPercMask: byte;
 
-procedure TAdLibPercussion.enable;
+procedure TAdLibPercussionDriver.enable;
 begin
   if not AdLibDrv.getIsInitialised then exit;
   
@@ -68,9 +68,9 @@ begin
   AdLibWrite($b8, $22);
 end;
 
-procedure TAdLibPercussion.disable;
+procedure TAdLibPercussionDriver.disable;
 begin
-  if not AdLibData.getIsInitialised then exit;
+  if not AdLibDrv.getIsInitialised then exit;
 
   AdLibWrite($BD, $00);
   percussionEnabled := false;
