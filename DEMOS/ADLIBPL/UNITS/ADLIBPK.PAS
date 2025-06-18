@@ -54,21 +54,23 @@ begin
   if not AdLibDrv.getIsInitialised then exit;
   
   { Enable rhythm mode in register $BD }
+  AdLibWrite($BD, $00);
+
+  { Setup default percussion frequencies }
+  AdLibWrite($A6, $16);
+  AdLibWrite($B6, $20);
+
+  { Snare on channel 7 }
+  AdLibWrite($A7, $16);
+  AdLibWrite($B7, $20);
+
+  { Tom on channel 8 }
+  AdLibWrite($A8, $16);
+  AdLibWrite($b8, $20);
+
   AdLibWrite($BD, $20);
   percussionEnabled := true;
   currentPercMask := 0;
-
-  { Setup default percussion frequencies }
-  AdLibWrite($A6, $15);
-  AdLibWrite($B6, $28);
-
-  { Snare on channel 7 }
-  AdLibWrite($A7, $12);
-  AdLibWrite($B7, $25);
-
-  { Tom on channel 8 }
-  AdLibWrite($A8, $0C);
-  AdLibWrite($b8, $22);
 
   writeLn('Enabled TAdLibPercussionDriver')
 end;
@@ -88,40 +90,40 @@ procedure TAdLibPercussionDriver.setupKit(const kit: TPercussionKit);
 begin
   if not percussionEnabled then exit;
 
-  { Setup bass drum (operators $13 + $16) }
-  AdLibWrite($33, $00);  { Modulator }
-  AdLibWrite($40 + $13, 63 - kit.bassLevel);  { Modulator level }
-  AdLibWrite($43, $00);  { Carrier }
-  AdLibWrite($40 + $16, 63 - kit.bassLevel);
+  { Setup bass drum (operators 12 + 15) }
+  AdLibWrite($20 + $0C, $01);  { Modulator }
+  AdLibWrite($40 + $0C, 63 - kit.bassLevel);  { Modulator level }
+  AdLibWrite($60 + $0C, $F0);  { fast attack }
+  AdLibWrite($80 + $0C, $77);  { medium delay }
 
-  AdLibWrite($60 + $13, $F0);
-  AdLibWrite($63, $F0);
-  AdLibWrite($80 + $13, $77);
-  AdLibWrite($83, $77);
+  AdLibWrite($20 + $0F, $01);
+  AdLibWrite($40 + $0F, 63 - kit.bassLevel);
+  AdLibWrite($60 + $0F, $F0);
+  AdLibWrite($80 + $0F, $77);
 
-  { Setup snare drum (operator 17) }
-  AdLibWrite($31, $00);
-  AdLibWrite($40 + $11, 63 - kit.snareLevel);
-  AdLibWrite($61, $F8); { very fast attack }
-  AdLibWrite($81, $55); { quick decay }
+  { Setup snare drum (operator 16) }
+  AdLibWrite($20 + $10, $01);
+  AdLibWrite($40 + $10, 63 - kit.snareLevel);
+  AdLibWrite($60 + $10, $F8); { very fast attack }
+  AdLibWrite($80 + $10, $55); { quick decay }
 
-  { Setup tom-tom (operator 15) }
-  AdLibWrite($32, $00);
-  AdLibWrite($40 + $12, 63 - kit.tomLevel);
-  AdLibWrite($62, $F6);
-  AdLibWrite($82, $66);
+  { Setup tom-tom (operator 14) }
+  AdLibWrite($20 + $0E, $01);
+  AdLibWrite($40 + $0E, 63 - kit.tomLevel);
+  AdLibWrite($60 + $0E, $F6);
+  AdLibWrite($80 + $0E, $66);
 
-  { Setup cymbal (operator 18) }
-  AdLibWrite($35, $01);
-  AdLibWrite($40 + $15, 63 - kit.cymbalLevel);
-  AdLibWrite($65, $FA);
-  AdLibWrite($85, $44);
+  { Setup cymbal (operator 17) }
+  AdLibWrite($20 + $11, $01);
+  AdLibWrite($40 + $11, 63 - kit.cymbalLevel);
+  AdLibWrite($60 + $11, $FA);
+  AdLibWrite($80 + $11, $44);
 
-  { Setup hi-hat (operator 14) }
-  AdLibWrite($34, $01);
-  AdLibWrite($40 + $14, 63 - kit.hihatLevel);
-  AdLibWrite($64, $FC);
-  AdLibWrite($84, $33)
+  { Setup hi-hat (operator 13) }
+  AdLibWrite($20 + $0D, $01);
+  AdLibWrite($40 + $0D, 63 - kit.hihatLevel);
+  AdLibWrite($60 + $0D, $FC);
+  AdLibWrite($80 + $0D, $33)
 end;
 
 procedure TAdLibPercussionDriver.play(const drums: byte);
@@ -130,8 +132,15 @@ begin
 
   writeLn('Playing ', drums);
 
-  { Clear previous percussion }
+  { Clear previous percussions }
   AdLibWrite($BD, $20);
+
+  { Simulate delay }
+asm
+  mov cx, 100
+  @delay:
+  loop @delay
+end;
 
   { Set new percussion mask }
   currentPercMask := drums;

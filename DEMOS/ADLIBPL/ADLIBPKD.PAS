@@ -42,6 +42,7 @@ begin
       '3': AdLibPercussionDrv.play(PERC_TOM_BIT);
       '4': AdLibPercussionDrv.play(PERC_CYMBAL_BIT);
       '5': AdLibPercussionDrv.play(PERC_HIHAT_BIT);
+      's': AdLibPercussionDrv.stop;
       end;
     end;
 
