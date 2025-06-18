@@ -49,8 +49,8 @@ type
     feedback: byte;
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
-  PAdLibDriver = ^TAdLib;
-  TAdLib = object
+  PAdLibDriver = ^TAdLibDriver;
+  TAdLibDriver = object
     function getIsInitialised: boolean;
     procedure init;
     procedure update;
@@ -68,7 +68,7 @@ type
   end;
 
 var
-  AdLibDrv: TAdLib;
+  AdLibDrv: TAdLibDriver;
 
 procedure initNote(
   var note: TNote;
@@ -190,15 +190,15 @@ begin
   AdLibWrite($C0 + channel, (instr^.feedback shl 1) or instr^.algorithm)
 end;
 
-procedure TAdLib.loadInstrument(const slot: byte; const instr: PInstrument);
+procedure TAdLibDriver.loadInstrument(const slot: byte; const instr: PInstrument);
 begin
-  if instr = nil then panicHalt('TAdLib.loadInstrument: Attempting to load a nil instrument');
+  if instr = nil then panicHalt('TAdLibDriver.loadInstrument: Attempting to load a nil instrument');
   if slot >= MAX_INSTRUMENTS then exit;
 
   instruments[slot] := instr
 end;
 
-procedure TAdLib.selectInstrument(const channel, slot: byte);
+procedure TAdLibDriver.selectInstrument(const channel, slot: byte);
 begin
   if channel >= MAX_CHANNELS then exit;
   if slot >= MAX_INSTRUMENTS then exit;
@@ -216,13 +216,13 @@ begin
 end;
 
 
-function TAdLib.getIsInitialised: boolean;
+function TAdLibDriver.getIsInitialised: boolean;
 begin
   getIsInitialised := isInitialised
 end;
 
 
-procedure TAdLib.init;
+procedure TAdLibDriver.init;
 var
   a: byte;
 begin
@@ -256,7 +256,7 @@ begin
 end;
 
 
-procedure TAdLib.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+procedure TAdLibDriver.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
 var
   volume: byte;
   carrierOffset: byte;
@@ -284,14 +284,14 @@ begin
 end;
 
 
-procedure TAdLib.stopChannel(const channel: byte);
+procedure TAdLibDriver.stopChannel(const channel: byte);
 begin
   if channel >= MAX_CHANNELS then exit;
   AdLibWrite($B0 + channel, 0);
   channels[channel].active := false
 end;
 
-procedure TAdLib.stopAllChannels;
+procedure TAdLibDriver.stopAllChannels;
 var
   a: byte;
 begin
@@ -302,13 +302,13 @@ end;
 { TODO: set volume }
 
 
-procedure TAdLib.playMelody(const melody: PMelody; const channel: byte);
+procedure TAdLibDriver.playMelody(const melody: PMelody; const channel: byte);
 var
   found: boolean;
 begin
   stopChannel(channel);
 
-  if melody = nil then panicHalt('TAdLib.playMelody: Attempting to play a nil melody!');
+  if melody = nil then panicHalt('TAdLibDriver.playMelody: Attempting to play a nil melody!');
   
   channels[channel].active := true;
   channels[channel].melody := melody;
@@ -321,7 +321,7 @@ begin
 end;
 
 
-procedure TAdLib.update;
+procedure TAdLibDriver.update;
 var
   a: byte;
   now: double;
@@ -351,7 +351,7 @@ begin
 end;
 
 
-procedure TAdLib.shutdown;
+procedure TAdLibDriver.shutdown;
 begin
   if not isInitialised then exit;
   
