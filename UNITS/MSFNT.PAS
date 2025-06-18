@@ -72,6 +72,7 @@ procedure printMSFont(
   const text: string;
   const x, y: integer;
   const colour: byte);
+function measureMSFont(const font: PMSFont; const text: string): word;
 
 
 implementation
@@ -215,9 +216,11 @@ begin
   left := 0;
   for c:=1 to length(text) do begin
     charcode := ord(text[c]);
-    if font^.glyphs[charcode] = nil then continue; { TODO: use defaultChar }
+    if font^.glyphs[charcode] = nil then
+      glyph := font^.glyphs[font^.header.defaultChar]
+    else
+      glyph := font^.glyphs[charcode];
 
-    glyph := font^.glyphs[charcode];
     for b:=0 to glyph^.height - 1 do
       for a:=0 to glyph^.width - 1 do begin
         currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
@@ -229,6 +232,26 @@ begin
 
     inc(left, font^.glyphs[charcode]^.width)
   end;
+end;
+
+function measureMSFont(const font: PMSFont; const text: string): word;
+var
+  a, result: word;
+  charcode: byte;
+begin
+  if font = nil then begin
+    panicHalt('printMSFont: font is nil!');
+    exit
+  end;
+
+  result := 0;
+  for a:=1 to length(text) do begin
+    charcode := ord(text[a]);
+    if font^.glyphs[charcode] = nil then continue; { TODO: use defaultChar }
+    inc(result, font^.glyphs[charcode]^.width)
+  end;
+  
+  measureMSFont := result
 end;
 
 end.
