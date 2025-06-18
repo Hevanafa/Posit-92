@@ -46,8 +46,10 @@ All the demonstrations are placed in `DEMOS`
 ### Utility units
 
 - `ADLIB.PAS`: AdLib utility
+- `ADLIBPK.PAS`: AdLib percussion kit (unstable)
 - `BITMAP.PAS`: Utility for BMP files
 - `BMFONT.PAS`: BMFont support utility
+- `BMPROT.PAS`: Procedural bitmap rotation & scaling
 - `CONV.PAS`: Common conversion features
 - `FPS.PAS`: FPS counter utility
 - `GRAPHICS.PAS`: Primitives drawing utility
@@ -57,6 +59,7 @@ All the demonstrations are placed in `DEMOS`
 - `MEMORY.PAS`: Memory debugging utility
 - `MONOBMP.PAS`: 1-bit bitmap support utility
 - `MOUSE.PAS`: Mouse utility
+- `MSFNT.PAS`: Microsoft bitmap font (FNT) utility
 - `PANIC.PAS`: Panic halt utility
 - `PCS.PAS`: PC speaker utility
 - `STRINGS.PAS`: String operation utility

@@ -34,7 +34,8 @@ Sounds
 - [x] Basic AdLib driver
 - [x] AdLib with instruments & channels
 - [x] AdLib sound effects setup
-- [ ] AdLib music setup: melody & more extensive use of channels & timers
+- [x] AdLib music setup: melody & more extensive use of channels & timers
+- AdLib percussion setup: drums (bass, snare, hi-hat, cymbal, tom)
 - SoundBlaster
 
 - [x] Docs: Building
