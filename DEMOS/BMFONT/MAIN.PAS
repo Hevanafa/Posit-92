@@ -23,8 +23,8 @@ begin
   initKeyHandler;
   initFPSCounter;
 
-  { loadBMFont('COMMOD64.FNT', font); }
-  loadBMFont('FR12.FNT', font);
+  { loadBMFont(font, 'COMMOD64.FNT'); }
+  loadBMFont(font, 'FR12.FNT');
 end;
 
 
@@ -48,7 +48,7 @@ var
   a, w: integer;
   s, scoreStr: string;
 begin
-  cls($7D);
+  asmCls($7D);
 
   { TODO: Your drawing code here }
 
@@ -63,7 +63,7 @@ begin
   font.print(scoreStr, 160 - w div 2, 8, 15);
 
   drawFPS;
-  flush
+  asmFlush
 end;
 
 
