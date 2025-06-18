@@ -49,7 +49,9 @@ type
     feedback: byte;
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
+  PAdLibDriver = ^TAdLib;
   TAdLib = object
+    function getIsInitialised: boolean;
     procedure init;
     procedure update;
     procedure shutdown;
@@ -74,6 +76,8 @@ procedure initNote(
   const octave: byte;
   const duration: double;
   const velocity: byte);
+
+procedure AdLibWrite(const reg, value: byte);
 
 
 implementation
@@ -209,6 +213,12 @@ var
 begin
   for a := $20 to $F5 do
     AdLibWrite(a, 0);
+end;
+
+
+function TAdLib.getIsInitialised: boolean;
+begin
+  getIsInitialised := isInitialised
 end;
 
 

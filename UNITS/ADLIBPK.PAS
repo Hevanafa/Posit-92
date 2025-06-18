@@ -3,13 +3,31 @@ unit AdLibPK;
 
 interface
 
+uses AdLib;
+
+type
+  TPercussionKit = record
+    bassLevel,
+    snareLevel,
+    tomLevel,
+    cymbalLevel,
+    hihatLevel: byte
+  end;
+
+  TAdLibPercussion = object
+    parent: PAdLibDriver;
+    procedure enable;
+    procedure disable;
+    procedure setupKit(const kit: TPercussionKit);
+    procedure play(const drums: byte);
+    procedure stop;
+  end;
+
 var
-  AdLibPercussionDrv: TAdLibPercussion
+  AdLibPercussionDrv: TAdLibPercussion;
 
 
 implementation
-
-uses AdLib;
 
 const
   PERC_BASS_DRUM = 6;
@@ -23,21 +41,15 @@ const
   PERC_CYMBAL = 8;
   PERC_CYMBAL_BIT = $02;
 
-type
-  TPercussionKit = record
-    bassLevel,
-    snareLevel,
-    tomLevel,
-    cymbalLevel,
-    hihatLevel: byte
-  end;
 
-  TAdLibPercussion = object
-    procedure enable;
-    procedure disable;
-    procedure setupKit(const kit: TPercussionKit);
-    procedure play(const drums: byte);
-    procedure stop;
-  end;
+var
+  percussionEnabled: boolean;
+  currentPercMask: byte;
+
+procedure TAdLibPercussion.enable;
+begin
+  if not AdLibDrv.getIsInitialised then exit;
+  { TODO: Implement this }
+end;
   
 end.
