@@ -49,7 +49,32 @@ var
 procedure TAdLibPercussion.enable;
 begin
   if not AdLibDrv.getIsInitialised then exit;
-  { TODO: Implement this }
-end;
   
+  { Enable rhythm mode in register $BD }
+  AdLibWrite($BD, $20);
+  percussionEnabled := true;
+  currentPercMask := 0;
+
+  { Setup default percussion frequencies }
+  AdLibWrite($A6, $15);
+  AdLibWrite($B6, $28);
+
+  { Snare on channel 7 }
+  AdLibWrite($A7, $12);
+  AdLibWrite($B7, $25);
+
+  { Tom on channel 8 }
+  AdLibWrite($A8, $0C);
+  AdLibWrite($b8, $22);
+end;
+
+procedure TAdLibPercussion.disable;
+begin
+  if not AdLibData.getIsInitialised then exit;
+
+  AdLibWrite($BD, $00);
+  percussionEnabled := false;
+  currentPercMask := 0
+end;
+
 end.
