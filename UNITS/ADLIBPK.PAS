@@ -1,4 +1,7 @@
-{ Percussion kit extension }
+{
+  Percussion kit extension
+  Part of Posit-92 game framework
+}
 unit AdLibPK;
 
 interface
@@ -116,10 +119,25 @@ begin
   AdLibWrite($64, $FC);
   AdLibWrite($84, $33)
 end;
-{
-  TODO:
+
 procedure TAdLibPercussionDriver.play(const drums: byte);
+begin
+  if not percussionEnabled then exit;
+
+  { Clear previous percussion }
+  AdLibWrite($BD, $20);
+
+  { Set new percussion mask }
+  currentPercMask := drums;
+  AdLibWrite($BD, $20 or drums)
+end;
+
 procedure TAdLibPercussionDriver.stop;
-}
+begin
+  if not percussionEnabled then exit;
+
+  AdLibWrite($BD, $20);
+  currentPercMask := 0
+end;
 
 end.
