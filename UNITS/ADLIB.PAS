@@ -61,10 +61,13 @@ type
     procedure init;
     procedure update;
     procedure shutdown;
-    
+    procedure setPercussive(const value: boolean);    
+
     procedure loadInstrument(const slot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, slot: byte);
-    
+    procedure setMelodicInstruments;
+    procedure setRhythmInstruments;
+
     { Playback }
     procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
     procedure stopVoice(const voice: byte);
@@ -109,6 +112,7 @@ const
 
 var
   isInitialised: boolean;
+  isPercussive: boolean;
   voices: array[0..MAX_VOICES-1] of TVoiceState;
   instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
@@ -227,6 +231,33 @@ begin
 end;
 
 
+{ Adapted from ccodere/pascal-adlib's GitHub repo }
+procedure TAdLibDriver.setPercussive(const value: boolean);
+begin
+  isPercussive := value;
+  { TODO: set the instruments }
+
+  if value then begin
+    { Skipped voices & setting BDRegister values }
+    AdLibWrite($BD, $E0);
+    { setRhythmInstruments; }
+  end else begin
+    AdLibWrite($BD, $C0);
+    { setMelodicInstruments; }
+  end;
+end;
+
+procedure TAdLibDriver.setMelodicInstruments;
+begin
+  { TODO: Not implemented! }
+end;
+
+procedure TAdLibDriver.setRhythmInstruments;
+begin
+  { TODO: Not implemented! }
+end;
+
+
 procedure TAdLibDriver.init;
 var
   a: byte;
@@ -234,6 +265,11 @@ begin
   if isInitialised then exit;
 
   resetAllRegisters;
+
+  { Let us decide which waveforms we wish to have }
+  AdLibWrite($01, $20);
+  { Set key-scaling to ON }
+  AdLibWrite($08, $40);
   
   for a := 0 to MAX_VOICES-1 do begin
     voices[a].active := false;
@@ -244,9 +280,12 @@ begin
     voices[a].volume := 127
   end;
   
-  isInitialised := true
+  isInitialised := true;
+
+  setPercussive(false);
 end;
 
+{ Only for melodic voice }
 procedure keyOn(const voice, freqLow, freqHigh: byte);
 begin
   if voice >= MAX_VOICES then exit;
@@ -254,6 +293,7 @@ begin
   AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
 end;
 
+{ Only for melodic voice }
 procedure keyOff(const voice: byte);
 begin
   if voice >= MAX_VOICES then exit;
