@@ -1,3 +1,9 @@
+{
+  AdLib FM synthetiser utility unit
+  Part of Posit-92 game framework
+
+}
+
 unit AdLib;
 
 interface
@@ -57,14 +63,14 @@ type
     procedure shutdown;
     
     procedure loadInstrument(const slot: byte; const instr: PInstrument);
-    procedure selectInstrument(const channel, slot: byte);
+    procedure selectInstrument(const voice, slot: byte);
     
     { Playback }
-    procedure playNote(const channel: byte; const freq: word; const octave, velocity: byte);
-    procedure stopChannel(const channel: byte);
+    procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
+    procedure stopVoice(const voice: byte);
     
-    procedure playMelody(const melody: PMelody; const channel: byte);
-    procedure stopAllChannels;
+    procedure playMelody(const melody: PMelody; const voice: byte);
+    procedure stopAllVoices;
   end;
 
 var
@@ -85,7 +91,7 @@ implementation
 uses CRT, Panic, Timing;
 
 type
-  TChannelState = record
+  TVoiceState = record
     active: boolean;
     melody: PMelody;
     noteIndex: byte;
@@ -95,15 +101,15 @@ type
   end;
 
 const
-  AdLibStatus = $388;
-  AdLibData = $389;
+  AddressPort = $388;  { Address / status port }
+  DataPort = $389;  { Data port }
   
-  MAX_CHANNELS = 9;
-  MAX_INSTRUMENTS = 16;
+  MAX_VOICES = 9; { indices 0..8 }
+  MAX_INSTRUMENTS = 16; { indices 0..15 }
 
 var
   isInitialised: boolean;
-  channels: array[0..MAX_CHANNELS-1] of TChannelState;
+  voices: array[0..MAX_VOICES-1] of TVoiceState;
   instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
 
@@ -111,10 +117,10 @@ procedure AdLibWrite(const reg, value: byte);
 var
   a: byte;
 begin
-  Port[AdLibStatus] := reg;
-  for a:=1 to 10 do;  { simulated delay }
-  Port[AdLibData] := value;
-  for a:=1 to 10 do;  { simulated delay }
+  Port[AddressPort] := reg;
+  for a:=1 to 3 do;  { simulated delay }
+  Port[DataPort] := value;
+  for a:=1 to 12 do;  { simulated delay }
 end;
 
 {
@@ -136,13 +142,12 @@ begin
   note.velocity := velocity;
 end;
 
-procedure setupInstrument(const channel: byte; var instr: PInstrument);
+procedure setupInstrument(const voice: byte; var instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
 begin
-  { Calculate operator offsets }
-  case channel of
+  case voice of
     0: begin modOffset := $00; carOffset := $03; end;
     1: begin modOffset := $01; carOffset := $04; end;
     2: begin modOffset := $02; carOffset := $05; end;
@@ -187,7 +192,7 @@ begin
   end;
   
   { Set algorithm and feedback }
-  AdLibWrite($C0 + channel, (instr^.feedback shl 1) or instr^.algorithm)
+  AdLibWrite($C0 + voice, (instr^.feedback shl 1) or instr^.algorithm)
 end;
 
 procedure TAdLibDriver.loadInstrument(const slot: byte; const instr: PInstrument);
@@ -198,12 +203,12 @@ begin
   instruments[slot] := instr
 end;
 
-procedure TAdLibDriver.selectInstrument(const channel, slot: byte);
+procedure TAdLibDriver.selectInstrument(const voice, slot: byte);
 begin
-  if channel >= MAX_CHANNELS then exit;
+  if voice >= MAX_VOICES then exit;
   if slot >= MAX_INSTRUMENTS then exit;
-  channels[channel].instrument := slot;
-  setupInstrument(channel, instruments[slot])
+  voices[voice].instrument := slot;
+  setupInstrument(voice, instruments[slot])
 end;
 
 
@@ -230,94 +235,93 @@ begin
 
   resetAllRegisters;
   
-  for a := 0 to MAX_CHANNELS-1 do begin
-    channels[a].active := false;
-    channels[a].melody := nil;
-    channels[a].noteIndex := 0;
-    channels[a].noteEndTick := 0;
-    channels[a].instrument := 0;
-    channels[a].volume := 127
+  for a := 0 to MAX_VOICES-1 do begin
+    voices[a].active := false;
+    voices[a].melody := nil;
+    voices[a].noteIndex := 0;
+    voices[a].noteEndTick := 0;
+    voices[a].instrument := 0;
+    voices[a].volume := 127
   end;
   
   isInitialised := true
 end;
 
-procedure keyOn(const channel, freqLow, freqHigh: byte);
+procedure keyOn(const voice, freqLow, freqHigh: byte);
 begin
-  if channel >= MAX_CHANNELS then exit;
-  AdLibWrite($A0 + channel, freqLow); { low byte of frequency }
-  AdLibWrite($B0 + channel, freqHigh or $20) { high byte + key-on flag }
+  if voice >= MAX_VOICES then exit;
+  AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
+  AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
 end;
 
-procedure keyOff(const channel: byte);
+procedure keyOff(const voice: byte);
 begin
-  if channel >= MAX_CHANNELS then exit;
-  AdLibWrite($B0 + channel, 0)
+  if voice >= MAX_VOICES then exit;
+  AdLibWrite($B0 + voice, 0)
 end;
 
 
-procedure TAdLibDriver.playNote(const channel: byte; const freq: word; const octave, velocity: byte);
+procedure TAdLibDriver.playNote(const voice: byte; const freq: word; const octave, velocity: byte);
 var
   volume: byte;
   carrierOffset: byte;
 begin
-  if channel >= MAX_CHANNELS then exit;
+  if voice >= MAX_VOICES then exit;
 
   { Calculate carrier offset }
-  case channel of
-    0..2: carrierOffset := $03 + channel;
-    3..5: carrierOffset := $0B + (channel - 3);
-    6..8: carrierOffset := $13 + (channel - 6);
+  case voice of
+    0..2: carrierOffset := $03 + voice;
+    3..5: carrierOffset := $0B + (voice - 3);
+    6..8: carrierOffset := $13 + (voice - 6);
   end;
   
-  volume := (velocity * channels[channel].volume) div 127;
+  volume := (velocity * voices[voice].volume) div 127;
 
   { TODO: Implement master volume }
   
-  with instruments[channels[channel].instrument]^.carrier do
+  with instruments[voices[voice].instrument]^.carrier do
     AdLibWrite($40 + carrierOffset, (63 - (volume div 2)) and $3F);
 
   keyOn(
-    channel,
+    voice,
     lo(freq),
     (hi(freq) and $03) or (octave shl 2))
 end;
 
 
-procedure TAdLibDriver.stopChannel(const channel: byte);
+procedure TAdLibDriver.stopVoice(const voice: byte);
 begin
-  if channel >= MAX_CHANNELS then exit;
-  AdLibWrite($B0 + channel, 0);
-  channels[channel].active := false
+  if voice >= MAX_VOICES then exit;
+  AdLibWrite($B0 + voice, 0);
+  voices[voice].active := false
 end;
 
-procedure TAdLibDriver.stopAllChannels;
+procedure TAdLibDriver.stopAllVoices;
 var
   a: byte;
 begin
-  for a:=0 to MAX_CHANNELS - 1 do
-    stopChannel(a);
+  for a:=0 to MAX_VOICES - 1 do
+    stopVoice(a);
 end;
 
 { TODO: set volume }
 
-
-procedure TAdLibDriver.playMelody(const melody: PMelody; const channel: byte);
+procedure TAdLibDriver.playMelody(const melody: PMelody; const voice: byte);
 var
   found: boolean;
 begin
-  stopChannel(channel);
+  stopVoice(voice);
 
   if melody = nil then panicHalt('TAdLibDriver.playMelody: Attempting to play a nil melody!');
   
-  channels[channel].active := true;
-  channels[channel].melody := melody;
-  channels[channel].noteIndex := 0;
-  channels[channel].noteEndTick := getTimer + melody^.notes[0].duration;
-  channels[channel].instrument := melody^.instrument;
+  voices[voice].active := true;
+  voices[voice].melody := melody;
+  voices[voice].noteIndex := 0;
+  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
+  voices[voice].instrument := melody^.instrument;
 
-  setupInstrument(channel, instruments[melody^.instrument]);
-  playNote(channel, melody^.notes[0].freq, melody^.notes[0].octave, melody^.notes[0].velocity)
+  setupInstrument(voice, instruments[melody^.instrument]);
+  playNote(voice, melody^.notes[0].freq, melody^.notes[0].octave, melody^.notes[0].velocity)
 end;
 
 
@@ -330,21 +334,21 @@ begin
   
   now := getTimer;
   
-  for a:=0 to MAX_CHANNELS-1 do begin
-    if not channels[a].active then continue;
+  for a:=0 to MAX_VOICES-1 do begin
+    if not voices[a].active then continue;
     
-    if now >= channels[a].noteEndTick then begin
+    if now >= voices[a].noteEndTick then begin
       keyOff(a);
-      inc(channels[a].noteIndex);
+      inc(voices[a].noteIndex);
       
-      if channels[a].noteIndex >= channels[a].melody^.noteCount then begin
-        channels[a].active := false;
+      if voices[a].noteIndex >= voices[a].melody^.noteCount then begin
+        voices[a].active := false;
         continue
       end;
       
-      with channels[a].melody^.notes[channels[a].noteIndex] do begin
+      with voices[a].melody^.notes[voices[a].noteIndex] do begin
         playNote(a, freq, octave, velocity);
-        channels[a].noteEndTick := now + duration
+        voices[a].noteEndTick := now + duration
       end;
     end;
   end;
@@ -355,7 +359,7 @@ procedure TAdLibDriver.shutdown;
 begin
   if not isInitialised then exit;
   
-  stopAllChannels;
+  stopAllVoices;
   resetAllRegisters;
 
   isInitialised := false
