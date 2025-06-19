@@ -107,14 +107,29 @@ const
   AddressPort = $388;  { Address / status port }
   StatusPort = $388;
   DataPort = $389;  { Data port }
-  
-  MAX_VOICES = 9; { indices 0..8 }
+
+  MAX_MELODIC_VOICES = 9; { indices 0..8 }
+  MAX_PERCUSSIVE_VOICES = 11;
   MAX_INSTRUMENTS = 16; { indices 0..15 }
+
+  { Percussive voice numbers }
+  BassDrumVoice = 6;
+  SnareDrumVoice = 7;
+  TomTomVoice = 8;
+  CymbalVoice = 9;
+  HiHatVoice = 10;
+
+  BassDrumBit = $10;
+  SnareDrumBit = $08;
+  TomTomBit = $04;
+  CymbalBit = $02;
+  HiHatBit = $01;
+  
 
 var
   isInitialised: boolean;
   isPercussive: boolean;
-  voices: array[0..MAX_VOICES-1] of TVoiceState;
+  voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
   instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
 
@@ -233,7 +248,7 @@ end;
 
 procedure TAdLibDriver.selectInstrument(const voice, slot: byte);
 begin
-  if voice >= MAX_VOICES then exit;
+  if voice >= MAX_MELODIC_VOICES then exit;
   if slot >= MAX_INSTRUMENTS then exit;
   voices[voice].instrument := slot;
   setupInstrument(voice, instruments[slot])
@@ -303,6 +318,7 @@ begin
   checkAdLib := (status1 = $00) and (status2 = $C0)
 end;
 
+
 procedure TAdLibDriver.init;
 var
   a: byte;
@@ -321,7 +337,7 @@ begin
   { Set key-scaling to ON }
   AdLibWrite($08, $40);
   
-  for a := 0 to MAX_VOICES-1 do begin
+  for a := 0 to MAX_MELODIC_VOICES-1 do begin
     voices[a].active := false;
     voices[a].melody := nil;
     voices[a].noteIndex := 0;
@@ -338,8 +354,10 @@ end;
 { Only for melodic voice }
 { TODO: Add the percussive mode }
 procedure keyOn(const voice, freqLow, freqHigh: byte);
+var
+ 
 begin
-  if voice >= MAX_VOICES then exit;
+  if voice >= MAX_MELODIC_VOICES then exit;
 
   AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
   AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
@@ -349,7 +367,7 @@ end;
 { TODO: Add the percussive mode }
 procedure keyOff(const voice: byte);
 begin
-  if voice >= MAX_VOICES then exit;
+  if voice >= MAX_MELODIC_VOICES then exit;
   AdLibWrite($B0 + voice, 0)
 end;
 
@@ -359,7 +377,7 @@ var
   volume: byte;
   carrierOffset: byte;
 begin
-  if voice >= MAX_VOICES then exit;
+  if voice >= MAX_MELODIC_VOICES then exit;
 
   { Calculate carrier offset }
   case voice of
@@ -384,7 +402,7 @@ end;
 
 procedure TAdLibDriver.stopVoice(const voice: byte);
 begin
-  if voice >= MAX_VOICES then exit;
+  if voice >= MAX_MELODIC_VOICES then exit;
   AdLibWrite($B0 + voice, 0);
   voices[voice].active := false
 end;
@@ -393,7 +411,7 @@ procedure TAdLibDriver.stopAllVoices;
 var
   a: byte;
 begin
-  for a:=0 to MAX_VOICES - 1 do
+  for a:=0 to MAX_MELODIC_VOICES - 1 do
     stopVoice(a);
 end;
 
@@ -427,7 +445,7 @@ begin
   
   now := getTimer;
   
-  for a:=0 to MAX_VOICES-1 do begin
+  for a:=0 to MAX_MELODIC_VOICES-1 do begin
     if not voices[a].active then continue;
     
     if now >= voices[a].noteEndTick then begin
