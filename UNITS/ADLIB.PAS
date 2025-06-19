@@ -91,7 +91,7 @@ procedure AdLibWrite(const reg, value: byte);
 
 implementation
 
-uses CRT, Panic, Timing;
+uses CRT, Logger, Panic, Timing;
 
 type
   TVoiceState = record
@@ -105,6 +105,7 @@ type
 
 const
   AddressPort = $388;  { Address / status port }
+  StatusPort = $388;
   DataPort = $389;  { Data port }
   
   MAX_VOICES = 9; { indices 0..8 }
@@ -280,12 +281,38 @@ begin
   { TODO: Not implemented! }
 end;
 
+{ Adapted from BoardInstalled from ccodere/pascal-adlib }
+function checkAdLib: boolean;
+var
+  status1, status2: integer;
+begin
+  AdLibWrite($04, $60);  { Reset both timers }
+  AdLibWrite($04, $80);  { Enable timer interrupts }
+  status1 := Port[StatusPort];
+
+  AdLibWrite($02, $FF);
+  AdLibWrite($04, $21);  { Start timer 21h }
+  delay(100);  { Important }
+
+  status2 := Port[StatusPort];
+  AdLibWrite($04, $60);  { Reset both timers }
+  AdLibWrite($04, $80);  { Enable timer interrupts }
+
+  status1 := status1 and $E0;
+  status2 := status2 and $E0;
+  checkAdLib := (status1 = $00) and (status2 = $C0)
+end;
 
 procedure TAdLibDriver.init;
 var
   a: byte;
 begin
   if isInitialised then exit;
+
+  if not checkAdLib then begin
+    writeLog('TAdLibDriver.init: Can''t find the AdLib card!');
+    exit
+  end;
 
   resetAllRegisters;
 
@@ -313,6 +340,7 @@ end;
 procedure keyOn(const voice, freqLow, freqHigh: byte);
 begin
   if voice >= MAX_VOICES then exit;
+
   AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
   AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
 end;
