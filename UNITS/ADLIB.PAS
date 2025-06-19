@@ -1,7 +1,6 @@
 {
-  AdLib FM synthetiser utility unit
+  AdLib FM synthesiser interface utility unit
   Part of Posit-92 game framework
-
 }
 
 unit AdLib;
@@ -55,6 +54,7 @@ type
     feedback: byte;
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
+
   PAdLibDriver = ^TAdLibDriver;
   TAdLibDriver = object
     function getIsInitialised: boolean;
@@ -146,24 +146,47 @@ begin
   note.velocity := velocity;
 end;
 
+function getModulatorOffset(const voice: byte): byte;
+begin
+  case voice of
+  0: getModulatorOffset := $00;
+  1: getModulatorOffset := $01;
+  2: getModulatorOffset := $02;
+
+  3: getModulatorOffset := $08;
+  4: getModulatorOffset := $09;
+  5: getModulatorOffset := $0A;
+
+  6: getModulatorOffset := $10;
+  7: getModulatorOffset := $11;
+  8: getModulatorOffset := $12;
+  end;
+end;
+
+function getCarrierOffset(const voice: byte): byte;
+begin
+  case voice of
+  0: getCarrierOffset := $03;
+  1: getCarrierOffset := $04;
+  2: getCarrierOffset := $05;
+
+  3: getCarrierOffset := $0B;
+  4: getCarrierOffset := $0C;
+  5: getCarrierOffset := $0D;
+
+  6: getCarrierOffset := $13;
+  7: getCarrierOffset := $14;
+  8: getCarrierOffset := $15;
+  end;
+end;
+
 procedure setupInstrument(const voice: byte; var instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
 begin
-  case voice of
-    0: begin modOffset := $00; carOffset := $03; end;
-    1: begin modOffset := $01; carOffset := $04; end;
-    2: begin modOffset := $02; carOffset := $05; end;
-    
-    3: begin modOffset := $08; carOffset := $0b; end;
-    4: begin modOffset := $09; carOffset := $0c; end;
-    5: begin modOffset := $0A; carOffset := $0d; end;
-    
-    6: begin modOffset := $10; carOffset := $13; end;
-    7: begin modOffset := $11; carOffset := $14; end;
-    8: begin modOffset := $12; carOffset := $15; end;
-  end;
+  modOffset := getModulatorOffset(voice);
+  carOffset := getCarrierOffset(voice);
 
   if instr = nil then panicHalt('setupInstrument: instr is nil!');
   
@@ -286,6 +309,7 @@ begin
 end;
 
 { Only for melodic voice }
+{ TODO: Add the percussive mode }
 procedure keyOn(const voice, freqLow, freqHigh: byte);
 begin
   if voice >= MAX_VOICES then exit;
@@ -294,6 +318,7 @@ begin
 end;
 
 { Only for melodic voice }
+{ TODO: Add the percussive mode }
 procedure keyOff(const voice: byte);
 begin
   if voice >= MAX_VOICES then exit;
