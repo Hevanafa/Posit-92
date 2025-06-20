@@ -62,9 +62,7 @@ begin
 
   now := getTimer;
 
-  { TODO: Your update code here }
-
-
+  { Your update code here }
   if lastKeys[SC_Q] <> isKeyDown(SC_Q) then begin
     lastKeys[SC_Q] := isKeyDown(SC_Q);
 
@@ -76,37 +74,64 @@ begin
     end;
   end;
 
-  if isKeyDown(SC_ESC) then done := true;
-  
-  if lastSpace <> isKeyDown(SC_SPACE) then begin
-    lastSpace := isKeyDown(SC_SPACE);
+  if lastKeys[SC_W] <> isKeyDown(SC_W) then begin
+    lastKeys[SC_W] := isKeyDown(SC_W);
 
-    { TODO: implement a full drumset }
-    { if lastSpace then
-      AdLibDrv.playMelody(@sfxCoin, 0); }
-    if lastSpace then begin
-      { AdLibDrv.selectInstrument(0, 0); }
-
-      { AdLibDrv.playMelodyNoInstrument(@odeToJoy, 0); }
-
-      { Snare drum }
-      { AdLibDrv.drumOn(SnareDrumVoice, 40); }
-
-      { Tom-tom }
-      { AdLibDrv.drumOn(TomTomVoice, 30); }
-
-      { Cymbal }
-      AdLibDrv.drumOn(CymbalVoice, 40);
-
-      { Hi-hat }
-      { AdLibDrv.drumOn(HiHatVoice, 30); }
-
-      snareOn := true;
-      snareEndTick := getTimer + 0.2;
+    { Snare drum }
+    if lastKeys[SC_W] then begin
+      AdLibDrv.drumOn(SnareDrumVoice, 40);
+      drumStates[1] := true;
+      endTicks[1] := now + 0.2;
     end;
   end;
 
-  for a:=0 to high(drumStates) then begin
+  if lastKeys[SC_E] <> isKeyDown(SC_E) then begin
+    lastKeys[SC_E] := isKeyDown(SC_E);
+
+    { Tom-tom drum }
+    if lastKeys[SC_E] then begin
+      AdLibDrv.drumOn(TomTomVoice, 30);
+      drumStates[2] := true;
+      endTicks[2] := now + 0.2;
+    end;
+  end;
+
+  if lastKeys[SC_R] <> isKeyDown(SC_R) then begin
+    lastKeys[SC_R] := isKeyDown(SC_R);
+
+    { Bass drum }
+    if lastKeys[SC_R] then begin
+      AdLibDrv.drumOn(CymbalVoice, 40);
+      drumStates[3] := true;
+      endTicks[3] := now + 0.2;
+    end;
+  end;
+
+  if lastKeys[SC_T] <> isKeyDown(SC_T) then begin
+    lastKeys[SC_T] := isKeyDown(SC_T);
+
+    { Bass drum }
+    if lastKeys[SC_T] then begin
+      AdLibDrv.drumOn(HiHatVoice, 30);
+      drumStates[4] := true;
+      endTicks[4] := now + 0.2;
+    end;
+  end;
+
+  if isKeyDown(SC_ESC) then done := true;
+  
+  { if lastSpace <> isKeyDown(SC_SPACE) then begin 
+    lastSpace := isKeyDown(SC_SPACE); }
+
+    { if lastSpace then
+      AdLibDrv.playMelody(@sfxCoin, 0); }
+    { if lastSpace then begin }
+      { AdLibDrv.selectInstrument(0, 0); }
+      { AdLibDrv.playMelodyNoInstrument(@odeToJoy, 0); }
+    { end; }
+  { end; }
+
+  for a:=0 to high(drumStates) do begin
     if not drumStates[a] then continue;
 
     if now >= endTicks[a] then begin
@@ -143,7 +168,7 @@ begin
   print('R - cymbal', 16, 40, 15);
   print('T - hi-hat', 16, 48, 15);
   
-  print('Esc - done', 16, 48, 15);
+  print('Esc - done', 16, 184, 15);
 
   AdLibDrv.drawDebug;
 
