@@ -1,86 +1,33 @@
+{
+  Minimal AdLib drum set demo
+  Part of Posit-92 game framework
+}
+
 {$DEFINE DEBUG}
 
 uses
   CRT, DOS,
-  AdLib, Bitmap, Logger,  { AdLibPK }
+  AdLib, Bitmap, Logger,
   Keyboard, Mouse, Timing, VGA;
 
 const
   SC_ESC = $01;
   SC_SPACE = $39;
+  SC_Q = $10;
+  SC_W = $11;
+  SC_E = $12;
+  SC_R = $13;
+  SC_T = $14;
+
 var
   done: boolean;
   t: double;
   DosuEXE: array[0..1] of PBitmap;
-  sfxCoin: TMelody;
-  lastSpace: boolean;
-  PianoInstrument: TInstrument;
-  odeToJoy: TMelody;
-  snareOn: boolean;
-  snareEndTick: double;
-  { TODO: More of your game state here }
 
-
-procedure initInstruments;
-begin
-  with PianoInstrument do begin
-    modulator.tremolo := false;
-    modulator.vibrato := false;
-    modulator.sustain := false;
-    modulator.keyScale := false;
-    modulator.multiplier := 1;
-    modulator.totalLevel := 25; { octaves ? }
-    modulator.attack := 15;
-    modulator.decay := 4;
-    modulator.sustainLevel := 6;
-    modulator.release := 7;
-    modulator.waveform := 0;
-    
-    carrier.tremolo := false;
-    carrier.vibrato := false;
-    carrier.sustain := false;
-    carrier.keyScale := false;
-    carrier.multiplier := 1;
-    carrier.totalLevel := 0;
-    carrier.attack := 15;
-    carrier.decay := 4; 
-    carrier.sustainLevel := 6;
-    carrier.release := 7;
-    carrier.waveform := 0;
-    
-    feedback := 6;
-    algorithm := 0
-  end;
-  
-  { NOTE: Add more of your instruments here }
-end;
-
-
-procedure setupOdeToJoy;
-begin
-  odeToJoy.noteCount := 16;
-  odeToJoy.instrument := 0;
-
-  initNote(odeToJoy.notes[0], NOTE_E, 4, 0.5, 120);
-  initNote(odeToJoy.notes[1], NOTE_E, 4, 0.5, 120);
-  initNote(odeToJoy.notes[2], NOTE_F, 4, 0.5, 120);
-  initNote(odeToJoy.notes[3], NOTE_G, 4, 0.5, 120);
-  
-  initNote(odeToJoy.notes[4], NOTE_G, 4, 0.5, 120);
-  initNote(odeToJoy.notes[5], NOTE_F, 4, 0.5, 120);
-  initNote(odeToJoy.notes[6], NOTE_E, 4, 0.5, 120);
-  initNote(odeToJoy.notes[7], NOTE_D, 4, 0.5, 120);
-
-  initNote(odeToJoy.notes[8], NOTE_C, 4, 0.5, 120);
-  initNote(odeToJoy.notes[9], NOTE_C, 4, 0.5, 120);
-  initNote(odeToJoy.notes[10], NOTE_D, 4, 0.5, 120);
-  initNote(odeToJoy.notes[11], NOTE_E, 4, 0.5, 120);
-
-  initNote(odeToJoy.notes[12], NOTE_E, 4, 0.75, 120);
-  initNote(odeToJoy.notes[13], NOTE_D, 4, 0.25, 120);
-  initNote(odeToJoy.notes[14], NOTE_D, 4, 1.0, 120);
-  initNote(odeToJoy.notes[15], NOTE_D, 4, 0.5, 80);
-end;
+  { TODO: Implement this }
+  lastKeys: array[SC_Q..SC_T] of boolean;
+  drumStates: array[0..4] of boolean;
+  endTicks: array[0..4] of double;
 
 
 procedure INIT;
@@ -98,38 +45,36 @@ begin
   randomize;
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  lastSpace := false;
   
   AdLibDrv.init;
-  {
-  initInstruments;
-  AdLibDrv.loadInstrument(0, @PianoInstrument);
-  }
   AdLibDrv.setPercussive(true);
-  setupOdeToJoy;
-
-  with sfxCoin do begin
-    noteCount := 3;
-    instrument := 0;
-    initNote(notes[0], NOTE_C, 5, 0.3, 127);
-    initNote(notes[1], NOTE_E, 5, 0.3, 127);
-    initNote(notes[2], NOTE_F, 5, 0.3, 127)
-  end;
-
-
 end;
 
 
 procedure update;
 var
-  a: integer;
+  a: word;
   now: double;
 begin
   updateDeltaTime;
   updateMouse;
   AdLibDrv.update;
 
+  now := getTimer;
+
   { TODO: Your update code here }
+
+
+  if lastKeys[SC_Q] <> isKeyDown(SC_Q) then begin
+    lastKeys[SC_Q] := isKeyDown(SC_Q);
+
+    { Bass drum }
+    if lastKeys[SC_Q] then begin
+      AdLibDrv.drumOn(BassDrumVoice, 52);
+      drumStates[0] := true;
+      endTicks[0] := now + 0.2;
+    end;
+  end;
 
   if isKeyDown(SC_ESC) then done := true;
   
@@ -143,9 +88,6 @@ begin
       { AdLibDrv.selectInstrument(0, 0); }
 
       { AdLibDrv.playMelodyNoInstrument(@odeToJoy, 0); }
-
-      { Bass drum }
-      { AdLibDrv.drumOn(BassDrumVoice, 52); }
 
       { Snare drum }
       { AdLibDrv.drumOn(SnareDrumVoice, 40); }
@@ -164,16 +106,19 @@ begin
     end;
   end;
 
-  now := getTimer;
-  if snareOn then begin
-    if now >= snareEndTick then begin
-      snareOn := false;
+  for a:=0 to high(drumStates) then begin
+    if not drumStates[a] then continue;
 
-      { AdLibDrv.drumOff(BassDrumVoice); }
-      { AdLibDrv.drumOff(SnareDrumVoice); }
-      { AdLibDrv.drumOff(TomTomVoice); }
-      AdLibDrv.drumOff(CymbalVoice);
-      { AdLibDrv.drumOff(HiHatVoice); }
+    if now >= endTicks[a] then begin
+      drumStates[a] := false;
+
+      case a of
+      0: AdLibDrv.drumOff(BassDrumVoice);
+      1: AdLibDrv.drumOff(SnareDrumVoice);
+      2: AdLibDrv.drumOff(TomTomVoice);
+      3: AdLibDrv.drumOff(CymbalVoice);
+      4: AdLibDrv.drumOff(HiHatVoice);
+      end;
     end;
   end;
   
@@ -187,16 +132,18 @@ var
 begin
   asmCls($7D);
 
-  { TODO: Your drawing code here }
-
   if (trunc(t * 1.5) and 1) = 0 then
     spr(dosuEXE[0], 148, 76, 13)
   else
     spr(dosuEXE[1], 148, 76, 13);
 
-  { print('Press Space to play chime', 160-100, 120, 15); }
-  print('Press Space to play', 160-76, 120, 15);
-  print('Ode to Joy', 160-40, 128, 15);
+  print('Q - bass drum', 16, 16, 15);
+  print('W - snare drum', 16, 24, 15);
+  print('E - tom-tom', 16, 32, 15);
+  print('R - cymbal', 16, 40, 15);
+  print('T - hi-hat', 16, 48, 15);
+  
+  print('Esc - done', 16, 48, 15);
 
   AdLibDrv.drawDebug;
 
