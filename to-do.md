@@ -19,15 +19,16 @@ Graphics
   - (under BMFont unit) Draw a segment of a sprite
 - [x] Support for 1-bit BMP file format
 - [x] Draw a sprite with assembly
+- [x] Microsoft bitmap font (FNT) support
 
 Mode X Graphics
 - [x] Access to Mode X
 - [x] Stable Mode X page flipping
 - [x] PSET to the active page
 - [x] PBitmap support
-- [ ] Drawing primitives
-- [ ] BMFont support
-- [ ] 1-bit bitmap support
+- Drawing primitives
+- BMFont support
+- 1-bit bitmap support
 
 Sounds
 - [x] PC speaker
@@ -35,7 +36,7 @@ Sounds
 - [x] AdLib with instruments & channels
 - [x] AdLib sound effects setup
 - [x] AdLib music setup: melody & more extensive use of channels & timers
-- AdLib percussion setup: drums (bass, snare, hi-hat, cymbal, tom)
+- [x] AdLib percussion setup: drums (bass, snare, hi-hat, cymbal, tom)
 - SoundBlaster
 
 - [x] Docs: Building
