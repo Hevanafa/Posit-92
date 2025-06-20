@@ -441,39 +441,6 @@ begin
 end;
 
 
-procedure TAdLibDriver.init;
-var
-  a: byte;
-begin
-  if isInitialised then exit;
-
-  if not checkAdLib then begin
-    writeLog('TAdLibDriver.init: Can''t find the AdLib card!');
-    exit
-  end;
-
-  resetAllRegisters;
-
-  { Let us decide which waveforms we wish to have }
-  AdLibWrite($01, $20);
-  { Set key-scaling to ON }
-  AdLibWrite($08, $40);
-  
-  for a := 0 to MAX_MELODIC_VOICES-1 do begin
-    voices[a].active := false;
-    voices[a].melody := nil;
-    voices[a].noteIndex := 0;
-    voices[a].noteEndTick := 0;
-    voices[a].instrument := 0;
-    voices[a].volume := 127
-  end;
-  
-  isInitialised := true;
-
-  setPercussive(false);
-end;
-
-
 function getIsMelodic(const voice: byte): boolean;
 begin
   getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
@@ -524,6 +491,37 @@ begin
   end;
 end;
 
+procedure TAdLibDriver.init;
+var
+  a: byte;
+begin
+  if isInitialised then exit;
+
+  if not checkAdLib then begin
+    writeLog('TAdLibDriver.init: Can''t find the AdLib card!');
+    exit
+  end;
+
+  resetAllRegisters;
+
+  { Let us decide which waveforms we wish to have }
+  AdLibWrite($01, $20);
+  { Set key-scaling to ON }
+  AdLibWrite($08, $40);
+  
+  for a := 0 to MAX_MELODIC_VOICES-1 do begin
+    voices[a].active := false;
+    voices[a].melody := nil;
+    voices[a].noteIndex := 0;
+    voices[a].noteEndTick := 0;
+    voices[a].instrument := 0;
+    voices[a].volume := 127
+  end;
+  
+  isInitialised := true;
+
+  setPercussive(false);
+end;
 
 procedure TAdLibDriver.playNote(const voice: byte; const freq: word; const octave, velocity: byte);
 var
@@ -549,11 +547,12 @@ begin
     (hi(freq) and $03) or (octave shl 2))
 end;
 
-
 procedure TAdLibDriver.stopVoice(const voice: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
-  AdLibWrite($B0 + voice, 0);
+
+  { AdLibWrite($B0 + voice, 0); }
+  keyOff(voice);
   voices[voice].active := false
 end;
 
