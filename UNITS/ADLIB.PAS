@@ -2,13 +2,11 @@
   AdLib FM synthesiser interface utility unit
   Part of Posit-92 game framework
   Some parts are adapted from ccodere/pascal-adlib's GitHub repo
+
+  20-06-2025: The current version doesn't support playing percussion alongside melodic mode
 }
 
 {$DEFINE DEBUG}
-{ TODO: Review the code which uses CalcNote, especially the percussive mode part
-  Apparently, CalcNote is used only in NoteOn & NoteOff
-}
-
 { TODO: Maybe the percussive mode needs another set of NoteOn & NoteOff }
 
 unit AdLib;
@@ -100,6 +98,8 @@ type
     procedure playMelodyNoInstrument(const melody: PMelody; const voice: byte);
     procedure playMelody(const melody: PMelody; const voice: byte);
     procedure stopAllVoices;
+
+    procedure drawDebug;
   end;
 
 const 
@@ -126,7 +126,7 @@ implementation
 
 uses
   CRT,
-  Conv, Logger, Panic, Timing;
+  Conv, Logger, Panic, Timing, VGA;
 
 type
   TVoiceState = record
@@ -428,6 +428,7 @@ begin
     AdLibWrite(opOffset + $E3, SetWaveSelect);
   end;
   
+  { The other percussive voices only have one operator }
   for a:=SnareDrumVoice to HiHatVoice do begin
     opOffset := OpModulator[a];
     AdLibWrite(opOffset + $20, InstrArray[a].WaveChar);
@@ -759,6 +760,16 @@ begin
     voices[a].instrument := 0;
     voices[a].volume := 127
   end;
+
+  { Select SINUS Waves for Output }
+  for a:=0 to 8 do begin
+    {
+    AdLibWrite($E0 + SlotMVoice[i][Modulator], $00);
+    AdLibWrite($E0 + SlotMVoice[i][Carrier], $00);
+    }
+    AdLibWrite($E0 + getModulatorOffset(a), $00);
+    AdLibWrite($E0 + getCarrierOffset(a), $00);
+  end;
   
   isInitialised := true;
 
@@ -882,6 +893,17 @@ begin
       end;
     end;
   end;
+end;
+
+
+procedure TAdLibDriver.drawDebug;
+begin
+  if not isInitialised then begin
+    asmPrint('AdLib is not initialised!', 0, 0, 7);
+    exit
+  end;
+
+  asmPrint('$BD: ' + i32str(BDRegister), 0, 8, 7);
 end;
 
 
