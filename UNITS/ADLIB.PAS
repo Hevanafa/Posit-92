@@ -175,37 +175,25 @@ begin
 end;
 
 function getModulatorOffset(const voice: byte): byte;
+const
+  offsets: array[0..8] of byte = (
+    $00, $01, $02,
+    $08, $09, $0A,
+    $10, $11, $12
+  );
 begin
-  case voice of
-  0: getModulatorOffset := $00;
-  1: getModulatorOffset := $01;
-  2: getModulatorOffset := $02;
-
-  3: getModulatorOffset := $08;
-  4: getModulatorOffset := $09;
-  5: getModulatorOffset := $0A;
-
-  6: getModulatorOffset := $10;
-  7: getModulatorOffset := $11;
-  8: getModulatorOffset := $12;
-  end;
+  getModulatorOffset := offsets[voice]
 end;
 
 function getCarrierOffset(const voice: byte): byte;
+const
+  offsets: array[0..8] of byte = (
+    $03, $04, $05,
+    $0B, $0C, $0D,
+    $13, $14, $15
+  );
 begin
-  case voice of
-  0: getCarrierOffset := $03;
-  1: getCarrierOffset := $04;
-  2: getCarrierOffset := $05;
-
-  3: getCarrierOffset := $0B;
-  4: getCarrierOffset := $0C;
-  5: getCarrierOffset := $0D;
-
-  6: getCarrierOffset := $13;
-  7: getCarrierOffset := $14;
-  8: getCarrierOffset := $15;
-  end;
+  getCarrierOffset := offsets[voice]
 end;
 
 
@@ -310,6 +298,7 @@ const
     $00, $01, $02, $08, $09, $0a,
     $10, $11, $12, $01, $11, $4f,
     $00, $f1);
+  { Todo: adapt this with the TInstrument format }
   ElectricPiano: array[0..1] of TOldInstrument = (
   (
     WaveChar: 65; ScalingOutput: 127;
@@ -486,7 +475,6 @@ begin
     stopVoice(a);
 end;
 
-{ TODO: set volume }
 
 procedure TAdLibDriver.playMelodyNoInstrument(const melody: PMelody; const voice: byte);
 var
