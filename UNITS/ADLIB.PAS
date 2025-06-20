@@ -3,6 +3,9 @@
   Part of Posit-92 game framework
 }
 
+{ TODO: Implement every part that involves the BDRegister }
+{ TODO: Maybe the percussive mode needs another set of NoteOn & NoteOff }
+
 unit AdLib;
 
 interface
@@ -140,7 +143,7 @@ const
 
 var
   isInitialised: boolean;
-  isPercussive: boolean;
+  isPercussiveMode: boolean;
   voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
   instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
@@ -278,7 +281,7 @@ end;
 { Adapted from ccodere/pascal-adlib's GitHub repo }
 procedure TAdLibDriver.setPercussive(const value: boolean);
 begin
-  isPercussive := value;
+  isPercussiveMode := value;
 
   if value then begin
     { Skipped MaxVoices & BDRegister values }
@@ -470,22 +473,55 @@ begin
   setPercussive(false);
 end;
 
-{ Only for melodic voice }
-{ TODO: Add the percussive mode }
+
+function getIsMelodic(const voice: byte): boolean;
+begin
+  getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
+    (not isPercussiveMode)
+end;
+
 procedure keyOn(const voice, freqLow, freqHigh: byte);
+const
+  PercussiveOffset: array[0..10] of byte = (
+      $11, $10, $08, $04, $02, $01,
+      $06, $07, $08, $08, $07);
+var
+  isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
-  AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
+  isMelodic := getIsMelodic(voice);
+
+  if isMelodic then begin
+    AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
+    AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
+  end else begin
+    BDRegister := BDRegister OR PercBits[Voice-6];
+    Output[Voice] := CalcNote(Voice, Note);
+    SndOutput($A0 + PercussiveOffset[Voice], freqLow);
+    SndOutput($B0 + PercussiveOffset[Voice], freqHigh);
+
+    AdLibWrite($BD, BDRegister);
+  end;
 end;
 
 { Only for melodic voice }
-{ TODO: Add the percussive mode }
 procedure keyOff(const voice: byte);
+const
+  PercBits: array[0..4] of byte =
+    { $10, $08, $04, $02, $01 }
+    (BassDrumBit, SnareDrumBit, TomTomBit, CymbalBit, HiHatBit)
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
-  AdLibWrite($B0 + voice, 0)
+
+  isMelodic := getIsMelodic(voice);
+
+  if isMelodic then
+    AdLibWrite($B0 + voice, 0)
+  else begin
+    BDRegister := BDRegister AND (NOT Percbits[Voice - 6]);
+    AdLibWrite($BD, BDRegister);
+  end;
 end;
 
 
