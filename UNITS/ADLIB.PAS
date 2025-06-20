@@ -4,6 +4,8 @@
   Some parts are adapted from ccodere/pascal-adlib's GitHub repo
 }
 
+{$DEFINE DEBUG}
+{ TODO: Review the code which uses CalcNote, especially the percussive mode part }
 { TODO: Maybe the percussive mode needs another set of NoteOn & NoteOff }
 
 unit AdLib;
@@ -106,7 +108,9 @@ procedure AdLibWrite(const reg, value: byte);
 
 implementation
 
-uses CRT, Logger, Panic, Timing;
+uses
+  CRT,
+  Conv, Logger, Panic, Timing;
 
 type
   TVoiceState = record
@@ -287,6 +291,10 @@ end;
 procedure TAdLibDriver.setPercussive(const value: boolean);
 begin
   isPercussiveMode := value;
+
+{$IFDEF DEBUG}
+  writeLog('Changed percussive mode to ' + boolStr(value));
+{$ENDIF}
 
   if value then begin
     { Skipped MaxVoices value }
