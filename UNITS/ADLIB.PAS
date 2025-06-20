@@ -83,6 +83,7 @@ type
     procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
     procedure stopVoice(const voice: byte);
     
+    procedure playMelodyNoInstrument(const melody: PMelody; const voice: byte);
     procedure playMelody(const melody: PMelody; const voice: byte);
     procedure stopAllVoices;
   end;
@@ -456,10 +457,12 @@ begin
   
   volume := (velocity * voices[voice].volume) div 127;
 
-  { TODO: Implement master volume }
-  
+  { Important: Don't delete this! }
+  {
   with instruments[voices[voice].instrument]^.carrier do
-    AdLibWrite($40 + carrierOffset, (63 - (volume div 2)) and $3F);
+    AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
+  }
+  AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
 
   keyOn(
     voice,
@@ -484,6 +487,28 @@ begin
 end;
 
 { TODO: set volume }
+
+procedure TAdLibDriver.playMelodyNoInstrument(const melody: PMelody; const voice: byte);
+var
+  found: boolean;
+begin
+  stopVoice(voice);
+
+  if melody = nil then panicHalt('TAdLibDriver.playMelody: Attempting to play a nil melody!');
+  
+  voices[voice].active := true;
+  voices[voice].melody := melody;
+  voices[voice].noteIndex := 0;
+  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
+  { voices[voice].instrument := melody^.instrument; }
+
+  { setupInstrument(voice, instruments[melody^.instrument]); }
+  playNote(
+    voice,
+    melody^.notes[0].freq,
+    melody^.notes[0].octave,
+    melody^.notes[0].velocity)
+end;
 
 procedure TAdLibDriver.playMelody(const melody: PMelody; const voice: byte);
 var
