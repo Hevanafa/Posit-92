@@ -46,7 +46,6 @@ All the demonstrations are placed in `DEMOS`
 ### Utility units
 
 - `ADLIB.PAS`: AdLib utility
-- `ADLIBPK.PAS`: AdLib percussion kit (unstable)
 - `BITMAP.PAS`: Utility for BMP files
 - `BMFONT.PAS`: BMFont support utility
 - `BMPROT.PAS`: Procedural bitmap rotation & scaling
