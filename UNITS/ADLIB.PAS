@@ -76,8 +76,8 @@ type
 
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
-    procedure setMelodicInstruments;
-    procedure setRhythmInstruments;
+    procedure setupMelodicInstruments;
+    procedure setupRhythmInstruments;
 
     { Playback }
     procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
@@ -283,16 +283,15 @@ begin
   if value then begin
     { Skipped MaxVoices & BDRegister values }
     AdLibWrite($BD, $E0);
-    { TODO: }
-    setRhythmInstruments;
+    setupRhythmInstruments;
   end else begin
     AdLibWrite($BD, $C0);
-    setMelodicInstruments;
+    setupMelodicInstruments;
   end;
 end;
 
 { Assigns all voices with the electric piano preset }
-procedure TAdLibDriver.setMelodicInstruments;
+procedure TAdLibDriver.setupMelodicInstruments;
 const
   OpModulator: array[0..13] of byte = (
     $00, $01, $02, $08, $09, $0a,
@@ -338,23 +337,83 @@ begin
 end;
 
 
-procedure TAdLibDriver.setRhythmInstruments;
+procedure TAdLibDriver.setupRhythmInstruments;
 const
-  PercOperatorModulator: array[0..10] of byte = (
+  OpModulator: array[0..10] of byte = (
     $F2, $53, $74, $00, $00, $08,
     $10, $14, $12, $15, $11
   );
+
+  { PERCUSSIVE MODE VOICES }
+  BassDrum:array[0..1] of TOldInstrument = (
+    { Modulator }
+    (
+      WaveChar: 0; ScalingOutput: 11;
+      AttackDecay: $A8; SustainRelease: $4C;
+      FeedBack: 1; SetWaveSelect: 1),
+
+    { Carrier }
+    (
+      WaveChar: 0; ScalingOutput: 0;
+      AttackDecay: $D6; SustainRelease: $4F;
+      FeedBack: 1; SetWaveSelect: 0));
+
+  InstrArray:Array[7..10] of TOldInstrument =
+  (* SnareDrum Instrument *)
+  ((
+    WaveChar:12; ScalingOutput: 0;
+    AttackDecay: 248; SustainRelease: 181;
+    FeedBack: 0; SetWaveSelect: 0),
+
+  (* TomTom Voice instrument *)
+  (WaveChar: 4; ScalingOutput: 0;
+    AttackDecay: 247; SustainRelease: 181;
+    FeedBack: 0; SetWaveSelect: 0),
+  (* Cymbal Voice Instrument *)
+  (WaveChar: 1; ScalingOutput: 0;
+    AttackDecay: 245; SustainRelease: 181;
+    FeedBack: 0; SetWaveSelect: 0),
+  (* hihat Voice Instrument *)
+  (WaveChar: 1; ScalingOutput: 0;
+    AttackDecay: 247; SustainRelease: 181;
+    FeedBack: 0; SetWaveSelect: 0));
+var
+  a, opOffset: byte;
 begin
   { Skipped Carrier up to Volume array accesses }
-  panicHalt('TAdLibDriver.setRhythmInstruments: Not yet implemented!');
 
-  { opOffset := PercOperatorModulator[BassDrumVoice]; }
+  opOffset := OpModulator[BassDrumVoice];
+
+  { Modulator }
+  with BassDrum[0] do begin
+    AdLibWrite(opOffset + $20, WaveChar);
+    AdLibWrite(opOffset + $40, ScalingOutput);
+    AdLibWrite(opOffset + $60, AttackDecay);
+    AdLibWrite(opOffset + $80, SustainRelease);
+    AdLibWrite(BassDrumVoice + $C0, Feedback);
+    AdLibWrite(opOffset + $E0, SetWaveSelect);
+  end;
+
+  { Carrier }
+  with BassDrum[1] do begin
+    AdLibWrite(opOffset + $23, WaveChar);
+    AdLibWrite(opOffset + $43, ScalingOutput);
+    AdLibWrite(opOffset + $63, AttackDecay);
+    AdLibWrite(opOffset + $83, SustainRelease);
+    AdLibWrite(opOffset + $E3, SetWaveSelect);
+  end;
   
-  { TODO: Assign the values from BassDrum[modulator] }
-  { TODO: Assign the values from BassDrum[carrier] }
-
-  { TODO: Assign the other percussive voices }
+  for a:=SnareDrumVoice to HiHatVoice do begin
+    opOffset := OpModulator[a];
+    AdLibWrite(opOffset + $20, InstrArray[a].WaveChar);
+    AdLibWrite(opOffset + $40, InstrArray[a].ScalingOutput);
+    AdLibWrite(opOffset + $60, InstrArray[a].AttackDecay);
+    AdLibWrite(opOffset + $80, InstrArray[a].SustainRelease);
+    AdLibWrite(a + $C0, InstrArray[a].Feedback);
+    AdLibWrite(opOffset + $E0, InstrArray[a].SetWaveSelect);
+  end;
 end;
+
 
 { Adapted from BoardInstalled from ccodere/pascal-adlib }
 function checkAdLib: boolean;
@@ -437,13 +496,8 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  { Calculate carrier offset }
-  case voice of
-    0..2: carrierOffset := $03 + voice;
-    3..5: carrierOffset := $0B + (voice - 3);
-    6..8: carrierOffset := $13 + (voice - 6);
-  end;
-  
+  carrierOffset := getCarrierOffset(voice);
+
   volume := (velocity * voices[voice].volume) div 127;
 
   { Important: Don't delete this! }
