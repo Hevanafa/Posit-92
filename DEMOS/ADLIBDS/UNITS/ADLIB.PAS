@@ -7,8 +7,8 @@
 }
 
 {$DEFINE DEBUG}
-{ TODO: Maybe the percussive mode needs another set of NoteOn & NoteOff }
-{ TODO: Debug BDRegister value for each drum instrument }
+{ TODO: Adapt the old instrument to the new one }
+{ TODO: Implement TVoice, which handles the melody & drum scheduling }
 
 unit AdLib;
 
