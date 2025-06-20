@@ -83,7 +83,7 @@ type
     procedure init;
     procedure update;
     procedure shutdown;
-    procedure setPercussive(const value: boolean);    
+    procedure setPercussive(const value: boolean);
 
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
@@ -93,7 +93,10 @@ type
     { Playback }
     procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
     procedure stopVoice(const voice: byte);
-    
+
+    procedure drumOn(const voice, note: byte);
+    procedure drumOff(const voice: byte);
+
     procedure playMelodyNoInstrument(const melody: PMelody; const voice: byte);
     procedure playMelody(const melody: PMelody; const voice: byte);
     procedure stopAllVoices;
@@ -463,12 +466,6 @@ begin
 end;
 
 
-function getIsMelodic(const voice: byte): boolean;
-begin
-  getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
-    (not isPercussiveMode)
-end;
-
 { Taken from ccodere/pascal-adlib's GitHub repo }
 const
   NoteTab: array[0..126] of byte = (
@@ -675,15 +672,17 @@ ASM
 end;
 
 
+function getIsMelodic(const voice: byte): boolean;
+begin
+  getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
+    (not isPercussiveMode)
+end;
+
+{ low-level interface, doesn't change the `active` flag }
 procedure melodicKeyOn(const voice, freqLow, freqHigh: byte);
-const
-  PercussiveOffset: array[0..10] of byte = (
-      $11, $10, $08, $04, $02, $01,
-      $06, $07, $08, $08, $07);
 var
   isMelodic: boolean;
 begin
-  { TODO: Separate percussion logic }
   if voice >= MAX_MELODIC_VOICES then exit;
 
   isMelodic := getIsMelodic(voice);
@@ -691,40 +690,51 @@ begin
   if isMelodic then begin
     AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
     AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
-  end else begin
-    BDRegister := BDRegister OR PercussionBits[Voice - 6];
-    AdLibWrite($A0 + PercussiveOffset[Voice], freqLow);
-    AdLibWrite($B0 + PercussiveOffset[Voice], freqHigh);
-
-    AdLibWrite($BD, BDRegister);
   end;
 end;
 
 
+{ low-level interface, doesn't change the `active` flag }
 procedure melodicKeyOff(const voice: byte);
 var
   isMelodic: boolean;
 begin
-  { TODO: Separate percussion logic }
   if voice >= MAX_MELODIC_VOICES then exit;
 
   isMelodic := getIsMelodic(voice);
 
   if isMelodic then
-    AdLibWrite($B0 + voice, 0)
-  else begin
-    BDRegister := BDRegister AND (NOT PercussionBits[Voice - 6]);
-    AdLibWrite($BD, BDRegister);
-  end;
+    AdLibWrite($B0 + voice, 0);
 end;
 
 
-{
-procedure drumOn(const drum: byte);
+procedure TAdLibDriver.drumOn(const voice, note: byte);
+const
+  PercussiveOffset: array[0..10] of byte = (
+    $11, $10, $08, $04, $02, $01,
+    $06, $07, $08, $08, $07);
+var
+  output: byte;
 begin
+  if not isPercussiveMode then exit;
 
+  BDRegister := BDRegister OR PercussionBits[Voice - 6];
+  output := CalcNote(voice, note);
+  AdLibWrite($A0 + PercussiveOffset[Voice], lo(output));
+  AdLibWrite($B0 + PercussiveOffset[Voice], hi(output));
+
+  AdLibWrite($BD, BDRegister);
 end;
-}
+
+
+procedure TAdLibDriver.drumOff(const voice: byte);
+begin
+  if not isPercussiveMode then exit;
+
+  BDRegister := BDRegister AND (NOT PercussionBits[Voice - 6]);
+  AdLibWrite($BD, BDRegister);
+end;
+
 
 procedure TAdLibDriver.init;
 var
