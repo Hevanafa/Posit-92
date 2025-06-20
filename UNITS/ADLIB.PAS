@@ -102,6 +102,13 @@ type
     procedure stopAllVoices;
   end;
 
+const 
+  BassDrumVoice = 6;
+  SnareDrumVoice = 7;
+  TomTomVoice = 8;
+  CymbalVoice = 9;
+  HiHatVoice = 10;
+
 var
   AdLibDrv: TAdLibDriver;
 
@@ -139,13 +146,6 @@ const
   MAX_MELODIC_VOICES = 9; { indices 0..8 }
   MAX_PERCUSSIVE_VOICES = 6; { for melodies: indices 0..5, percussions: 6, 7, 8 }
   MAX_INSTRUMENTS = 16; { indices 0..15 }
-
-  { Percussive voice numbers }
-  BassDrumVoice = 6;
-  SnareDrumVoice = 7;
-  TomTomVoice = 8;
-  CymbalVoice = 9;
-  HiHatVoice = 10;
 
   BassDrumBit = $10;
   SnareDrumBit = $08;
@@ -374,16 +374,11 @@ const
   { PERCUSSIVE MODE VOICES }
   { TODO: Adapt this with the TInstrument format }
   BassDrum:array[0..1] of TOldInstrument = (
-    { Modulator }
-    (
-      WaveChar: 0; ScalingOutput: 11;
-      AttackDecay: $A8; SustainRelease: $4C;
+    (WaveChar: 0; ScalingOutput: 11;
+      AttackDecay: 168; SustainRelease: 76;
       FeedBack: 1; SetWaveSelect: 1),
-
-    { Carrier }
-    (
-      WaveChar: 0; ScalingOutput: 0;
-      AttackDecay: $D6; SustainRelease: $4F;
+    (WaveChar: 0; ScalingOutput: 0;
+      AttackDecay: 214; SustainRelease: 79;
       FeedBack: 1; SetWaveSelect: 0));
 
   InstrArray:Array[7..10] of TOldInstrument =
@@ -405,8 +400,10 @@ const
   (WaveChar: 1; ScalingOutput: 0;
     AttackDecay: 247; SustainRelease: 181;
     FeedBack: 0; SetWaveSelect: 0));
+
 var
   a, opOffset: byte;
+
 begin
   { Skipped Carrier up to Volume array accesses }
 
@@ -714,7 +711,7 @@ const
     $11, $10, $08, $04, $02, $01,
     $06, $07, $08, $08, $07);
 var
-  output: byte;
+  output: word;
 begin
   if not isPercussiveMode then exit;
 
