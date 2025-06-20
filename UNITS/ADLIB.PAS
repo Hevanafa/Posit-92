@@ -675,7 +675,7 @@ ASM
 end;
 
 
-procedure keyOn(const voice, freqLow, freqHigh: byte);
+procedure melodicKeyOn(const voice, freqLow, freqHigh: byte);
 const
   PercussiveOffset: array[0..10] of byte = (
       $11, $10, $08, $04, $02, $01,
@@ -683,6 +683,7 @@ const
 var
   isMelodic: boolean;
 begin
+  { TODO: Separate percussion logic }
   if voice >= MAX_MELODIC_VOICES then exit;
 
   isMelodic := getIsMelodic(voice);
@@ -700,10 +701,11 @@ begin
 end;
 
 
-procedure keyOff(const voice: byte);
+procedure melodicKeyOff(const voice: byte);
 var
   isMelodic: boolean;
 begin
+  { TODO: Separate percussion logic }
   if voice >= MAX_MELODIC_VOICES then exit;
 
   isMelodic := getIsMelodic(voice);
@@ -715,6 +717,14 @@ begin
     AdLibWrite($BD, BDRegister);
   end;
 end;
+
+
+{
+procedure drumOn(const drum: byte);
+begin
+
+end;
+}
 
 procedure TAdLibDriver.init;
 var
@@ -748,7 +758,10 @@ begin
   setPercussive(false);
 end;
 
-procedure TAdLibDriver.playNote(const voice: byte; const freq: word; const octave, velocity: byte);
+procedure TAdLibDriver.playNote(
+  const voice: byte;
+  const freq: word;
+  const octave, velocity: byte);
 var
   volume: byte;
   carrierOffset: byte;
@@ -766,7 +779,7 @@ begin
   }
   AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
 
-  keyOn(
+  melodicKeyOn(
     voice,
     lo(freq),
     (hi(freq) and $03) or (octave shl 2))
@@ -777,7 +790,7 @@ begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
   { AdLibWrite($B0 + voice, 0); }
-  keyOff(voice);
+  melodicKeyOff(voice);
   voices[voice].active := false
 end;
 
@@ -848,7 +861,7 @@ begin
     if not voices[a].active then continue;
     
     if now >= voices[a].noteEndTick then begin
-      keyOff(a);
+      melodicKeyOff(a);
       inc(voices[a].noteIndex);
       
       if voices[a].noteIndex >= voices[a].melody^.noteCount then begin
