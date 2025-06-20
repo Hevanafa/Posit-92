@@ -1,9 +1,9 @@
 {
   AdLib FM synthesiser interface utility unit
   Part of Posit-92 game framework
+  Some parts are adapted from ccodere/pascal-adlib's GitHub repo
 }
 
-{ TODO: Implement every part that involves the BDRegister }
 { TODO: Maybe the percussive mode needs another set of NoteOn & NoteOff }
 
 unit AdLib;
@@ -139,11 +139,16 @@ const
   TomTomBit = $04;
   CymbalBit = $02;
   HiHatBit = $01;
-  
+
+  PercussionBits: array[0..4] of byte =
+    { $10, $08, $04, $02, $01 }
+    (BassDrumBit, SnareDrumBit, TomTomBit, CymbalBit, HiHatBit);
+
 
 var
   isInitialised: boolean;
   isPercussiveMode: boolean;
+  BDRegister: byte;
   voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
   instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
 
@@ -284,11 +289,13 @@ begin
   isPercussiveMode := value;
 
   if value then begin
-    { Skipped MaxVoices & BDRegister values }
-    AdLibWrite($BD, $E0);
+    { Skipped MaxVoices value }
+    BDRegister := $E0;
+    AdLibWrite($BD, BDRegister);
     setupRhythmInstruments;
   end else begin
-    AdLibWrite($BD, $C0);
+    BDRegister := $C0;
+    AdLibWrite($BD, BDRegister);
     setupMelodicInstruments;
   end;
 end;
@@ -348,6 +355,7 @@ const
   );
 
   { PERCUSSIVE MODE VOICES }
+  { TODO: Adapt this with the TInstrument format }
   BassDrum:array[0..1] of TOldInstrument = (
     { Modulator }
     (
@@ -447,6 +455,7 @@ begin
     (not isPercussiveMode)
 end;
 
+
 procedure keyOn(const voice, freqLow, freqHigh: byte);
 const
   PercussiveOffset: array[0..10] of byte = (
@@ -463,21 +472,18 @@ begin
     AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
     AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
   end else begin
-    BDRegister := BDRegister OR PercBits[Voice-6];
-    Output[Voice] := CalcNote(Voice, Note);
-    SndOutput($A0 + PercussiveOffset[Voice], freqLow);
-    SndOutput($B0 + PercussiveOffset[Voice], freqHigh);
+    BDRegister := BDRegister OR PercussionBits[Voice - 6];
+    AdLibWrite($A0 + PercussiveOffset[Voice], freqLow);
+    AdLibWrite($B0 + PercussiveOffset[Voice], freqHigh);
 
     AdLibWrite($BD, BDRegister);
   end;
 end;
 
-{ Only for melodic voice }
+
 procedure keyOff(const voice: byte);
-const
-  PercBits: array[0..4] of byte =
-    { $10, $08, $04, $02, $01 }
-    (BassDrumBit, SnareDrumBit, TomTomBit, CymbalBit, HiHatBit)
+var
+  isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
@@ -486,7 +492,7 @@ begin
   if isMelodic then
     AdLibWrite($B0 + voice, 0)
   else begin
-    BDRegister := BDRegister AND (NOT Percbits[Voice - 6]);
+    BDRegister := BDRegister AND (NOT PercussionBits[Voice - 6]);
     AdLibWrite($BD, BDRegister);
   end;
 end;
