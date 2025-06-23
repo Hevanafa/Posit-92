@@ -3,9 +3,6 @@ uses
   Conv, Panic, QSort;
 
 
-type
-  TSum = function(const i, j: integer): integer;
-
 procedure printArrayI16(const ary: array of integer);
 var
   a: integer;
@@ -46,29 +43,8 @@ var
   a, b, c: word;
   numbers: array[0..9] of integer;
   enemies: array[0..4] of PEnemy;
-  segment, offset: word;
-  sumFunc: pointer;
 begin
   randomize;
-
-  a := 5; b := 10;
-  writeLn('a = ', a, ', b = ', b, '. What is a + b?');
-
-  { Use a pointer to function }
-  { Note: Not possible in Turbo Pascal, due to
-    Error 122: Invalid variable reference }
-  writeLn('Expected result: ', a + b);
-  sumFunc := @sum;
-
-  { These are different }
-  writeLn('sumFunc is ', longint(sumFunc));
-  segment := seg(sumFunc);
-  offset := ofs(sumFunc);
-  writeLn('sumFunc address is ', longint(segment) shl 16 + offset);
-
-  c := TSum(sumFunc)(a, b);
-  writeLn('Result: ', c);  { wrong }
-
 
   { Part 1: integer sort }
   writeLn;

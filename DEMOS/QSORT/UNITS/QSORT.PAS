@@ -13,21 +13,12 @@ type
     x, y: integer;
   end;
 
-  TEnemyCompareFunc = function(const a, b: PEnemy): integer;
-
 
 { Add your custom records as necessary }
 procedure quickSortI16(var ary: array of integer; low, high: integer);
 procedure sortI16(var ary: array of integer);
 
-{
-Not possible
-procedure quickSortEnemies(
-  var ary: array of PEnemy;
-  low, high: integer;
-  compare: TEnemyCompareFunc);
-}
-procedure quickSortEnemies(var ary: array of PEnemy; low, high: integer);
+procedure quickSortEnemiesByX(var ary: array of PEnemy; low, high: integer);
 procedure sortEnemiesByX(var ary: array of PEnemy);
 
 
@@ -75,10 +66,9 @@ begin
 end;
 
 
-function partitionEnemies(
+function partitionEnemiesByX(
   var ary: array of PEnemy;
-  low, high: integer
-  { compare: TEnemyCompareFunc }): integer;
+  low, high: integer): integer;
 var
   pivot, temp: PEnemy;
   a, b: integer;
@@ -88,6 +78,7 @@ begin
   a := low - 1;
 
   for b := low to high - 1 do begin
+    { compare(ary[b], pivot) }
     if ary[b]^.x <= pivot^.x then begin
       inc(a);
 
@@ -101,36 +92,21 @@ begin
   ary[a + 1] := ary[high];
   ary[high] := temp;
 
-  partitionEnemies := a + 1
+  partitionEnemiesByX := a + 1
 end;
 
-procedure quickSortEnemies(
+procedure quickSortEnemiesByX(
   var ary: array of PEnemy;
-  low, high: integer
-  { compare: TEnemyCompareFunc });
+  low, high: integer);
 var
   partitionIdx: integer;
 begin
   if low < high then begin
-    partitionIdx := partitionEnemies(ary, low, high);  { compare }
+    partitionIdx := partitionEnemiesByX(ary, low, high);  { compare }
 
-    quickSortEnemies(ary, low, partitionIdx - 1);  { compare }
-    quickSortEnemies(ary, partitionIdx + 1, high);  { compare }
+    quickSortEnemiesByX(ary, low, partitionIdx - 1);  { compare }
+    quickSortEnemiesByX(ary, partitionIdx + 1, high);  { compare }
   end;
-end;
-
-
-function compareEnemiesByX(const a, b: PEnemy): integer;
-begin
-  if a = nil then panicHalt('compareEnemiesByX: a is nil!');
-  if b = nil then panicHalt('compareEnemiesByX: b is nil!');
-
-  if a^.x < b^.x then
-    compareEnemiesByX := -1
-  else if a^.x > b^.x then
-    compareEnemiesByX := 1
-  else
-    compareEnemiesByX := 0;
 end;
 
 
@@ -141,16 +117,8 @@ begin
 end;
 
 procedure sortEnemiesByX(var ary: array of PEnemy);
-var
-  compareFunc: pointer;
 begin
-  { compareFunc := TEnemyCompareFunc(compareEnemiesByX); }
-  { quickSortEnemies(ary, low(ary), high(ary), compareFunc) }
-
-  compareFunc := @compareEnemiesByX;
-  {Invalid compiler directive: $T-}
-  quickSortEnemies(ary, low(ary), high(ary))  { TEnemyCompareFunc(compareFunc) }
-  {Invalid compiler directive: $T+}
+  quickSortEnemiesByX(ary, low(ary), high(ary))
 end;
 
 
