@@ -1,9 +1,12 @@
 uses
   CRT,
-  Conv, QSort;
+  Conv, Panic, QSort;
 
 
-procedure printArray(const ary: array of integer);
+type
+  TSum = function(const i, j: integer): integer;
+
+procedure printArrayI16(const ary: array of integer);
 var
   a: integer;
 begin
@@ -17,21 +20,85 @@ begin
 end;
 
 
+procedure printArrayPEnemy(const ary: array of PEnemy);
 var
-  a: word;
+  a: integer;
+begin
+  for a:=low(ary) to high(ary) do begin
+    if ary[a] = nil then continue;
+
+    if a >= low(ary) + 1 then
+      write(', ', i32str(ary[a]^.x))
+    else
+      write(ary[a]^.x);
+  end;
+  writeLn
+end;
+
+
+function sum(const i, j: integer): integer;
+begin
+  sum := i + j
+end;
+
+
+var
+  a, b, c: word;
   numbers: array[0..9] of integer;
+  enemies: array[0..4] of PEnemy;
+  segment, offset: word;
+  sumFunc: pointer;
 begin
   randomize;
 
+  a := 5; b := 10;
+  writeLn('a = ', a, ', b = ', b, '. What is a + b?');
+
+  { Use a pointer to function }
+  { Note: Not possible in Turbo Pascal, due to
+    Error 122: Invalid variable reference }
+  writeLn('Expected result: ', a + b);
+  sumFunc := @sum;
+
+  { These are different }
+  writeLn('sumFunc is ', longint(sumFunc));
+  segment := seg(sumFunc);
+  offset := ofs(sumFunc);
+  writeLn('sumFunc address is ', longint(segment) shl 16 + offset);
+
+  c := TSum(sumFunc)(a, b);
+  writeLn('Result: ', c);  { wrong }
+
+
+  { Part 1: integer sort }
+  writeLn;
   for a:=0 to high(numbers) do
     numbers[a] := random(100);
 
   writeLn('Original:');
-  printArray(numbers);
+  printArrayI16(numbers);
 
   sortI16(numbers);
   writeLn('Sorted:');
-  printArray(numbers);
+  printArrayI16(numbers);
+
+  { Part 2: sorting a record }
+  writeLn;
+
+  for a:=0 to high(enemies) do begin
+    getMem(enemies[a], sizeof(TEnemy));
+    enemies[a]^.x := random(320);
+    enemies[a]^.y := random(200);
+  end;
+
+  writeLn('Original:');
+  printArrayPEnemy(enemies);
+
+  sortEnemiesByX(enemies);
+  writeLn('Sorted:');
+  printArrayPEnemy(enemies);
+
+  freeMem(enemies[a], sizeof(TEnemy));
 
   readLn
 end.
