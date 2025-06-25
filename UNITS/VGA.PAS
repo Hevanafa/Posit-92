@@ -12,10 +12,15 @@ var
 procedure initVGAMode;
 procedure initTextMode;
 procedure loadFont;
+
 procedure cls(const colour: byte);
 procedure asmCls(const colour: byte);
+
+{ calls asmPrint internally }
 procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
 procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+
 procedure pset(const x, y: word; const colour: byte);
 procedure asmPset(const x, y: word; const colour: byte);
 procedure asmFlush;
@@ -81,6 +86,11 @@ asm
 end;
 
 procedure print(const text: string; const x, y: integer; const colour: byte);
+begin
+  asmPrint(text, x, y, colour)
+end;
+
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
