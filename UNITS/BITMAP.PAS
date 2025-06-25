@@ -12,7 +12,10 @@ type
 
 procedure loadBMP(var output: PBitmap; const filename: string);
 
-procedure drawBMP(const image: PBitmap);
+{ Similar to spr but without the transparency check }
+procedure drawBMP(const image: PBitmap; const x, y: integer);
+procedure pascalDrawBMP(const image: PBitmap);
+{ TODO: add the x & y parameters }
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
 
 procedure freeBMP(var image: PBitmap);
@@ -111,14 +114,22 @@ begin
   close(f)
 end;
 
-procedure drawBMP(const image: PBitmap);
+
+
+procedure drawBMP(const image: PBitmap; const x, y: integer);
+begin
+  asmDrawBMP(image, x, y)
+end;
+
+{ TODO: add the x & y parameters }
+procedure pascalDrawBMP(const image: PBitmap);
 var
   a, b: integer;
 begin
   if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    asmPset(a, b, image^.data[a + b * image^.width]);
+    pset(a, b, image^.data[a + b * image^.width]);
 end;
 
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
@@ -244,8 +255,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      asmPset(x+a, y+b, image^.data[pos]);
-      { pset_legacy(x+a, y+b, image^.data[pos]); }
+      pset(x+a, y+b, image^.data[pos]);
   end;
 end;
 
@@ -474,7 +484,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      asmPset(x+a, y+b, tint);
+      pset(x+a, y+b, tint);
   end;
 end;
 
@@ -493,7 +503,7 @@ begin
   for a := 0 to srcW - 1 do begin
     pos := (srcX + a) + ((srcY + b) * image^.width);
     if image^.data[pos] <> transparencyKey then
-      asmPset(destX + a, destY + b, image^.data[pos]);
+      pset(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 
