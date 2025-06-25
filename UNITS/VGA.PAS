@@ -27,6 +27,7 @@ procedure pascalPrint(const text: string; const x, y: integer; const colour: byt
 procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
 
 procedure pset(const x, y: word; const colour: byte);
+procedure pascalPset(const x, y: word; const colour: byte);
 procedure asmPset(const x, y: word; const colour: byte);
 
 procedure flush;
@@ -182,7 +183,13 @@ end;
   end;
 end;
 
+
 procedure pset(const x, y: word; const colour: byte);
+begin
+  asmPset(x, y, colour)
+end;
+
+procedure pascalPset(const x, y: word; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
