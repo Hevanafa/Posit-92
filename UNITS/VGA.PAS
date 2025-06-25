@@ -1,4 +1,4 @@
-unit vga;
+unit CGA;
 
 interface
 
@@ -11,9 +11,14 @@ var
 
 procedure initVGAMode;
 procedure initTextMode;
+{ This loads the 8x8 font }
 procedure loadFont;
 
+procedure initBuffer;
+procedure freeBuffer;
+
 procedure cls(const colour: byte);
+procedure pascalCls(const colour: byte);
 procedure asmCls(const colour: byte);
 
 { calls asmPrint internally }
@@ -23,13 +28,13 @@ procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
 
 procedure pset(const x, y: word; const colour: byte);
 procedure asmPset(const x, y: word; const colour: byte);
+
 procedure asmFlush;
-procedure initBuffer;
-procedure freeBuffer;
+
 
 implementation
 
-uses dos;
+uses DOS;
 
 const
   bufferSize = 64000;
@@ -68,6 +73,12 @@ end;
 
 
 procedure cls(const colour: byte);
+begin
+  asmCls(colour)
+end;
+
+
+procedure pascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
