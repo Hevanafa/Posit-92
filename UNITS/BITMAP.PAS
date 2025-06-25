@@ -386,7 +386,6 @@ end;
 end;
 
 
-{ TODO: rewrite this with C-style loop }
 { Based on asmSpr with the difference being not using bounds checks
   Use with caution!
 }
@@ -419,20 +418,25 @@ asm
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
-  mov srcY, 0  { init row counter }
+@y_start:
+  mov srcY, 0
 
-@row_start:
+@y_condition:
   mov ax, imgHeight
   cmp srcY, ax
-  jge @row_end
+  jge @y_end
 
-  mov srcX, 0  { init col counter }
+@y_loop:
 
-@col_start:
+@x_start:
+  mov srcX, 0
+
+@x_condition:
   mov ax, imgWidth
   cmp srcX, ax
-  jge @col_end
+  jge @x_end
 
+@x_loop:
   { Get pixel }
   { Obtain the `data` offset }
   mov ax, srcY
@@ -445,11 +449,11 @@ asm
 
   { Check if transparent }
   mov al, es:[di]
-  cmp al, 13
-  je @skip_draw
+  cmp al, transKey
+  je @x_next
 
   mov colour, al
-  
+
   { Screen dest }
   mov bx, destY
   add bx, srcY
@@ -469,15 +473,17 @@ asm
   pop es
 
 
-@skip_draw:
+@x_next:
   inc srcX
-  jmp @col_start
+  jmp @x_condition
 
-@col_end:
+@x_end:
+
+@y_next:
   inc srcY
-  jmp @row_start
+  jmp @y_condition
 
-@row_end:
+@y_end:
 @skip:
 end;
 
