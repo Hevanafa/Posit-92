@@ -234,8 +234,7 @@ end;
 
 procedure pascalFlush;
 begin
-  panicHalt('pascalFlush: Not implemented!')
-  { copy(Mem[$A000:0], surface, 64000) }
+  Move(surface^, Mem[$A000:0], 64000)
 end;
 
 {
