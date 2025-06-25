@@ -46,19 +46,19 @@ end;
 
 procedure draw;
 begin
-  asmCls($7D);
+  cls($7D);
 
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    asmSpr(dosuEXE[0], 148, 76, 13)
+    spr(dosuEXE[0], 148, 76, 13)
   else
-    asmSpr(dosuEXE[1], 148, 76, 13);
+    spr(dosuEXE[1], 148, 76, 13);
 
   print('Hello world!', 160-48, 120, 15);
   drawMouse;
 
-  asmFlush
+  flush
 end;
 
 
