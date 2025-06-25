@@ -14,8 +14,7 @@ procedure loadBMP(var output: PBitmap; const filename: string);
 
 { Similar to spr but without the transparency check }
 procedure drawBMP(const image: PBitmap; const x, y: integer);
-procedure pascalDrawBMP(const image: PBitmap);
-{ TODO: add the x & y parameters }
+procedure pascalDrawBMP(const image: PBitmap; const x, y: integer);
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
 
 procedure freeBMP(var image: PBitmap);
@@ -41,7 +40,8 @@ procedure bitmapInfo(const image: PBitmap);
 
 implementation
 
-uses Logger, Conv, Panic, VGA;
+uses
+  Logger, Conv, Panic, VGA;
 
 {$IFDEF DEBUG}
 const DEBUG_READ_LINES = false;
@@ -121,12 +121,12 @@ begin
   asmDrawBMP(image, x, y)
 end;
 
-{ TODO: add the x & y parameters }
-procedure pascalDrawBMP(const image: PBitmap);
+procedure pascalDrawBMP(const image: PBitmap; const x, y: integer);
 var
   a, b: integer;
 begin
   if image = nil then exit;
+
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
     pset(a, b, image^.data[a + b * image^.width]);
@@ -157,20 +157,26 @@ asm
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
-  mov srcY, 0  { init row counter }
+@y_start:
+  mov srcY, 0
 
-@row_start:
+@y_condition:
   mov ax, imgHeight
   cmp srcY, ax
-  jge @row_end
+  jge @y_end
+  
+@y_loop:
 
-  mov srcX, 0  { init col counter }
 
-@col_start:
+@x_start:
+  mov srcX, 0
+
+@x_condition:
   mov ax, imgWidth
   cmp srcX, ax
-  jge @col_end
+  jge @x_end
 
+@x_loop:
   { Get pixel }
   { Obtain the `data` offset }
   mov ax, srcY
@@ -189,16 +195,16 @@ asm
   mov ax, destY
   add ax, srcY
   cmp ax, 0
-  jl @skip_draw
+  jl @x_next
   cmp ax, 200
-  jge @skip_draw
+  jge @x_next
 
   mov ax, destX
   add ax, srcX
   cmp ax, 0
-  jl @skip_draw
+  jl @x_next
   cmp ax, 320
-  jge @skip_draw
+  jge @x_next
 
   { Screen dest }
   mov bx, destY
@@ -218,16 +224,17 @@ asm
   mov es:[di+bx], al
   pop es
 
-
-@skip_draw:
+@x_next:
   inc srcX
-  jmp @col_start
+  jmp @x_condition
 
-@col_end:
+@x_end:
+
+@y_next:
   inc srcY
-  jmp @row_start
+  jmp @y_condition
 
-@row_end:
+@y_end:
 @skip:
 end;
 

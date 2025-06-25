@@ -1,4 +1,4 @@
-unit CGA;
+unit VGA;
 
 interface
 
@@ -199,12 +199,12 @@ procedure asmPset(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
   cmp y, 0
-  jl, @skip
+  jl @skip
   cmp y, 200
   jge @skip
 
   cmp x, 0
-  jl, @skip
+  jl @skip
   cmp x, 320
   jge @skip
 
