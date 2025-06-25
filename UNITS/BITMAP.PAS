@@ -24,7 +24,8 @@ procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKe
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
-procedure spr2(
+
+procedure blitRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
@@ -471,7 +472,7 @@ begin
 end;
 
 { Improved version of spr with partial sprite drawing }
-procedure spr2(
+procedure blitRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
