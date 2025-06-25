@@ -24,7 +24,9 @@ procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKe
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure pascalSprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 
+{ TODO: Implement the version with a TRect }
 procedure blitRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
@@ -459,6 +461,11 @@ end;
 
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+begin
+  pascalSprTint(image, x, y, transparencyKey, tint)
+end;
+
+procedure pascalSprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin
