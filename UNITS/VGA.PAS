@@ -29,12 +29,14 @@ procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
 procedure pset(const x, y: word; const colour: byte);
 procedure asmPset(const x, y: word; const colour: byte);
 
+procedure flush;
+procedure pascalFlush;
 procedure asmFlush;
 
 
 implementation
 
-uses DOS;
+uses DOS, Panic;
 
 const
   bufferSize = 64000;
@@ -211,6 +213,18 @@ asm
 @@done:
 end;
 
+
+procedure flush;
+begin
+  asmFlush
+end;
+
+
+procedure pascalFlush;
+begin
+  panicHalt('pascalFlush: Not implemented!')
+  { copy(Mem[$A000:0], surface, 64000) }
+end;
 
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
