@@ -11,11 +11,14 @@ type
   end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
+
 procedure drawBMP(const image: PBitmap);
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
+
 procedure freeBMP(var image: PBitmap);
 
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure pascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 { Taken from asmSprSafe from SPRTEST demo }
 procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -223,7 +226,13 @@ begin
   image := nil  { avoids dangling pointer }
 end;
 
+
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+begin
+  asmSpr(image, x, y, transparencyKey)
+end;
+
+procedure pascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
@@ -237,11 +246,8 @@ begin
   end;
 end;
 
-
-procedure asmSpr(
-  const image: PBitmap;
-  const x, y: integer;
-  const transparencyKey: byte);
+{ TODO: rewrite this with C-style loop }
+procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   srcX, srcY, imgWidth, imgHeight: word;
   destX, destY: integer;
@@ -353,6 +359,7 @@ end;
 end;
 
 
+{ TODO: rewrite this with C-style loop }
 { Based on asmSpr with the difference being not using bounds checks
   Use with caution!
 }
