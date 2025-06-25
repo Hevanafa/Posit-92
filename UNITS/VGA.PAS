@@ -26,9 +26,9 @@ procedure print(const text: string; const x, y: integer; const colour: byte);
 procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
 procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
 
-procedure pset(const x, y: word; const colour: byte);
-procedure pascalPset(const x, y: word; const colour: byte);
-procedure asmPset(const x, y: word; const colour: byte);
+procedure pset(const x, y: integer; const colour: byte);
+procedure pascalPset(const x, y: integer; const colour: byte);
+procedure asmPset(const x, y: integer; const colour: byte);
 
 procedure flush;
 procedure pascalFlush;
@@ -184,24 +184,29 @@ end;
 end;
 
 
-procedure pset(const x, y: word; const colour: byte);
+procedure pset(const x, y: integer; const colour: byte);
 begin
   asmPset(x, y, colour)
 end;
 
-procedure pascalPset(const x, y: word; const colour: byte);
+procedure pascalPset(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
 
-procedure asmPset(const x, y: word; const colour: byte); assembler;
+procedure asmPset(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
-  cmp x, 320
-  jae @@done
+  cmp y, 0
+  jl, @skip
   cmp y, 200
-  jae @@done
+  jge @skip
+
+  cmp x, 0
+  jl, @skip
+  cmp x, 320
+  jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -217,7 +222,7 @@ asm
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
-@@done:
+@skip:
 end;
 
 
