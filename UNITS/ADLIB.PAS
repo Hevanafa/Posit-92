@@ -67,12 +67,12 @@ type
   { TODO: Write an adapter to TInstrument }
   { Note: Don't use this, use TInstrument instead }
   TOldInstrument = Record
-    WaveChar: Byte;       { Wave Characteristic         }
-    ScalingOutput: Byte;  { Scaling Level / Ouput level }
-    AttackDecay: Byte;    { Attack / Decay Rate         }
-    SustainRelease: Byte; { Sustain / Release Rate      }
-    Feedback: Byte;       { Feedback                    }
-    SetWaveSelect: Byte;  { Type of Wave to use         }
+    WaveChar: Byte;       { Wave Characteristic          }
+    ScalingOutput: Byte;  { Scaling Level / Output level }
+    AttackDecay: Byte;    { Attack / Decay Rate          }
+    SustainRelease: Byte; { Sustain / Release Rate       }
+    Feedback: Byte;       { Feedback                     }
+    SetWaveSelect: Byte;  { Type of Wave to use          }
   end;
 
   PAdLibDriver = ^TAdLibDriver;
@@ -320,6 +320,26 @@ begin
     AdLibWrite($BD, BDRegister);
     setupMelodicInstruments;
   end;
+end;
+
+function convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
+begin
+  
+  { TODO: WaveChar }
+  { TODO: ScalingOutput }
+  output.tremolo
+  output.vibrato
+  output.sustainRate
+  output.keyScale
+  output.multiplier
+
+  output.attackRate := hi(src.AttackDecay);
+  output.decayRate := lo(src.AttackDecay);
+  output.sustainRate := hi(src.SustainRelease);
+  output.releaseRate := lo(src.SustainRelease);
+  output.feedback := src.Feedback;
+  output.algorithm := ??
+  output.waveform := src.SetWaveSelect;
 end;
 
 { Assigns all voices with the electric piano preset }
