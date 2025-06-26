@@ -36,6 +36,46 @@ var
   coins: array[0..9] of TCoin;
   rotation: double;
 
+  PianoInstrument: TInstrument;
+  sfxCoin: TMelody;
+
+
+procedure initInstruments;
+begin
+  with PianoInstrument do begin
+    with modulator do begin
+      tremolo := false;
+      vibrato := false;
+      sustain := false;
+      keyScale := false;
+      multiplier := 1;
+      totalLevel := 25; { octaves ? }
+      attackRate := 15;
+      decayRate := 4;
+      sustainRate := 6;
+      releaseRate := 7;
+      waveform := 0;
+    end;
+    
+    with carrier do begin
+      tremolo := false;
+      vibrato := false;
+      sustain := false;
+      keyScale := false;
+      multiplier := 1;
+      totalLevel := 0;
+      attackRate := 15;
+      decayRate := 4; 
+      sustainRate := 6;
+      releaseRate := 7;
+      waveform := 0;
+    end;
+    
+    feedback := 6;
+    algorithm := 0
+  end;
+end;
+
 
 procedure initCoin(var c: TCoin);
 begin
@@ -66,6 +106,16 @@ begin
 
   randomize;
   AdlibDrv.init;
+  initInstruments;
+  { AdlibDrv.assignInstrument(0, @PianoInstrument); }
+
+  with sfxCoin do begin
+    noteCount := 3;
+    instrument := @PianoInstrument;
+    initNote(notes[0], NOTE_C, 5, 0.3, 127);
+    initNote(notes[1], NOTE_E, 5, 0.3, 127);
+    initNote(notes[2], NOTE_F, 5, 0.3, 127)
+  end;
 
   loadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
@@ -94,7 +144,7 @@ begin
       inc(score, 1);
       initCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      { AdlibDrv.startMelody }
+      AdlibDrv.playMelody(@sfxCoin, 0);
     end;
 end;
 
