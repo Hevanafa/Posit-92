@@ -221,12 +221,12 @@ begin
 end;
 
 
-procedure setupInstrument(const voice: byte; var instr: PInstrument);
+procedure assignInstrument(const voice: byte; var instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
 begin
-  if instr = nil then panicHalt('setupInstrument: instr is nil!');
+  if instr = nil then panicHalt('assignInstrument: instr is nil!');
   
   modOffset := getModulatorOffset(voice);
   carOffset := getCarrierOffset(voice);
@@ -282,7 +282,7 @@ begin
   if instrSlot >= MAX_INSTRUMENTS then exit;
 
   voices[voice].instrument := instrSlot;
-  setupInstrument(voice, instruments[instrSlot])
+  assignInstrument(voice, instruments[instrSlot])
 end;
 
 
@@ -860,7 +860,7 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   { voices[voice].instrument := melody^.instrument; }
 
-  { setupInstrument(voice, instruments[melody^.instrument]); }
+  { assignInstrument(voice, instruments[melody^.instrument]); }
   playNote(
     voice,
     melody^.notes[0].freq,
@@ -882,7 +882,7 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   voices[voice].instrument := melody^.instrument;
 
-  setupInstrument(voice, instruments[melody^.instrument]);
+  assignInstrument(voice, instruments[melody^.instrument]);
   playNote(
     voice,
     melody^.notes[0].freq,
