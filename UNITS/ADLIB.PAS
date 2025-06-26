@@ -324,22 +324,20 @@ end;
 
 function convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
 begin
-  
-  { TODO: WaveChar }
-  { TODO: ScalingOutput }
-  output.tremolo
-  output.vibrato
-  output.sustainRate
-  output.keyScale
-  output.multiplier
+  output.tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
+  output.vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
+  output.sustainRate := (src.WaveChar and $20) <> 0;  { bit 5 }
+  output.keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
+  output.multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
 
   output.attackRate := hi(src.AttackDecay);
   output.decayRate := lo(src.AttackDecay);
   output.sustainRate := hi(src.SustainRelease);
   output.releaseRate := lo(src.SustainRelease);
-  output.feedback := src.Feedback;
-  output.algorithm := ??
-  output.waveform := src.SetWaveSelect;
+
+  output.feedback := (src.Feedback and $0E) shr 1;  { bits 1-3 }
+  output.algorithm := src.Feedback and $01;
+  output.waveform := src.SetWaveSelect and $07; { waveform select }
 end;
 
 { Assigns all voices with the electric piano preset }
