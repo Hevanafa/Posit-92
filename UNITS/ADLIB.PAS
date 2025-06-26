@@ -39,13 +39,6 @@ type
     velocity: byte  { 0..127 }
   end;
 
-  PMelody = ^TMelody;
-  TMelody = record
-    notes: array[0..15] of TNote;
-    noteCount: byte;
-    instrument: byte;
-  end;
-
   TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
@@ -65,7 +58,14 @@ type
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
 
-  { TODO: Write an adapter to TInstrument }
+  PMelody = ^TMelody;
+  TMelody = record
+    notes: array[0..15] of TNote;
+    noteCount: byte;
+    instrument: PInstrument;
+  end;
+
+  { Adapter: convertOldInstrument }
   { Note: Don't use this, use TInstrument instead }
   TOldInstrument = Record
     WaveChar: Byte;       { Wave Characteristic          }
@@ -87,8 +87,10 @@ type
     procedure shutdown;
     procedure setPercussive(const value: boolean);
 
+    {
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
+    }
     procedure assignInstrument(const voice: byte; const instr: PInstrument);
 
     procedure setupMelodicInstruments;
@@ -140,6 +142,7 @@ type
     melody: PMelody;
     noteIndex: byte;
     noteEndTick: double; { in seconds }
+    { TODO: add isPercussion condition }
     instrument: PInstrument;
     volume: byte; { 0..127 }
   end;
@@ -151,7 +154,7 @@ const
 
   MAX_MELODIC_VOICES = 9; { indices 0..8 }
   MAX_PERCUSSIVE_VOICES = 6; { for melodies: indices 0..5, percussions: 6, 7, 8 }
-  MAX_INSTRUMENTS = 16; { indices 0..15 }
+  { MAX_INSTRUMENTS = 16; } { indices 0..15 }
 
   BassDrumBit = $10;
   SnareDrumBit = $08;
@@ -169,7 +172,7 @@ var
   isPercussiveMode: boolean;
   BDRegister: byte;
   voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
-  instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
+  { instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument; }
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -270,6 +273,7 @@ end;
 
 { Loads a PInstrument to a slot }
 { TODO: reduce this into something like assignInstrument }
+{
 procedure TAdLibDriver.loadInstrument(const instrSlot: byte; const instr: PInstrument);
 begin
   if instr = nil then panicHalt('TAdLibDriver.loadInstrument: Attempting to load a nil instrument');
@@ -277,8 +281,10 @@ begin
 
   instruments[instrSlot] := instr
 end;
+}
 
 { TODO: reduce this into something like assignInstrument }
+{
 procedure TAdLibDriver.selectInstrument(const voice, instrSlot: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
@@ -287,6 +293,7 @@ begin
   voices[voice].instrument := instrSlot;
   assignInstrument(voice, instruments[instrSlot])
 end;
+}
 
 
 procedure resetAllRegisters;
@@ -804,7 +811,7 @@ begin
     voices[a].melody := nil;
     voices[a].noteIndex := 0;
     voices[a].noteEndTick := 0;
-    voices[a].instrument := 0;
+    voices[a].instrument := nil;
     voices[a].volume := 127
   end;
 
@@ -904,7 +911,7 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   voices[voice].instrument := melody^.instrument;
 
-  assignInstrument(voice, instruments[melody^.instrument]);
+  assignInstrument(voice, voices[voice].instrument);
   playNote(
     voice,
     melody^.notes[0].freq,
