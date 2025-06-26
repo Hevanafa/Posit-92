@@ -52,8 +52,8 @@ type
     sustain: boolean;
     keyScale: boolean;
     multiplier, totalLevel: byte;
-    sustainLevel, release: byte;
-    attack, decay: byte;
+    sustainRate, releaseRate: byte;
+    attackRate, decayRate: byte;
     waveform: byte;
   end;
   PInstrument = ^TInstrument;
@@ -64,6 +64,8 @@ type
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
 
+  { TODO: Write an adapter to TInstrument }
+  { Note: Don't use this, use TInstrument instead }
   TOldInstrument = Record
     WaveChar: Byte;       { Wave Characteristic         }
     ScalingOutput: Byte;  { Scaling Level / Ouput level }
@@ -238,8 +240,8 @@ begin
       (ord(keyScale) shl 4) or multiplier);
       
     AdLibWrite($40 + modOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
-    AdLibWrite($60 + modOffset, (attack shl 4) or decay);
-    AdLibWrite($80 + modOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($60 + modOffset, (attackRate shl 4) or decayRate);
+    AdLibWrite($80 + modOffset, (sustainRate shl 4) or releaseRate);
     AdLibWrite($e0 + modOffset, waveform)
   end;
   
@@ -252,8 +254,8 @@ begin
       (ord(keyScale) shl 4) or multiplier);
       
     AdLibWrite($40 + carOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
-    AdLibWrite($60 + carOffset, (attack shl 4) or decay);
-    AdLibWrite($80 + carOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($60 + carOffset, (attackRate shl 4) or decayRate);
+    AdLibWrite($80 + carOffset, (sustainRate shl 4) or releaseRate);
     AdLibWrite($e0 + carOffset, waveform)
   end;
   
@@ -264,6 +266,7 @@ begin
 end;
 
 { Loads a PInstrument to a slot }
+{ TODO: reduce this into something like assignInstrument }
 procedure TAdLibDriver.loadInstrument(const instrSlot: byte; const instr: PInstrument);
 begin
   if instr = nil then panicHalt('TAdLibDriver.loadInstrument: Attempting to load a nil instrument');
@@ -272,6 +275,7 @@ begin
   instruments[instrSlot] := instr
 end;
 
+{ TODO: reduce this into something like assignInstrument }
 procedure TAdLibDriver.selectInstrument(const voice, instrSlot: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
