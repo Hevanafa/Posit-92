@@ -51,9 +51,10 @@ type
     vibrato: boolean;
     sustain: boolean;
     keyScale: boolean;
-    multiplier, totalLevel: byte;
-    sustainRate, releaseRate: byte;
+    multiplier: byte;
+    totalLevel: byte; { octaves? }
     attackRate, decayRate: byte;
+    sustainRate, releaseRate: byte;
     waveform: byte;
   end;
   PInstrument = ^TInstrument;
@@ -322,22 +323,41 @@ begin
   end;
 end;
 
-function convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
+procedure convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
 begin
-  output.tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
-  output.vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
-  output.sustainRate := (src.WaveChar and $20) <> 0;  { bit 5 }
-  output.keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
-  output.multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
+  with output.modulator do begin
+    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
+    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
+    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
+    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
+    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
 
-  output.attackRate := hi(src.AttackDecay);
-  output.decayRate := lo(src.AttackDecay);
-  output.sustainRate := hi(src.SustainRelease);
-  output.releaseRate := lo(src.SustainRelease);
+    attackRate := hi(src.AttackDecay);
+    decayRate := lo(src.AttackDecay);
+    sustainRate := hi(src.SustainRelease);
+    releaseRate := lo(src.SustainRelease);
+    waveform := src.SetWaveSelect and $07; { waveform select }
+  end;
+
+  with output.carrier do begin
+    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
+    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
+    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
+    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
+    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
+
+    attackRate := hi(src.AttackDecay);
+    decayRate := lo(src.AttackDecay);
+    sustainRate := hi(src.SustainRelease);
+    releaseRate := lo(src.SustainRelease);
+    waveform := src.SetWaveSelect and $07; { waveform select }
+  end;
+
+  output.modulator.totalLevel := 25;  { octaves? }
+  output.carrier.totalLevel := 0;
 
   output.feedback := (src.Feedback and $0E) shr 1;  { bits 1-3 }
   output.algorithm := src.Feedback and $01;
-  output.waveform := src.SetWaveSelect and $07; { waveform select }
 end;
 
 
