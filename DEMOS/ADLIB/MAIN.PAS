@@ -1,8 +1,8 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Timing, VGA,
-  Bitmap, Conv, FPS, Adlib;
+  AdLib, Bitmap, Logger, Keyboard, Mouse,
+  Timing, VGA, Conv, FPS;
 
 type
   TRect = object
@@ -55,17 +55,16 @@ end;
 
 procedure INIT;
 begin
-  randomize;
   initLogger;
   initVGAMode;
   loadFont;
   initBuffer;
   initDeltaTime;
   initKeyHandler;
-  { initMouse; }
+  initMouse;
   initFPSCounter;
 
-  { PCSpeaker.init; }
+  randomize;
   AdlibDrv.init;
 
   loadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
@@ -95,7 +94,7 @@ begin
       inc(score, 1);
       initCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      AdlibDrv.startMelody
+      { AdlibDrv.startMelody }
     end;
 end;
 
@@ -115,10 +114,9 @@ var
   a: integer;
 begin
   updateDeltaTime;
-  { updateMouse; }
+  updateMouse;
   incrementFPS;
 
-  { TODO: Your update code here }
   { PCSpeaker.updateMelody; }
   AdlibDrv.update;
 
@@ -135,8 +133,10 @@ begin
 
   if lastB <> isKeydown($30) then begin
     lastB := isKeydown($30);
+    {
     if lastB then
       AdlibDrv.startMelody;
+    }
   end;
 
   if isKeyDown($11) then playerY := playerY - dt * 60;
@@ -196,8 +196,9 @@ begin
   scoreStr := i32str(score);
   print(scoreStr, (320 - length(scoreStr) * 8) div 2, 8, 15);
 
-  { drawMouse; }
+  drawMouse;
   drawFPS;
+  
   flush
 end;
 
@@ -214,7 +215,8 @@ begin
     draw;
   until done;
 
-  { resetMouse; }
+  resetMouse;
+  AdlibDrv.shutdown;
   resetKeyHandler;
   freeBuffer;
   closeLogger;
