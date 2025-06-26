@@ -89,6 +89,8 @@ type
 
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
+    procedure assignInstrument(const voice: byte; const instr: PInstrument);
+
     procedure setupMelodicInstruments;
     procedure setupRhythmInstruments;
 
@@ -138,7 +140,7 @@ type
     melody: PMelody;
     noteIndex: byte;
     noteEndTick: double; { in seconds }
-    instrument: byte;
+    instrument: PInstrument;
     volume: byte; { 0..127 }
   end;
 
@@ -222,7 +224,7 @@ begin
 end;
 
 
-procedure assignInstrument(const voice: byte; var instr: PInstrument);
+procedure TAdLibDriver.assignInstrument(const voice: byte; const instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
@@ -370,7 +372,7 @@ const
     $10, $11, $12, $01, $11, $4f,
     $00, $f1);
   { Todo: adapt this with the TInstrument format }
-  ElectricPiano: array[0..1] of TOldInstrument = (
+  OldElectricPiano: array[0..1] of TOldInstrument = (
   (
     WaveChar: 65; ScalingOutput: 127;
     AttackDecay: 242; SustainRelease: 81;
@@ -389,22 +391,22 @@ begin
       if op = 0 then portOffset := 0 else portOffset := 3;
 
       AdLibWrite($20 + portOffset + OpModulator[voice],
-        ElectricPiano[0].WaveChar);
+        OldElectricPiano[op].WaveChar);
 
       AdLibWrite($40 + portOffset + OpModulator[voice],
-        ElectricPiano[0].ScalingOutput);
+        OldElectricPiano[op].ScalingOutput);
 
       AdLibWrite($60 + portOffset + OpModulator[voice],
-        ElectricPiano[0].AttackDecay);
+        OldElectricPiano[op].AttackDecay);
 
       AdLibWrite($80 + portOffset + OpModulator[voice],
-        ElectricPiano[0].SustainRelease);
+        OldElectricPiano[op].SustainRelease);
 
       AdLibWrite($E0 + portOffset + OpModulator[voice],
-        ElectricPiano[0].SetWaveSelect);
+        OldElectricPiano[op].SetWaveSelect);
     end;
 
-    AdLibWrite($C0 + voice, ElectricPiano[0].FeedBack)
+    AdLibWrite($C0 + voice, OldElectricPiano[0].FeedBack)
   end;
 end;
 
