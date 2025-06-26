@@ -340,6 +340,8 @@ begin
   output.waveform := src.SetWaveSelect and $07; { waveform select }
 end;
 
+
+
 { Assigns all voices with the electric piano preset }
 procedure TAdLibDriver.setupMelodicInstruments;
 const
@@ -693,9 +695,9 @@ ASM
 end;
 
 
-function getIsMelodic(const voice: byte): boolean;
+function isVoiceMelodic(const voice: byte): boolean;
 begin
-  getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
+  isVoiceMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
     (not isPercussiveMode)
 end;
 
@@ -706,7 +708,7 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := getIsMelodic(voice);
+  isMelodic := isVoiceMelodic(voice);
 
   if isMelodic then begin
     AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
@@ -722,7 +724,7 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := getIsMelodic(voice);
+  isMelodic := isVoiceMelodic(voice);
 
   if isMelodic then
     AdLibWrite($B0 + voice, 0);
