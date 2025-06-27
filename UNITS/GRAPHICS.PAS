@@ -21,6 +21,7 @@ procedure asmVline(const x, y0, y1: integer; const colour: byte);
 
 procedure line(const x0, y0, x1, y1: integer; const colour: byte);
 procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
+procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
@@ -160,6 +161,36 @@ begin
     if e2 < dx then begin
       err := err + dx;
       y1 := y1 + sy;
+    end;
+  end;
+
+  asmPset(x1, y1, colour)
+end;
+
+procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
+var
+  dx, dy, sx, sy, err, e2: integer;
+begin
+  dx := abs(x1 - x0);
+  dy := abs(y1 - y0);
+
+  if x0 < x1 then sx := 1 else sx := -1;
+  if y0 < y1 then sy := 1 else sy := -1;
+
+  err := dx - dy;
+
+  while (x0 <> x1) or (y0 <> y1) do begin
+    asmPset(x0, y0, colour);
+    e2 := 2 * err;
+
+    if e2 > -dy then begin
+      err := err - dy;
+      x0 := x0 + sx;
+    end;
+
+    if e2 < dx then begin
+      err := err + dx;
+      y0 := y0 + sy;
     end;
   end;
 
