@@ -182,11 +182,20 @@ asm
   mov ax, dxi
   sub ax, dyi
   mov err, ax
-end;
 
+{ while (x0 <> x1) or (y0 <> y1) do begin }
+@loop_condition:
+  mov ax, x1
+  cmp x0, ax
+  jne @loop
 
-  while (x0 <> x1) or (y0 <> y1) do begin
-asm
+  mov ax, y1
+  cmp y0, ax
+  jne @loop
+
+  jmp @loop_done
+
+@loop:
   { asmPset(x0, y0, colour); }
 
   { PSET }
@@ -205,7 +214,7 @@ asm
   mov ax, 2
   mul err
   mov e2, ax
-  
+
   { if e2 > -dyi then begin }
   mov bx, dyi
   neg bx
@@ -242,8 +251,13 @@ asm
   { end; }
 
 @skip:
+
+@loop_next:
+  jmp @loop_condition
+
+@loop_done:
 end;
-  end; { end while }
+  { end; } { end while }
 
 
 { asmPset(x0, y0, colour) }
