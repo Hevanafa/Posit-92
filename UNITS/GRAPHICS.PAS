@@ -223,6 +223,11 @@ end;
 
 
 procedure vline(x, y0, y1: integer; const colour: byte);
+begin
+  pascalVline(x, y0, y1, colour)
+end;
+
+procedure pascalVline(x, y0, y1: integer; const colour: byte);
 var
   temp, a: integer;
 begin
@@ -237,6 +242,23 @@ begin
     asmPset(x, a, colour)
   end;
 end;
+
+procedure asmVline(const x, y0, y1: integer; const colour: byte);
+var
+  yStart, yEnd: integer;
+begin
+  if y0 > y1 then begin
+    yStart := y1; yEnd := y0
+  end else begin
+    yStart := y0; yEnd := y1
+  end;
+
+asm
+  
+end;
+
+end;
+
 
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
