@@ -21,6 +21,9 @@ procedure asmVline(const x, y0, y1: integer; const colour: byte);
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
+procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
+procedure asmRect(const x0, y0, x1, y1: integer; const colour: byte);
+
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
 procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
@@ -328,7 +331,7 @@ begin
   end;
 end;
 
-procedure asmRect(const x0, y0, y1, y1: integer; const colour: byte);
+procedure asmRect(const x0, y0, x1, y1: integer; const colour: byte);
 var
   xStart, xEnd, yStart, yEnd: integer;
   x, y: integer;
@@ -417,9 +420,13 @@ asm
   cmp x, 0
   jl @x_next
 
+@y_top:
+  cmp yStart, 0
+  jl @skip_y_top
+
   { PSET }
-  { Calculate offset: y * 320 + x }
-  mov ax, y
+  { Offset: y * 320 + x }
+  mov ax, yStart
   mov bx, 320
   mul bx      { ax = ax * bx }
   add ax, x
@@ -429,13 +436,33 @@ asm
   mov al, colour
   mov es:[di+bx], al
 
+@skip_y_top:
+
+@y_bottom:
+  cmp yEnd, 200
+  jge @skip_y_bottom
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, yEnd
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_y_bottom:
+
 @x_next:
   inc x
   jmp @x_condition
 
 @x_done:
 
-skip:
+@skip:
 end;
 
 end;
