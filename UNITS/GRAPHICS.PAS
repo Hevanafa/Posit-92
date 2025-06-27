@@ -15,6 +15,8 @@ procedure hline(x0, x1, y: integer; const colour: byte);
 procedure asmHline(const x0, x1, y: integer; const colour: byte);
 
 procedure vline(x, y0, y1: integer; const colour: byte);
+procedure pascalVline(x, y0, y1: integer; const colour: byte);
+procedure asmVline(const x, y0, y1: integer; const colour: byte);
 
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
 
@@ -224,7 +226,7 @@ end;
 
 procedure vline(x, y0, y1: integer; const colour: byte);
 begin
-  pascalVline(x, y0, y1, colour)
+  asmVline(x, y0, y1, colour)
 end;
 
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
@@ -263,14 +265,29 @@ asm
   jge @skip
 
 @y_start:
-  mov y, yStart
+  mov ax, yStart
+  mov y, ax
   
 @y_condition:
-  cmp y, yEnd
+  mov ax, yEnd
+  cmp y, ax
   jg @y_end
 
 @y_loop:
-  { TODO: PSET }
+  cmp y, 0
+  jl @y_next
+
+  { PSET }
+  { Calculate offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
 
 @y_next:
   inc y
