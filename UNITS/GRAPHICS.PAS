@@ -245,7 +245,7 @@ end;
 
 procedure asmVline(const x, y0, y1: integer; const colour: byte);
 var
-  yStart, yEnd: integer;
+  yStart, yEnd, y: integer;
 begin
   if y0 > y1 then begin
     yStart := y1; yEnd := y0
@@ -254,7 +254,30 @@ begin
   end;
 
 asm
+  { Check bounds }
+  cmp x, 0
+  jl @skip
+  cmp x, 320
+  jge @skip
+  cmp yStart, 200
+  jge @skip
+
+@y_start:
+  mov y, yStart
   
+@y_condition:
+  cmp y, yEnd
+  jg @y_end
+
+@y_loop:
+  { TODO: PSET }
+
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_end:
+@skip:
 end;
 
 end;
