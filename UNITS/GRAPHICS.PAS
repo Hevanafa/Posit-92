@@ -302,6 +302,11 @@ end;
 
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
+begin
+  pascalRect(x0, y0, x1, y1, colour)
+end;
+
+procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -320,6 +325,55 @@ begin
     asmPset(a, y1, colour)
   end;
 end;
+
+procedure asmRect(const x0, y0, y1, y1: integer; const colour: byte);
+var
+  xStart, xEnd, yStart, yEnd: integer;
+  x, y
+begin
+  if y0 > y1 then begin
+    yStart := y1; yEnd := y0
+  end else begin
+    yStart := y0; yEnd := y1
+  end;
+  if yStart >= 200 then exit;
+
+  if x0 > x1 then begin
+    xStart := x1; xEnd := x0
+  end else begin
+    xStart := x0; xEnd := x1
+  end;
+  if xStart >= 320 then exit;
+
+asm
+
+y_init:
+
+y_condition:
+
+y_loop:
+
+x_init:
+
+x_condition:
+
+x_loop:
+
+{ TODO: PSET }
+
+x_next:
+
+x_done:
+
+y_next:
+
+y_done:
+skip:
+end;
+
+end;
+
+
 
 
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
