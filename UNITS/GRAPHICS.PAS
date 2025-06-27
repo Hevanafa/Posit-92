@@ -177,7 +177,13 @@ begin
   if x0 < x1 then sx := 1 else sx := -1;
   if y0 < y1 then sy := 1 else sy := -1;
 
-  err := dxi - dyi;
+asm
+  { err := dxi - dyi; }
+  mov ax, dxi
+  sub ax, dyi
+  mov err, ax
+end;
+
 
   while (x0 <> x1) or (y0 <> y1) do begin
 asm
@@ -200,16 +206,34 @@ asm
   mul err
   mov e2, ax
 end;
+
     if e2 > -dyi then begin
       err := err - dyi;
       x0 := x0 + sx;
     end;
 
-    if e2 < dxi then begin
-      err := err + dxi;
-      y0 := y0 + sy;
-    end;
-  end;
+    
+asm
+  { if e2 < dxi then begin }
+  mov ax, dxi
+  cmp e2, ax
+  jge @skip
+
+  { err := err + dxi; }
+  mov ax, err
+  add ax, dxi
+  mov err, ax
+
+  { y0 := y0 + sy; }
+  mov ax, y0
+  add ax, sy
+  mov y0, ax
+  { end; }
+
+@skip:
+end;
+  end; { end while }
+
 
 { asmPset(x0, y0, colour) }
 asm
