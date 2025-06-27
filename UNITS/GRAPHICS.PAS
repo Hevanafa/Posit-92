@@ -169,32 +169,63 @@ end;
 
 procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
 var
-  dx, dy, sx, sy, err, e2: integer;
+  dxi, dyi, sx, sy, err, e2: integer;
 begin
-  dx := abs(x1 - x0);
-  dy := abs(y1 - y0);
+  dxi := abs(x1 - x0);
+  dyi := abs(y1 - y0);
 
   if x0 < x1 then sx := 1 else sx := -1;
   if y0 < y1 then sy := 1 else sy := -1;
 
-  err := dx - dy;
+  err := dxi - dyi;
 
   while (x0 <> x1) or (y0 <> y1) do begin
-    asmPset(x0, y0, colour);
-    e2 := 2 * err;
+asm
+  { asmPset(x0, y0, colour); }
 
-    if e2 > -dy then begin
-      err := err - dy;
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y0
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x0
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+  { e2 := 2 * err; }
+  mov ax, 2
+  mul err
+  mov e2, ax
+end;
+    if e2 > -dyi then begin
+      err := err - dyi;
       x0 := x0 + sx;
     end;
 
-    if e2 < dx then begin
-      err := err + dx;
+    if e2 < dxi then begin
+      err := err + dxi;
       y0 := y0 + sy;
     end;
   end;
 
-  asmPset(x1, y1, colour)
+{ asmPset(x0, y0, colour) }
+asm
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y0
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x0
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+end;
+
 end;
 
 
