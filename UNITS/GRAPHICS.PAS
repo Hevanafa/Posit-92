@@ -10,9 +10,14 @@ interface
 procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
+
 procedure hline(x0, x1, y: integer; const colour: byte);
 procedure asmHline(const x0, x1, y: integer; const colour: byte);
+
+procedure vline(x, y0, y1: integer; const colour: byte);
+
 procedure line(x1, y1, x2, y2: integer; const colour: byte);
+
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
 procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
@@ -215,6 +220,24 @@ asm
 
 @done:
 end;
+
+
+procedure vline(x, y0, y1: integer; const colour: byte);
+var
+  temp, a: integer;
+begin
+  if (x < 0) or (x >= 320) then exit;
+  if y0 > y1 then begin
+    temp := y0; y0 := y1; y1 := temp
+  end;
+  if y0 >= 200 then exit;
+
+  for a:=y0 to y1 do begin
+    if (a < 0) then continue;
+    asmPset(x, a, colour)
+  end;
+end;
+
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 var
