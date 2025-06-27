@@ -205,15 +205,26 @@ asm
   mov ax, 2
   mul err
   mov e2, ax
-end;
+  
+  { if e2 > -dyi then begin }
+  mov bx, dyi
+  neg bx
+  cmp e2, bx
+  jle @skip_e2_check
 
-    if e2 > -dyi then begin
-      err := err - dyi;
-      x0 := x0 + sx;
-    end;
+  { err := err - dyi; }
+  mov ax, err
+  sub ax, dyi
+  mov err, ax
 
-    
-asm
+  { x0 := x0 + sx; }
+  mov ax, x0
+  add ax, sx
+  mov x0, ax
+
+  { end; }
+@skip_e2_check:
+
   { if e2 < dxi then begin }
   mov ax, dxi
   cmp e2, ax
