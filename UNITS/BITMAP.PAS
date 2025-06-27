@@ -130,7 +130,7 @@ begin
 
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    pset(a, b, image^.data[a + b * image^.width]);
+    pset(x + a, y + b, image^.data[a + b * image^.width]);
 end;
 
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
