@@ -208,7 +208,8 @@ asm
   cmp x, 320
   jge @done
 
-  { Calculate offset: y * 320 + x }
+  { PSET }
+  { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
@@ -275,15 +276,14 @@ asm
 @y_condition:
   mov ax, yEnd
   cmp y, ax
-  { TODO: change this to jge next commit }
-  jg @y_end
+  jge @y_end
 
 @y_loop:
   cmp y, 0
   jl @y_next
 
   { PSET }
-  { Calculate offset: y * 320 + x }
+  { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
@@ -536,7 +536,8 @@ asm
   cmp x, 320
   jge @x_done
 
-  { Calculate offset: y * 320 + x }
+  { PSET }
+  { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
