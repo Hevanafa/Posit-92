@@ -264,6 +264,7 @@ asm
   cmp yStart, 200
   jge @skip
 
+{ for (y = yStart; y < yEnd; y++) }
 @y_start:
   mov ax, yStart
   mov y, ax
@@ -271,6 +272,7 @@ asm
 @y_condition:
   mov ax, yEnd
   cmp y, ax
+  { TODO: change this to jge next commit }
   jg @y_end
 
 @y_loop:
@@ -359,6 +361,48 @@ asm
 
 @y_loop:
 
+@x_left:
+  cmp xStart, 0
+  jl @skip_x_left
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx
+  add ax, xStart
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_x_left:
+
+@x_right:
+  cmp xEnd, 320
+  jge @skip_x_right
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx
+  add ax, xEnd
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_x_right:
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
+
+
 { for (x = xStart; x < xEnd; x++)}
 @x_init:
   mov ax, xStart
@@ -391,11 +435,6 @@ asm
 
 @x_done:
 
-@y_next:
-  inc y
-  jmp @y_condition
-
-@y_done:
 skip:
 end;
 
