@@ -5,7 +5,8 @@ interface
 type
   PBitmap = ^TBitmap;
   TBitmap = record
-    width, height, palsize: word;
+    width, height: word;
+    { palsize: word }
     data: array[0..0] of byte;
     { size: longint; }
   end;
@@ -153,7 +154,7 @@ asm
   or ax, di
   je @skip
 
-  add di, 6
+  add di, 4
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
@@ -295,7 +296,7 @@ asm
   or ax, di
   je @skip
 
-  add di, 6
+  add di, 4
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
@@ -414,7 +415,7 @@ asm
   or ax, di
   je @skip
 
-  add di, 6
+  add di, 4
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
@@ -490,6 +491,11 @@ end;
 end;
 
 
+{
+  Tint a sprite
+  Recommended to use a monochrome bitmap
+  Currently doesn't have the assembly equivalent
+}
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 begin
   pascalSprTint(image, x, y, transparencyKey, tint)
