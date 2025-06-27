@@ -329,7 +329,7 @@ end;
 procedure asmRect(const x0, y0, y1, y1: integer; const colour: byte);
 var
   xStart, xEnd, yStart, yEnd: integer;
-  x, y
+  x, y: integer;
 begin
   if y0 > y1 then begin
     yStart := y1; yEnd := y0
@@ -347,27 +347,55 @@ begin
 
 asm
 
-y_init:
+{ for (y = yStart; y < yEnd; y++) }
+@y_init:
+  mov ax, yStart
+  mov y, ax
 
-y_condition:
+@y_condition:
+  mov ax, yEnd
+  cmp y, ax
+  jge @y_done
 
-y_loop:
+@y_loop:
 
-x_init:
+{ for (x = xStart; x < xEnd; x++)}
+@x_init:
+  mov ax, xStart
+  mov x, ax
 
-x_condition:
+@x_condition:
+  mov ax, xEnd
+  cmp x, ax
+  jge @x_done
 
-x_loop:
+@x_loop:
+  cmp x, 0
+  jl @x_next
 
-{ TODO: PSET }
+  { PSET }
+  { Calculate offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
 
-x_next:
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
 
-x_done:
+@x_next:
+  inc x
+  jmp @x_condition
 
-y_next:
+@x_done:
 
-y_done:
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
 skip:
 end;
 
