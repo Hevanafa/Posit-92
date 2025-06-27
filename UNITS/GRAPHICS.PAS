@@ -11,14 +11,16 @@ procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 
-procedure hline(x0, x1, y: integer; const colour: byte);
+procedure hline(const x0, x1, y: integer; const colour: byte);
+procedure pascalHline(x0, x1, y: integer; const colour: byte);
 procedure asmHline(const x0, x1, y: integer; const colour: byte);
 
 procedure vline(x, y0, y1: integer; const colour: byte);
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
 procedure asmVline(const x, y0, y1: integer; const colour: byte);
 
-procedure line(x1, y1, x2, y2: integer; const colour: byte);
+procedure line(const x0, y0, x1, y1: integer; const colour: byte);
+procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
@@ -128,7 +130,13 @@ begin
   end;
 end;
 
-procedure line(x1, y1, x2, y2: integer; const colour: byte);
+
+procedure line(const x0, y0, x1, y1: integer; const colour: byte);
+begin
+  pascalLine(x0, y0, x1, y1, colour)
+end;
+
+procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
 var
   dx, dy, sx, sy, err, e2: integer;
 begin
@@ -159,7 +167,12 @@ begin
 end;
 
 
-procedure hline(x0, x1, y: integer; const colour: byte);
+procedure hline(const x0, x1, y: integer; const colour: byte);
+begin
+  asmHline(x0, x1, y, colour)
+end;
+
+procedure pascalHline(x0, x1, y: integer; const colour: byte);
 var
   x: integer;
 begin
@@ -466,8 +479,6 @@ asm
 end;
 
 end;
-
-
 
 
 procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
