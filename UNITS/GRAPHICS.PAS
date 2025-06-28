@@ -392,7 +392,7 @@ asm
   cmp yStart, 200
   jge @skip
 
-{ for (y = yStart; y < yEnd; y++) }
+{ for (y = yStart; y <= yEnd; y++) }
 @y_start:
   mov ax, yStart
   mov y, ax
@@ -400,7 +400,7 @@ asm
 @y_condition:
   mov ax, yEnd
   cmp y, ax
-  jge @y_end
+  jg @y_end
 
 @y_loop:
   cmp y, 0
@@ -476,7 +476,7 @@ begin
 
 asm
 
-{ for (y = yStart; y < yEnd; y++) }
+{ for (y = yStart; y <= yEnd; y++) }
 @y_init:
   mov ax, yStart
   mov y, ax
@@ -484,7 +484,7 @@ asm
 @y_condition:
   mov ax, yEnd
   cmp y, ax
-  jge @y_done
+  jg @y_done
 
 @y_loop:
 
@@ -530,7 +530,7 @@ asm
 @y_done:
 
 
-{ for (x = xStart; x < xEnd; x++)}
+{ for (x = xStart; x <= xEnd; x++)}
 @x_init:
   mov ax, xStart
   mov x, ax
@@ -538,7 +538,7 @@ asm
 @x_condition:
   mov ax, xEnd
   cmp x, ax
-  jge @x_done
+  jg @x_done
 
 @x_loop:
   cmp x, 0
