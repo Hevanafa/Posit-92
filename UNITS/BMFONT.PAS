@@ -18,7 +18,7 @@ type
     filename: string;
     lineHeight: word;
     bitmap: PBitmap;
-    procedure print(const text: string; x, y: integer; const colour: byte);
+    procedure print(const text: string; x, y: integer; const transparencyKey: byte);
     function textWidth(const text: string): integer;
   end;
 
@@ -139,12 +139,13 @@ begin
 end;
 
 
-procedure TBMFont.print(const text: string; x, y: integer; const colour: byte);
+procedure TBMFont.print(const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
   ch: char;
   g: PBMFontGlyph;
   srcX, srcY: word;
+  colour: byte;
 begin
   dx := x;
   for a:=1 to length(text) do begin
@@ -158,8 +159,9 @@ begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
+        colour := bitmap^.data[srcY * bitmap^.width + srcX];
 
-        if bitmap^.data[srcY * bitmap^.width + srcX] <> 0 then
+        if colour <> transparencyKey then
           asmPset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
       end;
     end;
