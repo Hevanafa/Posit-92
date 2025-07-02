@@ -441,7 +441,7 @@ begin
   end;
 end;
 
-procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
+procedure asmCircfillUnsafe(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   startX, endX: word;
@@ -452,18 +452,25 @@ begin
   p := 3 - 2 * radius;
 
   while x <= y do begin
-    startX := cxi-x;
-    a := startX;
+    startX := cxi - x;
     endX := cxi + x;
+    if startX < 0 then startX := 0;
+    if endX >= 320 then endX := 319;
+
+    a := startX;
     while a <= endX do begin
       asmPset(a, cyi + y, colour);
       asmPset(a, cyi - y, colour);
       inc(a)
     end;
 
+
     startX := cxi - y;
-    a := startX;
     endX := cxi + y;
+    if startX < 0 then startX := 0;
+    if endX >= 320 then endX := 319;
+
+    a := startX;
     while a <= endX do begin
       asmPset(a, cyi + x, colour);
       asmPset(a, cyi - x, colour);
