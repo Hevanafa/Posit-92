@@ -1214,23 +1214,25 @@ var
   rem: byte;
 begin
   if y0 > y1 then begin
-    yStart := y1; yEnd := y0
-  end else begin
-    yStart := y0; yEnd := y1
+    asm
+      mov ax, y0; mov bx, y1
+      mov y0, bx; mov y1, ax
+    end;
   end;
+  yStart := y0; yEnd := y1;
   if yStart >= 200 then exit;
 
   if x0 > x1 then begin
-    xStart := x1; xEnd := x0
-  end else begin
-    xStart := x0; xEnd := x1
+    asm
+      mov ax, x0; mov bx, x1
+      mov x0, bx; mov x1, ax
+    end;
   end;
+  xStart := x0; xEnd := x1;
   if xStart >= 320 then exit;
 
   reps := (1 + xEnd - xStart) div 2;
   rem := (1 + xEnd - xStart) and 1;
-
-  { Note: edge drawing use x0, y0 or x1, y1 instead of xEnd and xStart }
 
 asm
 
@@ -1247,8 +1249,7 @@ asm
 @y_loop:
 
 @x_left:
-  { TODO: dangerous if x0 > x1 }
-  cmp x0, 0
+  cmp xStart, 0
   jl @skip_x_left
 
   { PSET }
@@ -1256,7 +1257,7 @@ asm
   mov ax, y
   mov bx, 320
   mul bx
-  add ax, x0
+  add ax, xStart
   mov bx, ax
 
   les di, surface
@@ -1266,8 +1267,7 @@ asm
 @skip_x_left:
 
 @x_right:
-  { TODO: dangerous if x0 > x1 }
-  cmp x1, 320
+  cmp xEnd, 320
   jge @skip_x_right
 
   { PSET }
@@ -1275,7 +1275,7 @@ asm
   mov ax, y
   mov bx, 320
   mul bx
-  add ax, x1
+  add ax, xEnd
   mov bx, ax
 
   les di, surface
@@ -1291,7 +1291,6 @@ asm
 
 
 @y_top:
-  { TODO: dangerous if y0 > y1 }
   cmp yStart, 0
   jl @skip_y_top
 
@@ -1318,7 +1317,6 @@ asm
 @skip_y_top:
 
 @y_bottom:
-  { TODO: dangerous if y0 > y1 }
   cmp yEnd, 200
   jge @skip
 
