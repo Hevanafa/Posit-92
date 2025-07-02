@@ -457,25 +457,16 @@ begin
     if startX < 0 then startX := 0;
     if endX >= 320 then endX := 319;
 
-    a := startX;
-    while a <= endX do begin
-      asmPset(a, cyi + y, colour);
-      asmPset(a, cyi - y, colour);
-      inc(a)
-    end;
-
+    hline(startX, endX, cyi + y, colour);
+    hline(startX, endX, cyi - y, colour);
 
     startX := cxi - y;
     endX := cxi + y;
     if startX < 0 then startX := 0;
     if endX >= 320 then endX := 319;
 
-    a := startX;
-    while a <= endX do begin
-      asmPset(a, cyi + x, colour);
-      asmPset(a, cyi - x, colour);
-      inc(a)
-    end;
+    hline(startX, endX, cyi + x, colour);
+    hline(startX, endX, cyi - x, colour);
 
     if p < 0 then
       p := p+4 * x+6
