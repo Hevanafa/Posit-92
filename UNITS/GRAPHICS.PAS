@@ -74,6 +74,52 @@ begin
   end;
 end;
 
+procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
+var
+  x, y, p: integer;
+begin
+  x := 0;
+  y := radius;
+  p := 3 - 2 * radius;
+
+  while x <= y do begin
+asm
+  { asmPset(cxi + x, cyi + y, colour); }
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, cyi
+  add ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, cxi
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+end;
+    
+    asmPset(cxi - x, cyi + y, colour);
+    asmPset(cxi + x, cyi - y, colour);
+    asmPset(cxi - x, cyi - y, colour);
+    asmPset(cxi + y, cyi + x, colour);
+    asmPset(cxi - y, cyi + x, colour);
+    asmPset(cxi + y, cyi - x, colour);
+    asmPset(cxi - y, cyi - x, colour);
+
+    if p < 0 then
+      p := p+4 * x+6
+    else begin
+      p := p+4 * (x-y)+10;
+      dec(y);
+    end;
+    inc(x);
+  end;
+end;
+
+
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
