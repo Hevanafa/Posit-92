@@ -867,8 +867,8 @@ begin
   if startY < 0 then startY := 0;
   if endY >= 200 then endY := 199;
 
-  { for y:=startY to endY do }
 asm
+{ for (y = startY; y <= endY; y++) }
 @y_init:
   mov ax, startY
   mov y, ax
@@ -880,11 +880,17 @@ asm
 
 @y_loop:
 
-{ for (x = startX; x <= endX; x++) }
+{ for (x = startX; x <= endX; x += 2) }
 @x_init:
   mov ax, startX
+
+  { if (y and 1) = 1 then inc(x); }
+  test y, 1
+  jz @skip_inc
+  inc ax
+
+@skip_inc:  
   mov x, ax
-  { TODO: Improve with increments of 2 }
 
 @x_condition:
   mov ax, endX
@@ -892,13 +898,6 @@ asm
   jg @x_done
 
 @x_loop:
-  { if (x + b) and 1 = 1 }
-  mov ax, x
-  add ax, y
-  test ax, 1  { See if bit 0 is 1 }
-  jz @x_next
-
-@pset:
   { PSET }
   { Offset: y * 320 + x }
   mov ax, y
@@ -912,7 +911,7 @@ asm
   mov es:[di+bx], al
 
 @x_next:
-  inc x
+  inc x; inc x
   jmp @x_condition
 
 @x_done:
