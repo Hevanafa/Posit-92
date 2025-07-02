@@ -446,6 +446,8 @@ var
   x, y, p: integer;
   startX, endX: word;
   a: integer;
+  reps: word;
+  rem: byte;
 begin
   x := 0;
   y := radius;
@@ -457,7 +459,41 @@ begin
     if startX < 0 then startX := 0;
     if endX >= 320 then endX := 319;
 
-    hline(startX, endX, cyi + y, colour);
+    reps := (1 + endX - startX) div 2;
+    rem := (1 + endX - startX) and 1;
+
+asm
+  mov ax, cyi
+  add ax, y
+  cmp ax, 200
+  jge @skip
+
+  { hline(startX, endX, cyi + y, colour); }
+  { PSET }
+  { Start offset: y * 320 + x }
+  mov ax, cyi
+  add ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, startX
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+
+  mov ah, colour
+  mov al, colour
+  cld
+  mov cx, reps
+  rep stosw
+
+  test rem, 1
+  jz @skip
+  mov es:[di], al
+  
+@skip:
+end;
+
     hline(startX, endX, cyi - y, colour);
 
     startX := cxi - y;
