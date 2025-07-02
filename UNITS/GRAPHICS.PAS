@@ -9,8 +9,8 @@ interface
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);
 procedure pascalCirc(const cx, cy, radius: integer; const colour: byte);
-procedure asmCircUnsafe(const cx, cy, radius: integer; const colour: byte);
-procedure asmCirc(const cx, cy, radius: integer; const colour: byte);
+procedure asmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
+procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
 
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
