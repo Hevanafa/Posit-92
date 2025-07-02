@@ -1230,7 +1230,7 @@ begin
   reps := (1 + xEnd - xStart) div 2;
   rem := (1 + xEnd - xStart) and 1;
 
-  { TODO: edge drawing use x0, y0 or x1, y1 instead of xEnd and xStart }
+  { Note: edge drawing use x0, y0 or x1, y1 instead of xEnd and xStart }
 
 asm
 
@@ -1288,20 +1288,6 @@ asm
 @y_done:
 
 
-{ for (x = xStart; x <= xEnd; x++)}
-@x_init:
-  mov ax, xStart
-  mov x, ax
-
-@x_condition:
-  mov ax, xEnd
-  cmp x, ax
-  jg @x_done
-
-@x_loop:
-  cmp x, 0
-  jl @x_next
-
 @y_top:
   cmp yStart, 0
   jl @skip_y_top
@@ -1311,38 +1297,45 @@ asm
   mov ax, yStart
   mov bx, 320
   mul bx      { ax = ax * bx }
-  add ax, x
+  add ax, xStart
   mov bx, ax
 
   les di, surface
+  add di, bx
+  cld
+  mov ah, colour
   mov al, colour
-  mov es:[di+bx], al
+  mov cx, reps
+  rep stosw
+  { if (rem and 1) then }
+  test rem, 1
+  jz @skip_y_top
+  mov es:[di], al
 
 @skip_y_top:
 
 @y_bottom:
   cmp yEnd, 200
-  jge @skip_y_bottom
+  jge @skip
 
   { PSET }
   { Offset: y * 320 + x }
   mov ax, yEnd
   mov bx, 320
   mul bx      { ax = ax * bx }
-  add ax, x
+  add ax, xStart
   mov bx, ax
 
   les di, surface
+  add di, bx
+  mov ah, colour
   mov al, colour
-  mov es:[di+bx], al
+  mov cx, reps
+  rep stosw
 
-@skip_y_bottom:
-
-@x_next:
-  inc x
-  jmp @x_condition
-
-@x_done:
+  test rem, 1
+  jz @skip
+  mov es:[di], al
 
 @skip:
 end;
