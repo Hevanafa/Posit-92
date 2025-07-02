@@ -441,7 +441,7 @@ begin
   end;
 end;
 
-procedure asmCircfillUnsafe(const cxi, cyi, radius: integer; const colour: byte);
+procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   startX, endX: word;
@@ -521,13 +521,74 @@ asm
 @skip:
 end;
 
+
     startX := cxi - y;
     endX := cxi + y;
     if startX < 0 then startX := 0;
     if endX >= 320 then endX := 319;
 
-    hline(startX, endX, cyi + x, colour);
-    hline(startX, endX, cyi - x, colour);
+    reps := (1 + endX - startX) div 2;
+    rem := (1 + endX - startX) and 1;
+
+asm
+  mov ax, cyi
+  add ax, x
+  cmp ax, 200
+  jge @segment_2
+
+@segment_1:
+  { hline(startX, endX, cyi + x, colour); }
+  { Start offset: y * 320 + x }
+  mov ax, cyi
+  add ax, x
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, startX
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+
+  mov ah, colour
+  mov al, colour
+  cld
+  mov cx, reps
+  rep stosw
+
+  test rem, 1
+  jz @skip
+  mov es:[di], al
+
+@segment_2:
+  mov ax, cyi
+  sub ax, x
+  cmp ax, 0
+  jl @skip
+
+  { hline(startX, endX, cyi - x, colour); }
+  { Start offset: y * 320 + x }
+  mov ax, cyi
+  sub ax, x
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, startX
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+
+  mov ah, colour
+  mov al, colour
+  cld
+  mov cx, reps
+  rep stosw
+
+  test rem, 1
+  jz @skip
+  mov es:[di], al
+
+@skip:
+end;
 
     if p < 0 then
       p := p+4 * x+6
