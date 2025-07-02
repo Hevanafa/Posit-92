@@ -24,7 +24,7 @@ procedure asmHline(const x0, x1, y: integer; const colour: byte);
 procedure asmHline2(const x0, x1, y: integer; const colour: byte);
 
 
-procedure vline(x, y0, y1: integer; const colour: byte);
+procedure vline(const x, y0, y1: integer; const colour: byte);
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
 procedure asmVline(const x, y0, y1: integer; const colour: byte);
 
@@ -640,7 +640,12 @@ end;
 
 procedure line(const x0, y0, x1, y1: integer; const colour: byte);
 begin
-  pascalLine(x0, y0, x1, y1, colour)
+  if x0 = x1 then
+    vline(x0, y0, y1, colour);
+  else if y0 = y1 then
+    hline(x0, x1, y0, colour)
+  else
+    asmLine(x0, y0, x1, y1, colour);
 end;
 
 procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
@@ -913,7 +918,7 @@ end;
 end;
 
 
-procedure vline(x, y0, y1: integer; const colour: byte);
+procedure vline(const x, y0, y1: integer; const colour: byte);
 begin
   asmVline(x, y0, y1, colour)
 end;
