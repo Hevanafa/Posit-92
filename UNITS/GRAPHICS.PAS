@@ -1247,6 +1247,7 @@ asm
 @y_loop:
 
 @x_left:
+  { TODO: dangerous if x0 > x1 }
   cmp x0, 0
   jl @skip_x_left
 
@@ -1265,6 +1266,7 @@ asm
 @skip_x_left:
 
 @x_right:
+  { TODO: dangerous if x0 > x1 }
   cmp x1, 320
   jge @skip_x_right
 
@@ -1289,6 +1291,7 @@ asm
 
 
 @y_top:
+  { TODO: dangerous if y0 > y1 }
   cmp yStart, 0
   jl @skip_y_top
 
@@ -1315,6 +1318,7 @@ asm
 @skip_y_top:
 
 @y_bottom:
+  { TODO: dangerous if y0 > y1 }
   cmp yEnd, 200
   jge @skip
 
