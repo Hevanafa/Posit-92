@@ -849,7 +849,7 @@ end;
 
 procedure asmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
-  x, b, temp: integer;
+  x, y, temp: integer;
   startX, endX, startY, endY: integer;
 begin
   startX := x0; endX := x1;
@@ -867,9 +867,20 @@ begin
   if startY < 0 then startY := 0;
   if endY >= 200 then endY := 199;
 
-  for b:=startY to endY do
-    { for x:=startX to endX do }
+  { for y:=startY to endY do }
 asm
+@y_init:
+  mov ax, startY
+  mov y, ax
+
+@y_condition:
+  mov ax, endY
+  cmp y, ax
+  jg @y_done
+
+@y_loop:
+
+{ for (x = startX; x <= endX; x++) }
 @x_init:
   mov ax, startX
   mov x, ax
@@ -878,19 +889,19 @@ asm
 @x_condition:
   mov ax, endX
   cmp x, ax
-  jg @done
+  jg @x_done
 
 @x_loop:
   { if (x + b) and 1 = 1 }
   mov ax, x
-  add ax, b
+  add ax, y
   test ax, 1  { See if bit 0 is 1 }
   jz @x_next
 
 @pset:
   { PSET }
   { Offset: y * 320 + x }
-  mov ax, b
+  mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
   add ax, x
@@ -904,7 +915,14 @@ asm
   inc x
   jmp @x_condition
 
-@skip:
+@x_done:
+
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
+
 @done:
 end;
 
