@@ -384,20 +384,9 @@ asm
   mov ax, startX
   mov x, ax
 
-@x_condition:
-  mov ax, endX
-  cmp x, ax
-  jg @done
-
 @x_loop:
-  { Bounds check }
-  cmp x, 0
-  jl @x_next
-  cmp x, 320
-  jge @done
-
   { PSET }
-  { Offset: y * 320 + x }
+  { Start offset: y * 320 + x }
   mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
@@ -405,12 +394,17 @@ asm
   mov bx, ax
 
   les di, surface
-  mov al, colour
-  mov es:[di+bx], al
+  add di, bx
 
-@x_next:
-  inc x
-  jmp @x_condition
+  mov ah, colour
+  mov al, colour
+  cld
+  mov cx, reps
+  rep stosw
+
+  test rem, 1
+  jz @done
+  mov es:[di], al
 
 @done:
 end;
