@@ -684,6 +684,93 @@ asm
 end;
 end;
 
+procedure asmRectfill2(const x0, y0, x1, y1: integer; const colour: byte);
+var
+  x, y,
+  startX, endX,
+  startY, endY: integer;
+  reps: word;
+  rem: byte;
+begin
+  if y0 > y1 then begin
+    startY := y1; endY := y0
+  end else begin
+    startY := y0; endY := y1
+  end;
+
+  if x0 > x1 then begin
+    startX := x1; endX := x0
+  end else begin
+    startX := x0; endX := x1
+  end;
+
+  if startY < 0 then startY := 0;
+  if endY >= 200 then endY := 199;
+  if startX < 0 then startX := 0;
+  if endX >= 320 then endX := 319;
+  reps := (endX - startX) div 2;
+  rem := (endX - startX) and 1;
+
+asm
+@y_init:
+  { for (y = y0; y <= y1; y++) }
+  mov ax, startY
+  mov y, ax
+
+@y_condition:
+  mov ax, y
+  cmp ax, endY
+  jg @y_done
+
+@y_loop:
+
+  { for (x = x0; x <= x1; x++) }
+@x_init:
+  mov ax, startX
+  mov x, ax
+
+@x_condition:
+  mov ax, endX
+  cmp x, ax
+  jg @x_done
+
+@x_loop:
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+  cld
+  mov cx, reps
+  mov ah, colour
+  mov al, colour
+  rep stosw
+
+  test rem, 1
+  jz @x_next
+  inc di
+  mov al, 15
+  mov es:[di], al
+
+@x_next:
+  inc x
+  jmp @x_condition
+
+@x_done:
+
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
+end;
+end;
+
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
