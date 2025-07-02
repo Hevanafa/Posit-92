@@ -289,6 +289,12 @@ end;
 asm
   { TODO: Check coordinates first before plotting }
   { TODO: Missing bounds check }
+  mov ax, cyi
+  add ax, x
+  cmp ax, 200
+  jge @segment_3
+
+@segment_1:
   { asmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
@@ -303,10 +309,18 @@ asm
   mov al, colour
   mov es:[di], al
 
+@segment_2:
   { asmPset(cxi - y, cyi + x, colour); }
   sub di, y
   sub di, y
   mov es:[di], al
+
+
+@segment_3:
+  mov ax, cyi
+  sub ax, x
+  cmp ax, 0
+  jl @skip
 
   { asmPset(cxi + y, cyi - x, colour); }
   mov ax, cyi
@@ -322,10 +336,13 @@ asm
   mov al, colour
   mov es:[di], al
 
+@segment_4:
   { asmPset(cxi - y, cyi - x, colour); }
   sub di, y
   sub di, y
   mov es:[di], al
+
+@skip:
 end;
 
     if p < 0 then
