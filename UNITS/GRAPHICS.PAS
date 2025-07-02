@@ -444,6 +444,7 @@ end;
 procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
+  startX, endX: word;
   a: integer;
 begin
   x := 0;
@@ -451,13 +452,22 @@ begin
   p := 3 - 2 * radius;
 
   while x <= y do begin
-    for a:=cxi-x to cxi+x do begin
+    startX := cxi-x;
+    a := startX;
+    endX := cxi + x;
+    while a <= endX do begin
       asmPset(a, cyi + y, colour);
-      asmPset(a, cyi - y, colour)
+      asmPset(a, cyi - y, colour);
+      inc(a)
     end;
-    for a:=cxi-y to cxi+y do begin
+
+    startX := cxi - y;
+    a := startX;
+    endX := cxi + y;
+    while a <= endX do begin
       asmPset(a, cyi + x, colour);
-      asmPset(a, cyi - x, colour)
+      asmPset(a, cyi - x, colour);
+      inc(a)
     end;
 
     if p < 0 then
