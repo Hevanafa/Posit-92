@@ -8,6 +8,10 @@ unit Graphics;
 interface
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);
+procedure pascalCirc(const cx, cy, radius: integer; const colour: byte);
+procedure asmCircUnsafe(const cx, cy, radius: integer; const colour: byte);
+procedure asmCirc(const cx, cy, radius: integer; const colour: byte);
+
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 
@@ -46,7 +50,13 @@ implementation
 
 uses Maths, VGA;
 
+
 procedure circ(const cx, cy, radius: integer; const colour: byte);
+begin
+  asmCirc(cx, cy, radius, colour)
+end;
+
+procedure pascalCirc(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -74,7 +84,8 @@ begin
   end;
 end;
 
-procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
+{ Unsafe: No bounds check (faster) }
+procedure asmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -84,7 +95,6 @@ begin
 
   while x <= y do begin
 asm
-  { TODO: Unsafe: No bounds check }
   { asmPset(cxi + x, cyi + y, colour); }
 
   { PSET }
@@ -179,7 +189,7 @@ end;
 end;
 
 
-procedure asmCirc2(const cxi, cyi, radius: integer; const colour: byte);
+procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
