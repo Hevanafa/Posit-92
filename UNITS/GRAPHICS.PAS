@@ -466,10 +466,10 @@ asm
   mov ax, cyi
   add ax, y
   cmp ax, 200
-  jge @skip
+  jge @segment_2
 
+@segment_1:
   { hline(startX, endX, cyi + y, colour); }
-  { PSET }
   { Start offset: y * 320 + x }
   mov ax, cyi
   add ax, y
@@ -488,13 +488,38 @@ asm
   rep stosw
 
   test rem, 1
+  jz @segment_2
+  mov es:[di], al
+
+@segment_2:
+  mov ax, cyi
+  sub ax, y
+  cmp ax, 0
+  jl @skip
+
+  { hline(startX, endX, cyi - y, colour); }
+  { Start offset: y * 320 + x }
+  mov ax, cyi
+  sub ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, startX
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+
+  mov ah, colour
+  mov al, colour
+  cld
+  mov cx, reps
+  rep stosw
+
+  test rem, 1
   jz @skip
   mov es:[di], al
-  
 @skip:
 end;
-
-    hline(startX, endX, cyi - y, colour);
 
     startX := cxi - y;
     endX := cxi + y;
