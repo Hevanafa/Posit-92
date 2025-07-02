@@ -14,6 +14,8 @@ procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure hline(const x0, x1, y: integer; const colour: byte);
 procedure pascalHline(x0, x1, y: integer; const colour: byte);
 procedure asmHline(const x0, x1, y: integer; const colour: byte);
+procedure asmHline2(const x0, x1, y: integer; const colour: byte);
+
 
 procedure vline(x, y0, y1: integer; const colour: byte);
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
@@ -352,6 +354,67 @@ asm
   jmp @x_condition
 
 @done:
+end;
+
+
+procedure asmHline2(const x0, x1, y: integer; const colour: byte);
+var
+  x: integer;
+  startX, endX: integer;
+  reps: word;
+  rem: byte;
+begin
+  if y < 0 then exit;
+  if y >= 200 then exit;
+
+  startX := x0; endX := x1;
+
+  if startX > endX then begin
+    startX := x1; endX := x0
+  end;
+
+  { Edge cases }
+  if startX < 0 then startX := 0;
+  if endX >= 320 then endX := 319;
+  reps := (1 + endX - startX) div 2;
+  rem := (1 + endX - startX) and 1;
+
+asm
+  { for (x = x0; x <= x1; x++) }
+  mov ax, startX
+  mov x, ax
+
+@x_condition:
+  mov ax, endX
+  cmp x, ax
+  jg @done
+
+@x_loop:
+  { Bounds check }
+  cmp x, 0
+  jl @x_next
+  cmp x, 320
+  jge @done
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@x_next:
+  inc x
+  jmp @x_condition
+
+@done:
+end;
+
 end;
 
 
