@@ -84,6 +84,7 @@ begin
 
   while x <= y do begin
 asm
+  { TODO: Unsafe: No bounds check }
   { asmPset(cxi + x, cyi + y, colour); }
 
   { PSET }
@@ -97,11 +98,18 @@ asm
   mov bx, ax
 
   les di, surface
+  add di, bx
   mov al, colour
-  mov es:[di+bx], al
+  mov es:[di], al
+
+  { asmPset(cxi - x, cyi + y, colour); }
+  sub di, x
+  sub di, x
+  mov es:[di], al
+
 end;
     
-    asmPset(cxi - x, cyi + y, colour);
+    
     asmPset(cxi + x, cyi - y, colour);
     asmPset(cxi - x, cyi - y, colour);
     asmPset(cxi + y, cyi + x, colour);
