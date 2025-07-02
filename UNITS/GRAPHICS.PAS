@@ -23,7 +23,6 @@ procedure pascalHline(x0, x1, y: integer; const colour: byte);
 procedure asmHline(const x0, x1, y: integer; const colour: byte);
 procedure asmHline2(const x0, x1, y: integer; const colour: byte);
 
-
 procedure vline(const x, y0, y1: integer; const colour: byte);
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
 procedure asmVline(const x, y0, y1: integer; const colour: byte);
@@ -1075,6 +1074,8 @@ var
   xStart, xEnd, yStart, yEnd: integer;
   x, y: integer;
 begin
+  panicHalt('asmRect: Not implemented!');
+
   if y0 > y1 then begin
     yStart := y1; yEnd := y0
   end else begin
