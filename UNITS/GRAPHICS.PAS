@@ -27,8 +27,11 @@ procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
 procedure asmRect(const x0, y0, x1, y1: integer; const colour: byte);
 
-procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure rectfill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure pascalRectfill(x0, y0, x1, y1: integer; const colour: byte);
 procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure asmRectfill2(const x0, y0, x1, y1: integer; const colour: byte);
+
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -592,7 +595,12 @@ end;
 end;
 
 
-procedure rectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure rectfill(const x0, y0, x1, y1: integer; const colour: byte);
+begin
+  asmRectfill2(x0, y0, x1, y1, colour)
+end;
+
+procedure pascalRectfill(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -683,6 +691,7 @@ asm
 @y_done:
 end;
 end;
+
 
 procedure asmRectfill2(const x0, y0, x1, y1: integer; const colour: byte);
 var
