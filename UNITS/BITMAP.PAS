@@ -72,19 +72,19 @@ begin
   { writeLn('Read ', bytesRead, ' bytes from sample.bmp'); }
   seek(f, 18); blockRead(f, w, 2);
   seek(f, 22); blockRead(f, h, 2);
-  seek(f, 50); blockRead(f, palsize, 2);
+  { seek(f, 50); blockRead(f, palsize, 2); }
 
   size := sizeOf(TBitmap) + (w * h) - 1;
   getMem(output, size);
   output^.width := w;
   output^.height := h;
-  output^.palsize := palsize;
+  { output^.palsize := palsize; }
   { output^.size := w * h; }
 
 {$IFDEF DEBUG}
   writeLog('Width:' + i32str(output^.width));
   writeLog('Height:' + i32str(output^.height));
-  writeLog('Palette:' + i32str(output^.palsize));
+  { writeLog('Palette:' + i32str(output^.palsize)); }
 {$ENDIF}
 
   start := 54 + palsize * 4;
