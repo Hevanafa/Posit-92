@@ -408,7 +408,7 @@ end;
 
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
 begin
-  pascalCircfill(cx, cy, radius, colour)
+  asmCircfill(cx, cy, radius, colour)
 end;
 
 procedure pascalCircfill(const cx, cy, radius: integer; const colour: byte);
