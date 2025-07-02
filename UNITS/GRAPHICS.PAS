@@ -849,7 +849,7 @@ end;
 
 procedure asmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
-  a, b, temp: integer;
+  x, b, temp: integer;
   startX, endX, startY, endY: integer;
 begin
   startX := x0; endX := x1;
@@ -868,13 +868,24 @@ begin
   if endY >= 200 then endY := 199;
 
   for b:=startY to endY do
-    for a:=startX to endX do
+    { for x:=startX to endX do }
 asm
-  { if (a + b) and 1 = 1 }
-  mov ax, a
+@x_init:
+  mov ax, startX
+  mov x, ax
+  { TODO: Improve with increments of 2 }
+
+@x_condition:
+  mov ax, endX
+  cmp x, ax
+  jg @done
+
+@x_loop:
+  { if (x + b) and 1 = 1 }
+  mov ax, x
   add ax, b
   test ax, 1  { See if bit 0 is 1 }
-  jz @skip
+  jz @x_next
 
 @pset:
   { PSET }
@@ -882,17 +893,23 @@ asm
   mov ax, b
   mov bx, 320
   mul bx      { ax = ax * bx }
-  add ax, a
+  add ax, x
   mov bx, ax
 
   les di, surface
   mov al, colour
   mov es:[di+bx], al
 
+@x_next:
+  inc x
+  jmp @x_condition
+
 @skip:
+@done:
 end;
 
 end;
+
 
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 begin
