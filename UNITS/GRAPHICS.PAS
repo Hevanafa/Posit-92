@@ -285,7 +285,7 @@ end;
 
 procedure hline(const x0, x1, y: integer; const colour: byte);
 begin
-  asmHline(x0, x1, y, colour)
+  asmHline2(x0, x1, y, colour)
 end;
 
 procedure pascalHline(x0, x1, y: integer; const colour: byte);
