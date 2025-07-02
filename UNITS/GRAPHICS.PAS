@@ -1046,7 +1046,7 @@ end;
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
 begin
-  pascalRect(x0, y0, x1, y1, colour)
+  asmRect(x0, y0, x1, y1, colour)
 end;
 
 procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
@@ -1074,8 +1074,6 @@ var
   xStart, xEnd, yStart, yEnd: integer;
   x, y: integer;
 begin
-  panicHalt('asmRect: Not implemented!');
-
   if y0 > y1 then begin
     yStart := y1; yEnd := y0
   end else begin
