@@ -1206,6 +1206,150 @@ end;
 end;
 
 
+procedure asmRect2(const x0, y0, x1, y1: integer; const colour: byte);
+var
+  xStart, xEnd, yStart, yEnd: integer;
+  x, y: integer;
+  reps: integer;
+  rem: byte;
+begin
+  if y0 > y1 then begin
+    yStart := y1; yEnd := y0
+  end else begin
+    yStart := y0; yEnd := y1
+  end;
+  if yStart >= 200 then exit;
+
+  if x0 > x1 then begin
+    xStart := x1; xEnd := x0
+  end else begin
+    xStart := x0; xEnd := x1
+  end;
+  if xStart >= 320 then exit;
+
+  reps := (1 + xEnd - xStart) div 2;
+  rem := (1 + xEnd - xStart) and 1;
+
+  { TODO: edge drawing use x0, y0 or x1, y1 instead of xEnd and xStart }
+
+asm
+
+{ for (y = yStart; y <= yEnd; y++) }
+@y_init:
+  mov ax, yStart
+  mov y, ax
+
+@y_condition:
+  mov ax, yEnd
+  cmp y, ax
+  jg @y_done
+
+@y_loop:
+
+@x_left:
+  cmp x0, 0
+  jl @skip_x_left
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx
+  add ax, x0
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_x_left:
+
+@x_right:
+  cmp x1, 320
+  jge @skip_x_right
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx
+  add ax, x1
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_x_right:
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_done:
+
+
+{ for (x = xStart; x <= xEnd; x++)}
+@x_init:
+  mov ax, xStart
+  mov x, ax
+
+@x_condition:
+  mov ax, xEnd
+  cmp x, ax
+  jg @x_done
+
+@x_loop:
+  cmp x, 0
+  jl @x_next
+
+@y_top:
+  cmp yStart, 0
+  jl @skip_y_top
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, yStart
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_y_top:
+
+@y_bottom:
+  cmp yEnd, 200
+  jge @skip_y_bottom
+
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, yEnd
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_y_bottom:
+
+@x_next:
+  inc x
+  jmp @x_condition
+
+@x_done:
+
+@skip:
+end;
+
+end;
+
+
 procedure rectfill(const x0, y0, x1, y1: integer; const colour: byte);
 begin
   asmRectfill2(x0, y0, x1, y1, colour)
