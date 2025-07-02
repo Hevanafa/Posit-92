@@ -847,6 +847,32 @@ begin
         surface^[b*320+a] := colour;
 end;
 
+procedure asmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+var
+  a, b, temp: integer;
+  startX, endX, startY, endY: integer;
+begin
+  startX := x0; endX := x1;
+  startY := y0; endY := y1;
+
+  if x0 > x1 then begin
+    startX := x1; endX := x0
+  end;
+  if y0 > y1 then begin
+    startY := y1; endY := y0
+  end;
+
+  if startX < 0 then startX := 0;
+  if endX >= 320 then endX := 319;
+  if startY < 0 then startY := 0;
+  if endY >= 200 then endY := 199;
+
+  for b:=startY to endY do
+    for a:=startX to endX do
+      if (a + b) and 1 = 1 then
+        surface^[b * 320 + a] := colour;
+end;
+
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 begin
   line(x0, y0, x1, y1, colour);
