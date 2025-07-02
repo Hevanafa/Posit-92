@@ -27,6 +27,7 @@ procedure asmHline2(const x0, x1, y: integer; const colour: byte);
 procedure vline(const x, y0, y1: integer; const colour: byte);
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
 procedure asmVline(const x, y0, y1: integer; const colour: byte);
+procedure asmVline2(const x, y0, y1: integer; const colour: byte);
 
 procedure line(const x0, y0, x1, y1: integer; const colour: byte);
 procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
@@ -920,7 +921,7 @@ end;
 
 procedure vline(const x, y0, y1: integer; const colour: byte);
 begin
-  asmVline(x, y0, y1, colour)
+  asmVline2(x, y0, y1, colour)
 end;
 
 procedure pascalVline(x, y0, y1: integer; const colour: byte);
@@ -994,6 +995,54 @@ end;
 
 end;
 
+procedure asmVline2(const x, y0, y1: integer; const colour: byte);
+var
+  yStart, yEnd, y: integer;
+begin
+  if x < 0 then exit;
+  if x >= 320 then exit;
+
+  if y0 > y1 then begin
+    yStart := y1; yEnd := y0
+  end else begin
+    yStart := y0; yEnd := y1
+  end;
+
+  if yStart < 0 then yStart := 0;
+  if yEnd >= 200 then yEnd := 199;
+
+asm
+{ for (y = yStart; y <= yEnd; y++) }
+@y_start:
+  mov ax, yStart
+  mov y, ax
+  
+@y_condition:
+  mov ax, yEnd
+  cmp y, ax
+  jg @y_end
+
+@y_loop:
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, y
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, x
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@y_next:
+  inc y
+  jmp @y_condition
+
+@y_end:
+end;
+
+end;
 
 
 procedure rect(x0, y0, x1, y1: integer; const colour: byte);
