@@ -708,8 +708,8 @@ begin
   if endY >= 200 then endY := 199;
   if startX < 0 then startX := 0;
   if endX >= 320 then endX := 319;
-  reps := (endX - startX) div 2;
-  rem := (endX - startX) and 1;
+  reps := (1 + endX - startX) div 2;
+  rem := (1 + endX - startX) and 1;
 
 asm
 @y_init:
@@ -729,14 +729,9 @@ asm
   mov ax, startX
   mov x, ax
 
-@x_condition:
-  mov ax, endX
-  cmp x, ax
-  jg @x_done
-
 @x_loop:
   { PSET }
-  { Offset: y * 320 + x }
+  { Start offset: y * 320 + x }
   mov ax, y
   mov bx, 320
   mul bx      { ax = ax * bx }
@@ -753,15 +748,9 @@ asm
 
   test rem, 1
   jz @x_next
-  inc di
-  mov al, 15
   mov es:[di], al
 
 @x_next:
-  inc x
-  jmp @x_condition
-
-@x_done:
 
 @y_next:
   inc y
@@ -770,6 +759,7 @@ asm
 @y_done:
 end;
 end;
+
 
 procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 var
