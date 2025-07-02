@@ -13,6 +13,9 @@ procedure asmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
 procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
 
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
+procedure pascalCircfill(const cx, cy, radius: integer; const colour: byte);
+procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
+
 procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
 
 procedure hline(const x0, x1, y: integer; const colour: byte);
@@ -404,6 +407,11 @@ end;
 
 
 procedure circfill(const cx, cy, radius: integer; const colour: byte);
+begin
+  pascalCircfill(cx, cy, radius, colour)
+end;
+
+procedure pascalCircfill(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   a: integer;
@@ -432,6 +440,37 @@ begin
     inc(x)
   end;
 end;
+
+procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
+var
+  x, y, p: integer;
+  a: integer;
+begin
+  x := 0;
+  y := radius;
+  p := 3 - 2 * radius;
+
+  while x <= y do begin
+    for a:=cxi-x to cxi+x do begin
+      asmPset(a, cyi + y, colour);
+      asmPset(a, cyi - y, colour)
+    end;
+    for a:=cxi-y to cxi+y do begin
+      asmPset(a, cyi + x, colour);
+      asmPset(a, cyi - x, colour)
+    end;
+
+    if p < 0 then
+      p := p+4 * x+6
+    else begin
+      p := p+4 * (x-y)+10;
+      dec(y)
+    end;
+
+    inc(x)
+  end;
+end;
+
 
 procedure circfillDither(const cx, cy, radius: integer; const colour: byte);
 var
