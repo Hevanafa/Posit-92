@@ -311,8 +311,17 @@ asm
 
 @segment_2:
   { asmPset(cxi - y, cyi + x, colour); }
-  sub di, y
-  sub di, y
+  mov ax, cyi
+  add ax, x
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  sub ax, y
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
   mov es:[di], al
 
 
@@ -338,8 +347,17 @@ asm
 
 @segment_4:
   { asmPset(cxi - y, cyi - x, colour); }
-  sub di, y
-  sub di, y
+  mov ax, cyi
+  sub ax, x
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  sub ax, y
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
   mov es:[di], al
 
 @skip:
