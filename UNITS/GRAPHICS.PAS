@@ -126,11 +126,47 @@ asm
   sub di, x
   mov es:[di], al
 end;
-    
-    asmPset(cxi + y, cyi + x, colour);
-    asmPset(cxi - y, cyi + x, colour);
-    asmPset(cxi + y, cyi - x, colour);
-    asmPset(cxi - y, cyi - x, colour);
+
+
+asm
+  { asmPset(cxi + y, cyi + x, colour); }
+  mov ax, cyi
+  add ax, x
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  add ax, y
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
+  mov es:[di], al
+
+  { asmPset(cxi - y, cyi + x, colour); }
+  sub di, y
+  sub di, y
+  mov es:[di], al
+
+  { asmPset(cxi + y, cyi - x, colour); }
+  mov ax, cyi
+  sub ax, x
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  add ax, y
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
+  mov es:[di], al
+
+  { asmPset(cxi - y, cyi - x, colour); }
+  sub di, y
+  sub di, y
+  mov es:[di], al
+end;
 
     if p < 0 then
       p := p+4 * x+6
