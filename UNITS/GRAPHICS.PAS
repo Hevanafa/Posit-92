@@ -107,11 +107,26 @@ asm
   sub di, x
   mov es:[di], al
 
+  { asmPset(cxi + x, cyi - y, colour); }
+  mov ax, cyi
+  sub ax, y
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  add ax, x
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
+  mov es:[di], al
+
+  { asmPset(cxi - x, cyi - y, colour); }
+  sub di, x
+  sub di, x
+  mov es:[di], al
 end;
     
-    
-    asmPset(cxi + x, cyi - y, colour);
-    asmPset(cxi - x, cyi - y, colour);
     asmPset(cxi + y, cyi + x, colour);
     asmPset(cxi - y, cyi + x, colour);
     asmPset(cxi + y, cyi - x, colour);
