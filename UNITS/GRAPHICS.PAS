@@ -191,11 +191,16 @@ begin
 asm
   { TODO: Unsafe: No bounds check }
   
-  { TODO: Check coordinates first before plotting }
   mov ax, cyi
   add ax, y
   cmp ax, 200
-  jge @segment_1
+  jge @segment_3
+
+@segment_1:
+  mov ax, cxi
+  add ax, x
+  cmp ax, 320
+  jge @segment_2
 
   { asmPset(cxi + x, cyi + y, colour); }
   mov ax, cyi
@@ -211,6 +216,12 @@ asm
   mov al, colour
   mov es:[di], al
 
+@segment_2:
+  mov ax, cxi
+  sub ax, x
+  cmp ax, 0
+  jl @segment_3
+
   { asmPset(cxi - x, cyi + y, colour); }
   mov ax, cyi
   add ax, y
@@ -225,7 +236,18 @@ asm
   mov al, colour
   mov es:[di], al
 
-@segment_1:
+
+@segment_3:
+  mov ax, cyi
+  sub ax, y
+  cmp ax, 0
+  jl @skip
+
+  mov ax, cxi
+  add ax, x
+  cmp ax, 320
+  jge @segment_4
+
   { asmPset(cxi + x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
@@ -240,14 +262,33 @@ asm
   mov al, colour
   mov es:[di], al
 
+@segment_4:
+  mov ax, cxi
+  sub ax, x
+  cmp ax, 0
+  jl @skip
+
   { asmPset(cxi - x, cyi - y, colour); }
-  sub di, x
-  sub di, x
+  mov ax, cyi
+  sub ax, y
+  mov bx, 320
+  mul bx
+  add ax, cxi
+  sub ax, x
+  mov bx, ax
+
+  les di, surface  { reset ES:DI to surface }
+  add di, bx
+  mov al, colour
   mov es:[di], al
+
+@skip:
 end;
 
 
 asm
+  { TODO: Check coordinates first before plotting }
+  { TODO: Missing bounds check }
   { asmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
