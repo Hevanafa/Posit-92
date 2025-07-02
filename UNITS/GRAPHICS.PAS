@@ -189,7 +189,7 @@ begin
 
   while x <= y do begin
 asm
-  { TODO: Unsafe: No bounds check }
+  { Note: Check coordinates first before plotting }
   
   mov ax, cyi
   add ax, y
@@ -287,14 +287,18 @@ end;
 
 
 asm
-  { TODO: Check coordinates first before plotting }
-  { TODO: Missing bounds check }
+  { Note: Check coordinates first before plotting }
   mov ax, cyi
   add ax, x
   cmp ax, 200
   jge @segment_3
 
 @segment_1:
+  mov ax, cxi
+  add ax, y
+  cmp ax, 320
+  jge @segment_2
+
   { asmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
@@ -310,6 +314,11 @@ asm
   mov es:[di], al
 
 @segment_2:
+  mov ax, cxi
+  sub ax, y
+  cmp ax, 0
+  jl @segment_3
+
   { asmPset(cxi - y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
@@ -331,6 +340,11 @@ asm
   cmp ax, 0
   jl @skip
 
+  mov ax, cxi
+  add ax, y
+  cmp ax, 320
+  jge @segment_4
+
   { asmPset(cxi + y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
@@ -346,6 +360,11 @@ asm
   mov es:[di], al
 
 @segment_4:
+  mov ax, cxi
+  sub ax, y
+  cmp ax, 0
+  jl @skip
+
   { asmPset(cxi - y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
