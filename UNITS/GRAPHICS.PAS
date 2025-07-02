@@ -869,8 +869,29 @@ begin
 
   for b:=startY to endY do
     for a:=startX to endX do
-      if (a + b) and 1 = 1 then
-        surface^[b * 320 + a] := colour;
+asm
+  { if (a + b) and 1 = 1 }
+  mov ax, a
+  add ax, b
+  test ax, 1  { See if bit 0 is 1 }
+  jz @skip
+
+@pset:
+  { PSET }
+  { Offset: y * 320 + x }
+  mov ax, b
+  mov bx, 320
+  mul bx      { ax = ax * bx }
+  add ax, a
+  mov bx, ax
+
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip:
+end;
+
 end;
 
 procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
