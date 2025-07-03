@@ -140,11 +140,11 @@ var
   colour: byte;
   imageDataPtr: pointer; { Cache the data pointer }
 begin
+  if image = nil then exit;
+
   destX := x;
   destY := y;
   colour := 0;
-
-  if image = nil then exit;
 
 asm
   les si, image
@@ -169,13 +169,16 @@ asm
   jge @y_end
   
 @y_loop:
+  { 135 ops: 0.0850s }
   { Check bounds }
+  {
   mov ax, destY
   add ax, srcY
   cmp ax, 0
   jl @y_next
   cmp ax, 200
   jge @y_end
+  }
 
 @x_start:
   mov srcX, 0
@@ -187,6 +190,14 @@ asm
 
 @x_loop:
   { Check bounds }
+  { 135 ops: 0.0572s }
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @y_next
+  cmp ax, 200
+  jge @y_end
+
   mov ax, destX
   add ax, srcX
   cmp ax, 0
