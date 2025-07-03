@@ -146,16 +146,13 @@ begin
   imgHeight := image^.height;
   colour := 0;
 
+  if image = nil then exit;
+
 asm
-  les di, [image]
+  les si, image
 
-  { Check if image is nil }
-  mov ax, es
-  or ax, di
-  je @skip
-
-  add di, 4
-  mov word ptr imageDataPtr, di   { store offset }
+  add si, 4
+  mov word ptr imageDataPtr, si   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
 @y_start:
@@ -167,6 +164,13 @@ asm
   jge @y_end
   
 @y_loop:
+  { Check bounds }
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @y_next
+  cmp ax, 200
+  jge @y_end
 
 
 @x_start:
@@ -178,28 +182,7 @@ asm
   jge @x_end
 
 @x_loop:
-  { Get pixel }
-  { Obtain the `data` offset }
-  mov ax, srcY
-  mov bx, imgWidth
-  mul bx
-  add ax, srcX  { ax = b * imgWidth + a }
-
-  les di, imageDataPtr
-  add di, ax
-
-  mov al, es:[di]
-  mov colour, al
-
-  { asmPset }
   { Check bounds }
-  mov ax, destY
-  add ax, srcY
-  cmp ax, 0
-  jl @x_next
-  cmp ax, 200
-  jge @x_next
-
   mov ax, destX
   add ax, srcX
   cmp ax, 0
@@ -207,22 +190,33 @@ asm
   cmp ax, 320
   jge @x_next
 
-  { Screen dest }
-  mov bx, destY
-  add bx, srcY
-  mov cx, 320
-  mov ax, bx
-  mul cx
+  { Get pixel }
+  les si, imageDataPtr
 
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+  add si, ax
+
+  mov al, es:[si]
+  mov colour, al
+
+  { Screen destination }
+  { (destY + srcY) * 320 + destX + srcX }
+  mov ax, destY
+  add ax, srcY
+  mov bx, 320
+  mul bx
   add ax, destX
   add ax, srcX
-  mov bx, ax
 
   { PSET }
   push es
   les di, surface
+  add di, ax
   mov al, colour
-  mov es:[di+bx], al
+  mov es:[di], al
   pop es
 
 @x_next:
@@ -240,6 +234,7 @@ asm
 end;
 
 end;
+
 
 procedure freeBMP(var image: PBitmap);
 begin
