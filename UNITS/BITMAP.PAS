@@ -201,8 +201,10 @@ asm
   mov bx, imgWidth
   mul bx
   add ax, srcX  { ax = b * imgWidth + a }
-  { colour is at es:[si] }
   add si, ax
+
+  mov al, es:[si]
+  mov colour, al
 
   { Screen destination }
   { (destY + srcY) * 320 + destX + srcX }
@@ -215,9 +217,9 @@ asm
   add ax, srcX
 
   { PSET }
-  les di, surface
+  les di, surface  { This replaces both ES & DI with surface's pointer }
   add di, ax
-  mov al, es:[si]
+  mov al, colour
   mov es:[di], al
 
 @x_next:
