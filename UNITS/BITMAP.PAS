@@ -5,8 +5,7 @@ interface
 type
   PBitmap = ^TBitmap;
   TBitmap = record
-    width, height: word;
-    { palsize: word }
+    width, height: word;  { palsize is 256 by default }
     data: array[0..0] of byte;
     { size: longint; }
   end;
@@ -72,7 +71,9 @@ begin
   { writeLn('Read ', bytesRead, ' bytes from sample.bmp'); }
   seek(f, 18); blockRead(f, w, 2);
   seek(f, 22); blockRead(f, h, 2);
-  { seek(f, 50); blockRead(f, palsize, 2); }
+
+  { TODO: Turn this off, but pay attention to how asmDrawBMP & asmSpr's outputs look like }
+  seek(f, 50); blockRead(f, palsize, 2);
 
   size := sizeOf(TBitmap) + (w * h) - 1;
   getMem(output, size);
@@ -84,7 +85,7 @@ begin
 {$IFDEF DEBUG}
   writeLog('Width:' + i32str(output^.width));
   writeLog('Height:' + i32str(output^.height));
-  { writeLog('Palette:' + i32str(output^.palsize)); }
+  writeLog('Palette:' + i32str(output^.palsize));
 {$ENDIF}
 
   start := 54 + palsize * 4;
@@ -144,17 +145,19 @@ begin
 
   destX := x;
   destY := y;
+  imgWidth := image^.width;
+  imgHeight := image^.height;
   colour := 0;
 
 asm
   les si, image
 
   { deref imgWidth, make sure it can handle more than 256 bytes width }
-  mov ax, word ptr es:[si]  { deref imgWidth }
-  mov imgWidth, ax
-  add si, 2
-  mov ax, word ptr es:[si]  { deref imgHeight }
-  mov imgHeight, ax
+  {mov ax, es:[si]}  { deref imgWidth }
+  {mov imgWidth, ax
+  add si, 2}
+  {mov ax, es:[si]}  { deref imgHeight }
+  {mov imgHeight, ax}
 
   add si, 4
   mov word ptr imageDataPtr, si   { store offset }
