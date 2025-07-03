@@ -270,14 +270,15 @@ procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKe
 var
   srcX, srcY, imgWidth, imgHeight: word;
   destX, destY: integer;
-  transKey, colour: byte;
+  colour: byte;
   imageDataPtr: pointer; { Cache the data pointer }
 begin
+  if image = nil then exit;
+
   destX := x;
   destY := y;
   imgWidth := image^.width;
   imgHeight := image^.height;
-  transKey := transparencyKey;
   colour := 0;
 
 {
@@ -287,15 +288,10 @@ begin
 }
 
 asm
-  les di, [image]
+  les si, image
 
-  { Check if image is nil }
-  mov ax, es
-  or ax, di
-  je @skip
-
-  add di, 4
-  mov word ptr imageDataPtr, di   { store offset }
+  add si, 4
+  mov word ptr imageDataPtr, si   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
 @y_start:
@@ -307,6 +303,15 @@ asm
   jge @y_end
 
 @y_loop:
+  { 135 ops: 0.0867s }
+  {
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @y_next
+  cmp ax, 200
+  jge @y_end
+  }
 
 @x_start:
   mov srcX, 0
@@ -318,55 +323,53 @@ asm
 
 @x_loop:
   { Get pixel }
-  { Obtain the `data` offset }
+  { (srcY * imgWidth) + srcX }
   mov ax, srcY
   mov bx, imgWidth
   mul bx
   add ax, srcX  { ax = b * imgWidth + a }
 
-  les di, imageDataPtr
-  add di, ax
+  les si, imageDataPtr
+  add si, ax
 
   { Check if transparent }
-  mov al, es:[di]
-  cmp al, transKey
+  mov al, es:[si]
+  cmp al, transparencyKey
   je @x_next
 
   mov colour, al
 
   { Check bounds }
+  { 135 ops: 0.0547s }
   mov ax, destY
   add ax, srcY
   cmp ax, 0
-  jl @x_next
+  jl @y_next
   cmp ax, 200
-  jge @x_next
+  jge @y_end
 
   mov ax, destX
   add ax, srcX
   cmp ax, 0
   jl @x_next
   cmp ax, 320
-  jge @x_next
+  jge @x_end
 
   { Screen dest }
-  mov bx, destY
-  add bx, srcY
-  mov cx, 320
-  mov ax, bx
-  mul cx
+  mov ax, destY
+  add ax, srcY
+  mov bx, 320
+  mul bx
 
   add ax, destX
   add ax, srcX
   mov bx, ax
 
   { PSET }
-  push es
   les di, surface
+  add di, bx
   mov al, colour
-  mov es:[di+bx], al
-  pop es
-
+  mov es:[di], al
 
 @x_next:
   inc srcX
