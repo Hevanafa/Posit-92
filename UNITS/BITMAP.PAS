@@ -142,14 +142,19 @@ var
 begin
   destX := x;
   destY := y;
-  imgWidth := image^.width;
-  imgHeight := image^.height;
   colour := 0;
 
   if image = nil then exit;
 
 asm
   les si, image
+
+  { deref imgWidth, make sure it can handle more than 256 bytes width }
+  mov ax, word ptr es:[si]  { deref imgWidth }
+  mov imgWidth, ax
+  add si, 2
+  mov ax, word ptr es:[si]  { deref imgHeight }
+  mov imgHeight, ax
 
   add si, 4
   mov word ptr imageDataPtr, si   { store offset }
@@ -172,7 +177,6 @@ asm
   cmp ax, 200
   jge @y_end
 
-
 @x_start:
   mov srcX, 0
 
@@ -188,11 +192,11 @@ asm
   cmp ax, 0
   jl @x_next
   cmp ax, 320
-  jge @x_next
+  jge @x_end
 
   { Get pixel }
   les si, imageDataPtr
-
+  { (srcY * imgWidth) + srcX }
   mov ax, srcY
   mov bx, imgWidth
   mul bx
@@ -208,16 +212,15 @@ asm
   add ax, srcY
   mov bx, 320
   mul bx
+
   add ax, destX
   add ax, srcX
 
   { PSET }
-  push es
   les di, surface
   add di, ax
   mov al, colour
   mov es:[di], al
-  pop es
 
 @x_next:
   inc srcX
