@@ -5,12 +5,17 @@ interface
 uses Bitmap;
 
 type
+  ui8 = byte;
+  i8 = shortint;
+  i16 = integer;
+  ui16 = word;
+
   PBMFontGlyph = ^TBMFontGlyph;
   TBMFontGlyph = record
-    id: word;
-    x, y, width, height: word;
-    xoffset, yoffset: integer;
-    xadvance: integer;
+    id: ui16;
+    x, y, width, height: ui16;  { 2, 4, 6, 8 }
+    xoffset, yoffset: i16;  { 10, 12 }
+    xadvance: i16; { 14 }
     { page, chnl: byte; }
   end;
 
@@ -27,6 +32,7 @@ procedure freeBMFont(var font: PBMFont);
 
 procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 procedure pascalPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 
 function measureBMFont(const font: PBMFont; const text: string): integer;
 
@@ -191,6 +197,70 @@ begin
     end;
 
     inc(dx, g^.xadvance)
+  end;
+end;
+
+procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+var
+  a, row, col: integer;
+  dxi, dy: integer;
+  ch: char;
+  g: PBMFontGlyph;
+  srcX, srcY: word;
+  colour: byte;
+begin
+  if font = nil then exit;
+
+  dxi := x;
+  for a:=1 to length(text) do begin
+    ch := text[a];
+    if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
+
+    g := font^.glyphs[ord(ch)];
+    if g = nil then continue;
+
+    for row := 0 to g^.height - 1 do begin
+      for col := 0 to g^.width - 1 do begin
+        srcX := g^.x + col;
+        srcY := g^.y + row;
+        colour := font^.bitmap^.data[srcY * font^.bitmap^.width + srcX];
+
+asm
+  mov al, colour
+  cmp al, transparencyKey
+  je @skip
+
+  { TODO: Check bounds }
+
+  { Calculate offset }
+  { y + g^.yoffset + row }
+  les si, g
+
+  mov ax, y
+  add si, 12
+  add ax, es:[si]
+  add ax, row
+  mov bx, 320
+  mul bx
+
+  { dxi + g^.xoffset + col }
+  add ax, dxi
+  sub si, 2
+  add ax, es:[si]
+  add ax, col
+  mov bx, ax
+
+  les di, surface
+  add di, bx
+  mov al, colour
+  mov es:[di], al
+
+  @skip:
+end;
+      end;
+    end;
+
+    inc(dxi, g^.xadvance)
   end;
 end;
 
