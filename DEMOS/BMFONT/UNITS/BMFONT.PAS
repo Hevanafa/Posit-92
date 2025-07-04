@@ -44,11 +44,16 @@ var
   g: PBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
-  if output <> nil then begin
+  if output <> nil then
     writeLog('loadBMFont: output isn''t nil!');
 
-  for a:=low(output.glyphs) to high(output.glyphs) do
-    output.glyphs[a] := nil;
+  getMem(output, sizeof(TBMFont));
+
+  if output = nil then
+    panicHalt('loadBMFont: Out of memory!');
+
+  for a:=low(output^.glyphs) to high(output^.glyphs) do
+    output^.glyphs[a] := nil;
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
@@ -71,7 +76,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'lineHeight' then
-          output.lineHeight := parseInt(kv[1]);
+          output^.lineHeight := parseInt(kv[1]);
       end;
     end;
 
@@ -80,7 +85,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'file' then
-          output.filename := replaceAll(kv[1], '"', '');
+          output^.filename := replaceAll(kv[1], '"', '');
       end;
     end;
 
@@ -95,11 +100,11 @@ begin
         if key = 'id' then begin
           glyphID := parseInt(value);
 
-          if (low(output.glyphs) <= glyphID) and (glyphID <= high(output.glyphs)) then begin
+          if (low(output^.glyphs) <= glyphID) and (glyphID <= high(output^.glyphs)) then begin
             { writeLn('ID:', glyphID); }
             New(g);
             g^.id := glyphID;
-            output.glyphs[glyphID] := g
+            output^.glyphs[glyphID] := g
           end else begin
             { writeLn('Skipped glyph ', glyphID); }
             { when out of bounds }
@@ -107,13 +112,13 @@ begin
             break
           end;
         end
-        else if key = 'x' then output.glyphs[glyphID]^.x := parseInt(value)
-        else if key = 'y' then output.glyphs[glyphID]^.y := parseInt(value)
-        else if key = 'width' then output.glyphs[glyphID]^.width := parseInt(value)
-        else if key = 'height' then output.glyphs[glyphID]^.height := parseInt(value)
-        else if key = 'xoffset' then output.glyphs[glyphID]^.xoffset := parseInt(value)
-        else if key = 'yoffset' then output.glyphs[glyphID]^.yoffset := parseInt(value)
-        else if key = 'xadvance' then output.glyphs[glyphID]^.xadvance := parseInt(value);
+        else if key = 'x' then output^.glyphs[glyphID]^.x := parseInt(value)
+        else if key = 'y' then output^.glyphs[glyphID]^.y := parseInt(value)
+        else if key = 'width' then output^.glyphs[glyphID]^.width := parseInt(value)
+        else if key = 'height' then output^.glyphs[glyphID]^.height := parseInt(value)
+        else if key = 'xoffset' then output^.glyphs[glyphID]^.xoffset := parseInt(value)
+        else if key = 'yoffset' then output^.glyphs[glyphID]^.yoffset := parseInt(value)
+        else if key = 'xadvance' then output^.glyphs[glyphID]^.xadvance := parseInt(value);
       end;
     end;
 
@@ -121,8 +126,9 @@ begin
   end;
   close(f);
 
-  loadBMP(output.bitmap, output.filename)
+  loadBMP(output^.bitmap, output^.filename)
 end;
+
 
 procedure freeBMFont(var font: PBMFont);
 var
@@ -131,16 +137,16 @@ begin
   if font = nil then exit;
 
   count:=0;
-  for a:=low(font.glyphs) to high(font.glyphs) do begin
-    if font.glyphs[a] <> nil then begin
-      dispose(font.glyphs[a]);
-      font.glyphs[a] := nil;
+  for a:=low(font^.glyphs) to high(font^.glyphs) do begin
+    if font^.glyphs[a] <> nil then begin
+      dispose(font^.glyphs[a]);
+      font^.glyphs[a] := nil;
       inc(count)
     end;
   end;
-  freeBMP(font.bitmap);
-  font.filename := '';
-  font.lineHeight := 0;
+  freeBMP(font^.bitmap);
+  font^.filename := '';
+  font^.lineHeight := 0;
 
   writeLog('Freed ' + i32str(count) + ' glyphs')
 end;
