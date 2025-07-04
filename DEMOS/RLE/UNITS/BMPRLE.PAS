@@ -150,14 +150,21 @@ begin
 
     if destY >= 0 then begin
       for a:=1 to count do begin
-        surface^[destY * 320 + destX + left] := colour;
-        inc(left);
+        if destX + left < 0 then begin
+          inc(left);
+          continue
+        end;
 
-        if destX + left >= 200 then begin
+        { TODO: Handle x >= 320 }
+        { if destX + left >= 200 then begin }
           { Skip to the next scanline }
-          left := image^.width;
+          { left := image^.width;
           break;
         end;
+        }
+
+        surface^[destY * 320 + destX + left] := colour;
+        inc(left);
       end;
     end else
       inc(left, count);
