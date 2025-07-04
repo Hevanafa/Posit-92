@@ -153,13 +153,11 @@ begin
         surface^[destY * 320 + destX + left] := colour;
         inc(left);
 
-        { if destX + left >= 200 then begin }
+        if destX + left >= 200 then begin
           { Skip to the next scanline }
-          {
           left := image^.width;
           break;
         end;
-        }
       end;
     end else
       inc(left, count);
@@ -168,6 +166,8 @@ begin
       left := 0;
       inc(destY)
     end;
+
+    if destY >= 200 then break;
 
     inc(readPos, 2);
   end;
