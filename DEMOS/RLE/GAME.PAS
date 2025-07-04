@@ -68,11 +68,6 @@ var
   startTime: double;
   image: PBitmap;
   sampleRLE: PRLEBitmap;
-
-  { Not yet using longint for prototyping }
-  a, x, y: integer;
-  readPos, left: integer;
-  count, colour: byte;
 begin  
   { writeLn('Hello!'); }
   loadBMP(image, 'IMG/DOSU_1.BMP');
@@ -101,26 +96,7 @@ begin
 
   cls($00);
 
-  { Blit RLE bitmap }
-  x := 0; y := 0;
-  readPos := 0;
-  while readPos < sampleRLE^.dataSize do begin
-    count := sampleRLE^.data[readPos];
-    colour := sampleRLE^.data[readPos+1];
-
-    { Dangerous: no bounds check }
-    for a:=1 to count do
-      surface^[y * 320 + x + a - 1] := colour;
-    
-    inc(x, count);
-
-    if x >= sampleRLE^.width then begin
-      x := 0;
-      inc(y)
-    end;
-
-    inc(readPos, 2);
-  end;
+  blitRLE(sampleRLE);
 
   flush;
 

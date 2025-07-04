@@ -2,6 +2,8 @@ unit BMPRLE;
 
 interface
 
+uses Bitmap, Panic;
+
 type
   PRLEBitmap = ^TRLEBitmap;
   TRLEBitmap = record
@@ -12,9 +14,12 @@ type
 
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 procedure freeRLEBitmap(var image: PRLEBitmap);
+procedure blitRLE(const image: PRLEBitmap);
 
 
 implementation
+
+uses VGA;
 
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 var
@@ -125,8 +130,31 @@ begin
 end;
 
 procedure blitRLE(const image: PRLEBitmap);
+var
+  { Not yet using longint for prototyping }
+  a, x, y: integer;
+  readPos, left: integer;
+  count, colour: byte;
 begin
-end;
+  x := 0; y := 0;
+  readPos := 0;
+  while readPos < image^.dataSize do begin
+    count := image^.data[readPos];
+    colour := image^.data[readPos+1];
 
+    { Dangerous: no bounds check }
+    for a:=1 to count do
+      surface^[y * 320 + x + a - 1] := colour;
+    
+    inc(x, count);
+
+    if x >= image^.width then begin
+      x := 0;
+      inc(y)
+    end;
+
+    inc(readPos, 2);
+  end;
+end;
 
 end.
