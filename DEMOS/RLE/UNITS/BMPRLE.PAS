@@ -138,6 +138,7 @@ var
   readPos, destX, destY: integer;
   count, colour: byte;
 begin
+  if image = nil then exit;
   if y >= 200 then exit;
   if x >= 320 then exit;
 
@@ -150,21 +151,14 @@ begin
 
     if destY >= 0 then begin
       for a:=1 to count do begin
-        if destX + left < 0 then begin
+        if (destX + left < 0) or
+          (destX + left >= 320) then begin
           inc(left);
           continue
         end;
 
-        { TODO: Handle x >= 320 }
-        { if destX + left >= 200 then begin }
-          { Skip to the next scanline }
-          { left := image^.width;
-          break;
-        end;
-        }
-
         surface^[destY * 320 + destX + left] := colour;
-        inc(left);
+        inc(left)
       end;
     end else
       inc(left, count);
@@ -176,7 +170,7 @@ begin
 
     if destY >= 200 then break;
 
-    inc(readPos, 2);
+    inc(readPos, 2)
   end;
 end;
 
