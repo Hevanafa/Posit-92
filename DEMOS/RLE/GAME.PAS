@@ -2,7 +2,8 @@
 
 uses
   CRT, DOS,
-  Bitmap, Logger, Keyboard, Mouse, Timing, VGA,
+  Bitmap, Logger, Keyboard, Mouse,
+  Panic, Timing, VGA,
   BMPRLE;
 
 const
@@ -63,16 +64,13 @@ begin
 end;
 
 
+procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 var
-  startTime: double;
-  image: PBitmap;
   a, b, offset: word;
   count, colour: byte;
   writePos: word;
-  sampleRLEBitmap: PRLEBitmap;
-begin  
-  { writeLn('Hello!'); }
-  loadBMP(image, 'IMG/DOSU_1.BMP');
+begin
+  if src = nil then panicHalt('convertToRLE: src is nil!');
 
   { PBitmap to TRLEBitmap conversion }
 
@@ -81,19 +79,19 @@ begin
   offset := 0;
 
   count := 0;
-  colour := image^.data[0];
+  colour := src^.data[0];
 
-  for b:=0 to image^.height-1 do begin
+  for b:=0 to src^.height-1 do begin
     { write(b, ': '); }
 
-    { for a:=0 to image^.width-1 do begin }
+    { for a:=0 to src^.width-1 do begin }
     a := 0;
     while true do begin
-      if a >= image^.width then break;
+      if a >= src^.width then break;
 
-      { offset := b * image^.width + a; }
+      { offset := b * src^.width + a; }
 
-      if colour = image^.data[offset] then
+      if colour = src^.data[offset] then
         inc(count)
       else begin
         { Different pixel in the same scanline }
@@ -101,7 +99,7 @@ begin
         inc(writePos, 2);
 
         count := 1;
-        colour := image^.data[offset];
+        colour := src^.data[offset];
       end;
 
       inc(a);
@@ -115,45 +113,39 @@ begin
     { Reset the counter }
     count := 0;
     { Note: This doesn't handle offset overflow }
-    colour := image^.data[offset];
+    colour := src^.data[offset];
   end;
 
-  writeLn('writePos: ', writePos);
+  writeLn('Pass 1 writePos: ', writePos);
 
-  getMem(sampleRLEBitmap, sizeof(TRLEBitmap) + writePos);
-  sampleRLEBitmap^.width := image^.width;
-  sampleRLEBitmap^.height := image^.height;
-  sampleRLEBitmap^.dataSize := writePos;
+  getMem(output, sizeof(TRLEBitmap) + writePos);
+  output^.width := src^.width;
+  output^.height := src^.height;
+  output^.dataSize := writePos;
 
-  readLn;
-  freeBMP(image);
-
-  exit;
 
   { Pass 2 }
+  writePos := 0;
   offset := 0;
 
   count := 0;
-  colour := image^.data[0];
+  colour := src^.data[0];
 
-  for b:=0 to image^.height-1 do begin
-    write(b, ': ');
-
-    { for a:=0 to image^.width-1 do begin }
+  for b:=0 to src^.height-1 do begin
     a := 0;
     while true do begin
-      if a >= image^.width then break;
+      if a >= src^.width then break;
 
-      { offset := b * image^.width + a; }
-
-      if colour = image^.data[offset] then
+      if colour = src^.data[offset] then
         inc(count)
       else begin
         { Different pixel in the same scanline }
-        write('[', count, ', ', colour, '], ');
+        output^.data[writePos] := count;
+        output^.data[writePos+1] := colour;
+        inc(writePos, 2);
 
         count := 1;
-        colour := image^.data[offset];
+        colour := src^.data[offset];
       end;
 
       inc(a);
@@ -161,12 +153,28 @@ begin
     end;
 
     { Change of scanline }
-    writeLn('[', count, ', ', colour, '],');
+    output^.data[writePos] := count;
+    output^.data[writePos+1] := colour;
+    inc(writePos, 2);
 
     { Reset the counter }
     count := 0;
-    colour := image^.data[offset];
+    colour := src^.data[offset];
   end;
+
+  writeLn('Pass 2 writePos: ', writePos);
+end;
+
+
+var
+  startTime: double;
+  image: PBitmap;
+  sampleRLE: PRLEBitmap;
+begin  
+  { writeLn('Hello!'); }
+  loadBMP(image, 'IMG/DOSU_1.BMP');
+
+  convertToRLE(image, sampleRLE);
 
   readLn;
 
