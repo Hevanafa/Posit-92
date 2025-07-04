@@ -13,6 +13,8 @@ type
     xadvance: integer;
     { page, chnl: byte; }
   end;
+
+  PBMFont = ^TBMFont;
   TBMFont = record
     glyphs: array[32..127] of PBMFontGlyph;
     filename: string;
@@ -20,16 +22,16 @@ type
     bitmap: PBitmap;
   end;
 
-procedure loadBMFont(var output: TBMFont; const filename: string);
-procedure freeBMFont(var font: TBMFont);
-procedure printBMFont(const font: TBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-function measureBMFont(const font: TBMFont; const text: string): integer;
+procedure loadBMFont(var output: PBMFont; const filename: string);
+procedure freeBMFont(var font: PBMFont);
+procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+function measureBMFont(const font: PBMFont; const text: string): integer;
 
 implementation
 
 uses Conv, Logger, Panic, Strings, VGA;
 
-procedure loadBMFont(var output: TBMFont; const filename: string);
+procedure loadBMFont(var output: PBMFont; const filename: string);
 var
   a, b: integer;
   f: text;
@@ -42,6 +44,9 @@ var
   g: PBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
+  if output <> nil then begin
+    writeLog('loadBMFont: output isn''t nil!');
+
   for a:=low(output.glyphs) to high(output.glyphs) do
     output.glyphs[a] := nil;
 
@@ -119,10 +124,12 @@ begin
   loadBMP(output.bitmap, output.filename)
 end;
 
-procedure freeBMFont(var font: TBMFont);
+procedure freeBMFont(var font: PBMFont);
 var
   a, count: word;
 begin
+  if font = nil then exit;
+
   count:=0;
   for a:=low(font.glyphs) to high(font.glyphs) do begin
     if font.glyphs[a] <> nil then begin
@@ -139,7 +146,7 @@ begin
 end;
 
 
-procedure printBMFont(const font: TBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
   ch: char;
@@ -147,6 +154,8 @@ var
   srcX, srcY: word;
   colour: byte;
 begin
+  if font = nil then exit;
+
   dx := x;
   for a:=1 to length(text) do begin
     ch := text[a];
@@ -170,13 +179,18 @@ begin
   end;
 end;
 
-function measureBMFont(const font: TBMFont; const text: string): integer;
+function measureBMFont(const font: PBMFont; const text: string): integer;
 var
   a: integer;
   ch: char;
   glyph: PBMFontGlyph;
   result: integer;
 begin
+  if font = nil then begin
+    measureBMFont := 0;
+    exit
+  end;
+
   result := 0;
 
   for a:=1 to length(text) do begin
