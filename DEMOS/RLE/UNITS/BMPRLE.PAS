@@ -134,29 +134,35 @@ procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
-  srcX, srcY, left: integer;
-  readPos, destX, destY: integer;  { destX, destY }
+  left: integer;
+  readPos, destX, destY: integer;
   count, colour: byte;
 begin
   if y >= 200 then exit;
   if x >= 320 then exit;
 
   destX := x; destY := y;
-  readPos := 0;
+  readPos := 0; left := 0;
 
   while readPos < image^.dataSize do begin
     count := image^.data[readPos];
     colour := image^.data[readPos+1];
 
     if destY >= 0 then begin
-      { Dangerous: no bounds check }
-      for a:=1 to count do
-        surface^[destY * 320 + destX + left + a - 1] := colour;
+      for a:=1 to count do begin
+        surface^[destY * 320 + destX + left] := colour;
+        inc(left);
 
-      { TODO: Handle X right bound check }
-    end;
-
-    inc(left, count);
+        { if destX + left >= 200 then begin }
+          { Skip to the next scanline }
+          {
+          left := image^.width;
+          break;
+        end;
+        }
+      end;
+    end else
+      inc(left, count);
 
     if left >= image^.width then begin
       left := 0;
