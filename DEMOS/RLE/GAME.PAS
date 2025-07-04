@@ -90,8 +90,7 @@ begin
   end;
   }
 
-  readLn;
-
+  initLogger;
   initVGAMode;
   initBuffer;
   loadFont;
@@ -130,10 +129,11 @@ begin
 
   readLn;
 
-  initTextMode;
-
   freeRLEBitmap(sampleRLE);
   freeBMP(image);
+
+  initTextMode;
+  closeLogger;
 
   exit;
 

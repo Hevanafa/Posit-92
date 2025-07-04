@@ -13,16 +13,20 @@ type
   end;
 
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
+{ Currently there's no way to convert a RLE bitmap back to a PBitmap }
+
 procedure freeRLEBitmap(var image: PRLEBitmap);
+
 procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
 procedure blitRLE2(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
 procedure blitRLEUnsafe(const image: PRLEBitmap; const x, y: integer);
-
+{ Missing assembly version }
 
 implementation
 
-uses VGA;
+uses Conv, Logger, VGA;
 
+{ PBitmap to TRLEBitmap conversion }
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 var
   a, b, offset: word;
@@ -30,8 +34,6 @@ var
   writePos: word;
 begin
   if src = nil then panicHalt('convertToRLE: src is nil!');
-
-  { PBitmap to TRLEBitmap conversion }
 
   { Pass 1 }
   writePos := 0;
@@ -75,7 +77,7 @@ begin
     colour := src^.data[offset];
   end;
 
-  writeLn('Pass 1 writePos: ', writePos);
+  writeLog('Pass 1 writePos: ' + i32str(writePos));
 
   getMem(output, sizeof(TRLEBitmap) + writePos);
   output^.width := src^.width;
@@ -121,7 +123,7 @@ begin
     colour := src^.data[offset];
   end;
 
-  writeLn('Pass 2 writePos: ', writePos);
+  writeLog('Pass 2 writePos: ' + i32str(writePos));
 end;
 
 procedure freeRLEBitmap(var image: PRLEBitmap);
