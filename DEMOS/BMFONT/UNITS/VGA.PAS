@@ -1,4 +1,4 @@
-unit vga;
+unit VGA;
 
 interface
 
@@ -11,20 +11,33 @@ var
 
 procedure initVGAMode;
 procedure initTextMode;
+{ This loads the 8x8 font }
 procedure loadFont;
-procedure cls(const colour: byte);
-procedure asmCls(const colour: byte);
-procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
-procedure pset(const x, y: word; const colour: byte);
-procedure asmPset(const x, y: word; const colour: byte);
-procedure asmFlush;
+
 procedure initBuffer;
 procedure freeBuffer;
 
+procedure cls(const colour: byte);
+procedure pascalCls(const colour: byte);
+procedure asmCls(const colour: byte);
+
+{ calls asmPrint internally }
+procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
+procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+
+procedure pset(const x, y: integer; const colour: byte);
+procedure pascalPset(const x, y: integer; const colour: byte);
+procedure asmPset(const x, y: integer; const colour: byte);
+
+procedure flush;
+procedure pascalFlush;
+procedure asmFlush;
+
+
 implementation
 
-uses dos;
+uses DOS, Panic;
 
 const
   bufferSize = 64000;
@@ -64,6 +77,12 @@ end;
 
 procedure cls(const colour: byte);
 begin
+  asmCls(colour)
+end;
+
+
+procedure pascalCls(const colour: byte);
+begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
 end;
@@ -81,6 +100,11 @@ asm
 end;
 
 procedure print(const text: string; const x, y: integer; const colour: byte);
+begin
+  asmPrint(text, x, y, colour)
+end;
+
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -159,19 +183,30 @@ end;
   end;
 end;
 
-procedure pset(const x, y: word; const colour: byte);
+
+procedure pset(const x, y: integer; const colour: byte);
+begin
+  asmPset(x, y, colour)
+end;
+
+procedure pascalPset(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
 
-procedure asmPset(const x, y: word; const colour: byte); assembler;
+procedure asmPset(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
-  cmp x, 320
-  jae @@done
+  cmp y, 0
+  jl @skip
   cmp y, 200
-  jae @@done
+  jge @skip
+
+  cmp x, 0
+  jl @skip
+  cmp x, 320
+  jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -187,9 +222,20 @@ asm
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
-@@done:
+@skip:
 end;
 
+
+procedure flush;
+begin
+  asmFlush
+end;
+
+
+procedure pascalFlush;
+begin
+  Move(surface^, Mem[$A000:0], 64000)
+end;
 
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS

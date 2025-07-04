@@ -5,23 +5,31 @@ interface
 type
   PBitmap = ^TBitmap;
   TBitmap = record
-    width, height, palsize: word;
+    width, height: word;  { palsize is 256 by default }
     data: array[0..0] of byte;
     { size: longint; }
   end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
-procedure drawBMP(const image: PBitmap);
+
+{ Similar to spr but without the transparency check }
+procedure drawBMP(const image: PBitmap; const x, y: integer);
+procedure pascalDrawBMP(const image: PBitmap; const x, y: integer);
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
+
 procedure freeBMP(var image: PBitmap);
 
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure pascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 { Taken from asmSprSafe from SPRTEST demo }
 procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
-procedure spr2(
+procedure pascalSprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+
+{ TODO: Implement the version with a TRect }
+procedure blitRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
@@ -32,7 +40,8 @@ procedure bitmapInfo(const image: PBitmap);
 
 implementation
 
-uses Logger, Conv, Panic, VGA;
+uses
+  Logger, Conv, Panic, VGA;
 
 {$IFDEF DEBUG}
 const DEBUG_READ_LINES = false;
@@ -62,13 +71,15 @@ begin
   { writeLn('Read ', bytesRead, ' bytes from sample.bmp'); }
   seek(f, 18); blockRead(f, w, 2);
   seek(f, 22); blockRead(f, h, 2);
+
+  { TODO: Turn this off, but pay attention to how asmDrawBMP & asmSpr's outputs look like }
   seek(f, 50); blockRead(f, palsize, 2);
 
   size := sizeOf(TBitmap) + (w * h) - 1;
   getMem(output, size);
   output^.width := w;
   output^.height := h;
-  output^.palsize := palsize;
+  { output^.palsize := palsize; }
   { output^.size := w * h; }
 
 {$IFDEF DEBUG}
@@ -105,14 +116,22 @@ begin
   close(f)
 end;
 
-procedure drawBMP(const image: PBitmap);
+
+
+procedure drawBMP(const image: PBitmap; const x, y: integer);
+begin
+  asmDrawBMP(image, x, y)
+end;
+
+procedure pascalDrawBMP(const image: PBitmap; const x, y: integer);
 var
   a, b: integer;
 begin
   if image = nil then exit;
+
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    asmPset(a, b, image^.data[a + b * image^.width]);
+    pset(x + a, y + b, image^.data[a + b * image^.width]);
 end;
 
 procedure asmDrawBMP(const image: PBitmap; const x, y: integer);
@@ -122,6 +141,8 @@ var
   colour: byte;
   imageDataPtr: pointer; { Cache the data pointer }
 begin
+  if image = nil then exit;
+
   destX := x;
   destY := y;
   imgWidth := image^.width;
@@ -129,92 +150,108 @@ begin
   colour := 0;
 
 asm
-  les di, [image]
+  les si, image
 
-  { Check if image is nil }
-  mov ax, es
-  or ax, di
-  je @skip
+  { deref imgWidth, make sure it can handle more than 256 bytes width }
+  {mov ax, es:[si]}  { deref imgWidth }
+  {mov imgWidth, ax
+  add si, 2}
+  {mov ax, es:[si]}  { deref imgHeight }
+  {mov imgHeight, ax}
 
-  add di, 6
-  mov word ptr imageDataPtr, di   { store offset }
+  add si, 4
+  mov word ptr imageDataPtr, si   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
-  mov srcY, 0  { init row counter }
+@y_start:
+  mov srcY, 0
 
-@row_start:
+@y_condition:
   mov ax, imgHeight
   cmp srcY, ax
-  jge @row_end
-
-  mov srcX, 0  { init col counter }
-
-@col_start:
-  mov ax, imgWidth
-  cmp srcX, ax
-  jge @col_end
-
-  { Get pixel }
-  { Obtain the `data` offset }
-  mov ax, srcY
-  mov bx, imgWidth
-  mul bx
-  add ax, srcX  { ax = b * imgWidth + a }
-
-  les di, imageDataPtr
-  add di, ax
-
-  mov al, es:[di]
-  mov colour, al
-
-  { asmPset }
+  jge @y_end
+  
+@y_loop:
+  { 135 ops: 0.0850s }
   { Check bounds }
+  {
   mov ax, destY
   add ax, srcY
   cmp ax, 0
-  jl @skip_draw
+  jl @y_next
   cmp ax, 200
-  jge @skip_draw
+  jge @y_end
+  }
+
+@x_start:
+  mov srcX, 0
+
+@x_condition:
+  mov ax, imgWidth
+  cmp srcX, ax
+  jge @x_end
+
+@x_loop:
+  { Check bounds }
+  { 135 ops: 0.0572s }
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @y_next
+  cmp ax, 200
+  jge @y_end
 
   mov ax, destX
   add ax, srcX
   cmp ax, 0
-  jl @skip_draw
+  jl @x_next
   cmp ax, 320
-  jge @skip_draw
+  jge @x_end
 
-  { Screen dest }
-  mov bx, destY
-  add bx, srcY
-  mov cx, 320
-  mov ax, bx
-  mul cx
+  { Get pixel }
+  les si, imageDataPtr
+  { (srcY * imgWidth) + srcX }
+  mov ax, srcY
+  mov bx, imgWidth
+  mul bx
+  add ax, srcX  { ax = b * imgWidth + a }
+  add si, ax
+
+  mov al, es:[si]
+  mov colour, al
+
+  { Screen destination }
+  { (destY + srcY) * 320 + destX + srcX }
+  mov ax, destY
+  add ax, srcY
+  mov bx, 320
+  mul bx
 
   add ax, destX
   add ax, srcX
-  mov bx, ax
 
   { PSET }
-  push es
-  les di, surface
+  les di, surface  { This replaces both ES & DI with surface's pointer }
+  add di, ax
   mov al, colour
-  mov es:[di+bx], al
-  pop es
+  mov es:[di], al
 
-
-@skip_draw:
+@x_next:
   inc srcX
-  jmp @col_start
+  jmp @x_condition
 
-@col_end:
+@x_end:
+
+@y_next:
   inc srcY
-  jmp @row_start
+  jmp @y_condition
 
-@row_end:
+@y_end:
 @skip:
 end;
 
 end;
+
 
 procedure freeBMP(var image: PBitmap);
 begin
@@ -223,7 +260,13 @@ begin
   image := nil  { avoids dangling pointer }
 end;
 
+
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+begin
+  asmSpr(image, x, y, transparencyKey)
+end;
+
+procedure pascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
@@ -232,27 +275,24 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      asmPset(x+a, y+b, image^.data[pos]);
-      { pset_legacy(x+a, y+b, image^.data[pos]); }
+      pset(x+a, y+b, image^.data[pos]);
   end;
 end;
 
 
-procedure asmSpr(
-  const image: PBitmap;
-  const x, y: integer;
-  const transparencyKey: byte);
+procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   srcX, srcY, imgWidth, imgHeight: word;
   destX, destY: integer;
-  transKey, colour: byte;
+  colour: byte;
   imageDataPtr: pointer; { Cache the data pointer }
 begin
+  if image = nil then exit;
+
   destX := x;
   destY := y;
   imgWidth := image^.width;
   imgHeight := image^.height;
-  transKey := transparencyKey;
   colour := 0;
 
 {
@@ -262,91 +302,100 @@ begin
 }
 
 asm
-  les di, [image]
+  les si, image
 
-  { Check if image is nil }
-  mov ax, es
-  or ax, di
-  je @skip
-
-  add di, 6
-  mov word ptr imageDataPtr, di   { store offset }
+  add si, 4
+  mov word ptr imageDataPtr, si   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
-  mov srcY, 0  { init row counter }
+@y_start:
+  mov srcY, 0
 
-@row_start:
+@y_condition:
   mov ax, imgHeight
   cmp srcY, ax
-  jge @row_end
+  jge @y_end
 
-  mov srcX, 0  { init col counter }
+@y_loop:
+  { 135 ops: 0.0867s }
+  {
+  mov ax, destY
+  add ax, srcY
+  cmp ax, 0
+  jl @y_next
+  cmp ax, 200
+  jge @y_end
+  }
 
-@col_start:
+@x_start:
+  mov srcX, 0
+
+@x_condition:
   mov ax, imgWidth
   cmp srcX, ax
-  jge @col_end
+  jge @x_end
 
+@x_loop:
   { Get pixel }
-  { Obtain the `data` offset }
+  { (srcY * imgWidth) + srcX }
   mov ax, srcY
   mov bx, imgWidth
   mul bx
   add ax, srcX  { ax = b * imgWidth + a }
 
-  les di, imageDataPtr
-  add di, ax
+  les si, imageDataPtr
+  add si, ax
 
   { Check if transparent }
-  mov al, es:[di]
-  cmp al, transKey
-  je @skip_draw
+  mov al, es:[si]
+  cmp al, transparencyKey
+  je @x_next
 
   mov colour, al
 
   { Check bounds }
+  { 135 ops: 0.0547s }
   mov ax, destY
   add ax, srcY
   cmp ax, 0
-  jl @skip_draw
+  jl @y_next
   cmp ax, 200
-  jge @skip_draw
+  jge @y_end
 
   mov ax, destX
   add ax, srcX
   cmp ax, 0
-  jl @skip_draw
+  jl @x_next
   cmp ax, 320
-  jge @skip_draw
+  jge @x_end
 
   { Screen dest }
-  mov bx, destY
-  add bx, srcY
-  mov cx, 320
-  mov ax, bx
-  mul cx
+  mov ax, destY
+  add ax, srcY
+  mov bx, 320
+  mul bx
 
   add ax, destX
   add ax, srcX
   mov bx, ax
 
   { PSET }
-  push es
   les di, surface
+  add di, bx
   mov al, colour
-  mov es:[di+bx], al
-  pop es
+  mov es:[di], al
 
-
-@skip_draw:
+@x_next:
   inc srcX
-  jmp @col_start
+  jmp @x_condition
 
-@col_end:
+@x_end:
+
+@y_next:
   inc srcY
-  jmp @row_start
+  jmp @y_condition
 
-@row_end:
+@y_end:
 @skip:
 end;
 
@@ -381,24 +430,29 @@ asm
   or ax, di
   je @skip
 
-  add di, 6
+  add di, 4
   mov word ptr imageDataPtr, di   { store offset }
   mov word ptr imageDataPtr+2, es { store segment }
 
-  mov srcY, 0  { init row counter }
+@y_start:
+  mov srcY, 0
 
-@row_start:
+@y_condition:
   mov ax, imgHeight
   cmp srcY, ax
-  jge @row_end
+  jge @y_end
 
-  mov srcX, 0  { init col counter }
+@y_loop:
 
-@col_start:
+@x_start:
+  mov srcX, 0
+
+@x_condition:
   mov ax, imgWidth
   cmp srcX, ax
-  jge @col_end
+  jge @x_end
 
+@x_loop:
   { Get pixel }
   { Obtain the `data` offset }
   mov ax, srcY
@@ -411,11 +465,11 @@ asm
 
   { Check if transparent }
   mov al, es:[di]
-  cmp al, 13
-  je @skip_draw
+  cmp al, transKey
+  je @x_next
 
   mov colour, al
-  
+
   { Screen dest }
   mov bx, destY
   add bx, srcY
@@ -435,22 +489,34 @@ asm
   pop es
 
 
-@skip_draw:
+@x_next:
   inc srcX
-  jmp @col_start
+  jmp @x_condition
 
-@col_end:
+@x_end:
+
+@y_next:
   inc srcY
-  jmp @row_start
+  jmp @y_condition
 
-@row_end:
+@y_end:
 @skip:
 end;
 
 end;
 
 
+{
+  Tint a sprite
+  Recommended to use a monochrome bitmap
+  Currently doesn't have the assembly equivalent
+}
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+begin
+  pascalSprTint(image, x, y, transparencyKey, tint)
+end;
+
+procedure pascalSprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin
@@ -459,12 +525,12 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      asmPset(x+a, y+b, tint);
+      pset(x+a, y+b, tint);
   end;
 end;
 
 { Improved version of spr with partial sprite drawing }
-procedure spr2(
+procedure blitRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
@@ -478,7 +544,7 @@ begin
   for a := 0 to srcW - 1 do begin
     pos := (srcX + a) + ((srcY + b) * image^.width);
     if image^.data[pos] <> transparencyKey then
-      asmPset(destX + a, destY + b, image^.data[pos]);
+      pset(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 

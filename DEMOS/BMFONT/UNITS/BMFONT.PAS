@@ -18,12 +18,13 @@ type
     filename: string;
     lineHeight: word;
     bitmap: PBitmap;
-    procedure print(const text: string; x, y: integer; const colour: byte);
+    
     function textWidth(const text: string): integer;
   end;
 
 procedure loadBMFont(var output: TBMFont; const filename: string);
 procedure freeBMFont(var font: TBMFont);
+procedure printBMFont(const font: TBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 
 implementation
 
@@ -139,28 +140,30 @@ begin
 end;
 
 
-procedure TBMFont.print(const text: string; x, y: integer; const colour: byte);
+procedure printBMFont(const font: TBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
   ch: char;
   g: PBMFontGlyph;
   srcX, srcY: word;
+  colour: byte;
 begin
   dx := x;
   for a:=1 to length(text) do begin
     ch := text[a];
-    if (ord(ch) < low(glyphs)) or (ord(ch) > high(glyphs)) then continue;
+    if (ord(ch) < low(font.glyphs)) or (ord(ch) > high(font.glyphs)) then continue;
 
-    g := glyphs[ord(ch)];
+    g := font.glyphs[ord(ch)];
     if g = nil then continue;
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
+        colour := font.bitmap^.data[srcY * font.bitmap^.width + srcX];
 
-        if bitmap^.data[srcY * bitmap^.width + srcX] <> 0 then
-          asmPset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
+        if colour <> transparencyKey then
+          pset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
       end;
     end;
 
