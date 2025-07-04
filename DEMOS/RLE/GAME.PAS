@@ -178,13 +178,65 @@ var
   startTime: double;
   image: PBitmap;
   sampleRLE: PRLEBitmap;
+
+  { Not yet using longint for prototyping }
+  a, x, y: integer;
+  readPos, left: integer;
+  count, colour: byte;
 begin  
   { writeLn('Hello!'); }
   loadBMP(image, 'IMG/DOSU_1.BMP');
 
   convertToRLE(image, sampleRLE);
 
+  {
+  a:=0; x:=0;
+  while a < sampleRLE^.dataSize do begin
+    count := sampleRLE^.data[a];
+    write('[', count, ', ', sampleRLE^.data[a+1], '], ');
+
+    inc(x, count);
+    if x >= sampleRLE^.width then begin
+      x := 0;
+      writeLn;
+    end;
+    inc(a, 2)
+  end;
+  }
+
   readLn;
+
+  initVGAMode;
+  initBuffer;
+
+  cls($00);
+
+  { Blit RLE bitmap }
+  x := 0; y := 0;
+  readPos := 0;
+  while readPos < sampleRLE^.dataSize do begin
+    count := sampleRLE^.data[readPos];
+    colour := sampleRLE^.data[readPos+1];
+
+    { Dangerous: no bounds check }
+    for a:=1 to count do
+      surface^[y * 320 + x + a - 1] := colour;
+    
+    inc(x, count);
+
+    if x >= sampleRLE^.width then begin
+      x := 0;
+      inc(y)
+    end;
+
+    inc(readPos, 2);
+  end;
+
+  flush;
+
+  readLn;
+
+  initTextMode;
 
   freeRLEBitmap(sampleRLE);
   freeBMP(image);
