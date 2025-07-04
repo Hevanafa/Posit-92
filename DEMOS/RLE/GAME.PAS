@@ -166,6 +166,14 @@ begin
 end;
 
 
+procedure freeRLEBitmap(var image: PRLEBitmap);
+begin
+  if image = nil then exit;
+  freeMem(image, sizeof(TRLEBitmap) + image^.dataSize);
+  image := nil
+end;
+
+
 var
   startTime: double;
   image: PBitmap;
@@ -178,6 +186,7 @@ begin
 
   readLn;
 
+  freeRLEBitmap(sampleRLE);
   freeBMP(image);
 
   exit;
