@@ -24,7 +24,10 @@ type
 
 procedure loadBMFont(var output: PBMFont; const filename: string);
 procedure freeBMFont(var font: PBMFont);
+
 procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure pascalPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+
 function measureBMFont(const font: PBMFont; const text: string): integer;
 
 implementation
@@ -153,6 +156,12 @@ end;
 
 
 procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+begin
+  pascalPrintBMFont(font, text, x, y, transparencyKey)
+end;
+
+
+procedure pascalPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
   ch: char;
@@ -184,6 +193,7 @@ begin
     inc(dx, g^.xadvance)
   end;
 end;
+
 
 function measureBMFont(const font: PBMFont; const text: string): integer;
 var
