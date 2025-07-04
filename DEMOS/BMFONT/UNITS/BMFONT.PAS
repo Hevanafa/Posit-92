@@ -165,16 +165,16 @@ begin
   dx := x;
   for a:=1 to length(text) do begin
     ch := text[a];
-    if (ord(ch) < low(font.glyphs)) or (ord(ch) > high(font.glyphs)) then continue;
+    if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
 
-    g := font.glyphs[ord(ch)];
+    g := font^.glyphs[ord(ch)];
     if g = nil then continue;
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font.bitmap^.data[srcY * font.bitmap^.width + srcX];
+        colour := font^.bitmap^.data[srcY * font^.bitmap^.width + srcX];
 
         if colour <> transparencyKey then
           pset(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
@@ -201,8 +201,8 @@ begin
 
   for a:=1 to length(text) do begin
     ch := text[a];
-    if (low(font.glyphs) <= ord(ch)) and (ord(ch) <= high(font.glyphs)) then begin
-      glyph := font.glyphs[ord(ch)];
+    if (low(font^.glyphs) <= ord(ch)) and (ord(ch) <= high(font^.glyphs)) then begin
+      glyph := font^.glyphs[ord(ch)];
       if glyph <> nil then
         inc(result, glyph^.xadvance);
     end;
