@@ -2,7 +2,7 @@
 
 uses
   CRT, DOS,
-  Bitmap, Logger, Keyboard, Mouse,
+  Bitmap, Conv, Logger, Keyboard, Mouse,
   Panic, Timing, VGA,
   BMPRLE;
 
@@ -65,7 +65,8 @@ end;
 
 
 var
-  startTime: double;
+  a: word;
+  startTime, diff: double;
   image: PBitmap;
   sampleRLE: PRLEBitmap;
 begin  
@@ -93,10 +94,37 @@ begin
 
   initVGAMode;
   initBuffer;
+  loadFont;
 
   cls($00);
 
-  blitRLE(sampleRLE, 10, 10);
+  { blitRLE(sampleRLE, 10, 10); }
+
+  { Edge cases }
+  { blitRLE(sampleRLE, -10, -10);
+  blitRLE(sampleRLE, 10, -10); }
+
+  { blitRLE(sampleRLE, -10, 10);
+  blitRLE(sampleRLE, 310, 10); }
+
+  { blitRLE(sampleRLE, 10, 190); }
+  { blitRLEUnsafe(sampleRLE, 10, 10); }
+
+  startTime := getTimer;
+  for a:=1 to 1000 do begin
+    { 1.5595s }
+    { pascalDrawBMP(image, random(320), 10 + random(190)); }
+    { 0.5694s }
+    { blitRLE(sampleRLE, random(320), 10 + random(190), 13); }
+
+    { 1.5592s }
+    { pascalSpr(image, random(320), random(200), 13); }
+    { 0.5352s }
+    blitRLE2(sampleRLE, random(320), 10 + random(190), 13);
+  end;
+  diff := getTimer - startTime;
+
+  print('1000 operations done in ' + f32str(diff) + 's', 0, 0, 15);
 
   flush;
 

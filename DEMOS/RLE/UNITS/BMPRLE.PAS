@@ -135,7 +135,7 @@ procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
-  left: integer;
+  left: integer; { similar to top & left coords like in a terminal }
   readPos, destX, destY: integer;
   count, colour: byte;
 begin
@@ -232,7 +232,10 @@ var
   readPos, left: integer;
   count, colour: byte;
 begin
+  if image = nil then exit;
+
   destX := x; destY := y;
+
   left := 0;
   readPos := 0;
   while readPos < image^.dataSize do begin
