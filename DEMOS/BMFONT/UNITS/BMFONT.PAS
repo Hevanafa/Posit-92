@@ -13,18 +13,17 @@ type
     xadvance: integer;
     { page, chnl: byte; }
   end;
-  TBMFont = object
+  TBMFont = record
     glyphs: array[32..127] of PBMFontGlyph;
     filename: string;
     lineHeight: word;
     bitmap: PBitmap;
-    
-    function textWidth(const text: string): integer;
   end;
 
 procedure loadBMFont(var output: TBMFont; const filename: string);
 procedure freeBMFont(var font: TBMFont);
 procedure printBMFont(const font: TBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+function measureBMFont(const font: TBMFont; const text: string): integer;
 
 implementation
 
@@ -171,7 +170,7 @@ begin
   end;
 end;
 
-function TBMFont.textWidth(const text: string): integer;
+function measureBMFont(const font: TBMFont; const text: string): integer;
 var
   a: integer;
   ch: char;
@@ -182,14 +181,14 @@ begin
 
   for a:=1 to length(text) do begin
     ch := text[a];
-    if (low(glyphs) <= ord(ch)) and (ord(ch) <= high(glyphs)) then begin
-      glyph := glyphs[ord(ch)];
+    if (low(font.glyphs) <= ord(ch)) and (ord(ch) <= high(font.glyphs)) then begin
+      glyph := font.glyphs[ord(ch)];
       if glyph <> nil then
         inc(result, glyph^.xadvance);
     end;
   end;
 
-  textWidth := result
+  measureBMFont := result
 end;
 
 end.

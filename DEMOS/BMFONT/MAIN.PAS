@@ -53,13 +53,13 @@ begin
   { TODO: Your drawing code here }
 
   s := 'BMFont test';
-  w := font.textWidth(s);
+  w := measureBMFont(font, s);
   printBMFont(font, s, 160 - w div 2, 120, 13);
 
   { print('B - beep', 160-32, 130, 15); }
   { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
   scoreStr := f32str(t);
-  w := font.textWidth(scoreStr);
+  w := measureBMFont(font, scoreStr);
   printBMFont(font, scoreStr, 160 - w div 2, 8, 13);
 
   drawFPS;
