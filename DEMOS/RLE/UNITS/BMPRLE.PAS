@@ -138,6 +138,9 @@ var
   readPos, destX, destY: integer;  { destX, destY }
   count, colour: byte;
 begin
+  if y >= 200 then exit;
+  if x >= 320 then exit;
+
   destX := x; destY := y;
   readPos := 0;
 
@@ -145,10 +148,14 @@ begin
     count := image^.data[readPos];
     colour := image^.data[readPos+1];
 
-    { Dangerous: no bounds check }
-    for a:=1 to count do
-      surface^[destY * 320 + destX + left + a - 1] := colour;
-    
+    if destY >= 0 then begin
+      { Dangerous: no bounds check }
+      for a:=1 to count do
+        surface^[destY * 320 + destX + left + a - 1] := colour;
+
+      { TODO: Handle X right bound check }
+    end;
+
     inc(left, count);
 
     if left >= image^.width then begin
