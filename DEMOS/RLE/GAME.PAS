@@ -73,39 +73,43 @@ begin
   loadBMP(image, 'IMG/DOSU_1.BMP');
 
   { PBitmap to TRLEBitmap conversion }
+  offset := 0;
+  
   count := 0;
   colour := image^.data[0];
 
-  for b:=0 to 2 do begin
-    writeLn('Scanline ', b);
+  for b:=0 to 15 do begin
+    write(b, ': ');
 
     { for a:=0 to image^.width-1 do begin }
     a := 0;
     while true do begin
       if a >= image^.width then break;
 
-      offset := b * image^.width + a;
+      { offset := b * image^.width + a; }
 
       if colour = image^.data[offset] then
         inc(count)
       else begin
         { Different pixel in the same scanline }
-        writeLn('Pair: ', count, ', ', colour);
+        write('[', count, ', ', colour, '], ');
 
         count := 1;
         colour := image^.data[offset];
       end;
 
-      inc(a)
+      inc(a);
+      inc(offset)
     end;
 
     { Change of scanline }
-    writeLn('Pair: ', count, ', ', colour);
+    writeLn('[', count, ', ', colour, '],');
 
-    inc(offset);
+    { Reset the counter }
     count := 0;
     colour := image^.data[offset];
   end;
+
 
   readLn;
 
