@@ -22,9 +22,9 @@ type
   PBMFont = ^TBMFont;
   TBMFont = record
     glyphs: array[32..127] of PBMFontGlyph;
-    filename: string;
-    lineHeight: word;
-    bitmap: PBitmap;
+    filename: string;  { 384 }
+    lineHeight: word;  { 640 }
+    bitmap: PBitmap;  { 642 }
   end;
 
 procedure loadBMFont(var output: PBMFont; const filename: string);
@@ -208,6 +208,8 @@ var
   g: PBMFontGlyph;
   srcX, srcY: word;
   colour: byte;
+
+  width: word;
 begin
   if font = nil then exit;
 
@@ -223,9 +225,34 @@ begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font^.bitmap^.data[srcY * font^.bitmap^.width + srcX];
+        {
+        colour := font^.bitmap^.data[
+          srcY * font^.bitmap^.width + srcX];
+        }
 
 asm
+  les si, font
+  { Jump to font^.bitmap }
+  mov bx, es:[si + 642]
+  { font^.bitmap^.width }
+  mov dx, es:[si + 644]
+
+  mov si, bx
+  mov es, dx
+  mov ax, es:[si]
+  mov width, ax
+end;
+  
+  writeLog('width is: ' + i32str(width));
+
+asm
+  { data offset: srcY * font^.bitmap^.width + srcX }
+  mov bx, srcY
+  mul width
+  add bx, srcX
+  mov ax, es:[si+bx]
+  mov colour, ah
+
   mov al, colour
   cmp al, transparencyKey
   je @skip
