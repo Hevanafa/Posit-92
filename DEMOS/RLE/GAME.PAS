@@ -96,7 +96,7 @@ begin
 
   cls($00);
 
-  blitRLE(sampleRLE);
+  blitRLE(sampleRLE, 10, 10);
 
   flush;
 

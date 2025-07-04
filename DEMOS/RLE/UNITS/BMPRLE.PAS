@@ -14,7 +14,7 @@ type
 
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 procedure freeRLEBitmap(var image: PRLEBitmap);
-procedure blitRLE(const image: PRLEBitmap);
+procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
 procedure blitRLEUnsafe(const image: PRLEBitmap);
 
 
@@ -130,28 +130,30 @@ begin
   image := nil
 end;
 
-procedure blitRLE(const image: PRLEBitmap);
+procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
-  a, x, y: integer;
-  readPos, left: integer;
+  a: integer;
+  srcX, srcY, left: integer;
+  readPos, destX, destY: integer;  { destX, destY }
   count, colour: byte;
 begin
-  x := 0; y := 0;
+  destX := x; destY := y;
   readPos := 0;
+
   while readPos < image^.dataSize do begin
     count := image^.data[readPos];
     colour := image^.data[readPos+1];
 
     { Dangerous: no bounds check }
     for a:=1 to count do
-      surface^[y * 320 + x + a - 1] := colour;
+      surface^[destY * 320 + destX + left + a - 1] := colour;
     
-    inc(x, count);
+    inc(left, count);
 
-    if x >= image^.width then begin
-      x := 0;
-      inc(y)
+    if left >= image^.width then begin
+      left := 0;
+      inc(destY)
     end;
 
     inc(readPos, 2);
