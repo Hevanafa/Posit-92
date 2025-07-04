@@ -68,17 +68,75 @@ var
   image: PBitmap;
   a, b, offset: word;
   count, colour: byte;
+  writePos: word;
+  sampleRLEBitmap: PRLEBitmap;
 begin  
   { writeLn('Hello!'); }
   loadBMP(image, 'IMG/DOSU_1.BMP');
 
   { PBitmap to TRLEBitmap conversion }
+
+  { Pass 1 }
+  writePos := 0;
   offset := 0;
-  
+
   count := 0;
   colour := image^.data[0];
 
-  for b:=0 to 15 do begin
+  for b:=0 to image^.height-1 do begin
+    { write(b, ': '); }
+
+    { for a:=0 to image^.width-1 do begin }
+    a := 0;
+    while true do begin
+      if a >= image^.width then break;
+
+      { offset := b * image^.width + a; }
+
+      if colour = image^.data[offset] then
+        inc(count)
+      else begin
+        { Different pixel in the same scanline }
+        { write('[', count, ', ', colour, '], '); }
+        inc(writePos, 2);
+
+        count := 1;
+        colour := image^.data[offset];
+      end;
+
+      inc(a);
+      inc(offset)
+    end;
+
+    { Change of scanline }
+    { writeLn('[', count, ', ', colour, '],'); }
+    inc(writePos, 2);
+
+    { Reset the counter }
+    count := 0;
+    { Note: This doesn't handle offset overflow }
+    colour := image^.data[offset];
+  end;
+
+  writeLn('writePos: ', writePos);
+
+  getMem(sampleRLEBitmap, sizeof(TRLEBitmap) + writePos);
+  sampleRLEBitmap^.width := image^.width;
+  sampleRLEBitmap^.height := image^.height;
+  sampleRLEBitmap^.dataSize := writePos;
+
+  readLn;
+  freeBMP(image);
+
+  exit;
+
+  { Pass 2 }
+  offset := 0;
+
+  count := 0;
+  colour := image^.data[0];
+
+  for b:=0 to image^.height-1 do begin
     write(b, ': ');
 
     { for a:=0 to image^.width-1 do begin }
@@ -109,7 +167,6 @@ begin
     count := 0;
     colour := image^.data[offset];
   end;
-
 
   readLn;
 
