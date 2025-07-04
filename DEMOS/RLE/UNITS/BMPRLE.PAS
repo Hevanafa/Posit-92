@@ -15,6 +15,7 @@ type
 procedure convertToRLE(const src: PBitmap; var output: PRLEBitmap);
 procedure freeRLEBitmap(var image: PRLEBitmap);
 procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
+procedure blitRLE2(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
 procedure blitRLEUnsafe(const image: PRLEBitmap; const x, y: integer);
 
 
@@ -173,6 +174,55 @@ begin
     inc(readPos, 2)
   end;
 end;
+
+
+procedure blitRLE2(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
+var
+  { Not yet using longint for prototyping }
+  a: integer;
+  left: integer;
+  readPos, destX, destY: integer;
+  count, colour: byte;
+begin
+  if image = nil then exit;
+  if y >= 200 then exit;
+  if x >= 320 then exit;
+
+  destX := x; destY := y;
+  readPos := 0; left := 0;
+
+  while readPos < image^.dataSize do begin
+    count := image^.data[readPos];
+    colour := image^.data[readPos+1];
+
+    if colour <> transparencyKey then begin
+      if destY >= 0 then begin
+        for a:=1 to count do begin
+          if (destX + left < 0) or
+            (destX + left >= 320) then begin
+            inc(left);
+            continue
+          end;
+
+          surface^[destY * 320 + destX + left] := colour;
+          inc(left)
+        end;
+      end else
+        inc(left, count);
+    end else
+      inc(left, count);
+
+    if left >= image^.width then begin
+      left := 0;
+      inc(destY)
+    end;
+
+    if destY >= 200 then break;
+
+    inc(readPos, 2)
+  end;
+end;
+
 
 procedure blitRLEUnsafe(const image: PRLEBitmap; const x, y: integer);
 var
