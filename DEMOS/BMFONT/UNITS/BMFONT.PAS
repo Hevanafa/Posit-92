@@ -222,9 +222,20 @@ begin
     if g = nil then continue;
 
     for row := 0 to g^.height - 1 do begin
-      for col := 0 to g^.width - 1 do begin
 
 asm
+{ for (col = 0; col < g^.width; col++) }
+@col_init:
+  mov col, 0
+
+@col_condition:
+  les si, g
+  { g^.width }
+  mov ax, es:[si+6]
+  cmp col, ax
+  jg @col_end
+
+@col_loop:
   les si, g
 
   { srcX := g^.x + col; }
@@ -265,7 +276,7 @@ asm
   mov al, es:[si]
   mov colour, al
   cmp al, transparencyKey
-  je @skip
+  je @col_next
 
   { TODO: Check bounds }
 
@@ -292,9 +303,14 @@ asm
   mov al, colour
   mov es:[di], al
 
-  @skip:
+@col_next:
+  inc col
+  jmp @col_condition
+
+@col_end:
+@skip:
 end;
-      end;
+
     end;
 
     inc(dxi, g^.xadvance)
