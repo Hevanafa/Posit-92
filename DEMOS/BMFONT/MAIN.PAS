@@ -52,14 +52,22 @@ begin
   s := 'BMFont test';
   w := measureBMFont(font, s);
   { 291 FPS }
-  pascalPrintBMFont(font, s, 160 - w div 2, 120, 13);
+  { pascalPrintBMFont(font, s, 160 - w div 2, 120, 13); }
   { 315 FPS }
-  { asmPrintBMFont(font, s, 160 - w div 2, 120, 13); }
+  asmPrintBMFont(font, s, 160 - w div 2, 120, 13);
 
   scoreStr := f32str(t);
   w := measureBMFont(font, scoreStr);
-  pascalPrintBMFont(font, scoreStr, 160 - w div 2, 8, 13);
-  { asmPrintBMFont(font, scoreStr, 160 - w div 2, 8, 13); }
+  { pascalPrintBMFont(font, scoreStr, 160 - w div 2, 8, 13); }
+  asmPrintBMFont(font, scoreStr, 160 - w div 2, 8, 13);
+
+  { Edge case tests }
+  { Fail: }
+  { asmPrintBMFont(font, 'Left edge', -10, 10, 13); }
+
+  { asmPrintBMFont(font, 'Top edge', 10, -8, 13); }
+  { asmPrintBMFont(font, 'Right edge', 310, 10, 13); }
+  { asmPrintBMFont(font, 'Bottom edge', 10, 192, 13); }
 
   drawFPS;
   flush

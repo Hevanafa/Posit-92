@@ -212,6 +212,8 @@ var
   width: word;
 begin
   if font = nil then exit;
+  if x >= 320 then exit;
+  if y >= 200 then exit;
 
   destX := x;
   for a:=1 to length(text) do begin
@@ -289,7 +291,26 @@ asm
     cmp al, transparencyKey
     je @col_next
 
-    { TODO: Check bounds }
+    { Check bounds }
+    les si, g
+
+    mov ax, y
+    add si, 12
+    add ax, es:[si]
+    add ax, row
+    cmp ax, 0
+    jl @row_next
+    cmp ax, 200
+    jge @skip
+
+    mov ax, destX
+    add si, 10
+    add ax, es:[si]
+    add ax, col
+    cmp ax, 0
+    jl @col_next
+    cmp ax, 320
+    jge @row_next
 
     { Calculate offset }
     { y + g^.yoffset + row }
