@@ -203,7 +203,7 @@ end;
 procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col: integer;
-  destX, dy: integer;
+  destX, destY: integer;
   ch: char;
   g: PBMFontGlyph;
   srcX, srcY: word;
@@ -215,7 +215,7 @@ begin
   if x >= 320 then exit;
   if y >= 200 then exit;
 
-  destX := x;
+  destX := x; destY := y;
   for a:=1 to length(text) do begin
     ch := text[a];
     if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
@@ -294,7 +294,7 @@ asm
     { Check bounds }
     les si, g
 
-    mov ax, y
+    mov ax, destY
     add si, 12
     add ax, es:[si]
     add ax, row
@@ -304,7 +304,7 @@ asm
     jge @skip
 
     mov ax, destX
-    add si, 10
+    sub si, 2
     add ax, es:[si]
     add ax, col
     cmp ax, 0
@@ -316,7 +316,7 @@ asm
     { y + g^.yoffset + row }
     les si, g
 
-    mov ax, y
+    mov ax, destY
     add si, 12
     add ax, es:[si]
     add ax, row
