@@ -203,7 +203,7 @@ end;
 procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col: integer;
-  dxi, dy: integer;
+  destX, dy: integer;
   ch: char;
   g: PBMFontGlyph;
   srcX, srcY: word;
@@ -213,7 +213,7 @@ var
 begin
   if font = nil then exit;
 
-  dxi := x;
+  destX := x;
   for a:=1 to length(text) do begin
     ch := text[a];
     if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
@@ -221,99 +221,114 @@ begin
     g := font^.glyphs[ord(ch)];
     if g = nil then continue;
 
-    for row := 0 to g^.height - 1 do begin
-
 asm
-{ for (col = 0; col < g^.width; col++) }
-@col_init:
-  mov col, 0
+{ for (row = 0; row < g^.height; row++)}
+@row_init:
+  mov row, 0
 
-@col_condition:
+@row_condition:
   les si, g
-  { g^.width }
-  mov ax, es:[si+6]
-  cmp col, ax
-  jg @col_end
+  { g^.height }
+  mov ax, es:[si+8]
+  cmp row, ax
+  jg @row_end
 
-@col_loop:
-  les si, g
+@row_loop:
 
-  { srcX := g^.x + col; }
-  mov ax, es:[si+2]
-  add ax, col
-  mov srcX, ax
+  { for (col = 0; col < g^.width; col++) }
+  @col_init:
+    mov col, 0
 
-  { srcY := g^.y + row; }
-  mov ax, es:[si+4]
-  add ax, row
-  mov srcY, ax
+  @col_condition:
+    les si, g
+    { g^.width }
+    mov ax, es:[si+6]
+    cmp col, ax
+    jg @col_end
 
-  { get pixel from:
-    font^.bitmap^.data[
-      srcY * font^.bitmap^.width + srcX]
-  }
-  les si, font
-  { Jump to font^.bitmap }
-  add si, 642
-  mov bx, es:[si]
-  { font^.bitmap^.width }
-  mov dx, es:[si + 2]
+  @col_loop:
+    les si, g
 
-  { Assign ES:SI to TBitmap }
-  mov es, dx
-  mov si, bx
+    { srcX := g^.x + col; }
+    mov ax, es:[si+2]
+    add ax, col
+    mov srcX, ax
 
-  mov ax, es:[si]
-  mov width, ax
+    { srcY := g^.y + row; }
+    mov ax, es:[si+4]
+    add ax, row
+    mov srcY, ax
 
-  { data offset: srcY * font^.bitmap^.width + srcX }
-  mov bx, srcY
-  mul bx
-  add ax, srcX
+    { get pixel from:
+      font^.bitmap^.data[
+        srcY * font^.bitmap^.width + srcX]
+    }
+    les si, font
+    { Jump to font^.bitmap }
+    add si, 642
+    mov bx, es:[si]
+    { font^.bitmap^.width }
+    mov dx, es:[si + 2]
 
-  add ax, 4
-  add si, ax
-  mov al, es:[si]
-  mov colour, al
-  cmp al, transparencyKey
-  je @col_next
+    { Assign ES:SI to TBitmap }
+    mov es, dx
+    mov si, bx
 
-  { TODO: Check bounds }
+    mov ax, es:[si]
+    mov width, ax
 
-  { Calculate offset }
-  { y + g^.yoffset + row }
-  les si, g
+    { data offset: srcY * font^.bitmap^.width + srcX }
+    mov bx, srcY
+    mul bx
+    add ax, srcX
 
-  mov ax, y
-  add si, 12
-  add ax, es:[si]
-  add ax, row
-  mov bx, 320
-  mul bx
+    add ax, 4
+    add si, ax
+    mov al, es:[si]
+    mov colour, al
+    cmp al, transparencyKey
+    je @col_next
 
-  { dxi + g^.xoffset + col }
-  add ax, dxi
-  sub si, 2
-  add ax, es:[si]
-  add ax, col
-  mov bx, ax
+    { TODO: Check bounds }
 
-  les di, surface
-  add di, bx
-  mov al, colour
-  mov es:[di], al
+    { Calculate offset }
+    { y + g^.yoffset + row }
+    les si, g
 
-@col_next:
-  inc col
-  jmp @col_condition
+    mov ax, y
+    add si, 12
+    add ax, es:[si]
+    add ax, row
+    mov bx, 320
+    mul bx
 
-@col_end:
+    { destX + g^.xoffset + col }
+    add ax, destX
+    sub si, 2
+    add ax, es:[si]
+    add ax, col
+    mov bx, ax
+
+    les di, surface
+    add di, bx
+    mov al, colour
+    mov es:[di], al
+
+  @col_next:
+    inc col
+    jmp @col_condition
+
+  @col_end:
+
+@row_next:
+  inc row
+  jmp @row_condition
+
+@row_end:
 @skip:
 end;
 
-    end;
-
-    inc(dxi, g^.xadvance)
+    inc(destX, g^.xadvance)
   end;
 end;
 
