@@ -62,12 +62,10 @@ begin
   asmPrintBMFont(font, scoreStr, 160 - w div 2, 8, 13);
 
   { Edge case tests }
-  { Fail: }
-  { asmPrintBMFont(font, 'Left edge', -10, 10, 13); }
-
-  { asmPrintBMFont(font, 'Top edge', 10, -8, 13); }
-  { asmPrintBMFont(font, 'Right edge', 310, 10, 13); }
-  { asmPrintBMFont(font, 'Bottom edge', 10, 192, 13); }
+  asmPrintBMFont(font, 'Left edge', -20, 10, 13);
+  asmPrintBMFont(font, 'Top edge', 10, -8, 13);
+  asmPrintBMFont(font, 'Right edge', 310, 10, 13);
+  asmPrintBMFont(font, 'Bottom edge', 10, 192, 13);
 
   drawFPS;
   flush
