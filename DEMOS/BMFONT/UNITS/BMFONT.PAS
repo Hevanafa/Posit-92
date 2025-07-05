@@ -226,34 +226,37 @@ begin
         srcX := g^.x + col;
         srcY := g^.y + row;
         {
-        colour := font^.bitmap^.data[
-          srcY * font^.bitmap^.width + srcX];
+        
         }
 
 asm
+  { get pixel from:
+    font^.bitmap^.data[
+      srcY * font^.bitmap^.width + srcX]
+  }
   les si, font
   { Jump to font^.bitmap }
-  mov bx, es:[si + 642]
+  add si, 642
+  mov bx, es:[si]
   { font^.bitmap^.width }
-  mov dx, es:[si + 644]
+  mov dx, es:[si + 2]
 
-  mov si, bx
+  { Assign ES:SI to TBitmap }
   mov es, dx
+  mov si, bx
+
   mov ax, es:[si]
   mov width, ax
-end;
-  
-  writeLog('width is: ' + i32str(width));
 
-asm
   { data offset: srcY * font^.bitmap^.width + srcX }
   mov bx, srcY
-  mul width
-  add bx, srcX
-  mov ax, es:[si+bx]
-  mov colour, ah
+  mul bx
+  add ax, srcX
 
-  mov al, colour
+  add ax, 4
+  add si, ax
+  mov al, es:[si]
+  mov colour, al
   cmp al, transparencyKey
   je @skip
 
