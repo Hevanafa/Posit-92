@@ -223,13 +223,20 @@ begin
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
-        srcX := g^.x + col;
-        srcY := g^.y + row;
-        {
-        
-        }
 
 asm
+  les si, g
+
+  { srcX := g^.x + col; }
+  mov ax, es:[si+2]
+  add ax, col
+  mov srcX, ax
+
+  { srcY := g^.y + row; }
+  mov ax, es:[si+4]
+  add ax, row
+  mov srcY, ax
+
   { get pixel from:
     font^.bitmap^.data[
       srcY * font^.bitmap^.width + srcX]
