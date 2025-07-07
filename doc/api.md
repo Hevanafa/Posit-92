@@ -14,15 +14,33 @@ Separate the Pascal implementation with its assembly implementation counterpart 
 
 Example: `pascalPrint`, `asmPrint`, `pascalSpr`, `asmSpr`
 
-Typed enumerations use `Enum` as the suffix, and its members either using only the initials or the fully typed name
+Typed enumerations use `Enum` as the suffix, and its members either using only the initials or the fully qualified name
 
 Example:
 ```pascal
 type
+  { initials only }
+  GameStateEnum = (gsInit, gsRunning, gsShutdown);
+
+  { full name }
   GameStateEnum = (GameStateInit, GameStateRunning, GameStateShutdown);
 ```
 
+Typed enumerations behave similar to constants, but with the hidden initial values in each member.
 
+The examples provided above independently applicable on the games that implement them.
+
+Remember to **omit unnecessary words**, this is because file size & readability are both important in the compile process. Context is used extensively in this case.
+
+Example:
+```pascal
+procedure drawBMPAtPositionWithTransparencyKey(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+
+{ Can be shortened to: }
+procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+```
+
+The long name may sound cool, but using a terser & more familiar naming can save a lot of energy especially when having to maintain the game for a longer time (more than 1 month or so).
 
 
 ## Units
