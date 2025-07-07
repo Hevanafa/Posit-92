@@ -217,7 +217,7 @@ Contains either one of these values:
 
 `procedure initMouse`
 
-Must be called first before using the mouse.
+Must be called first before using the mouse. This loads `CURSOR.BMP` by default along with `loadCursor`
 
 
 `procedure updateMouse`
@@ -295,6 +295,34 @@ Updates delta time and the internal timer diff
 
 This unit handles the screen mode switch, the double buffering and some rudimentary tasks
 
+#### Global variables
+`surface`: This is the backbuffer that is used along with most draw procedures with `flush`, which copies the backbuffer directly to the VGA memory
+
+This variable is accessible as a pointer of array
+
+Example PSET implementation:
+```pascal
+const
+  x = 100; y = 50;
+var
+  colour: byte;
+begin
+  initVGAMode;
+  initBuffer;  { Required for surface buffer uses }
+  
+  cls($00);
+  colour := $0F;
+  surface^[y * 320 + x] := colour;
+  flush;
+  readLn;
+
+  { Clean up code }
+  freeBuffer;
+  initTextMode
+end;
+```
+
+#### Procedures & Functions
 
 `procedure initVGAMode`
 
