@@ -40,7 +40,7 @@ procedure drawBMPAtPositionWithTransparencyKey(const image: PBitmap; const x, y:
 procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 ```
 
-The long name may sound cool, but using a terser & more familiar naming can save a lot of energy especially when having to maintain the game for a longer time (more than 1 month or so).
+The long name may sound cool, but using a terser & more familiar naming can save a lot of energy especially when having to maintain the game for a longer time period (more than 1 month or so).
 
 
 ## Units
