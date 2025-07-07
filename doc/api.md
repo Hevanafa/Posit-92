@@ -1,6 +1,30 @@
 
 This file documents all of the available API's in this game framework
 
+## Naming
+
+Naming in general should be noticeable enough from the context of the unit that it belongs to.
+
+Procedures & functions that belong to a unit are suffixed with the unit's (or namespace's) purpose.
+
+Example:
+`print` for generic print to screen, `printBMFont` for printing to screen with BMFont
+
+Separate the Pascal implementation with its assembly implementation counterpart using `pascal` or `asm` prefix.
+
+Example: `pascalPrint`, `asmPrint`, `pascalSpr`, `asmSpr`
+
+Typed enumerations use `Enum` as the suffix, and its members either using only the initials or the fully typed name
+
+Example:
+```pascal
+type
+  GameStateEnum = (GameStateInit, GameStateRunning, GameStateShutdown);
+```
+
+
+
+
 ## Units
 
 ### Bitmap
