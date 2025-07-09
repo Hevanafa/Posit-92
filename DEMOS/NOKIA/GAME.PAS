@@ -10,6 +10,7 @@ const
 var
   done: boolean;
   t: double;
+  palette: array[0..1] of byte;
   { DosuEXE: array[0..1] of PBitmap; }
   { TODO: More of your game state here }
 
@@ -43,6 +44,8 @@ begin
   { TODO: Your init code here }
 
   randomize;
+  palette[0] := 98;
+  palette[1] := 8;
   {
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
@@ -65,7 +68,7 @@ end;
 
 procedure draw;
 begin
-  cls($7D);
+  cls(palette[0]);
 
   { TODO: Your drawing code here }
 
@@ -76,8 +79,7 @@ begin
     spr(dosuEXE[1], 148, 76, 13);
   }
 
-  print('Hello world!', 160-48, 120, 15);
-  { drawMouse; }
+  { print('Hello world!', 160-48, 120, 15); }
 
   flush
 end;
