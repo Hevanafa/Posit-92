@@ -4,7 +4,7 @@ interface
 
 type
   PByteArray = ^TByteArray;
-  TByteArray = array[0..63999] of byte;
+  TByteArray = array[0..4031] of byte;
 
 var
   surface: PByteArray;
@@ -40,7 +40,7 @@ implementation
 uses DOS, Panic;
 
 const
-  bufferSize = 64000;
+  bufferSize = 4032;
 var
   a, b: integer;
   font8x8: array[0..127, 0..7] of byte;
@@ -94,7 +94,7 @@ asm
   cld  { Make sure DI move forward }
   mov al, colour
   mov ah, colour
-  mov cx, 32000
+  mov cx, bufferSize
   rep stosw
   pop es
 end;
