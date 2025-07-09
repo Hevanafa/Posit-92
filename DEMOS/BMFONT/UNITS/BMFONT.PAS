@@ -27,7 +27,7 @@ type
     bitmap: PBitmap;  { 642 }
   end;
 
-procedure loadBMFont(var output: PBMFont; const filename: string);
+procedure loadBMFont(var font: PBMFont; const filename: string);
 procedure freeBMFont(var font: PBMFont);
 
 procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
@@ -40,7 +40,7 @@ implementation
 
 uses Conv, Logger, Panic, Strings, VGA;
 
-procedure loadBMFont(var output: PBMFont; const filename: string);
+procedure loadBMFont(var font: PBMFont; const filename: string);
 var
   b: integer;
   f: text;
@@ -55,18 +55,18 @@ var
   tempGlyph: TBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
-  if output <> nil then
-    writeLog('loadBMFont: output isn''t nil!');
+  if font <> nil then
+    writeLog('loadBMFont: font isn''t nil!');
 
-  { getMem(output, sizeof(TBMFont)); }
-  new(output);
+  { getMem(font, sizeof(TBMFont)); }
+  new(font);
 
-  if output = nil then
+  if font = nil then
     panicHalt('loadBMFont: Out of memory!');
 
-  for b:=low(output^.glyphs) to high(output^.glyphs) do
-    output^.glyphs[b] := nil;
-  output^.bitmap := nil;
+  for b:=low(font^.glyphs) to high(font^.glyphs) do
+    font^.glyphs[b] := nil;
+  font^.bitmap := nil;
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
@@ -86,7 +86,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'lineHeight' then
-          output^.lineHeight := parseInt(kv[1]);
+          font^.lineHeight := parseInt(kv[1]);
       end;
     end;
 
@@ -95,7 +95,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'file' then
-          output^.filename := replaceAll(kv[1], '"', '');
+          font^.filename := replaceAll(kv[1], '"', '');
       end;
     end;
 
@@ -114,7 +114,8 @@ begin
         { case-of can't be used with strings in TP7 }
         if key = 'id' then begin
           glyphID := parseInt(value);
-          { writeLn('ID:', glyphID); }
+
+          { writeLog('ID:' + i32str(glyphID)); }
           tempGlyph.id := glyphID;
         end
         else if key = 'x' then tempGlyph.x := parseInt(value)
@@ -126,16 +127,17 @@ begin
         else if key = 'xadvance' then tempGlyph.xadvance := parseInt(value);
       end;
 
-      if (low(output^.glyphs) <= tempGlyph.id) and
-          (tempGlyph.id <= high(output^.glyphs)) then begin
-        output^.glyphs[tempGlyph.id] := @tempGlyph;
+      if (low(font^.glyphs) <= tempGlyph.id) and
+          (tempGlyph.id <= high(font^.glyphs)) then begin
+        new(font^.glyphs[tempGlyph.id]);
+        font^.glyphs[tempGlyph.id]^ := tempGlyph;
         inc(count);
       end;
     end;
   end;
   close(f);
 
-  loadBMP(output^.bitmap, output^.filename);
+  loadBMP(font^.bitmap, font^.filename);
   writeLog('Loaded ' + i32str(count) + ' glyphs');
 end;
 
