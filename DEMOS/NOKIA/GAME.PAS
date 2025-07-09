@@ -2,14 +2,15 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Timing,
+  Conv, Logger, Keyboard, Timing,
   NokiaVGA;
 
 const
   SC_ESC = $01;
 var
   done: boolean;
-  t: double;
+  startTick, t: double;
+
   palette: array[0..1] of byte;
   { DosuEXE: array[0..1] of PBitmap; }
   { TODO: More of your game state here }
@@ -51,6 +52,8 @@ begin
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
   }
   clearVGAMem;
+
+  startTick := getTimer;
 end;
 
 
@@ -62,11 +65,14 @@ begin
 
   if isKeyDown(SC_ESC) then done := true;
   
-  t:=t+dt
+  t := getTimer - startTick
 end;
 
 
 procedure draw;
+var
+  x: double;
+  a: byte;
 begin
   cls(palette[0]);
 
@@ -79,7 +85,14 @@ begin
     spr(dosuEXE[1], 148, 76, 13);
   }
 
-  print('Hello world!', 4, 4, 8);
+  { print('Hello world!', 4, 4, 8); }
+  { print(f32str(t), 4, 4, 8); }
+
+  { Sine wave demo }
+  for a:=0 to 47 do begin
+    x := 42 + sin(t + a * 0.1) * 40;
+    pset(trunc(x), a, 8);
+  end;
 
   flush
 end;
