@@ -65,7 +65,7 @@ end;
 
 procedure draw;
 begin
-  { cls($7D); }
+  cls($7D);
 
   { TODO: Your drawing code here }
 

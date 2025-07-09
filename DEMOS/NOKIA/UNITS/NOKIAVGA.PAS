@@ -212,8 +212,8 @@ asm
   { Calculate offset: y * 84 + x }
   mov ax, y
   mov bx, 84
-  mul bx      { DX:AX = y * 84 --> result in AX }
-  add ax, x   { AX = y * 84 + x }
+  mul bx
+  add ax, x
 
   mov bx, ax
   les di, surface { ES:DI = address to surface }
@@ -301,31 +301,41 @@ end;
 end;
 
 procedure nokiaFlush;
+var
+  y: word;
 begin
 asm
   push es
 
+  { Assign ES:DI to VGA memory }
   mov ax, $A000
   mov es, ax
   xor di, di
 
-  { TODO: Copy from source buffer }
-  { push ds }
-  { lds si, surface }
-  mov si, offset surface
+  push ds
+  lds si, surface
+  { mov si, offset surface }
 
-  { Copy first line}
+@y_init:
+  mov y, 0
+
+@y_condition:
+  cmp y, 48
+  jge @y_end
+
+@y_loop:
   mov cx, 42
   cld
   rep movsw
 
-  { Copy second line }
+@y_next:
   add di, 236
-  mov cx, 42
-  cld
-  rep movsw
+  inc y
+  jmp @y_condition
 
-  { pop ds }
+@y_end:
+
+  pop ds
   pop es
 end;
 end;
