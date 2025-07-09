@@ -145,21 +145,31 @@ begin
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
 asm
-{ asmPset }
-  cmp x, 0
+  { Check bounds }
+  mov ax, y
+  add ax, row
+  cmp ax, 0
   jl @skip_pixel
-  cmp x, 320
-  jge @skip_pixel
-  cmp y, 0
-  jl @skip_pixel
-  cmp y, 200
+  cmp ax, 48
   jge @skip_pixel
 
+  mov ax, idx
+  dec ax
+  mov bx, 8
+  mul bx
+  add ax, x
+  add ax, col
+  cmp ax, 0
+  jl @skip_pixel
+  cmp ax, 84
+  jge @skip_pixel
+
+  { asmPset }
   { Calculate pixel offset }
   { y + row }
   mov ax, y
   add ax, row
-  mov bx, 320
+  mov bx, 84
   mul bx
   mov cx, ax
 

@@ -79,7 +79,7 @@ begin
     spr(dosuEXE[1], 148, 76, 13);
   }
 
-  { print('Hello world!', 160-48, 120, 15); }
+  print('Hello world!', 4, 4, 8);
 
   flush
 end;
