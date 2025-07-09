@@ -4,7 +4,7 @@
 uses
   CRT, DOS,
   Conv, Logger, Keyboard, Timing,
-  BMFont, VGA { NokiaVGA };
+  BMFont, { VGA } NokiaVGA;
 
 const
   SC_ESC = $01;

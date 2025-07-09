@@ -41,7 +41,7 @@ implementation
 
 uses
   Conv, Logger, Panic, Strings,
-  VGA { NokiaVGA };
+  NokiaVGA;
 
 procedure loadBMFont(var font: PBMFont; const filename: string);
 var
@@ -227,8 +227,8 @@ begin
   { if font = nil then exit; }
   if font = nil then panicHalt('asmPrintBMFont: font is nil!');
 
-  if x >= 320 then exit;
-  if y >= 200 then exit;
+  if y >= 48 then exit;
+  if x >= 84 then exit;
 
   destX := x; destY := y;
   for a:=1 to length(text) do begin
@@ -315,7 +315,7 @@ asm
     add ax, row
     cmp ax, 0
     jl @row_next
-    cmp ax, 200
+    cmp ax, 48
     jge @skip
 
     mov ax, destX
@@ -324,7 +324,7 @@ asm
     add ax, col
     cmp ax, 0
     jl @col_next
-    cmp ax, 320
+    cmp ax, 84
     jge @row_next
 
     { Calculate offset }
@@ -335,7 +335,7 @@ asm
     add si, 12
     add ax, es:[si]
     add ax, row
-    mov bx, 320
+    mov bx, 84
     mul bx
 
     { destX + g^.xoffset + col }
