@@ -23,7 +23,8 @@ begin
   initFPSCounter;
 
   { loadBMFont(font, 'COMMOD64.FNT'); }
-  loadBMFont(font, 'FR12.FNT');
+  { loadBMFont(font, 'FR12.FNT'); }
+  loadBMFont(font, 'NOKIA.TXT');
   
   bootTime := getTimer;
 end;

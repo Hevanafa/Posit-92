@@ -42,40 +42,41 @@ uses Conv, Logger, Panic, Strings, VGA;
 
 procedure loadBMFont(var output: PBMFont; const filename: string);
 var
-  a, b: integer;
+  b: integer;
   f: text;
+
+  count: word;
   line: string;
-  skipLine: boolean;
   pairs: array[0..11] of string;
   pairCount: word;
   kv: array[0..1] of string; { key-value pair }
   key, value: string;  { separated key-value pair }
-  g: PBMFontGlyph;
+
+  tempGlyph: TBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
   if output <> nil then
     writeLog('loadBMFont: output isn''t nil!');
 
-  getMem(output, sizeof(TBMFont));
+  { getMem(output, sizeof(TBMFont)); }
+  new(output);
 
   if output = nil then
     panicHalt('loadBMFont: Out of memory!');
 
-  for a:=low(output^.glyphs) to high(output^.glyphs) do
-    output^.glyphs[a] := nil;
+  for b:=low(output^.glyphs) to high(output^.glyphs) do
+    output^.glyphs[b] := nil;
+  output^.bitmap := nil;
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
   if IOResult <> 0 then
     panicHalt('loadBMFont: Couldn''t find "' + filename + '"!');
 
-  a := 0;
-  skipLine := false;
+  count := 0;
 
   while not eof(f) do begin
     readln(f, line);
-    skipLine := false;
-    { writeLn('Line ', a, ': ', line); }
 
     while contains(line, '  ') do
       line := replaceAll(line, '  ', ' ');
@@ -99,8 +100,13 @@ begin
     end;
 
     if startsWith(line, 'char') then begin
+      { Parse the whole line first, then check bounds }
+      glyphID := -1;
+      fillChar(tempGlyph, sizeof(TBMFontGlyph), 0);
+
       { assign glyph info }
       pairCount := split(line, ' ', pairs);
+
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         key := kv[0]; value := kv[1];
@@ -108,34 +114,29 @@ begin
         { case-of can't be used with strings in TP7 }
         if key = 'id' then begin
           glyphID := parseInt(value);
-
-          if (low(output^.glyphs) <= glyphID) and (glyphID <= high(output^.glyphs)) then begin
-            { writeLn('ID:', glyphID); }
-            New(g);
-            g^.id := glyphID;
-            output^.glyphs[glyphID] := g
-          end else begin
-            { writeLn('Skipped glyph ', glyphID); }
-            { when out of bounds }
-            skipLine := true;
-            break
-          end;
+          { writeLn('ID:', glyphID); }
+          tempGlyph.id := glyphID;
         end
-        else if key = 'x' then output^.glyphs[glyphID]^.x := parseInt(value)
-        else if key = 'y' then output^.glyphs[glyphID]^.y := parseInt(value)
-        else if key = 'width' then output^.glyphs[glyphID]^.width := parseInt(value)
-        else if key = 'height' then output^.glyphs[glyphID]^.height := parseInt(value)
-        else if key = 'xoffset' then output^.glyphs[glyphID]^.xoffset := parseInt(value)
-        else if key = 'yoffset' then output^.glyphs[glyphID]^.yoffset := parseInt(value)
-        else if key = 'xadvance' then output^.glyphs[glyphID]^.xadvance := parseInt(value);
+        else if key = 'x' then tempGlyph.x := parseInt(value)
+        else if key = 'y' then tempGlyph.y := parseInt(value)
+        else if key = 'width' then tempGlyph.width := parseInt(value)
+        else if key = 'height' then tempGlyph.height := parseInt(value)
+        else if key = 'xoffset' then tempGlyph.xoffset := parseInt(value)
+        else if key = 'yoffset' then tempGlyph.yoffset := parseInt(value)
+        else if key = 'xadvance' then tempGlyph.xadvance := parseInt(value);
+      end;
+
+      if (low(output^.glyphs) <= tempGlyph.id) and
+          (tempGlyph.id <= high(output^.glyphs)) then begin
+        output^.glyphs[tempGlyph.id] := @tempGlyph;
+        inc(count);
       end;
     end;
-
-    inc(a)
   end;
   close(f);
 
-  loadBMP(output^.bitmap, output^.filename)
+  loadBMP(output^.bitmap, output^.filename);
+  writeLog('Loaded ' + i32str(count) + ' glyphs');
 end;
 
 
@@ -154,8 +155,12 @@ begin
     end;
   end;
   freeBMP(font^.bitmap);
+  {
   font^.filename := '';
   font^.lineHeight := 0;
+  }
+  dispose(font);
+  font := nil;
 
   writeLog('Freed ' + i32str(count) + ' glyphs')
 end;
