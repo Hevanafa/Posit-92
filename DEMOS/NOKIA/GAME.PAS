@@ -38,7 +38,7 @@ begin
   loadFont;
   initBuffer;
   initDeltaTime;
-  { initKeyHandler; }
+  initKeyHandler;
 
   { TODO: Your init code here }
 
@@ -85,8 +85,6 @@ end;
 
 begin
   INIT;
-  readLn;
-  exit;
 
   done := false;
 

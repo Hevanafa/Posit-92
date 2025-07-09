@@ -33,6 +33,7 @@ procedure asmPset(const x, y: integer; const colour: byte);
 procedure flush;
 procedure pascalFlush;
 procedure asmFlush;
+procedure nokiaFlush;
 
 
 implementation
@@ -200,27 +201,23 @@ asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, 200
+  cmp y, 48
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, 320
+  cmp x, 84
   jge @skip
 
-  { Calculate offset: y * 320 + x }
+  { Calculate offset: y * 84 + x }
   mov ax, y
-  mov bx, 320
-  mul bx      { DX:AX = y * 320 --> result in AX }
-  add ax, x   { AX = y * 320 + x }
+  mov bx, 84
+  mul bx      { DX:AX = y * 84 --> result in AX }
+  add ax, x   { AX = y * 84 + x }
 
-  { Copy AX to BX because ES:[BX] is valid, not ES:[DI+AX] }
   mov bx, ax
-
-  { Write byte to the `surface` array }
-  les di, surface { ES:DI = surface^ }
+  les di, surface { ES:DI = address to surface }
   mov al, colour
-  { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
 @skip:
 end;
@@ -228,7 +225,7 @@ end;
 
 procedure flush;
 begin
-  asmFlush
+  nokiaFlush
 end;
 
 
@@ -261,6 +258,78 @@ asm
   pop es
   pop ds
 end;
+
+procedure nokiaFlushAttempt1;
+var
+  y: word;
+begin
+asm
+  push es
+
+  { copy from data source (DS:SI) }
+  push ds
+  lds si, surface
+
+@y_init:
+  mov y, 0
+
+@y_condition:
+  cmp y, 48
+  jge @y_end
+
+@y_loop:
+  { assign destination }
+  mov ax, y
+  mov bx, 84
+  mul bx
+  add ax, $A000
+  mov es, ax
+
+  xor di, di
+  mov cx, 41
+  cld
+  rep movsw
+
+@y_next:
+  inc y
+  jmp @y_init
+
+@y_end:
+  pop ds
+  pop es
+end;
+end;
+
+procedure nokiaFlush;
+begin
+asm
+  push es
+
+  mov ax, $A000
+  mov es, ax
+  xor di, di
+
+  { TODO: Copy from source buffer }
+  { push ds }
+  { lds si, surface }
+  mov si, offset surface
+
+  { Copy first line}
+  mov cx, 42
+  cld
+  rep movsw
+
+  { Copy second line }
+  add di, 236
+  mov cx, 42
+  cld
+  rep movsw
+
+  { pop ds }
+  pop es
+end;
+end;
+
 
 procedure initBuffer;
 begin
