@@ -95,12 +95,10 @@ begin
   printBMFont(font, 'Hello Nokia!', 4, 4, 13);
 
   { Sine wave demo }
-  {
   for a:=0 to 47 do begin
     x := 42 + sin(t + a * 0.1) * 40;
-    pset(trunc(x), a, palette[0]);
+    pset(trunc(x), a, palette[1]);
   end;
-  }
 
   flush
 end;
