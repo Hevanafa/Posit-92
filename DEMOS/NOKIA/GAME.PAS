@@ -1,15 +1,17 @@
 {$DEFINE DEBUG}
+{$R+}
 
 uses
   CRT, DOS,
   Conv, Logger, Keyboard, Timing,
-  NokiaVGA;
+  BMFont, VGA { NokiaVGA };
 
 const
   SC_ESC = $01;
 var
   done: boolean;
   startTick, t: double;
+  font: PBMFont;
 
   palette: array[0..1] of byte;
   { DosuEXE: array[0..1] of PBitmap; }
@@ -43,6 +45,7 @@ begin
   initKeyHandler;
 
   { TODO: Your init code here }
+  loadBMFont(font, 'NOKIA.TXT');
 
   randomize;
   palette[0] := 98;
@@ -55,6 +58,7 @@ begin
 
   startTick := getTimer;
 end;
+
 
 
 procedure update;
@@ -88,11 +92,15 @@ begin
   { print('Hello world!', 4, 4, 8); }
   { print(f32str(t), 4, 4, 8); }
 
+  printBMFont(font, 'Hello Nokia!', 4, 4, 13);
+
   { Sine wave demo }
+  {
   for a:=0 to 47 do begin
     x := 42 + sin(t + a * 0.1) * 40;
-    pset(trunc(x), a, 8);
+    pset(trunc(x), a, palette[0]);
   end;
+  }
 
   flush
 end;
@@ -113,6 +121,7 @@ begin
   freeBMP(dosuEXE[0]);
   freeBMP(dosuEXE[1]);
   }
+  freeBMFont(font);
 
   resetKeyHandler;
   freeBuffer;

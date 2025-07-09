@@ -226,9 +226,11 @@ asm
   add ax, x
 
   mov bx, ax
+  push es
   les di, surface { ES:DI = address to surface }
   mov al, colour
   mov es:[di+bx], al
+  pop es
 @skip:
 end;
 
