@@ -95,7 +95,7 @@ asm
   cld  { Make sure DI move forward }
   mov al, colour
   mov ah, colour
-  mov cx, bufferSize
+  mov cx, bufferSize shr 1
   rep stosw
   pop es
 end;
