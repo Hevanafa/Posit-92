@@ -41,7 +41,7 @@ procedure bitmapInfo(const image: PBitmap);
 implementation
 
 uses
-  Logger, Conv, Panic, VGA;
+  Logger, Conv, Panic, NokiaVGA; { VGA }
 
 {$IFDEF DEBUG}
 const DEBUG_READ_LINES = false;

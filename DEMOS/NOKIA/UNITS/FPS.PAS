@@ -10,12 +10,7 @@ procedure drawFPS;
 implementation
 
 uses
-{$IFDEF MODEX}
-  ModeX,
-{$ELSE}
-  VGA,
-{$ENDIF}
-  Timing, Conv;
+  NokiaVGA, Timing, Conv;
 
 var
   nowFPS, lastFPS: integer;

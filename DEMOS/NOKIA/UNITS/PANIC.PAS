@@ -6,12 +6,11 @@ procedure panicHalt(const msg: string);
 
 implementation
 
-uses Keyboard, Mouse, VGA;
+uses Keyboard, NokiaVGA;
 
 procedure panicHalt(const msg: string);
 begin
   resetKeyHandler;
-  resetMouse;
   initTextMode;
   writeLn(msg);
   halt(1)

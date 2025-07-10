@@ -1,10 +1,9 @@
 {$DEFINE DEBUG}
-{$R+}
 
 uses
   CRT, DOS,
   Conv, Logger, Keyboard, Timing,
-  BMFont, { VGA } NokiaVGA;
+  BMFont, NokiaVGA;
 
 const
   SC_ESC = $01;
