@@ -371,7 +371,9 @@ asm
   { mov si, offset surface }
 
 @y_init:
-  xor y, y  { reset y to 0 }
+  { reset y to 0 }
+  { xor y, y }  { Not possible with TP7 }
+  mov y, 0
 
 @y_condition:
   cmp y, 48
@@ -379,12 +381,7 @@ asm
 
 @y_loop:
 
-@x_init:
-  xor x, x  { reset x to 0 }
-
-@x_condition:
-  cmp x, 84
-  jge @x_end
+  mov cx, 84  { Used together with `loop` }
 
 @x_loop:
   mov bx, di
@@ -400,17 +397,7 @@ asm
   add bx, 2
   inc si
 
-{
-  mov cx, 42
-  cld
-  rep movsw
-}
-
-@x_next:
-  inc x
-  jmp @x_condition
-
-@x_end:
+  loop @x_loop  { decrement cx, pass if cx = 0 }
 
 @y_next:
   add di, 472  { (320 - 168) + 320 = 152 + 320 }
