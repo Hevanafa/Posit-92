@@ -371,7 +371,7 @@ asm
   { mov si, offset surface }
 
 @y_init:
-  mov y, 0
+  xor y, y  { reset y to 0 }
 
 @y_condition:
   cmp y, 48
@@ -380,7 +380,7 @@ asm
 @y_loop:
 
 @x_init:
-  mov x, 0
+  xor x, x  { reset x to 0 }
 
 @x_condition:
   cmp x, 84
@@ -413,7 +413,7 @@ asm
 @x_end:
 
 @y_next:
-  add di, 472  { 152 + 320 }
+  add di, 472  { (320 - 168) + 320 = 152 + 320 }
   inc y
   jmp @y_condition
 
