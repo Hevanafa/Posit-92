@@ -387,11 +387,17 @@ asm
   jge @x_end
 
 @x_loop:
-  mov al, ds:[si]
+  mov bx, di
+
+  mov al, ds:[si]  { obtain the source colour }
   mov es:[di], al
   inc di
   mov es:[di], al
   inc di
+  mov es:[bx+320], al
+  mov es:[bx+321], al
+
+  add bx, 2
   inc si
 
 {
@@ -407,7 +413,7 @@ asm
 @x_end:
 
 @y_next:
-  add di, 152
+  add di, 472  { 152 + 320 }
   inc y
   jmp @y_condition
 
