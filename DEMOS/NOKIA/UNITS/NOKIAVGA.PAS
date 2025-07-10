@@ -34,6 +34,7 @@ procedure flush;
 procedure pascalFlush;
 procedure asmFlush;
 procedure nokiaFlush;
+procedure nokiaFlushX2;
 
 
 implementation
@@ -342,6 +343,71 @@ asm
 
 @y_next:
   add di, 236
+  inc y
+  jmp @y_condition
+
+@y_end:
+
+  pop ds
+  pop es
+end;
+end;
+
+
+procedure nokiaFlushX2;
+var
+  x, y: word;
+begin
+asm
+  push es
+
+  { Assign ES:DI to VGA memory }
+  mov ax, $A000
+  mov es, ax
+  xor di, di
+
+  push ds
+  lds si, surface
+  { mov si, offset surface }
+
+@y_init:
+  mov y, 0
+
+@y_condition:
+  cmp y, 48
+  jge @y_end
+
+@y_loop:
+
+@x_init:
+  mov x, 0
+
+@x_condition:
+  cmp x, 84
+  jge @x_end
+
+@x_loop:
+  mov al, ds:[si]
+  mov es:[di], al
+  inc di
+  mov es:[di], al
+  inc di
+  inc si
+
+{
+  mov cx, 42
+  cld
+  rep movsw
+}
+
+@x_next:
+  inc x
+  jmp @x_condition
+
+@x_end:
+
+@y_next:
+  add di, 152
   inc y
   jmp @y_condition
 

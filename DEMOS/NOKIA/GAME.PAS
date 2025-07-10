@@ -102,7 +102,8 @@ begin
     pset(trunc(x), a, palette[1]);
   end;
 
-  flush
+  { flush }
+  nokiaFlushX2
 end;
 
 
