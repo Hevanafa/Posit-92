@@ -11,7 +11,7 @@ const
 var
   done: boolean;
   startTick, t: double;
-  font: PBMFont;
+  nokiaFont, p8Font: PBMFont;
 
   palette: array[0..1] of byte;
   { DosuEXE: array[0..1] of PBitmap; }
@@ -45,7 +45,8 @@ begin
   initKeyHandler;
 
   { TODO: Your init code here }
-  loadBMFont(font, 'NOKIA.TXT');
+  loadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
+  loadBMFont(p8Font, 'FONTS\P8.TXT');
 
   randomize;
   palette[0] := 98;
@@ -92,7 +93,8 @@ begin
   { print('Hello world!', 4, 4, 8); }
   { print(f32str(t), 4, 4, 8); }
 
-  printBMFont(font, 'Hello Nokia!', 4, 4, 13);
+  printBMFont(nokiaFont, 'Hello Nokia!', 4, 4, 13);
+  printBMFont(p8Font, 'hello pico-8!', 4, 16, 13);
 
   { Sine wave demo }
   for a:=0 to 47 do begin
@@ -119,7 +121,8 @@ begin
   freeBMP(dosuEXE[0]);
   freeBMP(dosuEXE[1]);
   }
-  freeBMFont(font);
+  freeBMFont(nokiaFont);
+  freeBMFont(p8Font);
 
   resetKeyHandler;
   freeBuffer;
