@@ -34,14 +34,7 @@ begin
 end;
 
 procedure Update; far;
-var
-  a: integer;
 begin
-  UpdateDeltaTime;
-  UpdateMouse;
-
-  { TODO: Your Update code here }
-
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   t:=t+dt
@@ -63,8 +56,6 @@ begin
   Print('Hello world!', 160-48, 120, 15);
 
   DrawMouse;
-
-  Flush
 end;
 
 

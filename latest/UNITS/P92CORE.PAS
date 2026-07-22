@@ -69,6 +69,22 @@ begin
   InitTextMode
 end;
 
+procedure P92Update;
+begin
+  UpdateDeltaTime;
+  UpdateMouse;
+end;
+
+procedure P92Draw;
+begin
+  { no-op }
+end;
+
+procedure P92AfterDraw;
+begin
+  Flush
+end;
+
 procedure P92Start(const config: TP92AppConfig);
 begin
   P92Init;
@@ -82,8 +98,12 @@ begin
   done := false;
 
   repeat
+    P92Update;
     config.Update;
+
+    P92Draw;
     config.Draw;
+    P92AfterDraw;
   until done;
 
   if @config.OnCleanup <> nil then
