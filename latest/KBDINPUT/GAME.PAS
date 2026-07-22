@@ -6,9 +6,6 @@ uses
   Bitmap;
   { Conv, FPS, Graphics, PCS; }
 
-const
-  K_ESC = $01;
-
 var
   { Game state variables }
   done: boolean;
@@ -44,7 +41,7 @@ begin
 
   { TODO: Your Update code here }
 
-  if IsKeyDown(K_ESC) then done := true;
+  if IsKeyDown(SC_ESCAPE) then done := true;
   t:=t+dt
 end;
 
