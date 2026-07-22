@@ -17,7 +17,6 @@ begin
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
-
 procedure OnCleanup; far;
 begin
   freeBMP(dosuEXE[0]);
@@ -25,12 +24,11 @@ begin
 end;
 
 
+procedure DrawOnce; far;
 var
   a, x, y: integer;
   startTime: double;
 begin
-  OnPreload;
-
   cls($7D);
   startTime := getTimer;
 
@@ -69,7 +67,17 @@ begin
   { Black rectangle behind the text below }
   rectfill(0, 0, 240, 8, 0);
   print('1000 operations done in ' + f32str(getTimer - startTime) + 's', 0, 0, 15);
+end;
 
-  flush;
-  readLn;
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.DrawOnce := @DrawOnce;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
 end.
+

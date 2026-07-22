@@ -6,6 +6,10 @@ type
   PByteArray = ^TByteArray;
   TByteArray = array[0..63999] of byte;
 
+const
+  VgaWidth = 320;
+  VgaHeight = 200;
+
 var
   surface: PByteArray;
 

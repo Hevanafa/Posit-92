@@ -122,7 +122,10 @@ begin
 
   if @config.DrawOnce <> nil then begin
     config.DrawOnce;
+    print('Press Enter to exit', 0, vgaheight - 8, $0F);
     Flush;
+    resetKeyHandler;
+    ReadLn;
   end else begin
     now := GetTimer;
     nextUpdateTick := now;
