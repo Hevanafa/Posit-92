@@ -50,7 +50,6 @@ begin
   end else
     writeLog('Mouse initialised.');
 
-  loadCursor;
   mouseInitialised := true
 end;
 

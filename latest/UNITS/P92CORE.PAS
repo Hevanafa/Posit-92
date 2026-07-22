@@ -10,6 +10,8 @@ type
   TP92Callback = procedure;
 
   TP92AppConfig = record
+    LoadDefaultCursor: boolean;
+
     { Callbacks }
     OnPreload: TP92Callback;
     OnReady: TP92Callback;
@@ -32,6 +34,7 @@ uses
 
 var
   done: boolean;
+  bootConfig: TP92AppConfig;
 
 procedure SignalDone;
 begin
@@ -40,6 +43,8 @@ end;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
+  config.LoadDefaultCursor := true;
+
   @config.OnPreload := nil;
   @config.OnReady := nil;
   @config.Update := nil;
@@ -47,6 +52,7 @@ begin
   @config.OnCleanup := nil;
 end;
 
+{ Called by P92Start }
 procedure P92Init;
 begin
   Randomize;
@@ -59,6 +65,9 @@ begin
 
   initKeyHandler;
   initMouse;
+
+  if bootConfig.LoadDefaultCursor then
+    loadCursor;
 
   initFPSCounter;
 end;
@@ -86,17 +95,22 @@ end;
 
 procedure P92AfterDraw;
 begin
+  if bootConfig.LoadDefaultCursor then
+    drawMouse;
+
   drawFPS;
 
   Flush
 end;
 
+{ Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
 var
   now,
   nextUpdateTick,
   nextDrawTick: double;
 begin
+  bootConfig := config;
   P92Init;
 
   if @config.OnPreload <> nil then

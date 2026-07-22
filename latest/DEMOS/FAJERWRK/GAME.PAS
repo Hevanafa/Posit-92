@@ -179,6 +179,8 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
+  appConfig.LoadDefaultCursor := false;
+
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
