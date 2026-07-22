@@ -56,6 +56,7 @@ begin
   loadFont;
   initBuffer;
   initDeltaTime;
+
   initKeyHandler;
   initMouse;
 

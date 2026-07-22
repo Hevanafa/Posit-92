@@ -8,8 +8,8 @@ function GetTimer: real;
 function GetTimerMS: Longint;
 procedure Limit(const fps: integer);
 
-procedure initDeltaTime;
-procedure updateDeltaTime;
+procedure InitDeltaTime;
+procedure UpdateDeltaTime;
 
 function DeltaTime: double;
 
@@ -76,7 +76,7 @@ begin
   while getTimer < nextGameTick do ;
 end;
 
-procedure initDeltaTime;
+procedure InitDeltaTime;
 begin
   dt := 0;
   lastTime := getTimer;
@@ -85,7 +85,7 @@ begin
   lastMS := timerMS; }
 end;
 
-procedure updateDeltaTime;
+procedure UpdateDeltaTime;
 begin
   { Call getTimer only once to prevent desync }
   newTime := getTimer;

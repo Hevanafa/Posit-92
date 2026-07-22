@@ -1,46 +1,36 @@
 
 uses
   CRT, DOS,
-  Bitmap, Conv, FPS, Graphics, Logger, Keyboard, Maths, Mouse, Timing, VGA;
-
-const
-  SC_ESC = $01;
-  SC_A = $1E;
-  SC_D = $20;
-  SC_S = $1F;
-  SC_W = $11;
+  P92Core, Bitmap, Conv, FPS, Graphics, Logger, Keyboard, Maths, Mouse, Timing, VGA;
 
 var
-  done: boolean;
+  { Asset variables }
+  DosuEXE: array[0..1] of PBitmap;
+  { Game state variables }
   t: double;
   x, y: double;
-  DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
-  { TODO: Your init code here }
-
-  randomize;
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+end;
 
+procedure OnCleanup; far;
+begin
+  FreeBMP(DosuEXE[0]);
+  FreeBMP(DosuEXE[1]);
+end;
+
+procedure OnReady; far;
+begin
+  t := 0.0;
   x := 200;
   y := 150;
 end;
 
-
-function getAngle(const x0, y0, x1, y1: double): double;
+function GetAngle(const x0, y0, x1, y1: double): double;
 var
   dx, dy, result: double;
 begin
@@ -67,30 +57,24 @@ begin
   while result >= 2 * pi do
     result := result - 2 * pi;
 
-  getAngle := result
+  GetAngle := result
 end;
 
 
-procedure update;
+procedure Update; far;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  { TODO: Your update code here }
+  if isKeyDown(SC_W) then y := y - DeltaTime * 60;
+  if isKeyDown(SC_S) then y := y + DeltaTime * 60;
+  if isKeyDown(SC_A) then x := x - DeltaTime * 60;
+  if isKeyDown(SC_D) then x := x + DeltaTime * 60;
 
-  if isKeyDown(SC_ESC) then done := true;
-
-  if isKeyDown(SC_W) then y := y - dt * 60;
-  if isKeyDown(SC_S) then y := y + dt * 60;
-  if isKeyDown(SC_A) then x := x - dt * 60;
-  if isKeyDown(SC_D) then x := x + dt * 60;
-
-  t:=t+dt
+  t:=t+DeltaTime
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   angle: double;
 begin
@@ -101,7 +85,7 @@ begin
   circfill(160, 100, 20, 12);
   circfill(trunc(x), trunc(y), 8, 15);
 
-  angle := getAngle(x, y, 160, 100);
+  angle := GetAngle(x, y, 160, 100);
   print('Angle: ' + f32str(angle), 0, 8, 7);
   print('Angle (deg): ' + f32str(rad2deg(angle)), 0, 16, 7);
 
@@ -111,22 +95,17 @@ begin
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
