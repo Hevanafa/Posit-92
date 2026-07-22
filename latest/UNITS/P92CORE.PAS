@@ -68,7 +68,7 @@ begin
   ResetKeyHandler;
   FreeBuffer;
   CloseLogger;
-  InitTextMode
+  InitTextMode;
 end;
 
 procedure P92Update;
@@ -91,6 +91,10 @@ begin
 end;
 
 procedure P92Start(const config: TP92AppConfig);
+var
+  now,
+  nextUpdateTick,
+  nextDrawTick: double;
 begin
   P92Init;
 
@@ -100,6 +104,31 @@ begin
   if @config.OnReady <> nil then
     config.OnReady;
 
+  now := GetTimer;
+  nextUpdateTick := now;
+  nextDrawTick := now;
+
+  repeat
+    now := GetTimer;
+    incrementFPS;
+
+    if now >= nextUpdateTick then begin
+      nextUpdateTick := now + 1.0 / 20.0;
+
+      P92Update;
+      config.Update
+    end;
+
+    if now >= nextDrawTick then begin
+      nextDrawTick := now + 1.0 / 60.0;
+
+      P92Draw;
+      config.Draw;
+      P92AfterDraw
+    end;
+  until done;
+
+{
   done := false;
 
   repeat
@@ -110,6 +139,7 @@ begin
     config.Draw;
     P92AfterDraw;
   until done;
+}
 
   if @config.OnCleanup <> nil then
     config.OnCleanup;

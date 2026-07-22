@@ -23,6 +23,12 @@ begin
   t := 0.0;
 end;
 
+procedure OnCleanup; far;
+begin
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
+end;
+
 procedure Update; far;
 begin
   { Handle inputs here }
@@ -47,42 +53,17 @@ begin
   drawMouse;
 end;
 
-
 var
-  now,
-  nextUpdateTick,
-  nextDrawTick: double;
-  
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  now := getTimer;
-  nextUpdateTick := now;
-  nextDrawTick := now;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  repeat
-    now := getTimer;
-    incrementFPS;
-
-    if now >= nextUpdateTick then begin
-      nextUpdateTick := now + 1.0 / 20.0;
-      Update
-    end;
-
-    if now >= nextDrawTick then begin
-      nextDrawTick := now + 1.0 / 60.0;
-      Draw
-    end;
-  until done;
-
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+

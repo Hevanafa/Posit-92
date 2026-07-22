@@ -61,7 +61,6 @@ end;
 
 var
   appConfig: TP92AppConfig;
-
 begin
   DefaultP92AppConfig(appConfig);
 
