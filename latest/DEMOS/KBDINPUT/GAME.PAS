@@ -37,7 +37,7 @@ procedure Update; far;
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
-  t:=t+dt
+  t := t + DeltaTime
 end;
 
 procedure Draw; far;
@@ -48,7 +48,7 @@ begin
 
   { TODO: Your drawing code here }
 
-  if (trunc(t * 1.5) and 1) = 0 then
+  if frac(t * 1.5) >= 0.5 then
     Spr(dosuEXE[0], 148, 76, 13)
   else
     Spr(dosuEXE[1], 148, 76, 13);

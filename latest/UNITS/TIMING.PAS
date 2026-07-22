@@ -6,11 +6,6 @@ unit Timing;
 
 interface
 
-{ Edit (19-05-2025): BIOS has the absolute ticks since the last boot }
-var
-  dt, newTime, lastTime: double; { in seconds }
-  { deltaMS, lastMS: longint; }
-
 function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
@@ -20,10 +15,17 @@ procedure Limit(const fps: integer);
 procedure InitDeltaTime;
 procedure UpdateDeltaTime;
 
+function DeltaTime: double;
+
 
 implementation
 
-uses crt, dos;
+uses CRT, DOS;
+
+{ Edit (19-05-2025): BIOS has the absolute ticks since the last boot }
+var
+  dt, newTime, lastTime: double; { in seconds }
+  { deltaMS, lastMS: longint; }
 
 { Ticks since the last boot }
 function GetTicks: Longint;
@@ -93,6 +95,11 @@ begin
     deltaMS := TimerMS - lastMS;
     lastMS := TimerMS;
   end; }
+end;
+
+function DeltaTime: double;
+begin
+  DeltaTime := dt
 end;
 
 
