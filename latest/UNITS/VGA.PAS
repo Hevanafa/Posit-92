@@ -1,5 +1,9 @@
 unit vga;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

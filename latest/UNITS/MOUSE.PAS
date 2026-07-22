@@ -1,5 +1,9 @@
 unit Mouse;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 uses Bitmap;

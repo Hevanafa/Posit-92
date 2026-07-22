@@ -1,5 +1,9 @@
 unit Timing;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 { Edit (19-05-2025): BIOS has the absolute ticks since the last boot }

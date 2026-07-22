@@ -1,5 +1,9 @@
 unit Logger;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 procedure initLogger;
