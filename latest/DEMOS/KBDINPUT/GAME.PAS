@@ -27,6 +27,13 @@ begin
   t := 0.0;
 end;
 
+procedure OnCleanup;
+begin
+  { Free all the resources here }
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
+end;
+
 procedure Update;
 var
   a: integer;
@@ -39,7 +46,6 @@ begin
   if IsKeyDown(SC_ESCAPE) then done := true;
   t:=t+dt
 end;
-
 
 procedure Draw;
 var
@@ -64,13 +70,13 @@ end;
 
 var
   appConfig: TP92AppConfig;
-  a: integer;
 
 begin
   DefaultP92AppConfig(appConfig);
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
+  @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig);
 
@@ -80,8 +86,4 @@ begin
     Update;
     Draw;
   until done;
-
-  { Cleanup code here }
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
 end.
