@@ -1,4 +1,4 @@
-unit vga;
+unit VGA;
 
 {$IFDEF FPC}
 {$MODE TP}
@@ -13,16 +13,19 @@ type
 var
   surface: PByteArray;
 
-procedure initVGAMode;
-procedure initTextMode;
-procedure loadFont;
-procedure cls(const colour: byte);
-procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure pset(const x, y: word; const colour: byte);
-procedure pset_legacy(const x, y: word; const colour: byte);
-procedure flush;
-procedure initBuffer;
-procedure freeBuffer;
+procedure InitVGAMode;
+procedure InitTextMode;
+
+procedure LoadFont;
+
+procedure Cls(const colour: byte);
+procedure Print(const text: string; const x, y: integer; const colour: byte);
+procedure Pset(const x, y: word; const colour: byte);
+procedure PsetLegacy(const x, y: word; const colour: byte);
+procedure Flush;
+
+procedure InitBuffer;
+procedure FreeBuffer;
 
 implementation
 
@@ -36,20 +39,20 @@ var
   bufferInitialised: boolean;
 
 
-procedure initVGAMode; assembler;
+procedure InitVGAMode; assembler;
 asm
   mov ax, 0013h
   int 10h
 end;
 
-procedure initTextMode; assembler;
+procedure InitTextMode; assembler;
 asm
   mov ax, 0003h
   int 10h
 end;
 
 { Load 8x8 font }
-procedure loadFont;
+procedure LoadFont;
 var
   Regs: Registers;
 begin
@@ -64,13 +67,13 @@ begin
 end;
 
 
-procedure cls(const colour: byte);
+procedure Cls(const colour: byte);
 begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
 end;
 
-procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure Print(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -83,23 +86,23 @@ begin
       mask := font8x8[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
-          pset((idx-1) * 8 + x + col, y + row, colour);
+          Pset((idx-1) * 8 + x + col, y + row, colour);
           { pos := (y+row) * 320 + (idx-1)*8 + (x+col);
           surface^[pos] := colour; }
-          { pset_legacy((idx-1) * 8 + x + col, y + row, colour); }
+          { PsetLegacy((idx-1) * 8 + x + col, y + row, colour); }
           end;
     end;
   end;
 end;
 
 
-procedure pset_legacy(const x, y: word; const colour: byte);
+procedure PsetLegacy(const x, y: word; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
 
-procedure PSET(const x, y: word; const colour: byte); assembler;
+procedure Pset(const x, y: word; const colour: byte); assembler;
 asm
   { Bounds check }
   cmp x, 320
@@ -133,7 +136,7 @@ end;
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
-procedure flush;
+procedure Flush;
 begin
   asm
     push ds
@@ -152,13 +155,13 @@ begin
   end;
 end;
 
-procedure initBuffer;
+procedure InitBuffer;
 begin
   if not bufferInitialised then
     getMem(surface, bufferSize);
 end;
 
-procedure freeBuffer;
+procedure FreeBuffer;
 begin
   if bufferInitialised then begin
     freeMem(surface, bufferSize);

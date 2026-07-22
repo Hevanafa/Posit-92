@@ -20,9 +20,9 @@ begin
   Randomize;
 
   InitLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
+  InitVGAMode;
+  LoadFont;
+  InitBuffer;
   initDeltaTime;
   initKeyHandler;
   initMouse;
@@ -52,7 +52,7 @@ procedure draw;
 var
   a: integer;
 begin
-  cls($7D);
+  Cls($7D);
 
   { TODO: Your drawing code here }
 
@@ -61,11 +61,11 @@ begin
   else
     spr(dosuEXE[1], 148, 76, 13);
 
-  print('Hello world!', 160-48, 120, 15);
+  Print('Hello world!', 160-48, 120, 15);
 
   drawMouse;
 
-  flush
+  Flush
 end;
 
 
@@ -87,7 +87,7 @@ begin
 
   resetMouse;
   resetKeyHandler;
-  freeBuffer;
+  FreeBuffer;
   CloseLogger;
-  initTextMode
+  InitTextMode
 end.

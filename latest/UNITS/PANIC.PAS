@@ -16,7 +16,7 @@ procedure panicHalt(const msg: string);
 begin
   resetKeyHandler;
   resetMouse;
-  initTextMode;
+  InitTextMode;
   writeLn(msg);
   halt(1)
 end;

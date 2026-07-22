@@ -31,7 +31,7 @@ var
 
 procedure loadCursor;
 begin
-  loadBMP(cursor, '.\CURSOR.BMP')
+  loadBMP(cursor, 'CURSOR.BMP')
 end;
 
 procedure freeCursor;
@@ -74,12 +74,12 @@ end;
 procedure debugMouse;
 begin
   if not mouseInitialised then begin
-    print('Mouse has not been initialised!', 0, 0, 15);
+    Print('Mouse has not been initialised!', 0, 0, 15);
     exit
   end;
 
-  print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
-  print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
+  Print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
+  Print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
 end;
 
 
