@@ -37,6 +37,15 @@ begin
   @config.OnCleanup := nil;
 end;
 
+procedure P92Cleanup;
+begin
+  ResetMouse;
+  ResetKeyHandler;
+  FreeBuffer;
+  CloseLogger;
+  InitTextMode
+end;
+
 procedure P92Start(const config: TP92AppConfig);
 begin
   Randomize;
@@ -52,9 +61,15 @@ begin
   if @config.OnPreload <> nil then
     config.OnPreload;
 
-  { TODO: OnReady }
+  if @config.OnReady <> nil then
+    config.OnReady;
+
   { TODO: Move the game loop here }
-  { TODO: OnCleanup}
+
+  if @config.OnCleanup <> nil then
+    config.OnCleanup;
+
+  P92Cleanup
 end;
 
 

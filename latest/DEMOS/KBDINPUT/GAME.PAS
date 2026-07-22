@@ -84,10 +84,4 @@ begin
   { Cleanup code here }
   FreeBMP(dosuEXE[0]);
   FreeBMP(dosuEXE[1]);
-
-  ResetMouse;
-  ResetKeyHandler;
-  FreeBuffer;
-  CloseLogger;
-  InitTextMode
 end.
