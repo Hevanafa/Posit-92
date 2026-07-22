@@ -39,21 +39,15 @@ type
     velocity: byte  { 0..127 }
   end;
 
-  PMelody = ^TMelody;
-  TMelody = record
-    notes: array[0..15] of TNote;
-    noteCount: byte;
-    instrument: byte;
-  end;
-
   TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
     sustain: boolean;
     keyScale: boolean;
-    multiplier, totalLevel: byte;
-    sustainLevel, release: byte;
-    attack, decay: byte;
+    multiplier: byte;
+    totalLevel: byte; { octaves? }
+    attackRate, decayRate: byte;
+    sustainRate, releaseRate: byte;
     waveform: byte;
   end;
   PInstrument = ^TInstrument;
@@ -64,13 +58,22 @@ type
     algorithm: byte;  { 0 = FM, 1 = Additive }
   end;
 
+  PMelody = ^TMelody;
+  TMelody = record
+    notes: array[0..15] of TNote;
+    noteCount: byte;
+    instrument: PInstrument;
+  end;
+
+  { Adapter: convertOldInstrument }
+  { Note: Don't use this, use TInstrument instead }
   TOldInstrument = Record
-    WaveChar: Byte;       { Wave Characteristic         }
-    ScalingOutput: Byte;  { Scaling Level / Ouput level }
-    AttackDecay: Byte;    { Attack / Decay Rate         }
-    SustainRelease: Byte; { Sustain / Release Rate      }
-    Feedback: Byte;       { Feedback                    }
-    SetWaveSelect: Byte;  { Type of Wave to use         }
+    WaveChar: Byte;       { Wave Characteristic          }
+    ScalingOutput: Byte;  { Scaling Level / Output level }
+    AttackDecay: Byte;    { Attack / Decay Rate          }
+    SustainRelease: Byte; { Sustain / Release Rate       }
+    Feedback: Byte;       { Feedback                     }
+    SetWaveSelect: Byte;  { Type of Wave to use          }
   end;
 
   PAdLibDriver = ^TAdLibDriver;
@@ -84,8 +87,12 @@ type
     procedure shutdown;
     procedure setPercussive(const value: boolean);
 
+    {
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
+    }
+    procedure assignInstrument(const voice: byte; const instr: PInstrument);
+
     procedure setupMelodicInstruments;
     procedure setupRhythmInstruments;
 
@@ -135,7 +142,8 @@ type
     melody: PMelody;
     noteIndex: byte;
     noteEndTick: double; { in seconds }
-    instrument: byte;
+    { TODO: add isPercussion condition }
+    instrument: PInstrument;
     volume: byte; { 0..127 }
   end;
 
@@ -146,7 +154,7 @@ const
 
   MAX_MELODIC_VOICES = 9; { indices 0..8 }
   MAX_PERCUSSIVE_VOICES = 6; { for melodies: indices 0..5, percussions: 6, 7, 8 }
-  MAX_INSTRUMENTS = 16; { indices 0..15 }
+  { MAX_INSTRUMENTS = 16; } { indices 0..15 }
 
   BassDrumBit = $10;
   SnareDrumBit = $08;
@@ -164,7 +172,7 @@ var
   isPercussiveMode: boolean;
   BDRegister: byte;
   voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
-  instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument;
+  { instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument; }
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -219,12 +227,12 @@ begin
 end;
 
 
-procedure setupInstrument(const voice: byte; var instr: PInstrument);
+procedure TAdLibDriver.assignInstrument(const voice: byte; const instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
 begin
-  if instr = nil then panicHalt('setupInstrument: instr is nil!');
+  if instr = nil then panicHalt('assignInstrument: instr is nil!');
   
   modOffset := getModulatorOffset(voice);
   carOffset := getCarrierOffset(voice);
@@ -238,8 +246,8 @@ begin
       (ord(keyScale) shl 4) or multiplier);
       
     AdLibWrite($40 + modOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
-    AdLibWrite($60 + modOffset, (attack shl 4) or decay);
-    AdLibWrite($80 + modOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($60 + modOffset, (attackRate shl 4) or decayRate);
+    AdLibWrite($80 + modOffset, (sustainRate shl 4) or releaseRate);
     AdLibWrite($e0 + modOffset, waveform)
   end;
   
@@ -252,8 +260,8 @@ begin
       (ord(keyScale) shl 4) or multiplier);
       
     AdLibWrite($40 + carOffset, (ord(keyScale) and 1) shl 6 or totalLevel);
-    AdLibWrite($60 + carOffset, (attack shl 4) or decay);
-    AdLibWrite($80 + carOffset, (sustainLevel shl 4) or release);
+    AdLibWrite($60 + carOffset, (attackRate shl 4) or decayRate);
+    AdLibWrite($80 + carOffset, (sustainRate shl 4) or releaseRate);
     AdLibWrite($e0 + carOffset, waveform)
   end;
   
@@ -264,6 +272,8 @@ begin
 end;
 
 { Loads a PInstrument to a slot }
+{ TODO: reduce this into something like assignInstrument }
+{
 procedure TAdLibDriver.loadInstrument(const instrSlot: byte; const instr: PInstrument);
 begin
   if instr = nil then panicHalt('TAdLibDriver.loadInstrument: Attempting to load a nil instrument');
@@ -271,15 +281,19 @@ begin
 
   instruments[instrSlot] := instr
 end;
+}
 
+{ TODO: reduce this into something like assignInstrument }
+{
 procedure TAdLibDriver.selectInstrument(const voice, instrSlot: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
   if instrSlot >= MAX_INSTRUMENTS then exit;
 
   voices[voice].instrument := instrSlot;
-  setupInstrument(voice, instruments[instrSlot])
+  assignInstrument(voice, instruments[instrSlot])
 end;
+}
 
 
 procedure resetAllRegisters;
@@ -318,6 +332,45 @@ begin
   end;
 end;
 
+procedure convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
+begin
+  with output.modulator do begin
+    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
+    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
+    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
+    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
+    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
+
+    attackRate := hi(src.AttackDecay);
+    decayRate := lo(src.AttackDecay);
+    sustainRate := hi(src.SustainRelease);
+    releaseRate := lo(src.SustainRelease);
+    waveform := src.SetWaveSelect and $07; { waveform select }
+  end;
+
+  with output.carrier do begin
+    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
+    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
+    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
+    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
+    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
+
+    attackRate := hi(src.AttackDecay);
+    decayRate := lo(src.AttackDecay);
+    sustainRate := hi(src.SustainRelease);
+    releaseRate := lo(src.SustainRelease);
+    waveform := src.SetWaveSelect and $07; { waveform select }
+  end;
+
+  output.modulator.totalLevel := 25;  { octaves? }
+  output.carrier.totalLevel := 0;
+
+  output.feedback := (src.Feedback and $0E) shr 1;  { bits 1-3 }
+  output.algorithm := src.Feedback and $01;
+end;
+
+
+
 { Assigns all voices with the electric piano preset }
 procedure TAdLibDriver.setupMelodicInstruments;
 const
@@ -326,7 +379,7 @@ const
     $10, $11, $12, $01, $11, $4f,
     $00, $f1);
   { Todo: adapt this with the TInstrument format }
-  ElectricPiano: array[0..1] of TOldInstrument = (
+  OldElectricPiano: array[0..1] of TOldInstrument = (
   (
     WaveChar: 65; ScalingOutput: 127;
     AttackDecay: 242; SustainRelease: 81;
@@ -345,22 +398,22 @@ begin
       if op = 0 then portOffset := 0 else portOffset := 3;
 
       AdLibWrite($20 + portOffset + OpModulator[voice],
-        ElectricPiano[0].WaveChar);
+        OldElectricPiano[op].WaveChar);
 
       AdLibWrite($40 + portOffset + OpModulator[voice],
-        ElectricPiano[0].ScalingOutput);
+        OldElectricPiano[op].ScalingOutput);
 
       AdLibWrite($60 + portOffset + OpModulator[voice],
-        ElectricPiano[0].AttackDecay);
+        OldElectricPiano[op].AttackDecay);
 
       AdLibWrite($80 + portOffset + OpModulator[voice],
-        ElectricPiano[0].SustainRelease);
+        OldElectricPiano[op].SustainRelease);
 
       AdLibWrite($E0 + portOffset + OpModulator[voice],
-        ElectricPiano[0].SetWaveSelect);
+        OldElectricPiano[op].SetWaveSelect);
     end;
 
-    AdLibWrite($C0 + voice, ElectricPiano[0].FeedBack)
+    AdLibWrite($C0 + voice, OldElectricPiano[0].FeedBack)
   end;
 end;
 
@@ -671,9 +724,9 @@ ASM
 end;
 
 
-function getIsMelodic(const voice: byte): boolean;
+function isVoiceMelodic(const voice: byte): boolean;
 begin
-  getIsMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
+  isVoiceMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
     (not isPercussiveMode)
 end;
 
@@ -684,7 +737,7 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := getIsMelodic(voice);
+  isMelodic := isVoiceMelodic(voice);
 
   if isMelodic then begin
     AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
@@ -700,7 +753,7 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := getIsMelodic(voice);
+  isMelodic := isVoiceMelodic(voice);
 
   if isMelodic then
     AdLibWrite($B0 + voice, 0);
@@ -758,7 +811,7 @@ begin
     voices[a].melody := nil;
     voices[a].noteIndex := 0;
     voices[a].noteEndTick := 0;
-    voices[a].instrument := 0;
+    voices[a].instrument := nil;
     voices[a].volume := 127
   end;
 
@@ -836,7 +889,7 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   { voices[voice].instrument := melody^.instrument; }
 
-  { setupInstrument(voice, instruments[melody^.instrument]); }
+  { assignInstrument(voice, instruments[melody^.instrument]); }
   playNote(
     voice,
     melody^.notes[0].freq,
@@ -858,7 +911,7 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   voices[voice].instrument := melody^.instrument;
 
-  setupInstrument(voice, instruments[melody^.instrument]);
+  assignInstrument(voice, voices[voice].instrument);
   playNote(
     voice,
     melody^.notes[0].freq,
