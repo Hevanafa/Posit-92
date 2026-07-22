@@ -26,7 +26,7 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, VGA;
+  Logger, Timing, Keyboard, Mouse, VGA;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin

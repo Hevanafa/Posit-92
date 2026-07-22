@@ -58,10 +58,15 @@ end;
 
 
 var
+  appConfig: TP92AppConfig;
   a: integer;
 
 begin
-  P92Start;
+  DefaultP92AppConfig(appConfig);
+
+  @appConfig.OnPreload := @OnPreload;
+
+  P92Start(appConfig);
 
   done := false;
 
