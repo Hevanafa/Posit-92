@@ -23,7 +23,7 @@ begin
   InitVGAMode;
   LoadFont;
   InitBuffer;
-  initDeltaTime;
+  InitDeltaTime;
   initKeyHandler;
   initMouse;
 
@@ -38,7 +38,7 @@ procedure update;
 var
   a: integer;
 begin
-  updateDeltaTime;
+  UpdateDeltaTime;
   updateMouse;
 
   { TODO: Your update code here }

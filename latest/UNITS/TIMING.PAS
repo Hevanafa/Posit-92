@@ -15,9 +15,11 @@ function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
-procedure Limit(fps: integer);
-procedure initDeltaTime;
-procedure updateDeltaTime;
+procedure Limit(const fps: integer);
+
+procedure InitDeltaTime;
+procedure UpdateDeltaTime;
+
 
 implementation
 
@@ -64,12 +66,12 @@ begin
 end;
 
 { Similar to QB64's _LIMIT }
-procedure Limit(fps: integer);
+procedure Limit(const fps: integer);
 begin
   delay(1000 div fps)
 end;
 
-procedure initDeltaTime;
+procedure InitDeltaTime;
 begin
   dt := 0;
   lastTime := getTimer;
@@ -78,7 +80,7 @@ begin
   lastMS := timerMS; }
 end;
 
-procedure updateDeltaTime;
+procedure UpdateDeltaTime;
 begin
   { Call getTimer only once to prevent desync }
   newTime := getTimer;
