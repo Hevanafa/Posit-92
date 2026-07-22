@@ -8,14 +8,15 @@ uses
 
 const
   K_ESC = $01;
+
 var
+  { Game state variables }
   done: boolean;
   t: double;
   DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
 
 
-procedure INIT;
+procedure Init;
 begin
   Randomize;
 
@@ -27,28 +28,28 @@ begin
   InitKeyHandler;
   InitMouse;
 
-  { TODO: Your init code here }
+  { TODO: Your Init code here }
 
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 
-procedure update;
+procedure Update;
 var
   a: integer;
 begin
   UpdateDeltaTime;
   UpdateMouse;
 
-  { TODO: Your update code here }
+  { TODO: Your Update code here }
 
   if IsKeyDown(K_ESC) then done := true;
   t:=t+dt
 end;
 
 
-procedure draw;
+procedure Draw;
 var
   a: integer;
 begin
@@ -73,15 +74,15 @@ var
   a: integer;
 
 begin
-  INIT;
+  Init;
   done := false;
 
   repeat
-    update;
-    draw;
+    Update;
+    Draw;
   until done;
 
-  { TODO: Your cleanup code here }
+  { Cleanup code here }
   freeBMP(dosuEXE[0]);
   freeBMP(dosuEXE[1]);
 
