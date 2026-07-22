@@ -17,6 +17,8 @@ type
     OnReady: TP92Callback;
     Update: TP92Callback;
     Draw: TP92Callback;
+    { This overrides update & draw loop }
+    DrawOnce: TP92Callback;
     OnCleanup: TP92Callback;
   end;
 
@@ -99,7 +101,6 @@ begin
     drawMouse;
 
   drawFPS;
-
   Flush
 end;
 
@@ -119,42 +120,47 @@ begin
   if @config.OnReady <> nil then
     config.OnReady;
 
-  now := GetTimer;
-  nextUpdateTick := now;
-  nextDrawTick := now;
-
-  repeat
+  if @config.DrawOnce <> nil then begin
+    config.DrawOnce;
+    Flush;
+  end else begin
     now := GetTimer;
-    incrementFPS;
+    nextUpdateTick := now;
+    nextDrawTick := now;
 
-    if now >= nextUpdateTick then begin
-      nextUpdateTick := now + 1.0 / 20.0;
+    repeat
+      now := GetTimer;
+      incrementFPS;
 
+      if now >= nextUpdateTick then begin
+        nextUpdateTick := now + 1.0 / 20.0;
+
+        P92Update;
+        config.Update
+      end;
+
+      if now >= nextDrawTick then begin
+        nextDrawTick := now + 1.0 / 60.0;
+
+        P92Draw;
+        config.Draw;
+        P92AfterDraw
+      end;
+    until done;
+
+  {
+    done := false;
+
+    repeat
       P92Update;
-      config.Update
-    end;
-
-    if now >= nextDrawTick then begin
-      nextDrawTick := now + 1.0 / 60.0;
+      config.Update;
 
       P92Draw;
       config.Draw;
-      P92AfterDraw
-    end;
-  until done;
-
-{
-  done := false;
-
-  repeat
-    P92Update;
-    config.Update;
-
-    P92Draw;
-    config.Draw;
-    P92AfterDraw;
-  until done;
-}
+      P92AfterDraw;
+    until done;
+  }
+  end;
 
   if @config.OnCleanup <> nil then
     config.OnCleanup;
