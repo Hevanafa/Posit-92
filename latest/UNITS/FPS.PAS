@@ -2,9 +2,9 @@ unit FPS;
 
 interface
 
-procedure initFPSCounter;
-procedure incrementFPS;
-procedure drawFPS;
+procedure InitFPSCounter;
+procedure IncrementFPS;
+procedure DrawFPS;
 
 
 implementation
@@ -21,14 +21,14 @@ var
   nowFPS, lastFPS: integer;
   lastFPSTime: double; { in seconds }
 
-procedure initFPSCounter;
+procedure InitFPSCounter;
 begin
   nowFPS := 0;
   lastFPS := 0;
   lastFPSTime := getTimer;
 end;
 
-procedure incrementFPS;
+procedure IncrementFPS;
 begin
   nowFPS := nowFPS + 1;
   if Timer - lastFPSTime >= 1.0 then begin
@@ -38,9 +38,9 @@ begin
   end;
 end;
 
-procedure drawFPS;
+procedure DrawFPS;
 begin
-  print('FPS:' + i32str(lastFPS), 240, 0, $0E);
+  Print('FPS:' + i32str(lastFPS), 240, 0, $0E)
 end;
 
 

@@ -29,7 +29,7 @@ var
   a, x, y: integer;
   startTime: double;
 begin
-  cls($7D);
+  Cls($7D);
   startTime := getTimer;
 
   {
@@ -44,7 +44,7 @@ begin
     { TODO: This only works once }
     { fastSpr4(dosuEXE[0], x, y, 13); }
     { fastSpr5(dosuEXE[0], x, y, 13); }
-    { print(i32str(a), x, y, 15); }
+    { Print(i32str(a), x, y, 15); }
   { end; }
 
   { fastSpr5(dosuEXE[0], 100, 50, 13);
@@ -60,13 +60,13 @@ begin
   for a:=1 to 1000 do begin
     x := random(300);
     y := random(180);
-    { spr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, pset: 1.3095s }
+    { spr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, Pset: 1.3095s }
     asmSprSafe(dosuEXE[0], x, y, 13);  { 0.6819s, 0.6826s }
   end;
 
   { Black rectangle behind the text below }
   rectfill(0, 0, 240, 8, 0);
-  print('1000 operations done in ' + f32str(getTimer - startTime) + 's', 0, 0, 15);
+  Print('1000 operations done in ' + f32str(getTimer - startTime) + 's', 0, 0, 15);
 end;
 
 var

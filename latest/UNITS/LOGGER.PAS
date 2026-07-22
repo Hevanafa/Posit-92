@@ -2,20 +2,20 @@ unit Logger;
 
 interface
 
-procedure initLogger;
-procedure writeLog(const msg: string);
-procedure closeLogger;
+procedure InitLogger;
+procedure WriteLog(const msg: string);
+procedure CloseLogger;
 
 
 implementation
 
-uses crt, dos;
+uses CRT, DOS;
 
 var
   logFile: Text;
   logOpened: boolean;
 
-procedure initLogger;
+procedure InitLogger;
 begin
   assign(logFile, 'LOG.TXT');
   {$I-}
@@ -29,14 +29,14 @@ begin
   end;
 end;
 
-procedure writeLog(const msg: string);
+procedure WriteLog(const msg: string);
 begin
   if not logOpened then exit;
   writeLn(logFile, msg);
   flush(logFile)
 end;
 
-procedure closeLogger;
+procedure CloseLogger;
 begin
   if logOpened then
     close(logFile);

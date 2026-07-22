@@ -68,14 +68,14 @@ begin
   p := 3 - 2 * radius;
 
   while x <= y do begin
-    asmPset(cx + x, cy + y, colour);
-    asmPset(cx - x, cy + y, colour);
-    asmPset(cx + x, cy - y, colour);
-    asmPset(cx - x, cy - y, colour);
-    asmPset(cx + y, cy + x, colour);
-    asmPset(cx - y, cy + x, colour);
-    asmPset(cx + y, cy - x, colour);
-    asmPset(cx - y, cy - x, colour);
+    AsmPset(cx + x, cy + y, colour);
+    AsmPset(cx - x, cy + y, colour);
+    AsmPset(cx + x, cy - y, colour);
+    AsmPset(cx - x, cy - y, colour);
+    AsmPset(cx + y, cy + x, colour);
+    AsmPset(cx - y, cy + x, colour);
+    AsmPset(cx + y, cy - x, colour);
+    AsmPset(cx - y, cy - x, colour);
 
     if p < 0 then
       p := p+4 * x+6
@@ -98,9 +98,9 @@ begin
 
   while x <= y do begin
 asm
-  { asmPset(cxi + x, cyi + y, colour); }
+  { AsmPset(cxi + x, cyi + y, colour); }
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, cyi
   add ax, y
@@ -115,12 +115,12 @@ asm
   mov al, colour
   mov es:[di], al
 
-  { asmPset(cxi - x, cyi + y, colour); }
+  { AsmPset(cxi - x, cyi + y, colour); }
   sub di, x
   sub di, x
   mov es:[di], al
 
-  { asmPset(cxi + x, cyi - y, colour); }
+  { AsmPset(cxi + x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
   mov bx, 320
@@ -134,7 +134,7 @@ asm
   mov al, colour
   mov es:[di], al
 
-  { asmPset(cxi - x, cyi - y, colour); }
+  { AsmPset(cxi - x, cyi - y, colour); }
   sub di, x
   sub di, x
   mov es:[di], al
@@ -142,7 +142,7 @@ end;
 
 
 asm
-  { asmPset(cxi + y, cyi + x, colour); }
+  { AsmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
   mov bx, 320
@@ -156,12 +156,12 @@ asm
   mov al, colour
   mov es:[di], al
 
-  { asmPset(cxi - y, cyi + x, colour); }
+  { AsmPset(cxi - y, cyi + x, colour); }
   sub di, y
   sub di, y
   mov es:[di], al
 
-  { asmPset(cxi + y, cyi - x, colour); }
+  { AsmPset(cxi + y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
   mov bx, 320
@@ -175,7 +175,7 @@ asm
   mov al, colour
   mov es:[di], al
 
-  { asmPset(cxi - y, cyi - x, colour); }
+  { AsmPset(cxi - y, cyi - x, colour); }
   sub di, y
   sub di, y
   mov es:[di], al
@@ -215,7 +215,7 @@ asm
   cmp ax, 320
   jge @segment_2
 
-  { asmPset(cxi + x, cyi + y, colour); }
+  { AsmPset(cxi + x, cyi + y, colour); }
   mov ax, cyi
   add ax, y
   mov bx, 320
@@ -235,7 +235,7 @@ asm
   cmp ax, 0
   jl @segment_3
 
-  { asmPset(cxi - x, cyi + y, colour); }
+  { AsmPset(cxi - x, cyi + y, colour); }
   mov ax, cyi
   add ax, y
   mov bx, 320
@@ -261,7 +261,7 @@ asm
   cmp ax, 320
   jge @segment_4
 
-  { asmPset(cxi + x, cyi - y, colour); }
+  { AsmPset(cxi + x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
   mov bx, 320
@@ -281,7 +281,7 @@ asm
   cmp ax, 0
   jl @skip
 
-  { asmPset(cxi - x, cyi - y, colour); }
+  { AsmPset(cxi - x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
   mov bx, 320
@@ -312,7 +312,7 @@ asm
   cmp ax, 320
   jge @segment_2
 
-  { asmPset(cxi + y, cyi + x, colour); }
+  { AsmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
   mov bx, 320
@@ -332,7 +332,7 @@ asm
   cmp ax, 0
   jl @segment_3
 
-  { asmPset(cxi - y, cyi + x, colour); }
+  { AsmPset(cxi - y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
   mov bx, 320
@@ -358,7 +358,7 @@ asm
   cmp ax, 320
   jge @segment_4
 
-  { asmPset(cxi + y, cyi - x, colour); }
+  { AsmPset(cxi + y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
   mov bx, 320
@@ -378,7 +378,7 @@ asm
   cmp ax, 0
   jl @skip
 
-  { asmPset(cxi - y, cyi - x, colour); }
+  { AsmPset(cxi - y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
   mov bx, 320
@@ -422,12 +422,12 @@ begin
 
   while x <= y do begin
     for a:=cx-x to cx+x do begin
-      asmPset(a, cy + y, colour);
-      asmPset(a, cy - y, colour)
+      AsmPset(a, cy + y, colour);
+      AsmPset(a, cy - y, colour)
     end;
     for a:=cx-y to cx+y do begin
-      asmPset(a, cy + x, colour);
-      asmPset(a, cy - x, colour)
+      AsmPset(a, cy + x, colour);
+      AsmPset(a, cy - x, colour)
     end;
 
     if p < 0 then
@@ -614,16 +614,16 @@ begin
   while x <= y do begin
     for a:=cx-x to cx+x do begin
       if ((a + cy + y) and 1) = 1 then
-        asmPset(a, cy + y, colour);
+        AsmPset(a, cy + y, colour);
 
       if ((a + cy - y) and 1) = 1 then
-        asmPset(a, cy - y, colour);
+        AsmPset(a, cy - y, colour);
     end;
     for a:=cx-y to cx+y do begin
       if ((a + cy + x) and 1) = 1 then
-        asmPset(a, cy + x, colour);
+        AsmPset(a, cy + x, colour);
       if ((a + cy - x) and 1) = 1 then
-        asmPset(a, cy - x, colour);
+        AsmPset(a, cy - x, colour);
     end;
 
     if p < 0 then
@@ -661,7 +661,7 @@ begin
   err := dx - dy;
 
   while (x1 <> x2) or (y1 <> y2) do begin
-    asmPset(x1, y1, colour);
+    AsmPset(x1, y1, colour);
     e2 := 2 * err;
 
     if e2 > -dy then begin
@@ -675,7 +675,7 @@ begin
     end;
   end;
 
-  asmPset(x1, y1, colour)
+  AsmPset(x1, y1, colour)
 end;
 
 procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
@@ -707,9 +707,9 @@ asm
   jmp @loop_done
 
 @loop:
-  { asmPset(x0, y0, colour); }
+  { AsmPset(x0, y0, colour); }
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y0
   mov bx, 320
@@ -771,9 +771,9 @@ end;
   { end; } { end while }
 
 
-{ asmPset(x0, y0, colour) }
+{ AsmPset(x0, y0, colour) }
 asm
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y0
   mov bx, 320
@@ -803,7 +803,7 @@ begin
   end;
 
   for x := x0 to x1 do
-    asmPset(x, y, colour);
+    AsmPset(x, y, colour);
 end;
 
 procedure asmHline(const x0, x1, y: integer; const colour: byte); assembler;
@@ -843,7 +843,7 @@ asm
   cmp x, 320
   jge @done
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -891,7 +891,7 @@ asm
   mov x, ax
 
 @x_loop:
-  { PSET }
+  { Pset }
   { Start offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -935,7 +935,7 @@ begin
 
   for a:=y0 to y1 do begin
     if (a < 0) then continue;
-    asmPset(x, a, colour)
+    AsmPset(x, a, colour)
   end;
 end;
 
@@ -972,7 +972,7 @@ asm
   cmp y, 0
   jl @y_next
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1022,7 +1022,7 @@ asm
   jg @y_end
 
 @y_loop:
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1060,12 +1060,12 @@ begin
     temp := y0; y0 := y1; y1 := temp
   end;
   for b:=y0 to y1 do begin
-    asmPset(x0, b, colour);
-    asmPset(x1, b, colour)
+    AsmPset(x0, b, colour);
+    AsmPset(x1, b, colour)
   end;
   for a:=x0 to x1 do begin
-    asmPset(a, y0, colour);
-    asmPset(a, y1, colour)
+    AsmPset(a, y0, colour);
+    AsmPset(a, y1, colour)
   end;
 end;
 
@@ -1106,7 +1106,7 @@ asm
   cmp xStart, 0
   jl @skip_x_left
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1124,7 +1124,7 @@ asm
   cmp xEnd, 320
   jge @skip_x_right
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1162,7 +1162,7 @@ asm
   cmp yStart, 0
   jl @skip_y_top
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, yStart
   mov bx, 320
@@ -1180,7 +1180,7 @@ asm
   cmp yEnd, 200
   jge @skip_y_bottom
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, yEnd
   mov bx, 320
@@ -1252,7 +1252,7 @@ asm
   cmp xStart, 0
   jl @skip_x_left
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1270,7 +1270,7 @@ asm
   cmp xEnd, 320
   jge @skip_x_right
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1294,7 +1294,7 @@ asm
   cmp yStart, 0
   jl @skip_y_top
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, yStart
   mov bx, 320
@@ -1320,7 +1320,7 @@ asm
   cmp yEnd, 200
   jge @skip
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, yEnd
   mov bx, 320
@@ -1416,7 +1416,7 @@ asm
   cmp x, 320
   jge @x_done
 
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1489,7 +1489,7 @@ asm
   mov x, ax
 
 @x_loop:
-  { PSET }
+  { Pset }
   { Start offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1596,7 +1596,7 @@ asm
   jg @x_done
 
 @x_loop:
-  { PSET }
+  { Pset }
   { Offset: y * 320 + x }
   mov ax, y
   mov bx, 320
@@ -1666,7 +1666,7 @@ begin
     xEnd := sx2 shr FIX_SHIFT;
     if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
     while xStart <= xEnd do begin
-      asmPset(xStart, y, colour);
+      AsmPset(xStart, y, colour);
       inc(xStart);
     end;
     inc(sx1, dx1); inc(sx2, dx2)
@@ -1681,7 +1681,7 @@ begin
     xEnd := sx2 shr FIX_SHIFT;
     if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
     while xStart <= xEnd do begin
-      asmPset(xStart, y, colour);
+      AsmPset(xStart, y, colour);
       inc(xStart);
     end;
     inc(sx1, dx1); inc(sx2, dx2)

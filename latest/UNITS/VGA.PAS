@@ -13,30 +13,30 @@ const
 var
   surface: PByteArray;
 
-procedure initVGAMode;
-procedure initTextMode;
+procedure InitVGAMode;
+procedure InitTextMode;
 { This loads the 8x8 font }
-procedure loadFont;
+procedure LoadCGAFont;
 
-procedure initBuffer;
-procedure freeBuffer;
+procedure InitBuffer;
+procedure FreeBuffer;
 
-procedure cls(const colour: byte);
-procedure pascalCls(const colour: byte);
-procedure asmCls(const colour: byte);
+procedure Cls(const colour: byte);
+procedure PascalCls(const colour: byte);
+procedure AsmCls(const colour: byte);
 
-{ calls asmPrint internally }
-procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
-procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+{ Routes to AsmPrint }
+procedure Print(const text: string; const x, y: integer; const colour: byte);
+procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
+procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 
-procedure pset(const x, y: integer; const colour: byte);
-procedure pascalPset(const x, y: integer; const colour: byte);
-procedure asmPset(const x, y: integer; const colour: byte);
+procedure Pset(const x, y: integer; const colour: byte);
+procedure PascalPset(const x, y: integer; const colour: byte);
+procedure AsmPset(const x, y: integer; const colour: byte);
 
-procedure flush;
-procedure pascalFlush;
-procedure asmFlush;
+procedure Flush;
+procedure PascalFlush;
+procedure AsmFlush;
 
 
 implementation
@@ -51,20 +51,20 @@ var
   bufferInitialised: boolean;
 
 
-procedure initVGAMode; assembler;
+procedure InitVGAMode; assembler;
 asm
   mov ax, 0013h
   int 10h
 end;
 
-procedure initTextMode; assembler;
+procedure InitTextMode; assembler;
 asm
   mov ax, 0003h
   int 10h
 end;
 
 { Load 8x8 font }
-procedure loadFont;
+procedure LoadCGAFont;
 var
   Regs: Registers;
 begin
@@ -79,19 +79,19 @@ begin
 end;
 
 
-procedure cls(const colour: byte);
+procedure Cls(const colour: byte);
 begin
-  asmCls(colour)
+  AsmCls(colour)
 end;
 
 
-procedure pascalCls(const colour: byte);
+procedure PascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
 end;
 
-procedure asmCls(const colour: byte); assembler;
+procedure AsmCls(const colour: byte); assembler;
 asm
   push es
   les di, surface  { Set ES:DI to surface pointer }
@@ -103,12 +103,12 @@ asm
   pop es
 end;
 
-procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure Print(const text: string; const x, y: integer; const colour: byte);
 begin
-  asmPrint(text, x, y, colour)
+  AsmPrint(text, x, y, colour)
 end;
 
-procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
+procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -121,17 +121,17 @@ begin
       mask := font8x8[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
-          asmPset((idx-1) * 8 + x + col, y + row, colour);
+          AsmPset((idx-1) * 8 + x + col, y + row, colour);
           { pos := (y+row) * 320 + (idx-1)*8 + (x+col);
           surface^[pos] := colour; }
-          { pset((idx-1) * 8 + x + col, y + row, colour); }
+          { Pset((idx-1) * 8 + x + col, y + row, colour); }
           end;
     end;
   end;
 end;
 
 
-procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   offset: integer;
@@ -148,7 +148,7 @@ begin
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
 asm
-{ asmPset }
+{ AsmPset }
   cmp x, 0
   jl @skip_pixel
   cmp x, 320
@@ -188,18 +188,18 @@ end;
 end;
 
 
-procedure pset(const x, y: integer; const colour: byte);
+procedure Pset(const x, y: integer; const colour: byte);
 begin
-  asmPset(x, y, colour)
+  AsmPset(x, y, colour)
 end;
 
-procedure pascalPset(const x, y: integer; const colour: byte);
+procedure PascalPset(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
 
-procedure asmPset(const x, y: integer; const colour: byte); assembler;
+procedure AsmPset(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
   cmp y, 0
@@ -230,14 +230,14 @@ asm
 end;
 
 
-procedure flush;
+procedure Flush;
 begin
-  pascalFlush;
-  { asmFlush }
+  PascalFlush;
+  { AsmFlush }
 end;
 
 
-procedure pascalFlush;
+procedure PascalFlush;
 begin
   Move(surface^, Mem[$A000:0], 64000)
 end;
@@ -250,7 +250,7 @@ end;
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
-procedure asmFlush; assembler;
+procedure AsmFlush; assembler;
 asm
   push ds
   push es
@@ -267,13 +267,13 @@ asm
   pop ds
 end;
 
-procedure initBuffer;
+procedure InitBuffer;
 begin
   if not bufferInitialised then
     getMem(surface, bufferSize);
 end;
 
-procedure freeBuffer;
+procedure FreeBuffer;
 begin
   if bufferInitialised then begin
     freeMem(surface, bufferSize);

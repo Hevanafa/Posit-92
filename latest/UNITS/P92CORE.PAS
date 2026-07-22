@@ -59,19 +59,19 @@ procedure P92Init;
 begin
   Randomize;
 
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
+  InitLogger;
+  InitVGAMode;
+  LoadCGAFont;
+  InitBuffer;
+  InitDeltaTime;
 
-  initKeyHandler;
-  initMouse;
+  InitKeyHandler;
+  InitMouse;
 
   if bootConfig.LoadDefaultCursor then
-    loadCursor;
+    LoadCursor;
 
-  initFPSCounter;
+  InitFPSCounter;
 end;
 
 procedure P92Cleanup;
@@ -87,7 +87,7 @@ procedure P92Update;
 begin
   UpdateDeltaTime;
   UpdateMouse;
-  incrementFPS;
+  IncrementFPS;
 end;
 
 procedure P92Draw;
@@ -98,9 +98,9 @@ end;
 procedure P92AfterDraw;
 begin
   if bootConfig.LoadDefaultCursor then
-    drawMouse;
+    DrawMouse;
 
-  drawFPS;
+  DrawFPS;
   Flush
 end;
 
@@ -122,9 +122,9 @@ begin
 
   if @config.DrawOnce <> nil then begin
     config.DrawOnce;
-    print('Press Enter to exit', 0, vgaheight - 8, $0F);
+    Print('Press Enter to exit', 0, vgaheight - 8, $0F);
     Flush;
-    resetKeyHandler;
+    ResetKeyHandler;
     ReadLn;
   end else begin
     now := GetTimer;
@@ -133,7 +133,7 @@ begin
 
     repeat
       now := GetTimer;
-      incrementFPS;
+      IncrementFPS;
 
       if now >= nextUpdateTick then begin
         nextUpdateTick := now + 1.0 / 20.0;

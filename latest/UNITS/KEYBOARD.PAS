@@ -119,14 +119,17 @@ const
   SC_F11 = $57;
   SC_F12 = $58;
 
-procedure initKeyHandler;
-procedure resetKeyHandler;
+procedure InitKeyHandler;
+
+{ Must be called before returning to text mode, otherwise all keys will be stuck in polling mode }
+procedure ResetKeyHandler;
+
 {
   Scancode lists:
   https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
   https://www.freebasic.net/wiki/GfxScancodes
 }
-function isKeyDown(scancode: byte): boolean;
+function IsKeyDown(scancode: byte): boolean;
 
 
 implementation
@@ -142,7 +145,7 @@ var
   oldKeyHandler: pointer;
   keyboardInitialised: boolean;
 
-procedure keyHandler; interrupt;
+procedure KeyHandler; interrupt;
 var
   scancode: byte;
   isBreak: boolean;
@@ -158,28 +161,28 @@ begin
   Port[$20] := $20
 end;
 
-procedure initKeyHandler;
+procedure InitKeyHandler;
 begin
   if keyboardInitialised then exit;
-  getIntVec($09, oldKeyHandler);
-  setIntVec($09, @keyHandler);
+  GetIntVec($09, oldKeyHandler);
+  SetIntVec($09, @KeyHandler);
   keyboardInitialised := true
 end;
 
-procedure resetKeyHandler;
+procedure ResetKeyHandler;
 begin
   if not keyboardInitialised then exit;
-  setIntVec($09, oldKeyHandler);
+  SetIntVec($09, oldKeyHandler);
   keyboardInitialised := false
 end;
 
-function isKeyDown(scancode: byte): boolean;
+function IsKeyDown(scancode: byte): boolean;
 begin
   if not keyboardInitialised then begin
-    isKeyDown := false;
+    IsKeyDown := false;
     exit
   end;
-  isKeyDown := keys[scancode]
+  IsKeyDown := keys[scancode]
 end;
 
 end.

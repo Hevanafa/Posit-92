@@ -9,13 +9,14 @@ var
   mouseX, mouseY: word;
   mouseButton: byte;
 
-procedure loadCursor;
-procedure freeCursor;
-procedure initMouse;
-procedure updateMouse;
-procedure debugMouse;
-procedure drawMouse;
-procedure resetMouse;
+procedure LoadCursor;
+procedure FreeCursor;
+
+procedure InitMouse;
+procedure UpdateMouse;
+procedure DebugMouse;
+procedure DrawMouse;
+procedure ResetMouse;
 
 
 implementation
@@ -25,17 +26,17 @@ uses DOS, Conv, Logger, VGA;
 var
   mouseInitialised: boolean;
 
-procedure loadCursor;
+procedure LoadCursor;
 begin
   loadBMP(cursor, 'CURSOR.BMP')
 end;
 
-procedure freeCursor;
+procedure FreeCursor;
 begin
   freeBMP(cursor)
 end;
 
-procedure initMouse;
+procedure InitMouse;
 var
   Regs: Registers;
 begin
@@ -44,17 +45,17 @@ begin
   regs.ax := 0;
   Intr($33, regs);
   if regs.ax = 0 then begin
-    writeLog('No mouse driver is found!');
+    WriteLog('No mouse driver is found!');
     readLn;
     halt
   end else
-    writeLog('Mouse initialised.');
+    WriteLog('Mouse initialised.');
 
   mouseInitialised := true
 end;
 
 
-procedure updateMouse;
+procedure UpdateMouse;
 var
   Regs: Registers;
 begin
@@ -66,19 +67,19 @@ begin
   mouseButton := regs.bx;
 end;
 
-procedure debugMouse;
+procedure DebugMouse;
 begin
   if not mouseInitialised then begin
-    print('Mouse has not been initialised!', 0, 0, 15);
+    Print('Mouse has not been initialised!', 0, 0, 15);
     exit
   end;
 
-  print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
-  print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
+  Print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
+  Print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
 end;
 
 
-procedure drawMouse;
+procedure DrawMouse;
 var
   Regs: Registers;
 begin
@@ -90,7 +91,7 @@ end;
   Must be called before initTextMode
   to prevent 20302 runtime error
 }
-procedure resetMouse;
+procedure ResetMouse;
 var
   Regs: Registers;
 begin
@@ -103,7 +104,7 @@ begin
   regs.ax := 0;
   intr($33, regs);
 
-  freeCursor;
+  FreeCursor;
   mouseInitialised := false
 end;
 
