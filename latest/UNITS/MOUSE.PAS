@@ -27,7 +27,7 @@ var
 
 procedure loadCursor;
 begin
-  loadBMP(cursor, 'CURSOR.BMP')
+  loadBMP(cursor, '.\CURSOR.BMP')
 end;
 
 procedure freeCursor;
