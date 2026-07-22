@@ -11,3 +11,7 @@ boilerplate/UNITS/
 
 # Turbo Pascal
 latest/TP/
+
+# Lazarus
+lib/
+*.lps

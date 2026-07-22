@@ -1,3 +1,4 @@
+program Game;
 
 uses
   CRT, DOS,
