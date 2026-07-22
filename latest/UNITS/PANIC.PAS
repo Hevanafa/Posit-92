@@ -14,7 +14,7 @@ uses Keyboard, Mouse, VGA;
 
 procedure panicHalt(const msg: string);
 begin
-  resetKeyHandler;
+  ResetKeyHandler;
   resetMouse;
   InitTextMode;
   writeLn(msg);

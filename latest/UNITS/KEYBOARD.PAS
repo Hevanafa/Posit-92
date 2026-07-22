@@ -11,14 +11,17 @@ unit Keyboard;
 
 interface
 
-procedure initKeyHandler;
-procedure resetKeyHandler;
+{ TODO: Include the DOS scancodes here }
+
+procedure InitKeyHandler;
+procedure ResetKeyHandler;
+
 {
   Scancode lists:
   https://www.freepascal.org/docs-html/rtl/keyboard/kbdscancode.html
   https://www.freebasic.net/wiki/GfxScancodes
 }
-function isKeyDown(scancode: byte): boolean;
+function IsKeyDown(const scancode: byte): boolean;
 
 
 implementation
@@ -50,7 +53,7 @@ begin
   Port[$20] := $20
 end;
 
-procedure initKeyHandler;
+procedure InitKeyHandler;
 begin
   if keyboardInitialised then exit;
   getIntVec($09, oldKeyHandler);
@@ -58,20 +61,20 @@ begin
   keyboardInitialised := true
 end;
 
-procedure resetKeyHandler;
+procedure ResetKeyHandler;
 begin
   if not keyboardInitialised then exit;
   setIntVec($09, oldKeyHandler);
   keyboardInitialised := false
 end;
 
-function isKeyDown(scancode: byte): boolean;
+function IsKeyDown(const scancode: byte): boolean;
 begin
   if not keyboardInitialised then begin
-    isKeyDown := false;
+    IsKeyDown := false;
     exit
   end;
-  isKeyDown := keys[scancode]
+  IsKeyDown := keys[scancode]
 end;
 
 end.

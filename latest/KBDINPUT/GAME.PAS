@@ -24,7 +24,7 @@ begin
   LoadFont;
   InitBuffer;
   InitDeltaTime;
-  initKeyHandler;
+  InitKeyHandler;
   initMouse;
 
   { TODO: Your init code here }
@@ -43,7 +43,7 @@ begin
 
   { TODO: Your update code here }
 
-  if isKeyDown(K_ESC) then done := true;
+  if IsKeyDown(K_ESC) then done := true;
   t:=t+dt
 end;
 
@@ -86,7 +86,7 @@ begin
   freeBMP(dosuEXE[1]);
 
   resetMouse;
-  resetKeyHandler;
+  ResetKeyHandler;
   FreeBuffer;
   CloseLogger;
   InitTextMode
