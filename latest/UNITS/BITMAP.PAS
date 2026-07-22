@@ -80,9 +80,9 @@ begin
   { output^.size := w * h; }
 
   if debug then begin
-    writeLog('Width:' + i32str(output^.width));
-    writeLog('Height:' + i32str(output^.height));
-    writeLog('Palette:' + i32str(output^.palsize));
+    WriteLog('Width:' + i32str(output^.width));
+    WriteLog('Height:' + i32str(output^.height));
+    WriteLog('Palette:' + i32str(output^.palsize));
   end;
 
   start := 54 + palsize * 4;
@@ -92,8 +92,8 @@ begin
     padding := 4 - w mod 4;
 
   if debug then begin
-    writeLog('Start:' + i32str(start));
-    writeLog('Padding:' + i32str(padding));
+    WriteLog('Start:' + i32str(start));
+    WriteLog('Padding:' + i32str(padding));
   end;
 
   for b := 0 to h-1 do begin
@@ -101,7 +101,7 @@ begin
     blockRead(f, buffer, w);
 
     if debug then
-      writeLog('Finished reading line ' + i32str(b));
+      WriteLog('Finished reading line ' + i32str(b));
 
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }
@@ -182,7 +182,7 @@ begin
   for i := 0 to 35 do begin
     sinLUT[i] := sin(i * 10 * Pi / 180);
     cosLUT[i] := cos(i * 10 * Pi / 180);
-    writeLog(i32str(i) + ' - ' + f32str(sinLUT[i]))
+    WriteLog(i32str(i) + ' - ' + f32str(sinLUT[i]))
   end;
 end;
 

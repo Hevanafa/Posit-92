@@ -48,11 +48,11 @@ begin
   regs.ax := 0;
   Intr($33, regs);
   if regs.ax = 0 then begin
-    writeLog('No mouse driver is found!');
+    WriteLog('No mouse driver is found!');
     readLn;
     halt
   end else
-    writeLog('Mouse initialised.');
+    WriteLog('Mouse initialised.');
 
   loadCursor;
   mouseInitialised := true

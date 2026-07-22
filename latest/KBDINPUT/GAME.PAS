@@ -17,8 +17,9 @@ var
 
 procedure INIT;
 begin
-  randomize;
-  initLogger;
+  Randomize;
+
+  InitLogger;
   initVGAMode;
   loadFont;
   initBuffer;
@@ -87,6 +88,6 @@ begin
   resetMouse;
   resetKeyHandler;
   freeBuffer;
-  closeLogger;
+  CloseLogger;
   initTextMode
 end.
