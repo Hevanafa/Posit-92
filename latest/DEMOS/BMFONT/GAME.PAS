@@ -1,49 +1,42 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Timing, VGA,
+  P92Core, Logger, Keyboard, Timing, VGA,
   Bitmap, Conv, FPS, BMFont;
 
-const
-  K_ESC = $01;
 var
   done: boolean;
   bootTime, t: double;
   font: PBMFont;
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initFPSCounter;
-
   { loadBMFont(font, 'COMMOD64.FNT'); }
   { loadBMFont(font, 'FR12.FNT'); }
-  loadBMFont(font, 'NOKIA.TXT');
-  
-  bootTime := getTimer;
+  loadBMFont(font, 'NOKIA.TXT')
 end;
 
+procedure OnReady; far;
+begin
+  bootTime := getTimer
+end;
 
-procedure update;
+procedure OnCleanup; far;
+begin
+  freeBMFont(font)
+end;
+
+procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  incrementFPS;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if isKeyDown(K_ESC) then done := true;
-
-  t := getTimer - bootTime;
+  t := getTimer - bootTime
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a, w: integer;
   s, scoreStr: string;
@@ -67,28 +60,20 @@ begin
   asmPrintBMFont(font, 'Top edge', 10, -8, 13);
   asmPrintBMFont(font, 'Right edge', 310, 10, 13);
   asmPrintBMFont(font, 'Bottom edge', 10, 192, 13);
-
-  drawFPS;
-  flush
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  freeBMFont(font);
-
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+

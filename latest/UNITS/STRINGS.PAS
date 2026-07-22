@@ -1,5 +1,9 @@
 unit Strings;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 function split(text, delim: string; var output: array of string): word;
