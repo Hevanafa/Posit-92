@@ -13,32 +13,35 @@ type
     data: array[0..0] of byte;
   end;
 
-procedure loadBMP(var output: PBitmap; const filename: string);
-procedure drawBMP(const image: PBitmap);
-procedure freeBMP(var image: PBitmap);
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
-procedure spr2(
+procedure LoadBMP(var output: PBitmap; const filename: string);
+procedure DrawBMP(const image: PBitmap);
+procedure FreeBMP(var image: PBitmap);
+procedure BitmapInfo(const image: PBitmap);
+
+procedure InitTrigLUT;
+
+procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure Spr2(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
   const transparencyKey: byte);
-procedure initTrigLUT;
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
-procedure sprPro2(
+procedure SprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
+procedure SprPro2(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double;
   const transparencyKey: byte);
+
 { procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte); }
-procedure sprProLUT(
+procedure SprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer;
   const transparencyKey: byte);
-procedure bitmapInfo(const image: PBitmap);
 
 
 implementation
@@ -51,7 +54,7 @@ var
   sinLUT, cosLUT: array[0..35] of double;
 
 { var makes it pass-by-reference }
-procedure loadBMP(var output: PBitmap; const filename: string);
+procedure LoadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -111,7 +114,7 @@ begin
   close(f)
 end;
 
-procedure drawBMP(const image: PBitmap);
+procedure DrawBMP(const image: PBitmap);
 var
   a, b: integer;
 begin
@@ -121,14 +124,28 @@ begin
     Pset(a, b, image^.data[a + b * image^.width]);
 end;
 
-procedure freeBMP(var image: PBitmap);
+procedure FreeBMP(var image: PBitmap);
 begin
   if image = nil then exit;
   freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1);
   image := nil  { avoids dangling pointer }
 end;
 
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure BitmapInfo(const image: PBitmap);
+begin
+  if image = nil then begin
+    Print('image is nil!', 10, 168, 15);
+    exit
+  end;
+
+  { Print('File name:' + name, 10, 160, 15); }
+  Print('Width: ' + i32str(image^.width), 10, 168, 15);
+  Print('Height: ' + i32str(image^.height), 10, 176, 15);
+  Print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+end;
+
+
+procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
@@ -142,7 +159,7 @@ begin
   end;
 end;
 
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin
@@ -155,8 +172,8 @@ begin
   end;
 end;
 
-{ Improved version of spr with partial sprite drawing }
-procedure spr2(
+{ Improved version of Spr with partial sprite drawing }
+procedure Spr2(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
@@ -174,7 +191,7 @@ begin
   end;
 end;
 
-procedure initTrigLUT;
+procedure InitTrigLUT;
 var
   i: integer;
 begin
@@ -186,7 +203,7 @@ begin
   end;
 end;
 
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
+procedure SprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -229,7 +246,7 @@ end;
 
 
 { Laggy }
-procedure sprPro2(
+procedure SprPro2(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY:
@@ -281,7 +298,7 @@ begin
 end;
 
 { Laggy despite with lookup tables }
-procedure sprProLUT(
+procedure SprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -324,19 +341,6 @@ begin
         Pset(x+ix, y+iy, colour);
     end;
   end;
-end;
-
-procedure bitmapInfo(const image: PBitmap);
-begin
-  if image = nil then begin
-    Print('image is nil!', 10, 168, 15);
-    exit
-  end;
-
-  { Print('File name:' + name, 10, 160, 15); }
-  Print('Width: ' + i32str(image^.width), 10, 168, 15);
-  Print('Height: ' + i32str(image^.height), 10, 176, 15);
-  Print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
 end;
 
 

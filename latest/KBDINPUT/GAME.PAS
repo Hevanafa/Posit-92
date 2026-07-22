@@ -30,8 +30,8 @@ begin
 
   { TODO: Your Init code here }
 
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 
@@ -58,9 +58,9 @@ begin
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76, 13)
+    Spr(dosuEXE[0], 148, 76, 13)
   else
-    spr(dosuEXE[1], 148, 76, 13);
+    Spr(dosuEXE[1], 148, 76, 13);
 
   Print('Hello world!', 160-48, 120, 15);
 
@@ -83,8 +83,8 @@ begin
   until done;
 
   { Cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 
   ResetMouse;
   ResetKeyHandler;
