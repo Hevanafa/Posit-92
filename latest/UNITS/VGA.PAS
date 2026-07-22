@@ -43,7 +43,7 @@ const
   bufferSize = 64000;
 var
   a, b: integer;
-  font8x8: array[0..127, 0..7] of byte;
+  font8x8: array[0..255, 0..7] of byte;
   bufferInitialised: boolean;
 
 
@@ -228,7 +228,8 @@ end;
 
 procedure flush;
 begin
-  asmFlush
+  pascalFlush;
+  { asmFlush }
 end;
 
 
