@@ -13,13 +13,13 @@ var
   mouseX, mouseY: word;
   mouseButton: byte;
 
-procedure loadCursor;
-procedure freeCursor;
-procedure initMouse;
-procedure updateMouse;
-procedure debugMouse;
-procedure drawMouse;
-procedure resetMouse;
+procedure LoadCursor;
+procedure FreeCursor;
+procedure InitMouse;
+procedure UpdateMouse;
+procedure DebugMouse;
+procedure DrawMouse;
+procedure ResetMouse;
 
 
 implementation
@@ -29,17 +29,17 @@ uses DOS, Conv, Logger, VGA;
 var
   mouseInitialised: boolean;
 
-procedure loadCursor;
+procedure LoadCursor;
 begin
   loadBMP(cursor, 'CURSOR.BMP')
 end;
 
-procedure freeCursor;
+procedure FreeCursor;
 begin
   freeBMP(cursor)
 end;
 
-procedure initMouse;
+procedure InitMouse;
 var
   Regs: Registers;
 begin
@@ -54,12 +54,12 @@ begin
   end else
     WriteLog('Mouse initialised.');
 
-  loadCursor;
+  LoadCursor;
   mouseInitialised := true
 end;
 
 
-procedure updateMouse;
+procedure UpdateMouse;
 var
   Regs: Registers;
 begin
@@ -71,7 +71,7 @@ begin
   mouseButton := regs.bx;
 end;
 
-procedure debugMouse;
+procedure DebugMouse;
 begin
   if not mouseInitialised then begin
     Print('Mouse has not been initialised!', 0, 0, 15);
@@ -83,7 +83,7 @@ begin
 end;
 
 
-procedure drawMouse;
+procedure DrawMouse;
 var
   Regs: Registers;
 begin
@@ -95,7 +95,7 @@ end;
   Must be called before initTextMode
   to prevent 20302 runtime error
 }
-procedure resetMouse;
+procedure ResetMouse;
 var
   Regs: Registers;
 begin
@@ -108,7 +108,7 @@ begin
   regs.ax := 0;
   intr($33, regs);
 
-  freeCursor;
+  FreeCursor;
   mouseInitialised := false
 end;
 

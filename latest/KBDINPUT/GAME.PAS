@@ -25,7 +25,7 @@ begin
   InitBuffer;
   InitDeltaTime;
   InitKeyHandler;
-  initMouse;
+  InitMouse;
 
   { TODO: Your init code here }
 
@@ -39,7 +39,7 @@ var
   a: integer;
 begin
   UpdateDeltaTime;
-  updateMouse;
+  UpdateMouse;
 
   { TODO: Your update code here }
 
@@ -63,7 +63,7 @@ begin
 
   Print('Hello world!', 160-48, 120, 15);
 
-  drawMouse;
+  DrawMouse;
 
   Flush
 end;
@@ -85,7 +85,7 @@ begin
   freeBMP(dosuEXE[0]);
   freeBMP(dosuEXE[1]);
 
-  resetMouse;
+  ResetMouse;
   ResetKeyHandler;
   FreeBuffer;
   CloseLogger;
