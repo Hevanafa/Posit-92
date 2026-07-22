@@ -1,14 +1,10 @@
 unit Logger;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
-procedure InitLogger;
-procedure WriteLog(const msg: string);
-procedure CloseLogger;
+procedure initLogger;
+procedure writeLog(const msg: string);
+procedure closeLogger;
 
 
 implementation
@@ -19,7 +15,7 @@ var
   logFile: Text;
   logOpened: boolean;
 
-procedure InitLogger;
+procedure initLogger;
 begin
   assign(logFile, 'LOG.TXT');
   {$I-}
@@ -33,14 +29,14 @@ begin
   end;
 end;
 
-procedure WriteLog(const msg: string);
+procedure writeLog(const msg: string);
 begin
   if not logOpened then exit;
   writeLn(logFile, msg);
   flush(logFile)
 end;
 
-procedure CloseLogger;
+procedure closeLogger;
 begin
   if logOpened then
     close(logFile);

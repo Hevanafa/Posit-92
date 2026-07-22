@@ -1,9 +1,5 @@
 unit VGA;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
 type
@@ -13,23 +9,35 @@ type
 var
   surface: PByteArray;
 
-procedure InitVGAMode;
-procedure InitTextMode;
+procedure initVGAMode;
+procedure initTextMode;
+{ This loads the 8x8 font }
+procedure loadFont;
 
-procedure LoadFont;
+procedure initBuffer;
+procedure freeBuffer;
 
-procedure Cls(const colour: byte);
-procedure Print(const text: string; const x, y: integer; const colour: byte);
-procedure Pset(const x, y: word; const colour: byte);
-procedure PsetLegacy(const x, y: word; const colour: byte);
-procedure Flush;
+procedure cls(const colour: byte);
+procedure pascalCls(const colour: byte);
+procedure asmCls(const colour: byte);
 
-procedure InitBuffer;
-procedure FreeBuffer;
+{ calls asmPrint internally }
+procedure print(const text: string; const x, y: integer; const colour: byte);
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
+procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+
+procedure pset(const x, y: integer; const colour: byte);
+procedure pascalPset(const x, y: integer; const colour: byte);
+procedure asmPset(const x, y: integer; const colour: byte);
+
+procedure flush;
+procedure pascalFlush;
+procedure asmFlush;
+
 
 implementation
 
-uses dos;
+uses DOS, Panic;
 
 const
   bufferSize = 64000;
@@ -39,20 +47,20 @@ var
   bufferInitialised: boolean;
 
 
-procedure InitVGAMode; assembler;
+procedure initVGAMode; assembler;
 asm
   mov ax, 0013h
   int 10h
 end;
 
-procedure InitTextMode; assembler;
+procedure initTextMode; assembler;
 asm
   mov ax, 0003h
   int 10h
 end;
 
 { Load 8x8 font }
-procedure LoadFont;
+procedure loadFont;
 var
   Regs: Registers;
 begin
@@ -67,13 +75,36 @@ begin
 end;
 
 
-procedure Cls(const colour: byte);
+procedure cls(const colour: byte);
+begin
+  asmCls(colour)
+end;
+
+
+procedure pascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
   fillChar(surface^, bufferSize, colour)
 end;
 
-procedure Print(const text: string; const x, y: integer; const colour: byte);
+procedure asmCls(const colour: byte); assembler;
+asm
+  push es
+  les di, surface  { Set ES:DI to surface pointer }
+  cld  { Make sure DI move forward }
+  mov al, colour
+  mov ah, colour
+  mov cx, 32000
+  rep stosw
+  pop es
+end;
+
+procedure print(const text: string; const x, y: integer; const colour: byte);
+begin
+  asmPrint(text, x, y, colour)
+end;
+
+procedure pascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -86,29 +117,96 @@ begin
       mask := font8x8[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
-          Pset((idx-1) * 8 + x + col, y + row, colour);
+          asmPset((idx-1) * 8 + x + col, y + row, colour);
           { pos := (y+row) * 320 + (idx-1)*8 + (x+col);
           surface^[pos] := colour; }
-          { PsetLegacy((idx-1) * 8 + x + col, y + row, colour); }
+          { pset((idx-1) * 8 + x + col, y + row, colour); }
           end;
     end;
   end;
 end;
 
 
-procedure PsetLegacy(const x, y: word; const colour: byte);
+procedure asmPrint(const text: string; const x, y: integer; const colour: byte);
+var
+  row, col, idx: integer;
+  offset: integer;
+  
+  mask: byte;
+  ch: char;
+begin
+  for idx := 1 to length(text) do begin
+    ch := text[idx];
+
+    for row := 0 to 7 do begin
+      mask := font8x8[ord(ch), row];
+      
+      for col := 0 to 7 do
+        if (mask and (1 shl (7 - col))) <> 0 then
+asm
+{ asmPset }
+  cmp x, 0
+  jl @skip_pixel
+  cmp x, 320
+  jge @skip_pixel
+  cmp y, 0
+  jl @skip_pixel
+  cmp y, 200
+  jge @skip_pixel
+
+  { Calculate pixel offset }
+  { y + row }
+  mov ax, y
+  add ax, row
+  mov bx, 320
+  mul bx
+  mov cx, ax
+
+  { (idx-1) * 8 + x + col }
+  xor ax, ax  { does the same as `mov ax, 0` }
+  add ax, idx
+  dec ax
+  mov bx, 8
+  mul bx
+  add ax, x
+  add ax, col
+  add ax, cx
+
+  mov bx, ax
+  les di, surface
+  mov al, colour
+  mov es:[di+bx], al
+
+@skip_pixel:
+end;
+    end;
+  end;
+end;
+
+
+procedure pset(const x, y: integer; const colour: byte);
+begin
+  asmPset(x, y, colour)
+end;
+
+procedure pascalPset(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
   surface^[y * 320 + x] := colour;
 end;
 
-procedure Pset(const x, y: word; const colour: byte); assembler;
+procedure asmPset(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
-  cmp x, 320
-  jae @@done
+  cmp y, 0
+  jl @skip
   cmp y, 200
-  jae @@done
+  jge @skip
+
+  cmp x, 0
+  jl @skip
+  cmp x, 320
+  jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -124,9 +222,20 @@ asm
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
-@@done:
+@skip:
 end;
 
+
+procedure flush;
+begin
+  asmFlush
+end;
+
+
+procedure pascalFlush;
+begin
+  Move(surface^, Mem[$A000:0], 64000)
+end;
 
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
@@ -136,32 +245,30 @@ end;
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
-procedure Flush;
-begin
-  asm
-    push ds
-    push es
+procedure asmFlush; assembler;
+asm
+  push ds
+  push es
 
-    lds si, surface { Load DS:SI with source pointer }
-    mov ax, $a000
-    mov es, ax      { Set ES to VGA segment }
-    xor di, di      { DI = 0 (Destination offset) }
+  lds si, surface { Load DS:SI with source pointer }
+  mov ax, $a000
+  mov es, ax      { Set ES to VGA segment }
+  xor di, di      { DI = 0 (Destination offset) }
 
-    mov cx, 32000   { 64000 bytes / 2 = 32000 words }
-    rep movsw       { Copy CX words from DS:SI to ES:DI }
+  mov cx, 32000   { 64000 bytes / 2 = 32000 words }
+  rep movsw       { Copy CX words from DS:SI to ES:DI }
 
-    pop es
-    pop ds
-  end;
+  pop es
+  pop ds
 end;
 
-procedure InitBuffer;
+procedure initBuffer;
 begin
   if not bufferInitialised then
     getMem(surface, bufferSize);
 end;
 
-procedure FreeBuffer;
+procedure freeBuffer;
 begin
   if bufferInitialised then begin
     freeMem(surface, bufferSize);

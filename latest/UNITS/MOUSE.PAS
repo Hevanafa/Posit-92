@@ -1,9 +1,5 @@
 unit Mouse;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
 uses Bitmap;
@@ -13,13 +9,13 @@ var
   mouseX, mouseY: word;
   mouseButton: byte;
 
-procedure LoadCursor;
-procedure FreeCursor;
-procedure InitMouse;
-procedure UpdateMouse;
-procedure DebugMouse;
-procedure DrawMouse;
-procedure ResetMouse;
+procedure loadCursor;
+procedure freeCursor;
+procedure initMouse;
+procedure updateMouse;
+procedure debugMouse;
+procedure drawMouse;
+procedure resetMouse;
 
 
 implementation
@@ -29,17 +25,17 @@ uses DOS, Conv, Logger, VGA;
 var
   mouseInitialised: boolean;
 
-procedure LoadCursor;
+procedure loadCursor;
 begin
-  LoadBMP(cursor, 'CURSOR.BMP')
+  loadBMP(cursor, 'CURSOR.BMP')
 end;
 
-procedure FreeCursor;
+procedure freeCursor;
 begin
-  FreeBMP(cursor)
+  freeBMP(cursor)
 end;
 
-procedure InitMouse;
+procedure initMouse;
 var
   Regs: Registers;
 begin
@@ -48,18 +44,18 @@ begin
   regs.ax := 0;
   Intr($33, regs);
   if regs.ax = 0 then begin
-    WriteLog('No mouse driver is found!');
+    writeLog('No mouse driver is found!');
     readLn;
     halt
   end else
-    WriteLog('Mouse initialised.');
+    writeLog('Mouse initialised.');
 
-  LoadCursor;
+  loadCursor;
   mouseInitialised := true
 end;
 
 
-procedure UpdateMouse;
+procedure updateMouse;
 var
   Regs: Registers;
 begin
@@ -71,31 +67,31 @@ begin
   mouseButton := regs.bx;
 end;
 
-procedure DebugMouse;
+procedure debugMouse;
 begin
   if not mouseInitialised then begin
-    Print('Mouse has not been initialised!', 0, 0, 15);
+    print('Mouse has not been initialised!', 0, 0, 15);
     exit
   end;
 
-  Print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
-  Print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
+  print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
+  print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
 end;
 
 
-procedure DrawMouse;
+procedure drawMouse;
 var
   Regs: Registers;
 begin
   if not mouseInitialised then exit;
-  Spr(cursor, mouseX, mouseY, 13);
+  spr(cursor, mouseX, mouseY, 13);
 end;
 
 {
   Must be called before initTextMode
   to prevent 20302 runtime error
 }
-procedure ResetMouse;
+procedure resetMouse;
 var
   Regs: Registers;
 begin
@@ -108,7 +104,7 @@ begin
   regs.ax := 0;
   intr($33, regs);
 
-  FreeCursor;
+  freeCursor;
   mouseInitialised := false
 end;
 

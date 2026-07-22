@@ -1,19 +1,20 @@
 unit Maths;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
 function min(const a, b: double): double;
 function max(const a, b: double): double;
 function deg2rad(const deg: double): double;
 function rad2deg(const rad: double): double;
+function i32power(const i, exp: longint): longint;
+function floor(const value: double): integer;
+function ceil(const value: double): integer;
+
 
 implementation
 
-{ TODO: Use this in rectfill and rectfillDither instead of pset }
+uses Panic;
+
 function min(const a, b: double): double;
 begin
   if a<=b then min:=a
@@ -34,6 +35,33 @@ end;
 function rad2deg(const rad: double): double;
 begin
   rad2deg := rad * 180 / pi
+end;
+
+function i32power(const i, exp: longint): longint;
+var
+  a, result: longint;
+begin
+  if exp < 0 then panicHalt('i32power: Negative exp isn''t supported!');
+  if exp = 0 then begin i32power := 1; exit end;
+  if exp = 1 then begin i32power := i; exit end;
+
+  result := i;
+  for a := 2 to exp do
+    result := result * i;
+  i32power := result
+end;
+
+function floor(const value: double): integer;
+begin
+  floor := trunc(value)
+end;
+
+function ceil(const value: double): integer;
+begin
+  if trunc(value) = value then
+    ceil := trunc(value)
+  else
+    ceil := trunc(value + 1);
 end;
 
 end.

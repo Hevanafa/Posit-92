@@ -1,31 +1,26 @@
 unit Timing;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
+
+{ Edit (19-05-2025): BIOS has the absolute ticks since the last boot }
+var
+  dt, newTime, lastTime: double; { in seconds }
+  { deltaMS, lastMS: longint; }
 
 function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
 procedure Limit(const fps: integer);
-
-procedure InitDeltaTime;
-procedure UpdateDeltaTime;
-
-function DeltaTime: double;
-
+procedure initDeltaTime;
+procedure updateDeltaTime;
 
 implementation
 
-uses CRT, DOS;
+uses crt, dos;
 
-{ Edit (19-05-2025): BIOS has the absolute ticks since the last boot }
 var
-  dt, newTime, lastTime: double; { in seconds }
-  { deltaMS, lastMS: longint; }
+  nextGameTick: double; { Used in `Limit()` }
 
 { Ticks since the last boot }
 function GetTicks: Longint;
@@ -69,11 +64,16 @@ end;
 
 { Similar to QB64's _LIMIT }
 procedure Limit(const fps: integer);
+var
+  startTick: double;
 begin
-  delay(1000 div fps)
+  { delay(1000 div fps) }
+  startTick := getTimer;
+  nextGameTick := startTick + 1.0 / fps;
+  while getTimer < nextGameTick do ;
 end;
 
-procedure InitDeltaTime;
+procedure initDeltaTime;
 begin
   dt := 0;
   lastTime := getTimer;
@@ -82,7 +82,7 @@ begin
   lastMS := timerMS; }
 end;
 
-procedure UpdateDeltaTime;
+procedure updateDeltaTime;
 begin
   { Call getTimer only once to prevent desync }
   newTime := getTimer;
@@ -95,11 +95,6 @@ begin
     deltaMS := TimerMS - lastMS;
     lastMS := TimerMS;
   end; }
-end;
-
-function DeltaTime: double;
-begin
-  DeltaTime := dt
 end;
 
 

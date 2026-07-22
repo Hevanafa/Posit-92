@@ -1,9 +1,5 @@
 unit Panic;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
 procedure panicHalt(const msg: string);
@@ -14,9 +10,9 @@ uses Keyboard, Mouse, VGA;
 
 procedure panicHalt(const msg: string);
 begin
-  ResetKeyHandler;
-  ResetMouse;
-  InitTextMode;
+  resetKeyHandler;
+  resetMouse;
+  initTextMode;
   writeLn(msg);
   halt(1)
 end;

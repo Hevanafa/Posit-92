@@ -1,9 +1,5 @@
 unit FPS;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 interface
 
 procedure initFPSCounter;
@@ -13,7 +9,13 @@ procedure drawFPS;
 
 implementation
 
-uses Timing, Conv, VGA;
+uses
+{$IFDEF MODEX}
+  ModeX,
+{$ELSE}
+  VGA,
+{$ENDIF}
+  Timing, Conv;
 
 var
   nowFPS, lastFPS: integer;
