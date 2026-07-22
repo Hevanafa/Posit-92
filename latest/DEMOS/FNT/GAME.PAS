@@ -5,69 +5,51 @@
 
 uses
   CRT, DOS,
-  MSFNT, FPS, Logger, Timing, VGA;
+  P92Core, MSFNT, Keyboard, VGA;
 
 var
-  done: boolean;
   font: PMSFont;
-  w: word;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-
-  randomize;
-  initFPSCounter;
   { loadMSFont(font, 'FONTS\8514OEM.FNT'); }
   loadMSFont(font, 'FONTS\VGASYS.FNT');
 end;
 
-
-procedure update;
+procedure OnCleanup; far;
 begin
-  updateDeltaTime;
-  incrementFPS;
-
-  if keyPressed then if readKey = #27 then done := true;
-end;
-
-
-procedure draw;
-begin
-  asmCls($7D);
-
-  printMSFont(font, 'Hello world with System font!', 160 - (w div 2), 120, 15);
-  drawFPS;
-
-  asmFlush
-end;
-
-begin
-  {
-  loadMSFont(testFont, '8514OEM.FNT');
-  testMSFontDisplay(testFont, 'A');
-  readLn;
-  exit;
-  }
-
-  INIT;
-  done := false;
-
-  w := measureMSFont(font, 'Hello world with System font!');
-
-  repeat
-    update;
-    draw
-  until done;
-
   freeMSFont(font);
+end;
 
-  freeBuffer;
-  closeLogger;
-  initTextMode
+procedure Update; far;
+begin
+  if isKeyDown(SC_ESCAPE) then SignalDone;
+end;
+
+
+procedure Draw; far;
+var
+  s: string;
+  w: word;
+begin
+  Cls($7D);
+
+  s := 'Hello world with System font!';
+  w := measureMSFont(font, s);
+  printMSFont(font, s, 160 - (w div 2), 120, 15);
+end;
+
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
 end.
+

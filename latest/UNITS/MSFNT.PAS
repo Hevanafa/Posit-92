@@ -109,6 +109,7 @@ begin
 {$ENDIF}
 
   for charIndex := output^.header.firstChar to output^.header.lastChar do begin
+  { for charIndex := output^.header.firstChar to output^.header.firstChar + 9 do begin }
     seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - output^.header.firstChar) * 4);
     blockRead(fntFile, bitsWidth, 2);
     blockRead(fntFile, charOffset, 2);
