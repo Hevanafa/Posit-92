@@ -2,12 +2,9 @@
 
 uses
   CRT, DOS,
-  Bitmap, Conv, FPS, Graphics, Logger,
+  P92Core, Bitmap, Conv, FPS, Graphics, Logger,
   Keyboard, Mouse, Timing, VGA;
 
-const
-  SC_ESC = $01;
-  
 type
   TPoint = record
     x, y: byte;
@@ -22,37 +19,26 @@ type
   end;
 
 var
-  done: boolean;
   t: double;
   nextParticleTick: double;
   stars: array[0..29] of TPoint;
   particles: array[0..399] of TParticle;
 
 
-procedure INIT;
+procedure OnReady; far;
 var
-  a: word;
+  a: integer;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  
-  initFPSCounter;
-  
-  randomize;
+  t := 0.0;
 
+  nextParticleTick := getTimer + 0.5;
   for a:=0 to high(stars) do begin
     stars[a].x := 20 + random(280);
     stars[a].y := 20 + random(160);
   end;
 end;
 
-
-procedure explode(const cx, cy: double);
+procedure Explode(const cx, cy: double);
 var
   a, i, count: word;
   colour: byte;
@@ -99,16 +85,11 @@ begin
   end;
 end;
 
-procedure update;
+procedure Update; far;
 var
   a, i: word;
   now: double;
 begin
-  updateDeltaTime;
-  updateMouse;
-  
-  incrementFPS;
-  
   now := getTimer;
   for a:=0 to high(particles) do begin
     if not particles[a].alive then continue;
@@ -137,18 +118,18 @@ begin
   
   if now >= nextParticleTick then begin
     nextParticleTick := now + 0.5;
-    explode(20 + random(280), 20 + random(160));
+    Explode(20 + random(280), 20 + random(160));
   end;
   
-  { TODO: Implement mouse input }
+  { TODO: Implement mouse input to Explode more particles }
 
-  if isKeyDown(SC_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
   
-  t:=t+dt
+  t:=t+DeltaTime;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a, i: word;
   aliveCount: word;
@@ -190,27 +171,18 @@ begin
   asmPrint('nextParticleTick: ' + f32str(nextParticleTick), 0, 0, 7);
   asmPrint('Alive: ' + i32str(aliveCount), 0, 8, 7);
   }
-  
-  drawMouse;
-  drawFPS;
-  asmFlush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
-  nextParticleTick := getTimer + 0.5;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-    { limit(70); }
-  until done;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
