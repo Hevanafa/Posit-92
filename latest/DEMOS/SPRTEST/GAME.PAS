@@ -1,31 +1,27 @@
 
 uses
   CRT, DOS,
-  Bitmap, Conv, Graphics, Logger, Mouse, Timing, VGA;
+  P92Core, Bitmap, Conv, Graphics, Logger, Mouse, Timing, VGA;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
+
+  { Game state variables }
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initMouse;
-
-  { TODO: Your init code here }
-
-  randomize;
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+end;
+
+
+procedure OnCleanup; far;
+begin
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
 end;
 
 
@@ -33,8 +29,7 @@ var
   a, x, y: integer;
   startTime: double;
 begin
-  INIT;
-  done := false;
+  OnPreload;
 
   cls($7D);
   startTime := getTimer;
@@ -77,13 +72,4 @@ begin
 
   flush;
   readLn;
-
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
 end.
