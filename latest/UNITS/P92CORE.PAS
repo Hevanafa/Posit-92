@@ -47,6 +47,8 @@ begin
 end;
 
 procedure P92Start(const config: TP92AppConfig);
+var
+  done: boolean;
 begin
   Randomize;
 
@@ -64,7 +66,12 @@ begin
   if @config.OnReady <> nil then
     config.OnReady;
 
-  { TODO: Move the game loop here }
+  done := false;
+
+  repeat
+    config.Update;
+    config.Draw;
+  until done;
 
   if @config.OnCleanup <> nil then
     config.OnCleanup;

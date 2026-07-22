@@ -11,30 +11,29 @@ var
   DosuEXE: array[0..1] of PBitmap;
 
   { Game state variables }
-  done: boolean;
   t: double;
 
 
-procedure OnPreload;
+procedure OnPreload; far;
 begin
   LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
-procedure OnReady;
+procedure OnReady; far;
 begin
   { Init game state here }
   t := 0.0;
 end;
 
-procedure OnCleanup;
+procedure OnCleanup; far;
 begin
   { Free all the resources here }
   FreeBMP(dosuEXE[0]);
   FreeBMP(dosuEXE[1]);
 end;
 
-procedure Update;
+procedure Update; far;
 var
   a: integer;
 begin
@@ -47,7 +46,7 @@ begin
   t:=t+dt
 end;
 
-procedure Draw;
+procedure Draw; far;
 var
   a: integer;
 begin
@@ -76,14 +75,10 @@ begin
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
   @appConfig.OnCleanup := @OnCleanup;
 
-  P92Start(appConfig);
-
-  done := false;
-
-  repeat
-    Update;
-    Draw;
-  until done;
+  P92Start(appConfig)
 end.
+
