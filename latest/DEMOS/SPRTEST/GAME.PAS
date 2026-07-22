@@ -57,6 +57,8 @@ begin
   { fastSpr5(dosuEXE[0], 100, 50, 13);
   fastSpr5(dosuEXE[0], 150, 50, 13); }
 
+  {fastSpr6(dosuEXE[0], 150, 50, 13);}
+
   {
   spr(dosuEXE[0], 150, 50, 13);
   }
