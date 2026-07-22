@@ -28,7 +28,7 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, Timing, Keyboard, Mouse, VGA;
+  FPS, Logger, Timing, Keyboard, Mouse, VGA;
 
 var
   done: boolean;
@@ -51,13 +51,15 @@ procedure P92Init;
 begin
   Randomize;
 
-  InitLogger;
-  InitVGAMode;
-  LoadFont;
-  InitBuffer;
-  InitDeltaTime;
-  InitKeyHandler;
-  InitMouse;
+  initLogger;
+  initVGAMode;
+  loadFont;
+  initBuffer;
+  initDeltaTime;
+  initKeyHandler;
+  initMouse;
+
+  initFPSCounter;
 end;
 
 procedure P92Cleanup;
@@ -73,6 +75,7 @@ procedure P92Update;
 begin
   UpdateDeltaTime;
   UpdateMouse;
+  incrementFPS;
 end;
 
 procedure P92Draw;
@@ -82,6 +85,8 @@ end;
 
 procedure P92AfterDraw;
 begin
+  drawFPS;
+
   Flush
 end;
 

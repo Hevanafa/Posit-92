@@ -2,55 +2,41 @@
 
 uses
   CRT, DOS,
+  P92Core,
   Bitmap, FPS, Logger, Keyboard, Mouse, Timing, VGA;
 
-const
-  SC_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
+  { Game state variables }
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
-  { TODO: Your init code here }
-
-  randomize;
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
-
-procedure update;
+procedure OnReady; far;
 begin
-  updateDeltaTime;
-  updateMouse;
-  { incrementFPS; }
+  t := 0.0;
+end;
 
-  { TODO: Your update code here }
+procedure Update; far;
+begin
+  { Handle inputs here }
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if isKeyDown(SC_ESC) then done := true;
+  { Handle game logic here }
   
-  t:=t+dt
+  t := t + DeltaTime
 end;
 
 
-procedure draw;
+procedure Draw; far;
 begin
-  cls($7D);
-
-  { TODO: Your drawing code here }
+  Cls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
     spr(dosuEXE[0], 148, 76, 13)
@@ -59,9 +45,6 @@ begin
 
   print('Hello world!', 160-48, 120, 15);
   drawMouse;
-  drawFPS;
-
-  flush
 end;
 
 
@@ -84,12 +67,12 @@ begin
 
     if now >= nextUpdateTick then begin
       nextUpdateTick := now + 1.0 / 20.0;
-      update
+      Update
     end;
 
     if now >= nextDrawTick then begin
       nextDrawTick := now + 1.0 / 60.0;
-      draw
+      Draw
     end;
   until done;
 
