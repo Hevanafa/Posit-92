@@ -7,20 +7,25 @@ uses
   Bitmap;
 
 var
+  { Asset variables }
+  DosuEXE: array[0..1] of PBitmap;
+
   { Game state variables }
   done: boolean;
   t: double;
-  DosuEXE: array[0..1] of PBitmap;
 
 
 procedure OnPreload;
 begin
-  { TODO: Your OnPreload code here }
-
   LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
+procedure OnReady;
+begin
+  { Init game state here }
+  t := 0.0;
+end;
 
 procedure Update;
 var
@@ -65,6 +70,7 @@ begin
   DefaultP92AppConfig(appConfig);
 
   @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
 
   P92Start(appConfig);
 
