@@ -7,13 +7,15 @@ unit P92Core;
 interface
 
 type
+  TP92Callback = procedure;
+
   TP92AppConfig = record
     { Callbacks }
-    OnPreload: procedure;
-    OnReady: procedure;
-    Update: procedure;
-    Draw: procedure;
-    OnCleanup: procedure;
+    OnPreload: TP92Callback;
+    OnReady: TP92Callback;
+    Update: TP92Callback;
+    Draw: TP92Callback;
+    OnCleanup: TP92Callback;
   end;
 
 
@@ -23,7 +25,19 @@ procedure P92Start(const config: TP92AppConfig);
 
 implementation
 
-procedure P92Start;
+uses
+  Logger, VGA;
+
+procedure DefaultP92AppConfig(var config: TP92AppConfig);
+begin
+  @config.OnPreload := nil;
+  @config.OnReady := nil;
+  @config.Update := nil;
+  @config.Draw := nil;
+  @config.OnCleanup := nil;
+end;
+
+procedure P92Start(const config: TP92AppConfig);
 begin
   Randomize;
 
@@ -35,23 +49,13 @@ begin
   InitKeyHandler;
   InitMouse;
 
-  OnPreload;
+  if @config.OnPreload <> nil then
+    config.OnPreload;
+
+  { TODO: OnReady }
+  { TODO: Move the game loop here }
+  { TODO: OnCleanup}
 end;
-
-function DefaultP92AppConfig: TP92AppConfig;
-var
-  result: TP92AppConfig;
-begin
-  with result do begin
-    OnPreload := nil;
-  end;
-end;
-
-procedure P92Start(config: TP92AppConfig);
-begin
-
-end;
-
 
 
 end.
