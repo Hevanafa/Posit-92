@@ -9,23 +9,24 @@ uses
 var
   done: boolean;
 
-procedure INIT;
+procedure Init;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initMouse;
+  Randomize;
+
+  InitLogger;
+  InitVGAMode;
+  LoadFont;
+  InitBuffer;
+  InitMouse;
 end;
 
 
-procedure update;
+procedure Update;
 var
   a: integer;
   ch: char;
 begin
-  updateMouse;
+  UpdateMouse;
   
   if keyPressed then begin
     ch := readKey;
@@ -34,7 +35,7 @@ begin
 end;
 
 
-procedure draw;
+procedure Draw;
 var
   a: integer;
 begin
@@ -45,22 +46,23 @@ begin
   print('y: ' + i32str(mouseY), 32, 40, 15);
   print('Button: ' + i32str(mouseButton), 32, 56, 15);
   
-  drawMouse;
-  flush
+  DrawMouse;
+
+  Flush
 end;
 
 
 begin
-  INIT;
+  Init;
   done := false;
 
   repeat
-    update;
-    draw;
+    Update;
+    Draw;
   until done;
 
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  ResetMouse;
+  FreeBuffer;
+  CloseLogger;
+  InitTextMode
 end.
