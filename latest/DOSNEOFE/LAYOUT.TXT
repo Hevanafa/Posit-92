@@ -1,0 +1,20 @@
+##########
+# ASCII  #
+#  ART   #  OS: DOSBox-X
+##########  Uptime: 1 hour, 20 miins
+##########  Computer Model: 8086
+##########  Memory: 15MB extended
+##########  Graphics adapter: SVGA
+##########  AdLib: Yes
+##########  SoundBlaster: Yes
+##########  Online drives: C, Z
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+            [ Colour array 1 ]
+            [ Colour array 2 ]
+          

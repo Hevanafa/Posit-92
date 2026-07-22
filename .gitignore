@@ -1,5 +1,3 @@
-latest/
-
 # Debugging stuff
 backup/
 *.BAK
@@ -10,3 +8,6 @@ LOG.TXT
 *.EXE
 *.TPU
 boilerplate/UNITS/
+
+# Turbo Pascal
+latest/TP/

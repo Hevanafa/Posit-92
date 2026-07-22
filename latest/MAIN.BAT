@@ -1,0 +1,3 @@
+@echo off
+cd POSIT-92
+C:\TP\BIN\TPX.EXE GAME2.PAS
