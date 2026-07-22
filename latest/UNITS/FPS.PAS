@@ -1,5 +1,9 @@
 unit FPS;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 procedure initFPSCounter;

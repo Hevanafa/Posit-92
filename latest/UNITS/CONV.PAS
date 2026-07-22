@@ -1,5 +1,9 @@
 { Common conversion utility unit }
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 unit Conv;
 
 interface

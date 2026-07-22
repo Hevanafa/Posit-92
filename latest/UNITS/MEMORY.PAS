@@ -1,5 +1,9 @@
 unit Memory;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 function getHeapSize: longint;

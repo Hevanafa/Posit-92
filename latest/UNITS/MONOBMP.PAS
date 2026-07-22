@@ -1,5 +1,9 @@
 { 1-bit BMP support }
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 unit MonoBMP;
 
 interface

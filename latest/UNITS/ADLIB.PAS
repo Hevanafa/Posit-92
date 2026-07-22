@@ -1,5 +1,9 @@
 unit Adlib;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

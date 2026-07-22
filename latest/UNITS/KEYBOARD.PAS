@@ -3,6 +3,10 @@
   DOSBox's default settings
 }
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 unit Keyboard;
 
 interface

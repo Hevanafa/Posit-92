@@ -1,5 +1,9 @@
 unit BMFont;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 uses Bitmap;

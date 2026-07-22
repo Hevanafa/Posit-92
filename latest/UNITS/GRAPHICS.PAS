@@ -1,4 +1,8 @@
-{ Primitives }
+{ Graphics primitives }
+
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
 
 unit Graphics;
 

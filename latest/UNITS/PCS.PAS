@@ -2,6 +2,10 @@
 
 unit PCS;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

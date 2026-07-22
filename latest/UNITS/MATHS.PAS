@@ -1,5 +1,9 @@
 unit Maths;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 function min(const a, b: double): double;
