@@ -2,9 +2,9 @@ program Game;
 
 uses
   CRT, DOS,
+  P92Core,
   Logger, Keyboard, Mouse, Timing, VGA,
   Bitmap;
-  { Conv, FPS, Graphics, PCS; }
 
 var
   { Game state variables }
@@ -13,19 +13,9 @@ var
   DosuEXE: array[0..1] of PBitmap;
 
 
-procedure Init;
+procedure OnPreload;
 begin
-  Randomize;
-
-  InitLogger;
-  InitVGAMode;
-  LoadFont;
-  InitBuffer;
-  InitDeltaTime;
-  InitKeyHandler;
-  InitMouse;
-
-  { TODO: Your Init code here }
+  { TODO: Your OnPreload code here }
 
   LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
@@ -71,7 +61,8 @@ var
   a: integer;
 
 begin
-  Init;
+  P92Start;
+
   done := false;
 
   repeat
