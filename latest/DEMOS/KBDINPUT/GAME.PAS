@@ -42,7 +42,8 @@ begin
 
   { TODO: Your Update code here }
 
-  if IsKeyDown(SC_ESCAPE) then done := true;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+
   t:=t+dt
 end;
 
