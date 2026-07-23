@@ -5,17 +5,12 @@ interface
 uses Bitmap;
 
 type
-  ui8 = byte;
-  i8 = shortint;
-  i16 = integer;
-  ui16 = word;
-
   PBMFontGlyph = ^TBMFontGlyph;
   TBMFontGlyph = record
-    id: ui16;
-    x, y, width, height: ui16;  { 2, 4, 6, 8 }
-    xoffset, yoffset: i16;  { 10, 12 }
-    xadvance: i16; { 14 }
+    id: word;
+    x, y, width, height: word;  { 2, 4, 6, 8 }
+    xoffset, yoffset: integer;  { 10, 12 }
+    xadvance: integer; { 14 }
     { page, chnl: byte; }
   end;
 
