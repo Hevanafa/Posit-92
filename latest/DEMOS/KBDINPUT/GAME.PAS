@@ -16,13 +16,14 @@ var
 
 procedure OnPreload; far;
 begin
+  { Load assets here }
   LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnReady; far;
 begin
-  { Init game state here }
+  { Init game state variables here }
   t := 0.0;
 end;
 
@@ -35,7 +36,10 @@ end;
 
 procedure Update; far;
 begin
+  { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  { Handle game state updates here }
 
   t := t + DeltaTime
 end;
@@ -46,7 +50,7 @@ var
 begin
   Cls($7D);
 
-  { TODO: Your drawing code here }
+  { Your drawing code here }
 
   if frac(t * 1.5) >= 0.5 then
     Spr(dosuEXE[0], 148, 76, 13)
