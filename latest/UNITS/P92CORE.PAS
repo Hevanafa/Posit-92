@@ -130,7 +130,13 @@ begin
 
     repeat
       now := GetTimer;
-      { Expected max FPS: 35 }
+
+    { Expected max FPS: 35
+
+      Why exactly 70?
+      This is to compensate for the coarse timer resolution
+      and the wake-up overhead }
+
       nextTick := now + 1 / 70.0;
 
       P92Update;
