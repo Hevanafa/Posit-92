@@ -130,16 +130,21 @@ begin
 
     repeat
       now := GetTimer;
+      { Expected max FPS: 35 }
+      nextTick := now + 1 / 70.0;
 
-      if now >= nextTick then begin
-        nextTick := now + 1.0 / 35.0;
+      P92Update;
+      config.Update;
 
-        P92Update;
-        config.Update;
+      P92Draw;
+      config.Draw;
+      P92AfterDraw;
 
-        P92Draw;
-        config.Draw;
-        P92AfterDraw
+      { Wait for the next frame }
+      while GetTimer < nextTick do
+      asm
+        sti
+        hlt
       end;
     until done;
 
