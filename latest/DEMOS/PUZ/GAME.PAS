@@ -5,39 +5,33 @@
 
 uses
   CRT, DOS,
-  Bitmap, Graphics, Logger, Keyboard, Mouse, Timing, VGA;
+  P92Core, Bitmap, Graphics, Logger, Keyboard, Mouse, Timing, VGA;
 
-const
-  SC_ESC = $01;
-  SC_1 = $02;
-  SC_2 = $03;
-  SC_3 = $04;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
+
+  { Game state variables }
   lights: array[0..3] of boolean;
   lastKeys: array[0..2] of boolean;
+  t: double;
   allLightsOff: boolean;
-  { TODO: More of your game state here }
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-
-  { TODO: Your init code here }
-
-  randomize;
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+end;
 
+procedure OnCleanup; far;
+begin
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
+end;
+
+procedure OnReady; far;
+begin
   allLightsOff := false;
   lights[0] := true;
   { lights[1] := true; }
@@ -45,11 +39,12 @@ begin
   lights[3] := true;
 end;
 
-procedure updateAllLightsOff;
+procedure UpdateAllLightsOff;
 var
   a: word;
 begin
   allLightsOff := true;
+
   for a:=0 to high(lights) do
     if lights[a] then begin
       allLightsOff := false;
@@ -58,13 +53,10 @@ begin
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: word;
 begin
-  updateDeltaTime;
-  updateMouse;
-
   for a:=0 to high(lastKeys) do begin
     if lastKeys[a] <> isKeyDown(a + SC_1) then begin
       lastKeys[a] := isKeyDown(a + SC_1);
@@ -85,16 +77,17 @@ begin
         end else
         end;
 
-      updateAllLightsOff
+      UpdateAllLightsOff
     end;
   end;
 
-  if isKeyDown(SC_ESC) then done := true;
-  t:=t+dt
+  if isKeyDown(SC_ESCAPE) then SignalDone;
+
+  t:=t+DeltaTime;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: word;
 begin
@@ -108,32 +101,25 @@ begin
     print('Good job!', 50, 50, 15);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    asmSpr(dosuEXE[0], 148, 76, 13)
+    Spr(dosuEXE[0], 148, 76, 13)
   else
-    asmSpr(dosuEXE[1], 148, 76, 13);
+    Spr(dosuEXE[1], 148, 76, 13);
 
-  print('Hello world!', 160-48, 120, 15);
-  drawMouse;
-  flush
+  print('Press 1, 2, 3, or 4', 160-86, 120, $0F);
+  print('to trigger change lights', 160-96, 128, $0F);
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.

@@ -23,6 +23,7 @@ procedure fastSpr4(const image: PBitmap; const x, y: integer; const transparency
 procedure fastSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+
 procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprSafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
