@@ -106,6 +106,14 @@ end;
 
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
+const
+  TargetFPS = 35;
+  {
+    HLT introduces a wake up delay
+    Waiting for a full 1/35 second produces about 25 FPS
+    Poll at twice the target frequency to obtain approximately 35 FPS
+  }
+  WaitFrequency = TargetFPS * 2;
 var
   now, nextTick: double;
 begin
@@ -130,14 +138,7 @@ begin
 
     repeat
       now := GetTimer;
-
-    { Expected max FPS: 35
-
-      Why exactly 70?
-      This is to compensate for the coarse timer resolution
-      and the wake-up overhead }
-
-      nextTick := now + 1 / 70.0;
+      nextTick := now + 1 / WaitFrequency;
 
       P92Update;
       config.Update;
