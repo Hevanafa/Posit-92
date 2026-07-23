@@ -142,7 +142,7 @@ begin
       end;
 
       if now >= nextDrawTick then begin
-        nextDrawTick := now + 1.0 / 60.0;
+        nextDrawTick := now + 1.0 / 35.0;
 
         P92Draw;
         config.Draw;
