@@ -37,11 +37,12 @@ var
   a: integer;
 begin
   result := 0;
+
   for a:=0 to high(particles) do
     if particles[a].alive then
-      result:=result + 1;
+      inc(result);
 
-  CountAlive:=result;
+  CountAlive := result
 end;
 
 
@@ -57,7 +58,7 @@ procedure Update; far;
 var
   a: integer;
 begin
-  if isKeyDown(SC_ESCAPE) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
   for a:=0 to high(particles) do begin
     if particles[a].alive then begin
@@ -82,8 +83,6 @@ begin
 
   { print('Alive: ' + int2str(CountAlive), 0, 16, 15); }
 
-  drawMouse;
-
   { Debug heap allocation }
   {
   print('Free heap: ' + i32str(MemAvail) + 'B', 0, 0, 15);
@@ -92,9 +91,6 @@ begin
 
   print('Delta t : ' + f32str(DeltaTime), 0, 0, 7);
   print('GetTimer: ' + f32str(GetTimer), 0, 8, 7);
-
-  drawFPS;
-  asmFlush
 end;
 
 
