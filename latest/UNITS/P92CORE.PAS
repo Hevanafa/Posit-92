@@ -107,9 +107,7 @@ end;
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
 var
-  now,
-  nextUpdateTick,
-  nextDrawTick: double;
+  now, nextTick: double;
 begin
   bootConfig := config;
   P92Init;
@@ -128,21 +126,16 @@ begin
     ReadLn;
   end else begin
     now := GetTimer;
-    nextUpdateTick := now;
-    nextDrawTick := now;
+    nextTick := now;
 
     repeat
       now := GetTimer;
 
-      if now >= nextUpdateTick then begin
-        nextUpdateTick := now + 1.0 / 20.0;
+      if now >= nextTick then begin
+        nextTick := now + 1.0 / 35.0;
 
         P92Update;
-        config.Update
-      end;
-
-      if now >= nextDrawTick then begin
-        nextDrawTick := now + 1.0 / 35.0;
+        config.Update;
 
         P92Draw;
         config.Draw;
