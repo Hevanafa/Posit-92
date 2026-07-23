@@ -1,4 +1,9 @@
 {
+  Compiler setup:
+  docs\compiler-setup\go32v2.md
+}
+
+{
 Command line:
 E:\fpc-go32v2-i386\fpc\bin\x86_64-win64\fpc.exe -Tgo32v2 -Pi386 -FuE:\fpc-go32v2-i386\fpcsrc\rtl\units\go32v2 -FuE:\fpc-go32v2-i386\fpcsrc\packages\rtl-console\units\go32v2 .\MAIN.PAS
 
