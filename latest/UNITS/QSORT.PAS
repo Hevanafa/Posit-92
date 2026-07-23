@@ -15,18 +15,18 @@ type
 
 
 { Add your custom records as necessary }
-procedure quickSortI16(var ary: array of integer; low, high: integer);
-procedure sortI16(var ary: array of integer);
+procedure QuickSortI16(var ary: array of integer; low, high: integer);
+procedure SortI16(var ary: array of integer);
 
-procedure quickSortEnemiesByX(var ary: array of PEnemy; low, high: integer);
-procedure sortEnemiesByX(var ary: array of PEnemy);
+procedure QuickSortEnemiesByX(var ary: array of PEnemy; low, high: integer);
+procedure SortEnemiesByX(var ary: array of PEnemy);
 
 
 implementation
 
 uses Panic;
 
-function partitionI16(var ary: array of integer; low, high: integer): integer;
+function PartitionI16(var ary: array of integer; low, high: integer): integer;
 var
   pivot, a, b, temp: integer;
 begin
@@ -49,24 +49,24 @@ begin
   ary[a + 1] := ary[high];
   ary[high] := temp;
 
-  partitionI16 := a + 1
+  PartitionI16 := a + 1
 end;
 
 
-procedure quickSortI16(var ary: array of integer; low, high: integer);
+procedure QuickSortI16(var ary: array of integer; low, high: integer);
 var
   partitionIdx: integer;
 begin
   if low < high then begin
-    partitionIdx := partitionI16(ary, low, high);
+    partitionIdx := PartitionI16(ary, low, high);
 
-    quickSortI16(ary, low, partitionIdx - 1);
-    quickSortI16(ary, partitionIdx + 1, high);
+    QuickSortI16(ary, low, partitionIdx - 1);
+    QuickSortI16(ary, partitionIdx + 1, high);
   end;
 end;
 
 
-function partitionEnemiesByX(
+function PartitionEnemiesByX(
   var ary: array of PEnemy;
   low, high: integer): integer;
 var
@@ -92,33 +92,33 @@ begin
   ary[a + 1] := ary[high];
   ary[high] := temp;
 
-  partitionEnemiesByX := a + 1
+  PartitionEnemiesByX := a + 1
 end;
 
-procedure quickSortEnemiesByX(
+procedure QuickSortEnemiesByX(
   var ary: array of PEnemy;
   low, high: integer);
 var
   partitionIdx: integer;
 begin
   if low < high then begin
-    partitionIdx := partitionEnemiesByX(ary, low, high);  { compare }
+    partitionIdx := PartitionEnemiesByX(ary, low, high);  { compare }
 
-    quickSortEnemiesByX(ary, low, partitionIdx - 1);  { compare }
-    quickSortEnemiesByX(ary, partitionIdx + 1, high);  { compare }
+    QuickSortEnemiesByX(ary, low, partitionIdx - 1);  { compare }
+    QuickSortEnemiesByX(ary, partitionIdx + 1, high);  { compare }
   end;
 end;
 
 
 { Convenience procedures }
-procedure sortI16(var ary: array of integer);
+procedure SortI16(var ary: array of integer);
 begin
-  quickSortI16(ary, low(ary), high(ary))
+  QuickSortI16(ary, low(ary), high(ary))
 end;
 
-procedure sortEnemiesByX(var ary: array of PEnemy);
+procedure SortEnemiesByX(var ary: array of PEnemy);
 begin
-  quickSortEnemiesByX(ary, low(ary), high(ary))
+  QuickSortEnemiesByX(ary, low(ary), high(ary))
 end;
 
 

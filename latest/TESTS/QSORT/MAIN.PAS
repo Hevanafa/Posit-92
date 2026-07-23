@@ -3,7 +3,7 @@ uses
   Conv, Panic, QSort;
 
 
-procedure printArrayI16(const ary: array of integer);
+procedure PrintArrayI16(const ary: array of integer);
 var
   a: integer;
 begin
@@ -17,7 +17,7 @@ begin
 end;
 
 
-procedure printArrayPEnemy(const ary: array of PEnemy);
+procedure PrintArrayPEnemy(const ary: array of PEnemy);
 var
   a: integer;
 begin
@@ -33,9 +33,9 @@ begin
 end;
 
 
-function sum(const i, j: integer): integer;
+function Sum(const i, j: integer): integer;
 begin
-  sum := i + j
+  Sum := i + j
 end;
 
 
@@ -52,11 +52,11 @@ begin
     numbers[a] := random(100);
 
   writeLn('Original:');
-  printArrayI16(numbers);
+  PrintArrayI16(numbers);
 
-  sortI16(numbers);
+  SortI16(numbers);
   writeLn('Sorted:');
-  printArrayI16(numbers);
+  PrintArrayI16(numbers);
 
   { Part 2: sorting a record }
   writeLn;
@@ -68,11 +68,11 @@ begin
   end;
 
   writeLn('Original:');
-  printArrayPEnemy(enemies);
+  PrintArrayPEnemy(enemies);
 
-  sortEnemiesByX(enemies);
+  SortEnemiesByX(enemies);
   writeLn('Sorted:');
-  printArrayPEnemy(enemies);
+  PrintArrayPEnemy(enemies);
 
   freeMem(enemies[a], sizeof(TEnemy));
 
