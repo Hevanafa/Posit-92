@@ -133,7 +133,6 @@ begin
 
     repeat
       now := GetTimer;
-      IncrementFPS;
 
       if now >= nextUpdateTick then begin
         nextUpdateTick := now + 1.0 / 20.0;
