@@ -36,10 +36,11 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="project"/>
+      <Filename Value="PROJECT.EXE" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="E:\fpc-go32v2-i386\fpcsrc\rtl\units\go32v2\;E:\fpc-go32v2-i386\fpcsrc\packages\rtl-console\units\go32v2\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
