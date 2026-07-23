@@ -21,6 +21,7 @@ procedure LoadCGAFont;
 procedure InitBuffer;
 procedure FreeBuffer;
 
+{ Routes to AsmCls }
 procedure Cls(const colour: byte);
 procedure PascalCls(const colour: byte);
 procedure AsmCls(const colour: byte);
@@ -30,10 +31,12 @@ procedure Print(const text: string; const x, y: integer; const colour: byte);
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
 procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 
+{ Routes to AsmPset }
 procedure Pset(const x, y: integer; const colour: byte);
 procedure PascalPset(const x, y: integer; const colour: byte);
 procedure AsmPset(const x, y: integer; const colour: byte);
 
+{ Routes to PascalFlush }
 procedure Flush;
 procedure PascalFlush;
 procedure AsmFlush;
@@ -232,7 +235,7 @@ end;
 
 procedure Flush;
 begin
-  PascalFlush;
+  PascalFlush
   { AsmFlush }
 end;
 
