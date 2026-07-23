@@ -109,6 +109,7 @@ procedure P92Start(const config: TP92AppConfig);
 const
   TargetFPS = 35;
   {
+    Sleep in HLT while waiting for the next frame
     HLT introduces a wake up delay
     Waiting for a full 1/35 second produces about 25 FPS
     Poll at twice the target frequency to obtain approximately 35 FPS
