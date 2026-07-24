@@ -15,6 +15,7 @@ latest/TP/
 # Free Pascal Compiler
 *.a
 *.o
+*.ppu
 
 # Lazarus
 lib/
