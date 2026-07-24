@@ -7,18 +7,15 @@
 
 uses
   CRT, DOS,
-  FPS, Graphics, Logger,
+  P92Core, FPS, Graphics, Logger,
   Keyboard, Mouse, Timing, VGA;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
   startTime: double;
   sinTable: array[0..255] of integer;
 
 { Used in drawBobbingGrid2 }
-procedure buildSinTable;
+procedure BuildSinTable;
 const
   HEIGHT_SCALE = 8;
 var
@@ -29,7 +26,7 @@ begin
 end;
 
 
-procedure drawBobbingGrid(t: double);
+procedure DrawBobbingGrid(t: double);
 const
   GRID_COLS = 16;
   GRID_ROWS = 8;
@@ -82,7 +79,7 @@ begin
 end;
 
 
-procedure drawBobbingGrid2(t: double);
+procedure DrawBobbingGrid2(t: double);
 const
   GRID_COLS = 16;
   GRID_ROWS = 8;
@@ -132,66 +129,39 @@ begin
     end;
 end;
 
-procedure INIT;
+procedure OnReady; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
-  { TODO: Your init code here }
-  buildSinTable;
+  BuildSinTable;
   startTime := getTimer
 end;
 
 
-procedure update;
-var
-  a: integer;
+procedure Update; far;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
-  if isKeyDown(K_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
 begin
   cls($00);
   { cls($0f); }
 
-  drawBobbingGrid2((getTimer - startTime) * 3);
-
-  drawMouse;
-  drawFPS;
-  flush
+  DrawBobbingGrid2((getTimer - startTime) * 3);
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
