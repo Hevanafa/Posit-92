@@ -2,11 +2,9 @@
 
 uses
   CRT, DOS,
-  Bitmap, Logger, PCS, Timing, VGA;
+  P92Core, Bitmap, Logger, Keyboard, PCS, Timing, VGA;
 
 const
-  SC_ESC = $01;
-
   C4 = 262;
   D4 = 294;
   E4 = 330;
@@ -27,33 +25,23 @@ const
   full = 1.0;
 
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
   imgPiano: PBitmap;
   hymn: TMelody;
-  { TODO: More of your game state here }
+
+  { Game state variables}
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  { initKeyHandler; }
-  { initMouse; }
-
-  { TODO: Your init code here }
-
-  randomize;
   loadBMP(imgPiano, 'IMG\PIANO.BMP');
-  {
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  }
-  PCSpeaker.init;
+end;
+
+procedure OnCleanup; far;
+begin
+  freeBMP(imgPiano);
 end;
 
 {
@@ -249,11 +237,6 @@ begin
   until done;
 
   { TODO: Your cleanup code here }
-  freeBMP(imgPiano);
-  {
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-  }
 
   PCSpeaker.stop;
 
@@ -263,3 +246,22 @@ begin
   closeLogger;
   initTextMode
 end.
+
+
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  appConfig.EnableKeyHandler := false;
+  appConfig.LoadDefaultCursor := false;
+
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
+end.
+
