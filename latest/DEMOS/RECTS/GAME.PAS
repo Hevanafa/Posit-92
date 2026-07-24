@@ -3,29 +3,22 @@
   Referenced from https://github.com/nesbox/TIC-80/wiki/rect
 }
 
-uses CRT, Graphics, FPS, Logger, Timing, VGA;
+uses
+  P92Core, Graphics, FPS, Logger, Timing, VGA;
 
 var
   done: boolean;
   x, y, dx, dy, colour: integer;
 
-procedure INIT;
+procedure OnReady; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initFPSCounter;
-  
   dx := 7;
   dy := 4;
   colour := 1;
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
   ch: char;
@@ -55,7 +48,7 @@ begin
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
   ch: char;
@@ -70,17 +63,17 @@ begin
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  cls($7D);
-  repeat
-    update;
-    draw
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
