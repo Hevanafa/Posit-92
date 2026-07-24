@@ -2,36 +2,37 @@ unit Memory;
 
 interface
 
-function getHeapSize: longint;
-function getFreeHeap: longint;
-function getStackSize: word;
-procedure drawMemInfo;
-procedure drawDOSMemInfo;
+function GetHeapSize: longint;
+function GetFreeHeap: longint;
+function GetStackSize: word;
+procedure DrawMemInfo;
+procedure DrawDOSMemInfo;
 
 implementation
 
 uses DOS, Conv, VGA;
 
 const
+  { Assuming that the computer has the conventional 640 KB RAM by default }
   HeapSize = 655360;
 
-function getHeapSize: longint;
+function GetHeapSize: longint;
 begin
-  getHeapSize := HeapSize
+  GetHeapSize := HeapSize
 end;
 
-function getFreeHeap: longint;
+function GetFreeHeap: longint;
 begin
-  getFreeHeap := MemAvail
+  GetFreeHeap := MemAvail
 end;
 
-function getStackSize: word;
+{ Gets an approximate stack usage }
+function GetStackSize: word;
 begin
-  { approximate stack usage }
-  getStackSize := sptr - sseg * 16
+  GetStackSize := SPtr - SSeg * 16
 end;
 
-procedure drawMemInfo;
+procedure DrawMemInfo;
 var
   totalHeap, freeHeap: longint;
   usedPerc: single;
@@ -40,13 +41,14 @@ begin
   freeHeap := memavail;
   usedPerc := (totalHeap - freeHeap) / totalHeap;
   
-  print('Heap: ' + i32str(totalHeap - freeHeap) + 'B ' + 
+  print(
+    'Heap: ' + i32str(totalHeap - freeHeap) + 'B ' +
     '/ ' + i32str(heapSize) + 'B ' + 
-	'( ' + i32str(round(usedPerc)) + '%)', 10, 10, 15);
-  print('Stack estimate: ' + i32str(getStackSize) + 'B', 10, 40, 15)
+    '(' + i32str(round(usedPerc * 100)) + '%)', 10, 10, 15);
+  print('Stack estimate: ' + i32str(GetStackSize) + 'B', 10, 40, 15)
 end;
 
-procedure drawDOSMemInfo;
+procedure DrawDOSMemInfo;
 var
   Regs: Registers;
   freeMem, totalMem: longint;
