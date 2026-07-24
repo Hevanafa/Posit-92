@@ -17,12 +17,12 @@ var
 
 procedure OnPreload; far;
 begin
-  loadBMFont(font, 'FONTS\ARIAL10.FNT');
+  LoadBMFont(font, 'FONTS\ARIAL10.FNT');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMFont(font);
+  FreeBMFont(font);
 end;
 
 procedure OnReady; far;

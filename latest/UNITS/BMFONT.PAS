@@ -16,18 +16,18 @@ type
 
   PBMFont = ^TBMFont;
   TBMFont = record
-    glyphs: array[32..127] of PBMFontGlyph;
-    filename: string;  { 384 }
-    lineHeight: word;  { 640 }
-    bitmap: PBitmap;  { 642 }
+    glyphs: array[0..255] of PBMFontGlyph;
+    filename: string;
+    lineHeight: word;
+    bitmap: PBitmap;
   end;
 
 procedure LoadBMFont(var font: PBMFont; const filename: string);
 procedure FreeBMFont(var font: PBMFont);
 
 procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-
 function MeasureBMFont(const font: PBMFont; const text: string): integer;
+
 
 implementation
 
