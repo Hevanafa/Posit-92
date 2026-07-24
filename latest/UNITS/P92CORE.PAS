@@ -6,6 +6,9 @@ unit P92Core;
 
 interface
 
+const
+  Posit92Version = '0.1';
+
 type
   TP92Callback = procedure;
 
