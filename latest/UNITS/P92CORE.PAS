@@ -36,11 +36,10 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, Timing, Keyboard, VGA, FPS
+  Logger, Timing, Keyboard, VGA, Mouse, FPS
 {$ifdef P92_MODEX}
-  , ModeX, XMouse;
+  , ModeX;
 {$else}
-  , Mouse;
 {$endif}
 
 var

@@ -2,7 +2,11 @@ unit Mouse;
 
 interface
 
+{$ifdef P92_MODEX}
+uses XBitmap;
+{$else}
 uses Bitmap;
+{$endif}
 
 var
   cursor: PBitmap;
