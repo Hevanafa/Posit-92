@@ -1,81 +1,64 @@
 
 uses
   CRT, DOS,
-  Conv, Logger, Timing, VGA;
+  P92Core, Conv, Keyboard, Logger, Timing, VGA;
 
-var
-  done: boolean;
-
-procedure INIT;
+function GetHours: byte;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
+  GetHours := trunc(timer) div 3600
+end;
+
+function GetMinutes: byte;
+begin
+  GetMinutes := trunc(timer) mod 3600 div 60
+end;
+
+function GetSeconds: byte;
+begin
+  GetSeconds := trunc(timer) mod 60
+end;
+
+function Format2Digits(const value: integer): string;
+begin
+  if value < 10 then
+    Format2Digits := '0' + i32str(value)
+  else
+    Format2Digits := i32str(value);
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  if keyPressed then
-    if readKey = #27 then done := true;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
-
-function getHours: byte;
-begin
-  getHours := trunc(timer) div 3600
-end;
-
-function getMinutes: byte;
-begin
-  getMinutes := trunc(timer) mod 3600 div 60
-end;
-
-function getSeconds: byte;
-begin
-  getSeconds := trunc(timer) mod 60
-end;
-
-function format2Digits(const value: integer): string;
-begin
-  if value < 10 then
-    format2Digits := '0' + i32str(value)
-  else
-    format2Digits := i32str(value);
-end;
-
-
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
   s: string;
 begin
   cls($7D);
+
   print(
-    format2Digits(getHours) + ':' +
-    format2Digits(getMinutes) + ':' +
-    format2Digits(getSeconds), 160-32, 96, 15);
+    Format2Digits(GetHours) + ':' +
+    Format2Digits(GetMinutes) + ':' +
+    Format2Digits(GetSeconds), 160-32, 96, 15);
+
   print('Esc - Exit', 0, 191, 15);
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw
-  until done;
+  appConfig.LoadDefaultCursor := false;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
