@@ -36,7 +36,7 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, Timing, Keyboard, VGA
+  Logger, Timing, Keyboard, VGA, FPS
 {$ifdef P92_MODEX}
   , ModeX, XFPS, XMouse;
 {$else}
@@ -83,6 +83,7 @@ begin
   InitLogger;
 
 {$ifdef P92_MODEX}
+  InitVGAMode;
   initModeX;
   loadFont;
 {$else}

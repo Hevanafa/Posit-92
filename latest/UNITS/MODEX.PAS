@@ -2,7 +2,7 @@ unit ModeX;
 
 interface
 
-procedure initVGAMode;
+{ Requires InitVGAMode call }
 procedure initModeX;
 procedure initTextMode;
 procedure loadFont;
@@ -28,16 +28,8 @@ var
   drawPage: byte;
   font8x8: array[0..127, 0..7] of byte;
 
-procedure initVGAMode; assembler;
-asm
-  mov ax, 0013h
-  int 10h
-end;
-
 procedure initModeX;
 begin
-  initVGAMode;
-
   { Modify VGA registers for Mode X }
   Port[$3C4] := $04;  Port[$3C5] := $06;  { Memory mode register }
   Port[$3D4] := $14;  Port[$3D5] := $00;  { Underline location }
