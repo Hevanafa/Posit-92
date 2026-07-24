@@ -137,52 +137,33 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        font.print(s, 13, 33 + a * 12, 11)
+        printBMFont(font, s, 13, 33 + a * 12, 11)
       end else
-        font.print(s, 13, 33 + a * 12, 7);
+        printBMFont(font, s, 13, 33 + a * 12, 7);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
-  w := font.textWidth(s);
-  font.print(s, 138 - w, 172, 7);
+  w := measureBMFont(font, s);
+  printBMFont(font, s, 138 - w, 172, 7);
 
   { Desc box }
   rectfillDither(152, 134, 311, 197, 196);
   rect(152, 134, 311, 197, 15);
 
-  font.print('Author: Hevanafa', 155, 137, 15);
-  font.print('Lorem Ipsum will uncover many', 155, 157, 15);
-  font.print('web sites still in their infancy.', 155, 169, 15);
-  font.print('Various versions have evolved', 155, 181, 15);
+  printBMFont(font, 'Author: Hevanafa', 155, 137, 15);
+  printBMFont(font, 'Lorem Ipsum will uncover many', 155, 157, 15);
+  printBMFont(font, 'web sites still in their infancy.', 155, 169, 15);
+  printBMFont(font, 'Various versions have evolved', 155, 181, 15);
 end;
 
-
-var
-  a: integer;
-
-begin
-  INIT;
-  done := false;
-
-  repeat
-    Update;
-    Draw;
-  until done;
-
-  { TODO: Your cleanup code here }
-  freeBMFont(font);
-
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
-end.
 
 var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.EnableKeyHandler := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

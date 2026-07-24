@@ -118,8 +118,13 @@ end;
 procedure P92Cleanup;
 begin
   ResetMouse;
+
   if bootConfig.EnableKeyHandler then
     ResetKeyHandler;
+
+  if bootConfig.EnableAdLib then
+    AdLibDrv.shutdown;
+
   FreeBuffer;
   CloseLogger;
   InitTextMode;
