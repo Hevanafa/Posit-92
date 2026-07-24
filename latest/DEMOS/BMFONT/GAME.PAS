@@ -1,8 +1,9 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, Keyboard, Timing, VGA,
-  Bitmap, Conv, FPS, BMFont;
+  P92Core, Logger,
+  Keyboard, Mouse,
+  Timing, VGA, Bitmap, Conv, FPS, BMFont;
 
 var
   bootTime, t: double;
