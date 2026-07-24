@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  Conv, Bitmap, FPS, Logger, Mouse, Timing, VGA;
+  P92Core, Conv, Bitmap, FPS, Logger, Mouse, Timing, VGA;
 
 type
   TExplosion = record
@@ -13,34 +13,12 @@ type
     ttl: double;  { in seconds }
   end;
 
-const
-  TARGET_FPS = 35;
-  MAX_FRAME_SKIP = 5;
-  K_ESC = $01;
 var
-  done: boolean;
   nextGameTick: double;
   loops: word;
   explosions: array[0..99] of TExplosion;
   imgExplosion: PBitmap;
 
-procedure spr2(
-  const image: PBitmap;
-  const srcX, srcY, srcW, srcH: integer;
-  const destX, destY: integer;
-  const transparencyKey: byte);
-var
-  a, b, pos: integer;
-begin
-  if image = nil then exit;
-  
-  for b := 0 to srcH - 1 do
-  for a := 0 to srcW - 1 do begin
-    pos := (srcX + a) + ((srcY + b) * image^.width);
-    if image^.data[pos] <> transparencyKey then
-      pset(destX + a, destY + b, image^.data[pos]);
-  end;
-end;
 
 function getFrame(const e: TExplosion): integer;
 var
@@ -113,7 +91,7 @@ begin
   for a:=0 to high(explosions) do begin
     { spr(imgExplosion, explosions[a].x, explosions[a].y, 13); }
 
-    spr2(
+    SprRegion(
       imgExplosion,
       getFrame(explosions[a]) * 16, 0, 16, 16,
       explosions[a].x, explosions[a].y, 13);
