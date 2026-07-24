@@ -36,11 +36,11 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  FPS, Logger, Timing, Keyboard, VGA
+  Logger, Timing, Keyboard, VGA
 {$ifdef P92_MODEX}
-  , ModeX, XMouse;
+  , ModeX, XFPS, XMouse;
 {$else}
-  , Mouse;
+  , FPS, Mouse;
 {$endif}
 
 var
@@ -82,13 +82,14 @@ begin
 
   InitLogger;
 
-  InitVGAMode;
-
 {$ifdef P92_MODEX}
   initModeX;
+  loadFont;
+{$else}
+  InitVGAMode;
+  LoadCGAFont;
 {$endif}
 
-  LoadCGAFont;
   InitBuffer;
   InitDeltaTime;
 
@@ -128,7 +129,12 @@ begin
     DrawMouse;
 
   DrawFPS;
-  Flush
+
+{$ifdef P92_MODEX}
+  flipPages;
+{$else}
+  Flush;
+{$endif}
 end;
 
 { Game engine entry point }

@@ -11,6 +11,7 @@ var
 
 procedure loadCursor;
 procedure freeCursor;
+
 procedure initMouse;
 procedure updateMouse;
 procedure debugMouse;

@@ -16,10 +16,8 @@ begin
   { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
   print('Top area', 0, 20, 15);
   print('Hello world!', 160-48, 120, 15);
-  
-  { Might disappear due to screen tearing, often happens in slower CPU's }
-  drawMouse;
-  drawFPS
+
+  drawFPS;
 end;
 
 var
