@@ -4,7 +4,9 @@
 
 uses
   CRT, DOS,
-  Conv, Bitmap, FPS, Logger, Mouse, Timing, VGA;
+  P92Core, Conv, Bitmap,
+  Keyboard, Mouse,
+  Timing, VGA;
 
 type
   TExplosion = record
@@ -14,18 +16,18 @@ type
   end;
 
 const
-  TARGET_FPS = 35;
-  MAX_FRAME_SKIP = 5;
-  K_ESC = $01;
   maxSpritesPerFrame = 50;
 var
-  done: boolean;
+  { Asset variables }
+  imgExplosion: PBitmap;
+
+  { Game state variables }
   startTime, nextGameTick: double;
   flipInt: word;
   loops: word;
   explosions: array[0..99] of TExplosion;
-  imgExplosion: PBitmap;
   frameCounter: integer;
+
 
 procedure spr2(
   const image: PBitmap;
@@ -72,21 +74,21 @@ begin
   e.ttl := 0.5
 end;
 
-procedure INIT;
+
+procedure OnPreload; far;
+begin
+  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
+end;
+
+procedure OnCleanup; far;
+begin
+  freeBMP(imgExplosion);
+end;
+
+procedure OnReady; far;
 var
   a: word;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initMouse;
-  initFPSCounter;
-
-  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
-  
   for a:=0 to high(explosions) do begin
     initExplosion(explosions[a]);
     explosions[a].ttl := random * 0.5;
@@ -98,28 +100,23 @@ begin
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
   for a:=0 to high(explosions) do
     if explosions[a].alive then begin
-      explosions[a].ttl := explosions[a].ttl - dt;
+      explosions[a].ttl := explosions[a].ttl - DeltaTime;
       if explosions[a].ttl <= 0 then
         explosions[a].alive := false;
     end else
       initExplosion(explosions[a]);
 
-  if keyPressed then
-    if readKey = #27 then done := true;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a, startIdx, totalSprites: integer;
 
@@ -151,42 +148,20 @@ begin
   }
 
   print(i32str(frameCounter), 0, 0, 15);
-
-  drawMouse;
-  drawFPS;
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  { without frameskipping: 27-29 FPS }
-  {
-  repeat
-    update;
-    draw
-  until done;
-  }
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  { with frameskipping: 35-39 FPS }
-  nextGameTick := getTimer;
-  repeat
-    loops := 0;
-    
-    while (getTimer > nextGameTick) and (loops < MAX_FRAME_SKIP) do begin
-      update;
-      nextGameTick := nextGameTick + (1 / TARGET_FPS);
-      inc(loops)
-    end;
-    draw
-  until done;
-
-  freeBMP(imgExplosion);
-
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
