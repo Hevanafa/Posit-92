@@ -40,9 +40,16 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\UNITS"/>
+      <OtherUnitFiles Value="..\..\UNITS;E:\fpc-msdos-i8086\fpc\units\i8086-msdos\rtl-console\;E:\fpc-msdos-i8086\fpcsrc\rtl\units\msdos\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <CodeGeneration>
+      <TargetCPU Value="i8086"/>
+      <TargetOS Value="msdos"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>

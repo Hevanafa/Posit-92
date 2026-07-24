@@ -3,7 +3,7 @@ program Game;
 uses
   CRT, DOS,
   P92Core,
-  Logger, Keyboard, Mouse,
+  Logger, Keyboard, Mouse, Strings,
   Bitmap, Timing, VGA;
 
 var
