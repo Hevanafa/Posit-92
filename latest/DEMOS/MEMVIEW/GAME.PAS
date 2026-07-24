@@ -4,11 +4,16 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, Keyboard, VGA, Memory;
+  P92Core, Logger, VGA, Memory;
 
 procedure Update; far;
+var
+  c: char;
 begin
-  if IsKeyDown(SC_ESCAPE) then SignalDone;
+  if KeyPressed then begin
+    c := ReadKey;
+    if c = #27 then SignalDone;
+  end;
 end;
 
 
@@ -27,6 +32,7 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
+  appConfig.EnableKeyHandler := false;
 
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;

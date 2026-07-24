@@ -15,7 +15,8 @@ type
   TP92AppConfig = record
     LoadDefaultCursor: boolean;
     EnableAdLib: boolean;
-    { Turning this off enables KeyPressed and ReadKey pattern from CRT unit }
+    { Turning this off enables the KeyPressed and ReadKey pattern
+      using the CRT unit }
     EnableKeyHandler: boolean;
 
     { Callbacks }
