@@ -2,10 +2,11 @@ unit ModeX;
 
 interface
 
-{ Requires InitVGAMode call }
-procedure initModeX;
-procedure initTextMode;
+{ Requires InitMode13h call }
+procedure InitModeX;
+
 procedure loadFont;
+
 procedure cls(const colour: byte);
 procedure PSET(const x, y: integer; const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
@@ -28,7 +29,7 @@ var
   drawPage: byte;
   font8x8: array[0..127, 0..7] of byte;
 
-procedure initModeX;
+procedure InitModeX;
 begin
   { Modify VGA registers for Mode X }
   Port[$3C4] := $04;  Port[$3C5] := $06;  { Memory mode register }
@@ -37,12 +38,6 @@ begin
   
   drawPage := 0;
   setVisiblePage(1 - drawPage)
-end;
-
-procedure initTextMode; assembler;
-asm
-  mov ax, 0003h
-  int 10h
 end;
 
 { Load 8x8 font }

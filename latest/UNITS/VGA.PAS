@@ -13,8 +13,9 @@ const
 var
   surface: PByteArray;
 
-procedure InitVGAMode;
-procedure InitTextMode;
+procedure InitMode13h;
+procedure InitModeText;
+
 { This loads the 8x8 font }
 procedure LoadCGAFont;
 
@@ -54,13 +55,13 @@ var
   bufferInitialised: boolean;
 
 
-procedure InitVGAMode; assembler;
+procedure InitMode13h; assembler;
 asm
   mov ax, 0013h
   int 10h
 end;
 
-procedure InitTextMode; assembler;
+procedure InitModeText; assembler;
 asm
   mov ax, 0003h
   int 10h

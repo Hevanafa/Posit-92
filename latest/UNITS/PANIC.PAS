@@ -12,7 +12,7 @@ procedure PanicHalt(const msg: string);
 begin
   ResetKeyHandler;
   ResetMouse;
-  InitTextMode;
+  InitModeText;
   WriteLn(msg);
   Halt(1)
 end;

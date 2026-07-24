@@ -43,7 +43,7 @@ uses
   Logger, Timing,
   PCS, AdLib,
   Keyboard, Mouse,
-  FPS, VGA
+  FPS, VGA, ModeX
 {$ifdef P92_MODEX}
   , ModeX;
 {$else}
@@ -96,7 +96,7 @@ begin
   initModeX;
   loadFont;
 {$else}
-  InitVGAMode;
+  InitMode13h;
   LoadCGAFont;
 {$endif}
 
@@ -129,7 +129,7 @@ begin
 
   FreeBuffer;
   CloseLogger;
-  InitTextMode;
+  InitModeText;
 end;
 
 procedure P92Update;
