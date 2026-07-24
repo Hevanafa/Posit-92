@@ -13,6 +13,7 @@ boilerplate/UNITS/
 latest/TP/
 
 # Free Pascal Compiler
+*.a
 *.o
 
 # Lazarus

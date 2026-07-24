@@ -1,20 +1,22 @@
 unit Panic;
 
+{$J-}
+
 interface
 
-procedure panicHalt(const msg: string);
+procedure PanicHalt(const msg: string);
 
 implementation
 
-uses Keyboard, Mouse, VGA;
+uses P92Core, Keyboard, Mouse, VGA;
 
-procedure panicHalt(const msg: string);
+procedure PanicHalt(const msg: string);
 begin
-  resetKeyHandler;
-  resetMouse;
-  initTextMode;
-  writeLn(msg);
-  halt(1)
+  ResetKeyHandler;
+  ResetMouse;
+  InitTextMode;
+  WriteLn(msg);
+  Halt(1)
 end;
 
 end.
