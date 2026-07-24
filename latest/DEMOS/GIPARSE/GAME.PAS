@@ -1,76 +1,15 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, Timing,
+  P92Core, Logger, Keyboard, VGA,
   Strings;
 
-function trimStart(const txt: string): string;
-var
-  a, len: integer;
-begin
-  len := length(txt);
-  a:=1;
-  while (a <= len) and (txt[a] = ' ') do
-    inc(a);
-  trimStart := copy(txt, a, len - a + 1)
-end;
 
-function trimEnd(const txt: string): string;
-var
-  a: integer;
-begin
-  a := length(txt);
-  while (a>0) and (txt[a] = ' ') do
-    dec(a);
-  trimEnd := copy(txt, 1, a)
-end;
-
-function trim(const txt: string): string;
-begin
-  trim := trimEnd(trimStart(txt));
-end;
-
-{ Similar to Lua & Python's str.lower() }
-function lower(const txt: string): string;
-var
-  a: integer;
-  result: string;
-begin
-  result := txt;
-  for a:=1 to length(result) do
-    if ('A' <= result[a]) and (result[a] <= 'Z') then
-      result[a] := chr(ord(result[a]) + 32);
-  lower := result
-end;
-
-{ Similar to Lua & Python's str.lower() }
-function upper(const txt: string): string;
-var
-  a: integer;
-  result: string;
-begin
-  result := txt;
-  for a:=1 to length(result) do
-    if ('a' <= result[a]) and (result[a] <= 'z') then
-      result[a] := chr(ord(result[a]) - 32);
-  upper := result
-end;
-
-
-procedure INIT;
-begin
-  randomize;
-  initLogger;
-  initDeltaTime;
-end;
-
-
+procedure OnReady; far;
 var
   t: text;
   line: string;
 begin
-  INIT;
-
   if not fileExists('GAMEINFO.TXT') then begin
     writeLn('GAMEINFO.TXT doesn''t exist!');
     halt(1)
@@ -90,12 +29,33 @@ begin
     writeLn(line);
     writeLn('Trimmed:');
     writeLn(trimStart(line)); }
-    if startsWith(trimStart(line), 'title') then
-      writeLn(line);
+    if startsWith(trimStart(line), 'Title') then
+      WriteLog(line);
   end;
 
   close(t);
+end;
 
-  readLn;
-  closeLogger
+procedure Update; far;
+begin
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+end;
+
+procedure Draw; far;
+begin
+  cls($0F);
+end;
+
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  appConfig.LoadDefaultCursor := false;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+
+  P92Start(appConfig)
 end.
+
