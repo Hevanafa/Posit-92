@@ -1,17 +1,12 @@
 
 uses
-  CRT, DOS,
-  FPS, Graphics, Logger, Keyboard, Mouse, Timing, VGA;
-  { Conv, PCS; }
+  P92Core, FPS, Graphics, Logger, Keyboard, Mouse, Timing, VGA;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
   startTime: double;
   { TODO: More of your game state here }
 
-procedure drawBobbingGrid(t: double);
+procedure DrawBobbingGrid(const t: double);
 const
   GRID_COLS = 16;
   GRID_ROWS = 8;
@@ -63,24 +58,14 @@ begin
     end;
 end;
 
-procedure INIT;
+procedure OnReady; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
   { TODO: Your init code here }
-  startTime := getTimer
+  startTime := GetTimer
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
@@ -88,40 +73,28 @@ begin
   updateMouse;
   incrementFPS;
 
-  if isKeyDown(K_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
 begin
   cls($7D);
-  drawBobbingGrid(getTimer - startTime);
-
-  drawMouse;
-  drawFPS;
-  flush
+  DrawBobbingGrid(getTimer - startTime);
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  { TODO: Your cleanup code here }
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
