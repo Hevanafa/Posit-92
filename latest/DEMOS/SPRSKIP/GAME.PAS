@@ -29,44 +29,26 @@ var
   frameCounter: integer;
 
 
-procedure spr2(
-  const image: PBitmap;
-  const srcX, srcY, srcW, srcH: integer;
-  const destX, destY: integer;
-  const transparencyKey: byte);
-var
-  a, b, pos: integer;
-begin
-  if image = nil then exit;
-  
-  for b := 0 to srcH - 1 do
-  for a := 0 to srcW - 1 do begin
-    pos := (srcX + a) + ((srcY + b) * image^.width);
-    if image^.data[pos] <> transparencyKey then
-      pset(destX + a, destY + b, image^.data[pos]);
-  end;
-end;
-
-function getFrame(const e: TExplosion): integer;
+function GetFrame(const e: TExplosion): integer;
 var
   result: word;
 begin
   result := trunc((0.5 - e.ttl) / 0.125);
   if result = 4 then
-    getFrame := 3
+    GetFrame := 3
   else
-    getFrame := result
+    GetFrame := result
 end;
 
-procedure drawSprite(const e: TExplosion);
+procedure DrawSprite(const e: TExplosion);
 begin
-  spr2(
+  SprRegion(
     imgExplosion,
-    getFrame(e) * 16, 0, 16, 16,
+    GetFrame(e) * 16, 0, 16, 16,
     e.x, e.y, 13);
 end;
 
-procedure initExplosion(var e: TExplosion);
+procedure InitExplosion(var e: TExplosion);
 begin
   e.alive := true;
   e.x := random(300);
@@ -90,7 +72,7 @@ var
   a: word;
 begin
   for a:=0 to high(explosions) do begin
-    initExplosion(explosions[a]);
+    InitExplosion(explosions[a]);
     explosions[a].ttl := random * 0.5;
   end;
 
@@ -110,7 +92,7 @@ begin
       if explosions[a].ttl <= 0 then
         explosions[a].alive := false;
     end else
-      initExplosion(explosions[a]);
+      InitExplosion(explosions[a]);
 
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
@@ -130,7 +112,7 @@ begin
 
   for a := 0 to high(explosions) do
     if (frameCounter and 1) = (a and 1) then
-      drawSprite(explosions[a]);
+      DrawSprite(explosions[a]);
 
 
   { Round-Robin flickering }
@@ -143,7 +125,7 @@ begin
   startIdx := (frameCounter * maxSpritesPerFrame) mod totalSprites;
 
   for a := 0 to maxSpritesPerFrame - 1 do begin
-    drawSprite(explosions[(startIdx + a) mod totalSprites]);
+    DrawSprite(explosions[(startIdx + a) mod totalSprites]);
   end;
   }
 

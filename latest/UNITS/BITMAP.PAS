@@ -31,11 +31,12 @@ procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transpar
 procedure asmSprSafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
-procedure spr2(
+procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
   const transparencyKey: byte);
+
 procedure initTrigLUT;
 procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
 procedure sprPro2(
@@ -1057,7 +1058,7 @@ begin
 end;
 
 { Improved version of spr with partial sprite drawing }
-procedure spr2(
+procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
