@@ -17,7 +17,7 @@ type
   PBMFont = ^TBMFont;
   TBMFont = record
     glyphs: array[0..255] of PBMFontGlyph;
-    filename: string;
+    { filename: string; }
     lineHeight: word;
     bitmap: PBitmap;
   end;
@@ -45,7 +45,7 @@ var
   kv: array[0..1] of string; { key-value pair }
   key, value: string;  { separated key-value pair }
 
-  tempGlyph: TBMFontGlyph;
+  newGlyph: TBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
   if font <> nil then
@@ -95,7 +95,7 @@ begin
     if startsWith(line, 'char') then begin
       { Parse the whole line first, then check bounds }
       glyphID := -1;
-      fillChar(tempGlyph, sizeof(TBMFontGlyph), 0);
+      fillChar(newGlyph, sizeof(TBMFontGlyph), 0);
 
       { assign glyph info }
       pairCount := split(line, ' ', pairs);
@@ -109,22 +109,22 @@ begin
           glyphID := parseInt(value);
 
           { writeLog('ID:' + i32str(glyphID)); }
-          tempGlyph.id := glyphID;
+          newGlyph.id := glyphID;
         end
-        else if key = 'x' then tempGlyph.x := parseInt(value)
-        else if key = 'y' then tempGlyph.y := parseInt(value)
-        else if key = 'width' then tempGlyph.width := parseInt(value)
-        else if key = 'height' then tempGlyph.height := parseInt(value)
-        else if key = 'xoffset' then tempGlyph.xoffset := parseInt(value)
-        else if key = 'yoffset' then tempGlyph.yoffset := parseInt(value)
-        else if key = 'xadvance' then tempGlyph.xadvance := parseInt(value);
+        else if key = 'x' then newGlyph.x := parseInt(value)
+        else if key = 'y' then newGlyph.y := parseInt(value)
+        else if key = 'width' then newGlyph.width := parseInt(value)
+        else if key = 'height' then newGlyph.height := parseInt(value)
+        else if key = 'xoffset' then newGlyph.xoffset := parseInt(value)
+        else if key = 'yoffset' then newGlyph.yoffset := parseInt(value)
+        else if key = 'xadvance' then newGlyph.xadvance := parseInt(value);
       end;
 
-      if (low(font^.glyphs) <= tempGlyph.id) and
-          (tempGlyph.id <= high(font^.glyphs)) then begin
-        new(font^.glyphs[tempGlyph.id]);
-        font^.glyphs[tempGlyph.id]^ := tempGlyph;
-        writeLog('Applied ID ' + i32str(tempGlyph.id));
+      if (low(font^.glyphs) <= newGlyph.id) and
+          (newGlyph.id <= high(font^.glyphs)) then begin
+        new(font^.glyphs[newGlyph.id]);
+        font^.glyphs[newGlyph.id]^ := newGlyph;
+        writeLog('Applied ID ' + i32str(newGlyph.id));
         inc(count);
       end;
     end;
