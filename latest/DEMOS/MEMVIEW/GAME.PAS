@@ -4,51 +4,33 @@
 
 uses
   CRT, DOS,
-  Logger, VGA, Memory;
+  P92Core, Logger, Keyboard, VGA, Memory;
 
-var
-  done: boolean;
-
-procedure INIT;
+procedure Update; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure update;
-var
-  ch: char;
-begin
-  if keyPressed then begin
-    ch := readKey;
-	if ch = #27 then done := true;
-  end;
-end;
-
-
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);
+
   drawMemInfo;
   drawDOSMemInfo;
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.LoadDefaultCursor := false;
 
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+
+  P92Start(appConfig)
 end.
+
