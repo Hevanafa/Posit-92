@@ -1,7 +1,5 @@
 unit Panic;
 
-{$J-}
-
 interface
 
 procedure PanicHalt(const msg: string);
