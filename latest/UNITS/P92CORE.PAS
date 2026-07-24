@@ -118,7 +118,8 @@ end;
 procedure P92Cleanup;
 begin
   ResetMouse;
-  ResetKeyHandler;
+  if bootConfig.EnableKeyHandler then
+    ResetKeyHandler;
   FreeBuffer;
   CloseLogger;
   InitTextMode;

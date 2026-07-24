@@ -6,7 +6,7 @@ uses
 
 var
   { Asset variables }
-  font: TBMFont;
+  font: PBMFont;
 
   { Game state variables }
   t: double;
@@ -38,6 +38,11 @@ end;
 procedure OnPreload; far;
 begin
   loadBMFont(font, 'FONTS\ARIAL10.FNT');
+end;
+
+procedure OnCleanup; far;
+begin
+  freeBMFont(font);
 end;
 
 procedure OnReady; far;
@@ -90,25 +95,25 @@ begin
         if relativeIdx >= 9 then firstIdx := selectedIdx - 9;
         if relativeIdx < 2  then firstIdx := selectedIdx - 2;
       end;
-      27: done := true;
+      27: SignalDone;
     end;
   end;
 
-  t:=t+dt
+  t := t + DeltaTime;
 end;
 
 
-procedure printOutline(const txt: string; const x, y: integer; const colour, outline: byte);
+procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  font.print(txt, x-1, y, outline);
-  font.print(txt, x+1, y, outline);
-  font.print(txt, x, y-1, outline);
-  font.print(txt, x, y+1, outline);
-  font.print(txt, x, y, colour)
+  printBMFont(font, txt, x-1, y, outline);
+  printBMFont(font, txt, x+1, y, outline);
+  printBMFont(font, txt, x, y-1, outline);
+  printBMFont(font, txt, x, y+1, outline);
+  printBMFont(font, txt, x, y, colour);
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a, w: integer;
   s: string;
@@ -119,7 +124,7 @@ begin
   rectfillDither(8, 32, 144, 184, 196);
   rect(8, 32, 144, 184, 15);
 
-  printOutline(menuItems[selectedIdx], 152, 119, 15, 0);
+  PrintOutline(menuItems[selectedIdx], 152, 119, 15, 0);
 
   { Menu box }
   maxDisplayed := trunc(min(12, menuCount));
@@ -150,10 +155,6 @@ begin
   font.print('Lorem Ipsum will uncover many', 155, 157, 15);
   font.print('web sites still in their infancy.', 155, 169, 15);
   font.print('Various versions have evolved', 155, 181, 15);
-
-  drawMouse;
-  drawFPS;
-  flush
 end;
 
 
@@ -166,15 +167,29 @@ begin
 
   repeat
     Update;
-    draw;
+    Draw;
   until done;
 
   { TODO: Your cleanup code here }
   freeBMFont(font);
 
   resetMouse;
-  { resetKeyHandler; }
   freeBuffer;
   closeLogger;
   initTextMode
 end.
+
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
+end.
+
