@@ -10,6 +10,8 @@ Commodore64 and Franklin Gothic Book size 12 BMFont demo
 
 Sine grid bobbing
 
+**Note:** This demo is bugged -- it crashes when using the latest unit collection
+
 ### CLOCK
 
 Clock display using `GetTimer`
