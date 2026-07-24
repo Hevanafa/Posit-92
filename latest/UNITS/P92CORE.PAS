@@ -94,10 +94,8 @@ begin
   InitMode13h;
 {$ifdef P92_MODEX}
   initModeX;
-  loadFont;
-{$else}
-  LoadCGAFont;
 {$endif}
+  LoadCGAFont;
 
   InitBuffer;
   InitDeltaTime;

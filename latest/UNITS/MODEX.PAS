@@ -5,8 +5,6 @@ interface
 { Requires InitMode13h call }
 procedure InitModeX;
 
-procedure loadFont;
-
 procedure cls(const colour: byte);
 procedure PSET(const x, y: integer; const colour: byte);
 procedure print(const text: string; const x, y: integer; const colour: byte);
@@ -16,7 +14,8 @@ procedure flipPages;
 
 implementation
 
-uses DOS;
+uses
+  DOS, VGA;
 
 {
   Mode X page start addresses (19200 bytes each):
@@ -27,7 +26,6 @@ const
 
 var
   drawPage: byte;
-  font8x8: array[0..127, 0..7] of byte;
 
 procedure InitModeX;
 begin
@@ -38,21 +36,6 @@ begin
   
   drawPage := 0;
   setVisiblePage(1 - drawPage)
-end;
-
-{ Load 8x8 font }
-procedure loadFont;
-var
-  Regs: Registers;
-begin
-  { Get the 8x8 font pointer }
-  regs.ah := $11;
-  regs.al := $30;
-  regs.bh := 3; { 8x8 font }
-  Intr($10, Regs);
-
-  { Copy font data to buffer }
-  Move(Mem[Regs.ES:Regs.BP], font8x8, sizeOf(font8x8));
 end;
 
 procedure cls(const colour: byte);
@@ -89,7 +72,7 @@ begin
     if (idx < 0) or (idx > 127) then continue;
 
     for row := 0 to 7 do begin
-      mask := font8x8[ord(text[idx]), row];
+      mask := BorrowCGAFont^[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
           pset((idx-1) * 8 + x + col, y + row, colour);

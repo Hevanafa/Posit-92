@@ -18,6 +18,7 @@ procedure InitModeText;
 
 { This loads the 8x8 font }
 procedure LoadCGAFont;
+function BorrowCGAFont: pointer;
 
 procedure InitBuffer;
 procedure FreeBuffer;
@@ -54,7 +55,6 @@ var
   font8x8: array[0..255, 0..7] of byte;
   bufferInitialised: boolean;
 
-
 procedure InitMode13h; assembler;
 asm
   mov ax, 0013h
@@ -80,6 +80,11 @@ begin
 
   { Copy font data to buffer }
   Move(Mem[Regs.ES:Regs.BP], font8x8, sizeOf(font8x8));
+end;
+
+function BorrowCGAFont: pointer;
+begin
+  BorrowCGAFont := @font8x8
 end;
 
 
