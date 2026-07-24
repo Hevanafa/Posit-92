@@ -5,11 +5,12 @@ interface
 { Requires InitMode13h call }
 procedure InitModeX;
 
-procedure cls(const colour: byte);
-procedure PSET(const x, y: integer; const colour: byte);
-procedure print(const text: string; const x, y: integer; const colour: byte);
-procedure setVisiblePage(const page: byte);
-procedure flipPages;
+procedure Cls(const colour: byte);
+procedure PSet(const x, y: integer; const colour: byte);
+procedure Print(const text: string; const x, y: integer; const colour: byte);
+
+procedure SetVisiblePage(const page: byte);
+procedure FlipModeXPage;
 
 
 implementation
@@ -35,10 +36,10 @@ begin
   Port[$3D4] := $17;  Port[$3D5] := $E3;  { Mode control }
   
   drawPage := 0;
-  setVisiblePage(1 - drawPage)
+  SetVisiblePage(1 - drawPage)
 end;
 
-procedure cls(const colour: byte);
+procedure Cls(const colour: byte);
 begin
   port[$3C4] := $02;  { Select "map mask register", basically the plane that you can write to }
   port[$3C5] := $0f;  { Enable all 4 planes: 0000 1111 -> all the 4 planes are enabled }
@@ -46,7 +47,7 @@ begin
   fillChar(Mem[$A000:drawPage * pageSize], 19200, colour)
 end;
 
-procedure PSET(const x, y: integer; const colour: byte);
+procedure PSet(const x, y: integer; const colour: byte);
 var
   offset: integer;
 begin
@@ -61,8 +62,8 @@ begin
   Mem[$A000:offset] := colour
 end;
 
-{ Based on the print procedure from VGA unit }
-procedure print(const text: string; const x, y: integer; const colour: byte);
+{ Based on the Print procedure from VGA unit }
+procedure Print(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
   pos: integer;
@@ -75,13 +76,13 @@ begin
       mask := BorrowCGAFont^[ord(text[idx]), row];
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
-          pset((idx-1) * 8 + x + col, y + row, colour);
+          PSet((idx-1) * 8 + x + col, y + row, colour);
     end;
   end;
 end;
 
 { Tells the VGA to start displaying pixels from memory address X }
-procedure setVisiblePage(const page: byte);
+procedure SetVisiblePage(const page: byte);
 begin
   port[$3D4] := $0C;  { CRTC address register - "Start Address High" }
   port[$3D5] := hi(page * pageSize); { Write high byte of start address }
@@ -89,7 +90,7 @@ begin
   port[$3D5] := lo(page * pageSize); { Write low byte of start address }
 end;
 
-procedure waitForVSync;
+procedure WaitForVSync;
 begin
   { Wait for the end of current retrace (if in one) }
   while (port[$3DA] and $08) <> 0 do;
@@ -97,11 +98,11 @@ begin
   while (port[$3DA] and $08) = 0 do;
 end;
 
-procedure flipPages;
+procedure FlipModeXPage;
 begin
-  waitForVSync;
+  WaitForVSync;
   drawPage := 1 - drawPage;
-  setVisiblePage(1 - drawPage)
+  SetVisiblePage(1 - drawPage)
 end;
 
 

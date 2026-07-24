@@ -94,7 +94,7 @@ begin
   if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    pset(a, b, image^.data[a + b * image^.width]);
+    PSet(a, b, image^.data[a + b * image^.width]);
 end;
 
 procedure freeBMP(var image: PBitmap);
@@ -113,7 +113,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, image^.data[pos]);
+      PSet(x+a, y+b, image^.data[pos]);
   end;
 end;
 
@@ -126,7 +126,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, tint);
+      PSet(x+a, y+b, tint);
   end;
 end;
 
@@ -166,7 +166,7 @@ begin
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
       colour := image^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+        PSet(x+ix, y+iy, colour);
     end;
   end;
 end;
@@ -203,10 +203,10 @@ begin
 
   { Debug bounding box }
   {
-  pset(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
-  pset(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  PSet(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  PSet( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  PSet( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  PSet(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
   }
 
   { bounding box }
@@ -219,7 +219,7 @@ begin
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
       colour := image^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+        PSet(x+ix, y+iy, colour);
     end;
   end;
 end;
@@ -228,14 +228,14 @@ end;
 procedure bitmapInfo(const image: PBitmap);
 begin
   if image = nil then begin
-    print('image is nil!', 10, 168, 15);
+    Print('image is nil!', 10, 168, 15);
     exit
   end;
 
-  { print('File name:' + name, 10, 160, 15); }
-  print('Width: ' + i32str(image^.width), 10, 168, 15);
-  print('Height: ' + i32str(image^.height), 10, 176, 15);
-  print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+  { Print('File name:' + name, 10, 160, 15); }
+  Print('Width: ' + i32str(image^.width), 10, 168, 15);
+  Print('Height: ' + i32str(image^.height), 10, 176, 15);
+  Print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
 end;
 
 

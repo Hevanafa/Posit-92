@@ -12,11 +12,11 @@ end;
 
 procedure Draw; far;
 begin
-  cls($7D);
+  Cls($7D);
 
-  { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
-  print('Top area', 0, 20, $0F);
-  print('Hello from VGA Mode X!', 160-48, 120, $0E);
+  { Print('getTimer:' + f32str(getTimer), 0, 20, 15); }
+  Print('Top area', 0, 20, $0F);
+  Print('Hello from VGA Mode X!', 160-48, 120, $0E);
 end;
 
 var

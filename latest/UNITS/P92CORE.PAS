@@ -152,7 +152,7 @@ begin
   DrawFPS;
 
 {$ifdef P92_MODEX}
-  flipPages;
+  FlipModeXPage;
 {$else}
   Flush;
 {$endif}
