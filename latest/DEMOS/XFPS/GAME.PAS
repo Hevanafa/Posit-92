@@ -1,8 +1,9 @@
 {$DEFINE DEBUG}
 
 uses
-  P92Core, Conv, Logger, Timing, Keyboard,
-  ModeX, XBitmap, XMouse, XFPS;
+  P92Core, Conv, Logger, FPS, Timing,
+  Keyboard,
+  ModeX, XBitmap, XMouse;
 
 procedure Update; far;
 begin
@@ -14,10 +15,8 @@ begin
   cls($7D);
 
   { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
-  print('Top area', 0, 20, 15);
-  print('Hello world!', 160-48, 120, 15);
-
-  drawFPS;
+  print('Top area', 0, 20, $0F);
+  print('Hello from VGA Mode X!', 160-48, 120, $0E);
 end;
 
 var

@@ -38,9 +38,9 @@ implementation
 uses
   Logger, Timing, Keyboard, VGA, FPS
 {$ifdef P92_MODEX}
-  , ModeX, XFPS, XMouse;
+  , ModeX, XMouse;
 {$else}
-  , FPS, Mouse;
+  , Mouse;
 {$endif}
 
 var
