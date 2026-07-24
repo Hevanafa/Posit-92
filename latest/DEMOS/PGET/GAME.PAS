@@ -1,84 +1,75 @@
 
 uses
   CRT,
-  Bitmap, Conv, Logger, Mouse, VGA;
+  P92Core, Bitmap, Conv, Logger, Keyboard, Mouse, VGA;
 
 var
-  done: boolean;
+  { Asset variables }
   kenneyTinytown: PBitmap;
-  lastX, lastY: word;
+
+  { Game state variables }
+  lastX, lastY: integer;
   colour: byte;
 
 
-function PGET(const x, y: integer): byte;
+function PGet(const x, y: integer): byte;
 var
   offset: integer;
 begin
   if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then begin
-    PGET := 0;
+    PGet := 0;
     exit
   end;
   offset := y * 320 + x;
-  PGET := Mem[$A000:offset]
+  PGet := Mem[$A000:offset]
 end;
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initMouse;
-
   loadBMP(kenneyTinytown, 'IMG/TINYTOWN.BMP');
 end;
 
+procedure OnReady; far;
+begin
+  lastX := -1;
+  lastY := -1;
+  colour := $FF;
+end;
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
   ch: char;
 begin
-  updateMouse;
-  
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+
   if (lastX <> mouseX) or (lastY <> mouseY) then begin
     lastX := mouseX;
     lastY := mouseY;
-    colour := PGET(mouseX, mouseY);
-  end;
-  
-  if keyPressed then begin
-    ch := readKey;
-    if ch = #27 then done := true;
+    colour := PGet(mouseX, mouseY);
   end;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);  
   
   drawBMP(kenneyTinytown);
   print('Colour: ' + i32str(colour), 4, 4, 15);
-  
-  drawMouse;
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  freeBMP(kenneyTinytown);
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
