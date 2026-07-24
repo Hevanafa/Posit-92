@@ -67,9 +67,9 @@ begin
     exit
   end;
 
-  if currentMelody.notes[currentNote].rest then
-    noSound
-  else
+  noSound;
+
+  if not currentMelody.notes[currentNote].rest then
     sound(currentMelody.notes[currentNote].freq);
 
   noteEndTick := getTimer + currentMelody.notes[currentNote].duration;
