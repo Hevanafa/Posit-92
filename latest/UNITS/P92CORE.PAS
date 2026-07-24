@@ -15,6 +15,7 @@ type
   TP92AppConfig = record
     LoadDefaultCursor: boolean;
     EnableAdLib: boolean;
+    EnableKeyHandler: boolean;
 
     { Callbacks }
     OnPreload: TP92Callback;
@@ -37,10 +38,14 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, Timing, Keyboard, VGA, Mouse, FPS
+  Logger, Timing,
+  PCS, AdLib,
+  Keyboard, Mouse,
+  FPS, VGA
 {$ifdef P92_MODEX}
   , ModeX;
 {$else}
+  ;
 {$endif}
 
 var
@@ -68,6 +73,7 @@ procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.LoadDefaultCursor := true;
   config.EnableAdLib := false;
+  config.EnableKeyHandler := true;
 
   @config.OnPreload := nil;
   @config.OnReady := nil;
@@ -95,7 +101,9 @@ begin
   InitBuffer;
   InitDeltaTime;
 
-  InitKeyHandler;
+  if bootConfig.EnableKeyHandler then
+    InitKeyHandler;
+
   InitMouse;
 
   if bootConfig.LoadDefaultCursor then
