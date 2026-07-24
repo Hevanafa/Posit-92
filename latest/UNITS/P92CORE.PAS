@@ -24,6 +24,7 @@ type
 
 
 procedure SignalDone;
+function FileExists(const filename: string): boolean;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 procedure P92Start(const config: TP92AppConfig);
@@ -41,6 +42,18 @@ var
 procedure SignalDone;
 begin
   done := true
+end;
+
+function FileExists(const filename: string): boolean;
+var
+  f: file;
+begin
+  {$I-}  { Turn off runtime error 2: IO error halt }
+  assign(f, filename);
+  reset(f);
+  FileExists := (IOResult = 0);
+  close(f)  { Safe, even if the file isn't open }
+  {$I+}
 end;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);

@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  Logger, Timing,
+  P92Core, Logger, Timing,
   Strings;
 
 function trimStart(const txt: string): string;
@@ -54,19 +54,6 @@ begin
     if ('a' <= result[a]) and (result[a] <= 'z') then
       result[a] := chr(ord(result[a]) - 32);
   upper := result
-end;
-
-
-function fileExists(const filename: string): boolean;
-var
-  f: file;
-begin
-  {$I-} { Turn off runtime error 2: IO error halt }
-  assign(f, filename);
-  reset(f);
-  fileExists := (IOResult = 0);
-  close(f)  { Safe, even if the file isn't open }
-  {$I+}
 end;
 
 
