@@ -6,6 +6,9 @@ type
   PSurfaceBuffer = ^TSurfaceBuffer;
   TSurfaceBuffer = array[0..63999] of byte;
 
+  PFont8x8 = ^TFont8x8;
+  TFont8x8 = array[0..255, 0..7] of byte;
+
 const
   VgaWidth = 320;
   VgaHeight = 200;
@@ -18,7 +21,7 @@ procedure InitModeText;
 
 { This loads the 8x8 font }
 procedure LoadCGAFont;
-function BorrowCGAFont: pointer;
+function BorrowCGAFont: PFont8x8;
 
 procedure InitBuffer;
 procedure FreeBuffer;
@@ -52,7 +55,7 @@ const
   bufferSize = 64000;
 var
   a, b: integer;
-  font8x8: array[0..255, 0..7] of byte;
+  font8x8: TFont8x8;
   bufferInitialised: boolean;
 
 procedure InitMode13h; assembler;
@@ -82,7 +85,7 @@ begin
   Move(Mem[Regs.ES:Regs.BP], font8x8, sizeOf(font8x8));
 end;
 
-function BorrowCGAFont: pointer;
+function BorrowCGAFont: PFont8x8;
 begin
   BorrowCGAFont := @font8x8
 end;
