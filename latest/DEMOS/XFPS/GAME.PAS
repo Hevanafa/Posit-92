@@ -2,8 +2,8 @@
 
 uses
   P92Core, Conv, Logger, FPS, Timing,
-  Keyboard,
-  ModeX, XBitmap, XMouse;
+  Keyboard, Mouse,
+  ModeX, XBitmap;
 
 procedure Update; far;
 begin
