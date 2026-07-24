@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  Bitmap, Logger, FPS, Timing, VGA;
+  P92Core, Bitmap, Logger, Keyboard, FPS, Timing, VGA;
 
 type
   TVec2 = record
@@ -12,44 +12,41 @@ type
   end;
 
 var
-  done: boolean;
+  { Asset variables }
   imgGrass: PBitmap;
+  { Game state variables }
   positions: array[0..99] of TVec2;
 
 
-procedure INIT;
+procedure OnPreload; far;
+begin
+  LoadBMP(imgGrass, 'IMG\GRASS.BMP');
+end;
+
+procedure OnReady; far;
 var
   a: integer;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initFPSCounter;
-
-  loadBMP(imgGrass, 'IMG\GRASS.BMP');
-  
   for a:=0 to high(positions) do
     with positions[a] do begin
-	  x := trunc(random(300));
-	  y := trunc(random(180))
+      x := trunc(random(300));
+      y := trunc(random(180))
     end;
 end;
 
 
-procedure update;
+procedure OnCleanup; far;
 begin
-  updateDeltaTime;
-  incrementFPS;
+  freeBMP(imgGrass)
+end;
 
-  if keyPressed then
-    if readKey = #27 then done := true;
+procedure Update; far;
+begin
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
 begin
@@ -57,24 +54,20 @@ begin
   
   for a:=0 to high(positions) do
     spr(imgGrass, trunc(positions[a].x), trunc(positions[a].y), 13);
-
-  drawFPS;
-  flush
 end;
 
-
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.LoadDefaultCursor := false;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  freeBMP(imgGrass);
-
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
