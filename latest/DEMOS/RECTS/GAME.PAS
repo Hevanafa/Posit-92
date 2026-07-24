@@ -4,7 +4,7 @@
 }
 
 uses
-  P92Core, Graphics, FPS, Logger, Timing, VGA;
+  P92Core, Graphics, FPS, Keyboard, Logger, Timing, VGA;
 
 var
   done: boolean;
@@ -15,6 +15,9 @@ begin
   dx := 7;
   dy := 4;
   colour := 1;
+
+  { Called just once }
+  cls($7D);
 end;
 
 
@@ -23,9 +26,8 @@ var
   a: integer;
   ch: char;
 begin
-  updateDeltaTime;
-  incrementFPS;
-  
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+
   inc(x, dx);
   inc(y, dy);
   
@@ -39,12 +41,6 @@ begin
     dy := -dy;
     colour := colour mod 15 + 1
   end;
-
-  if keyPressed then begin
-    ch := readKey;
-    if ch = #27 then done := true;
-  end;
-  
 end;
 
 
@@ -53,13 +49,8 @@ var
   a: integer;
   ch: char;
 begin
-  { cls($7D); }
   rectfill(x, y, x+5, y+5, colour);
-  
   rectfill(240, 0, 302, 8, 0);
-  drawFPS;
-  
-  flush
 end;
 
 
@@ -68,11 +59,10 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
-  @appConfig.OnPreload := @OnPreload;
+  appConfig.LoadDefaultCursor := false;
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
 end.
