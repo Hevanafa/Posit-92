@@ -1,15 +1,15 @@
 
 uses
   CRT, DOS,
-  Adlib, Conv, FPS, Logger, Maths, Mouse, Timing, VGA,
+  P92Core, AdLib, Conv, FPS, Logger, Maths, Mouse, Timing, VGA,
   Bitmap, BMFont, Graphics;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   font: TBMFont;
+
+  { Game state variables }
+  t: double;
   menuItems: array[0..99] of string;
   menuCount: integer;
   selectedIdx, firstIdx: integer;
@@ -35,23 +35,15 @@ begin
 end;
 
 
+procedure OnPreload; far;
+begin
+  loadBMFont(font, 'FONTS\ARIAL10.FNT');
+end;
 
-procedure INIT;
+procedure OnReady; far;
 var
   a: integer;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  { initKeyHandler; }
-  initMouse;
-
-  initFPSCounter;
-  AdlibDrv.init;
-  loadBMFont(font, 'FONTS\ARIAL10.FNT');
   selectedIdx := 0;
   firstIdx := -2;
   menuCount := 100;
@@ -61,20 +53,13 @@ begin
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a, relativeIdx: integer;
   ch: char;
 begin
-  updateDeltaTime;
-  updateMouse;
-  AdlibDrv.update;
-  incrementFPS;
-
-  { TODO: Your update code here }
-
   { if isKeyDown(K_ESC) then done := true; }
-  if keyPressed then begin
+  if KeyPressed then begin
     ch := readKey;
 
     case ord(ch) of
@@ -180,7 +165,7 @@ begin
   done := false;
 
   repeat
-    update;
+    Update;
     draw;
   until done;
 

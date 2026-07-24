@@ -14,6 +14,7 @@ type
 
   TP92AppConfig = record
     LoadDefaultCursor: boolean;
+    EnableAdLib: boolean;
 
     { Callbacks }
     OnPreload: TP92Callback;
@@ -66,6 +67,7 @@ end;
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.LoadDefaultCursor := true;
+  config.EnableAdLib := false;
 
   @config.OnPreload := nil;
   @config.OnReady := nil;
@@ -100,6 +102,9 @@ begin
     LoadCursor;
 
   InitFPSCounter;
+
+  if bootConfig.EnableAdLib then
+    AdlibDrv.init;
 end;
 
 procedure P92Cleanup;
@@ -116,6 +121,9 @@ begin
   UpdateDeltaTime;
   UpdateMouse;
   IncrementFPS;
+
+  if bootConfig.EnableAdLib then
+    AdlibDrv.update;
 end;
 
 procedure P92Draw;
