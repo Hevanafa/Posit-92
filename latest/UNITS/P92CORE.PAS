@@ -36,7 +36,12 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  FPS, Logger, Timing, Keyboard, Mouse, VGA;
+  FPS, Logger, Timing, Keyboard, VGA
+{$ifdef P92_MODEX}
+  , ModeX, XMouse;
+{$else}
+  , Mouse;
+{$endif}
 
 var
   done: boolean;
@@ -76,7 +81,13 @@ begin
   Randomize;
 
   InitLogger;
+
   InitVGAMode;
+
+{$ifdef P92_MODEX}
+  initModeX;
+{$endif}
+
   LoadCGAFont;
   InitBuffer;
   InitDeltaTime;
