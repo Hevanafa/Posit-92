@@ -5,7 +5,6 @@ uses
   Bitmap, Conv, FPS, BMFont;
 
 var
-  done: boolean;
   bootTime, t: double;
   font: PBMFont;
 

@@ -45,11 +45,14 @@ var
   kv: array[0..1] of string; { key-value pair }
   key, value: string;  { separated key-value pair }
 
+  bitmapPath: string;
   newGlyph: TBMFontGlyph;
   glyphID, parseResult, tempI32: integer;
 begin
   if font <> nil then
-    writeLog('loadBMFont: font isn''t nil!');
+    writeLog('LoadBMFont: font isn''t nil!');
+
+  WriteLog('LoadBMFont: Loading font from ' + filename);
 
   { getMem(font, sizeof(TBMFont)); }
   new(font);
@@ -88,7 +91,7 @@ begin
       for b:=0 to pairCount-1 do begin
         split(pairs[b], '=', kv);
         if kv[0] = 'file' then
-          font^.filename := replaceAll(kv[1], '"', '');
+          bitmapPath := replaceAll(kv[1], '"', '');
       end;
     end;
 
@@ -131,7 +134,7 @@ begin
   end;
   close(f);
 
-  loadBMP(font^.bitmap, font^.filename);
+  loadBMP(font^.bitmap, bitmapPath);
   writeLog('Loaded ' + i32str(count) + ' glyphs');
 end;
 
