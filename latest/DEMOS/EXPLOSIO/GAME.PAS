@@ -14,24 +14,27 @@ type
   end;
 
 var
+  { Asset variables }
+  imgExplosion: PBitmap;
+
+  { Game state variables }
   nextGameTick: double;
   loops: word;
   explosions: array[0..99] of TExplosion;
-  imgExplosion: PBitmap;
 
 
-function getFrame(const e: TExplosion): integer;
+function GetFrame(const e: TExplosion): integer;
 var
   result: word;
 begin
   result := trunc((0.5 - e.ttl) / 0.125);
   if result = 4 then
-    getFrame := 3
+    GetFrame := 3
   else
-    getFrame := result
+    GetFrame := result
 end;
 
-procedure initExplosion(var e: TExplosion);
+procedure InitExplosion(var e: TExplosion);
 begin
   e.alive := true;
   e.x := random(300);
@@ -39,50 +42,45 @@ begin
   e.ttl := 0.5
 end;
 
-procedure INIT;
+
+procedure OnPreload; far;
+begin
+  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
+end;
+
+procedure OnCleanup; far;
+begin
+  freeBMP(imgExplosion);
+end;
+
+procedure OnReady; far;
 var
   a: word;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initMouse;
-  initFPSCounter;
-
-  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
-  
   for a:=0 to high(explosions) do begin
-    initExplosion(explosions[a]);
+    InitExplosion(explosions[a]);
     explosions[a].ttl := random * 0.5;
   end;
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
+  if KeyPressed and (ReadKey = #27) then SignalDone;
 
   for a:=0 to high(explosions) do
     if explosions[a].alive then begin
-      explosions[a].ttl := explosions[a].ttl - dt;
+      explosions[a].ttl := explosions[a].ttl - DeltaTime;
       if explosions[a].ttl <= 0 then
         explosions[a].alive := false;
     end else
-      initExplosion(explosions[a]);
-
-  if keyPressed then
-    if readKey = #27 then done := true;
+      InitExplosion(explosions[a]);
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
 begin
@@ -93,47 +91,27 @@ begin
 
     SprRegion(
       imgExplosion,
-      getFrame(explosions[a]) * 16, 0, 16, 16,
+      GetFrame(explosions[a]) * 16, 0, 16, 16,
       explosions[a].x, explosions[a].y, 13);
       
-      { print(i32str(getFrame(explosions[a])), explosions[a].x, explosions[a].y, 15); }
+      { print(i32str(GetFrame(explosions[a])), explosions[a].x, explosions[a].y, 15); }
   end;
-  
-  drawMouse;
-  drawFPS;
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  { without frameskipping: 27-29 FPS }
-  {
-  repeat
-    update;
-    draw
-  until done;
-  }
+  appConfig.EnableKeyHandler := false;
 
-  { with frameskipping: 35-39 FPS }
-  nextGameTick := getTimer;
-  repeat
-    loops := 0;
-    
-    while (getTimer > nextGameTick) and (loops < MAX_FRAME_SKIP) do begin
-      update;
-      nextGameTick := nextGameTick + (1 / TARGET_FPS);
-      inc(loops)
-    end;
-    draw;
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  freeBMP(imgExplosion);
-
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
