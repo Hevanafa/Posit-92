@@ -1,37 +1,16 @@
 {$DEFINE DEBUG}
 
 uses
-  CRT,
-  Conv, Logger, Timing, ModeX, XBitmap, XFPS, XMouse;
+  Conv, Logger, Timing,
+  Keyboard, XMouse,
+  ModeX, XBitmap, XFPS;
 
-var
-  done: boolean;
-
-procedure INIT;
+procedure Update; far;
 begin
-  initLogger;
-  initModeX;
-  loadFont;
-  initMouse;
-
-  initDeltaTime;
-  initFPSCounter;
-
-  randomize;
-end;
-
-
-procedure update;
-begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
   if keyPressed then if readKey = #27 then done := true;
 end;
 
-
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);
 
@@ -45,19 +24,18 @@ begin
 end;
 
 var
-  a, b: integer;
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    limit(35);
-    update;
-    draw;
-    flipPages
-  until done;
+  appConfig.EnableModeX := true;
 
-  resetMouse;
-  closeLogger;
-  initTextMode
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
 end.
+
