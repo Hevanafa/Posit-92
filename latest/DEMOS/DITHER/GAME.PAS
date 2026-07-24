@@ -1,13 +1,8 @@
 
-uses CRT, Logger, Maths, Mouse, VGA;
+uses
+  P92Core, Logger, Maths, Keyboard, Mouse, VGA;
 
-const
-  K_ESC = $01;
-var
-  done: boolean;
-
-
-procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDither(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -27,47 +22,27 @@ begin
         surface^[b*320+a] := colour;
 end;
 
-procedure INIT;
+procedure Update; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initMouse;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 
-procedure update;
-begin
-  updateMouse;
-
-  if keyPressed then
-    if readKey = #27 then done := true;
-end;
-
-
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);
-  rectfillDither(10, 20, 50, 60, 7);
-  drawMouse;
-  flush
+
+  RectFillDither(10, 20, 50, 60, 7);
 end;
 
-
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  { Clean-up }
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
