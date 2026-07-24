@@ -3,10 +3,12 @@ unit Bitmap;
 interface
 
 type
+  TByteArray = array[0..0] of byte;
+
   PBitmap = ^TBitmap;
   TBitmap = record
     width, height, palsize: word;
-    data: array[0..0] of byte;
+    data: TByteArray;
   end;
 
 procedure loadBMP(var output: PBitmap; const filename: string);
