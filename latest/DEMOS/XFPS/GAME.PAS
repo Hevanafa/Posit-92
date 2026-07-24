@@ -1,13 +1,12 @@
 {$DEFINE DEBUG}
 
 uses
-  Conv, Logger, Timing,
-  Keyboard, XMouse,
-  ModeX, XBitmap, XFPS;
+  P92Core, Conv, Logger, Timing, Keyboard,
+  ModeX, XBitmap, XMouse, XFPS;
 
 procedure Update; far;
 begin
-  if keyPressed then if readKey = #27 then done := true;
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
 procedure Draw; far;
@@ -28,13 +27,8 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
-  appConfig.EnableModeX := true;
-
-  @appConfig.OnPreload := @OnPreload;
-  @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
 end.
