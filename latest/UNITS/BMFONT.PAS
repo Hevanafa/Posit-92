@@ -22,20 +22,18 @@ type
     bitmap: PBitmap;  { 642 }
   end;
 
-procedure loadBMFont(var font: PBMFont; const filename: string);
-procedure freeBMFont(var font: PBMFont);
+procedure LoadBMFont(var font: PBMFont; const filename: string);
+procedure FreeBMFont(var font: PBMFont);
 
-procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-procedure pascalPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 
-function measureBMFont(const font: PBMFont; const text: string): integer;
+function MeasureBMFont(const font: PBMFont; const text: string): integer;
 
 implementation
 
 uses Conv, Logger, Panic, Strings, VGA;
 
-procedure loadBMFont(var font: PBMFont; const filename: string);
+procedure LoadBMFont(var font: PBMFont; const filename: string);
 var
   b: integer;
   f: text;
@@ -138,7 +136,7 @@ begin
 end;
 
 
-procedure freeBMFont(var font: PBMFont);
+procedure FreeBMFont(var font: PBMFont);
 var
   a, count: word;
 begin
@@ -166,13 +164,7 @@ begin
 end;
 
 
-procedure printBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-begin
-  pascalPrintBMFont(font, text, x, y, transparencyKey)
-end;
-
-
-procedure pascalPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
   ch: char;
@@ -205,161 +197,8 @@ begin
   end;
 end;
 
-procedure asmPrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
-var
-  a, row, col: integer;
-  destX, destY: integer;
-  ch: char;
-  g: PBMFontGlyph;
-  srcX, srcY: word;
-  colour: byte;
 
-  width: word;
-begin
-  if font = nil then exit;
-  if x >= 320 then exit;
-  if y >= 200 then exit;
-
-  destX := x; destY := y;
-  for a:=1 to length(text) do begin
-    ch := text[a];
-    if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
-
-    g := font^.glyphs[ord(ch)];
-    if g = nil then continue;
-
-asm
-{ for (row = 0; row < g^.height; row++)}
-@row_init:
-  mov row, 0
-
-@row_condition:
-  les si, g
-  { g^.height }
-  mov ax, es:[si+8]
-  cmp row, ax
-  jg @row_end
-
-@row_loop:
-
-  { for (col = 0; col < g^.width; col++) }
-  @col_init:
-    mov col, 0
-
-  @col_condition:
-    les si, g
-    { g^.width }
-    mov ax, es:[si+6]
-    cmp col, ax
-    jg @col_end
-
-  @col_loop:
-    les si, g
-
-    { srcX := g^.x + col; }
-    mov ax, es:[si+2]
-    add ax, col
-    mov srcX, ax
-
-    { srcY := g^.y + row; }
-    mov ax, es:[si+4]
-    add ax, row
-    mov srcY, ax
-
-    { get pixel from:
-      font^.bitmap^.data[
-        srcY * font^.bitmap^.width + srcX]
-    }
-    les si, font
-    { Jump to font^.bitmap }
-    add si, 642
-    mov bx, es:[si]
-    { font^.bitmap^.width }
-    mov dx, es:[si + 2]
-
-    { Assign ES:SI to TBitmap }
-    mov es, dx
-    mov si, bx
-
-    mov ax, es:[si]
-    mov width, ax
-
-    { data offset: srcY * font^.bitmap^.width + srcX }
-    mov bx, srcY
-    mul bx
-    add ax, srcX
-
-    add ax, 4
-    add si, ax
-    mov al, es:[si]
-    mov colour, al
-    cmp al, transparencyKey
-    je @col_next
-
-    { Check bounds }
-    les si, g
-
-    mov ax, destY
-    add si, 12
-    add ax, es:[si]
-    add ax, row
-    cmp ax, 0
-    jl @row_next
-    cmp ax, 200
-    jge @skip
-
-    mov ax, destX
-    sub si, 2
-    add ax, es:[si]
-    add ax, col
-    cmp ax, 0
-    jl @col_next
-    cmp ax, 320
-    jge @row_next
-
-    { Calculate offset }
-    { y + g^.yoffset + row }
-    les si, g
-
-    mov ax, destY
-    add si, 12
-    add ax, es:[si]
-    add ax, row
-    mov bx, 320
-    mul bx
-
-    { destX + g^.xoffset + col }
-    add ax, destX
-    sub si, 2
-    add ax, es:[si]
-    add ax, col
-    mov bx, ax
-
-    les di, surface
-    add di, bx
-    mov al, colour
-    mov es:[di], al
-
-  @col_next:
-    inc col
-    jmp @col_condition
-
-  @col_end:
-
-@row_next:
-  inc row
-  jmp @row_condition
-
-@row_end:
-@skip:
-end;
-
-    inc(destX, g^.xadvance)
-  end;
-end;
-
-
-function measureBMFont(const font: PBMFont; const text: string): integer;
+function MeasureBMFont(const font: PBMFont; const text: string): integer;
 var
   a: integer;
   ch: char;
@@ -367,7 +206,7 @@ var
   result: integer;
 begin
   if font = nil then begin
-    measureBMFont := 0;
+    MeasureBMFont := 0;
     exit
   end;
 
@@ -382,7 +221,7 @@ begin
     end;
   end;
 
-  measureBMFont := result
+  MeasureBMFont := result
 end;
 
 end.
