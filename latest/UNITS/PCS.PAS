@@ -11,7 +11,7 @@ type
     duration: double; { in seconds }
   end;
   TMelody = record
-    notes: array[0..15] of TNote;
+    notes: array[0..127] of TNote;
     noteCount: byte;
   end;
 

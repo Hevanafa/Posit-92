@@ -14,6 +14,8 @@ type
 
   TP92AppConfig = record
     LoadDefaultCursor: boolean;
+
+    EnablePCSpeaker: boolean;
     EnableAdLib: boolean;
     { Turning this off enables the KeyPressed and ReadKey pattern
       using the CRT unit }
@@ -41,9 +43,9 @@ implementation
 
 uses
   Logger, Timing,
-  PCS, AdLib,
   Keyboard, Mouse,
-  FPS, VGA
+  FPS, VGA,
+  PCS, AdLib
 {$ifdef P92_MODEX}
   , ModeX;
 {$else}
@@ -74,6 +76,8 @@ end;
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.LoadDefaultCursor := true;
+
+  config.EnablePCSpeaker := true;
   config.EnableAdLib := false;
   config.EnableKeyHandler := true;
 
@@ -110,6 +114,9 @@ begin
 
   InitFPSCounter;
 
+  if bootConfig.EnablePCSpeaker then
+    PCSpeaker.init;
+
   if bootConfig.EnableAdLib then
     AdlibDrv.init;
 end;
@@ -120,6 +127,9 @@ begin
 
   if bootConfig.EnableKeyHandler then
     ResetKeyHandler;
+
+  if bootConfig.EnablePCSpeaker then
+    PCSpeaker.stop;
 
   if bootConfig.EnableAdLib then
     AdLibDrv.shutdown;
