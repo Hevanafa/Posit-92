@@ -2,7 +2,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Logger, Keyboard, PCS, Timing, VGA;
+  P92Core, Bitmap, Logger, PCS, Timing, VGA;
 
 const
   C4 = 262;
@@ -33,17 +33,6 @@ var
   { Game state variables}
   t: double;
 
-
-procedure OnPreload; far;
-begin
-  loadBMP(imgPiano, 'IMG\PIANO.BMP');
-end;
-
-procedure OnCleanup; far;
-begin
-  freeBMP(imgPiano);
-end;
-
 {
 procedure initJerusalemHymn;
 begin
@@ -69,7 +58,7 @@ begin
 end;
 }
 
-procedure initJerusalemHymn;
+procedure InitJerusalemHymn;
 begin
   hymn.noteCount := 128;
 
@@ -185,67 +174,40 @@ begin
   initNote(hymn.notes[95], G4, full + half);
 end;
 
-
-procedure update;
+procedure OnPreload; far;
 begin
-  updateDeltaTime;
-  { updateMouse; }
-  PCSpeaker.update;
-
-  { TODO: Your update code here }
-
-  { if isKeyDown(SC_ESC) then done := true; }
-  if keyPressed then if readKey = #27 then done := true;
-  
-  t:=t+dt
-end;
-
-
-procedure draw;
-begin
-  asmCls($7D);
-
-  { TODO: Your drawing code here }
-
-  asmSpr(imgPiano, 148, 76, 13);
-
-  {
-  if (trunc(t * 1.5) and 1) = 0 then
-    asmSpr(dosuEXE[0], 148, 76, 13)
-  else
-    asmSpr(dosuEXE[1], 148, 76, 13);
-  }
-
-  print('Playing "Jerusalem" hymn', 160-96, 120, 15);
-  print('by Sir Charles Hubert', 160-84, 130, 15);
-  print('Hastings Parry', 160-56, 140, 15);
-  { drawMouse; }
-
-  asmFlush
-end;
-
-
-begin
-  INIT;
-  done := false;
+  loadBMP(imgPiano, 'IMG\PIANO.BMP');
   initJerusalemHymn;
+end;
+
+procedure OnCleanup; far;
+begin
+  freeBMP(imgPiano);
+end;
+
+procedure OnReady; far;
+begin
   PCSpeaker.playMelody(hymn);
+end;
 
-  repeat
-    update;
-    draw
-  until done;
+procedure Update; far;
+begin
+  if KeyPressed and (ReadKey = #27) then SignalDone;
+  
+  t:=t+DeltaTime;
+end;
 
-  { TODO: Your cleanup code here }
 
-  PCSpeaker.stop;
+procedure Draw; far;
+begin
+  Cls($7D);
 
-  { resetMouse; }
-  { resetKeyHandler; }
-  freeBuffer;
-  closeLogger;
-  initTextMode
-end.
+  Spr(imgPiano, 148, 76, 13);
+
+  Print('Playing "Jerusalem" hymn', 160-96, 120, 15);
+  Print('by Sir Charles Hubert', 160-84, 130, 15);
+  Print('Hastings Parry', 160-56, 140, 15);
+end;
 
 
 var

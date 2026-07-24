@@ -145,6 +145,9 @@ begin
   UpdateMouse;
   IncrementFPS;
 
+  if bootConfig.EnablePCSpeaker then
+    PCSpeaker.update;
+
   if bootConfig.EnableAdLib then
     AdlibDrv.update;
 end;
