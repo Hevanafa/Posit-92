@@ -1,5 +1,9 @@
 unit BMPRLE;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 uses Bitmap, Panic;

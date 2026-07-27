@@ -1,5 +1,9 @@
 unit XBitmap;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

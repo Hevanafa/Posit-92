@@ -2,6 +2,10 @@
 
 unit MonoBMP;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

@@ -1,11 +1,16 @@
 unit Timing;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 function GetTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
+
 procedure Limit(const fps: integer);
 
 procedure InitDeltaTime;

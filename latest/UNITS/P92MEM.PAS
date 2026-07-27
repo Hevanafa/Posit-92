@@ -1,4 +1,8 @@
-unit Memory;
+unit P92MEM;
+
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
 
 interface
 

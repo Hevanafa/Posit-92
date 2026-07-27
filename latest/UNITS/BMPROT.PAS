@@ -1,5 +1,9 @@
 { Bitmap rotation + scale render procedures }
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 procedure initTrigLUT;

@@ -1,12 +1,16 @@
 {
   Microsoft FNT (Windows Bitmap Font) utility unit
-  Part of Posit-92 game framework
+  Part of Posit-92 game engine
 
   Supports both monospaced and proportional Microsoft FNT
   files as used in Windows 95 and prior
 }
 
 unit MSFNT;
+
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
 
 interface
 

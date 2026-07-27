@@ -1,5 +1,9 @@
 unit P92VGA;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

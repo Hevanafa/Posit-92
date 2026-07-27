@@ -5,6 +5,10 @@
 
 unit Graphics;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);

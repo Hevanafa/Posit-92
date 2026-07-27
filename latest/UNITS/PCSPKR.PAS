@@ -4,7 +4,11 @@
   By Hevanafa
 }
 
-unit PCSpkr;
+unit PCSPKR;
+
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
 
 interface
 

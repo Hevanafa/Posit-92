@@ -1,5 +1,9 @@
 unit ModeX;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 { Requires InitMode13h call }

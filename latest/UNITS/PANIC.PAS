@@ -1,5 +1,9 @@
 unit Panic;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 procedure PanicHalt(const msg: string);

@@ -12,6 +12,10 @@
 
 unit AdLib;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 const

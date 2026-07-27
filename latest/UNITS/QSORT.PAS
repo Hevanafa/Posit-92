@@ -5,6 +5,10 @@
 
 unit QSort;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type

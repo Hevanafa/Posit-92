@@ -1,5 +1,9 @@
 unit P92Mouse;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 {$ifdef P92_MODEX}

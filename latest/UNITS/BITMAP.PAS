@@ -1,5 +1,9 @@
 unit Bitmap;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 interface
 
 type
