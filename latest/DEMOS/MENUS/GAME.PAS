@@ -6,7 +6,7 @@ uses
 
 var
   { Asset variables }
-  font: PBMFont;
+  font, outlineFont: PBMFont;
 
   { Game state variables }
   t: double;
@@ -16,8 +16,15 @@ var
 
 
 procedure OnPreload; far;
+var
+  a: word;
 begin
   LoadBMFont(font, 'FONTS\ARIAL10.FNT');
+  LoadBMFont(outlineFont, 'FONTS\ARIAL10.FNT');
+
+  for a:=0 to outlineFont^.bitmap^.width * outlineFont^.bitmap^.height - 1 do
+    if outlineFont^.bitmap^.data[a] = 15 then
+      outlineFont^.bitmap^.data[a] := 0;
 end;
 
 procedure OnCleanup; far;
@@ -85,11 +92,11 @@ end;
 
 procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  printBMFont(font, txt, x-1, y, outline);
-  printBMFont(font, txt, x+1, y, outline);
-  printBMFont(font, txt, x, y-1, outline);
-  printBMFont(font, txt, x, y+1, outline);
-  printBMFont(font, txt, x, y, colour);
+  printBMFont(outlineFont, txt, x-1, y, 13);
+  printBMFont(outlineFont, txt, x+1, y, 13);
+  printBMFont(outlineFont, txt, x, y-1, 13);
+  printBMFont(outlineFont, txt, x, y+1, 13);
+  printBMFont(font, txt, x, y, 13);
 end;
 
 
