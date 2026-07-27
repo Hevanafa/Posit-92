@@ -4,40 +4,15 @@
 
 uses
   CRT,
-  Bitmap, Conv, Logger, Mouse, VGA;
+  P92Core, Conv, Mouse, VGA;
 
-var
-  done: boolean;
 
-procedure Init;
+procedure Update; far;
 begin
-  Randomize;
-
-  InitLogger;
-  InitVGAMode;
-  LoadFont;
-  InitBuffer;
-  InitMouse;
+  if keyPressed and (ReadKey = #27) then SignalDone;
 end;
 
-
-procedure Update;
-var
-  a: integer;
-  ch: char;
-begin
-  UpdateMouse;
-  
-  if keyPressed then begin
-    ch := readKey;
-	if ch = #27 then done := true;
-  end;
-end;
-
-
-procedure Draw;
-var
-  a: integer;
+procedure Draw; far;
 begin
   cls($7D);
 
@@ -45,24 +20,19 @@ begin
   print('x: ' + i32str(mouseX), 32, 32, 15);
   print('y: ' + i32str(mouseY), 32, 40, 15);
   print('Button: ' + i32str(mouseButton), 32, 56, 15);
-  
-  DrawMouse;
-
-  Flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  Init;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    Update;
-    Draw;
-  until done;
+  appConfig.EnableKeyHandler := false;
 
-  ResetMouse;
-  FreeBuffer;
-  CloseLogger;
-  InitTextMode
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+
+  P92Start(appConfig)
 end.
+
