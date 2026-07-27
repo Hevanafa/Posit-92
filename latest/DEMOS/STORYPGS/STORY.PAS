@@ -91,7 +91,7 @@ begin
   if not isStory then exit;
 
   if storyRow < lineCount then begin
-    elapsed := elapsed + dt;
+    elapsed := elapsed + DeltaTime;
     if elapsed >= charInterval then begin
       elapsed := 0;
       inc(storyCol)
@@ -112,14 +112,15 @@ begin
 
   { Render full text }
   for a:=0 to storyRow - 1 do
-    font^.print(lines[a], 0, font^.lineHeight * a, 15);
+    PrintBMFont(font, lines[a], 0, font^.lineHeight * a, 0);
 
   { Render partially }
   if storyRow < lineCount then
-    font^.print(
+    PrintBMFont(
+      font,
       copy(lines[storyRow], 1, storyCol),
       0, storyRow * font^.lineHeight,
-      15);
+      0);
 end;
 
 
