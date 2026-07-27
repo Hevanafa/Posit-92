@@ -5,7 +5,7 @@
 
 uses
   CRT, DOS,
-  Logger, VGA, Bitmap, BMFont;
+  P92Core, Logger, VGA, Bitmap, BMFont;
 
 var
   done: boolean;
@@ -18,8 +18,9 @@ var
 begin
   for dy:=-1 to 1 do
     for dx:=-1 to 1 do
-      print(t, x+dx, y+dy, outline);
-  print(t, x, y, colour)
+      Print(t, x+dx, y+dy, outline);
+
+  Print(t, x, y, colour)
 end;
 
 procedure printShadow(const t: string; const x, y: integer; const colour, shadow: byte);
@@ -39,7 +40,7 @@ begin
     if (idx < 0) or (idx > 127) then continue;
 
     for row := 0 to 7 do begin
-      mask := font8x8[ord(text[idx]), row];
+      mask := BorrowCGAFont^[ord(text[idx]), row];
       colour := row + 8;
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
@@ -50,18 +51,7 @@ begin
 end;
 
 
-procedure INIT;
-begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  { loadBMFont(font, 'FONTS\FR12.FNT'); }
-end;
-
-
-procedure update;
+procedure Update; far;
 var
   a: integer;
   ch: char;
@@ -73,7 +63,7 @@ begin
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
 begin
@@ -82,21 +72,19 @@ begin
   printOutline('Outline!', 50, 50, 0, $0B);
   printShadow('Shadow!', 50, 70, $2A, 0);
   printStripes('Stripes!', 50, 90);
-
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.EnableKeyHandler := false;
 
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+
+  P92Start(appConfig)
 end.
+
