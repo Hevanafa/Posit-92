@@ -1,4 +1,4 @@
-unit Mouse;
+unit P92Mouse;
 
 interface
 

@@ -3,7 +3,7 @@
   DOSBox's default settings
 }
 
-unit Keyboard;
+unit P92KBD;
 
 interface
 
