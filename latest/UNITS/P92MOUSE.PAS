@@ -90,8 +90,6 @@ end;
 
 
 procedure DrawMouse;
-var
-  Regs: Registers;
 begin
   if not mouseInitialised then exit;
   spr(cursor, mouseX, mouseY, 13);

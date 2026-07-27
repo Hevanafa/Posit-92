@@ -884,8 +884,6 @@ end;
 
 
 procedure TAdLibDriver.playMelodyNoInstrument(const melody: PMelody; const voice: byte);
-var
-  found: boolean;
 begin
   stopVoice(voice);
 
@@ -906,8 +904,6 @@ begin
 end;
 
 procedure TAdLibDriver.playMelody(const melody: PMelody; const voice: byte);
-var
-  found: boolean;
 begin
   stopVoice(voice);
 

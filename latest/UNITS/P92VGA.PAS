@@ -58,7 +58,6 @@ uses DOS, Panic;
 const
   bufferSize = 64000;
 var
-  a, b: integer;
   font8x8: TFont8x8;
   bufferInitialised: boolean;
 
@@ -127,7 +126,6 @@ end;
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
   row, col, idx: integer;
-  pos: integer;
   mask: byte;
 begin
   for idx := 1 to length(text) do begin
@@ -285,15 +283,18 @@ end;
 
 procedure InitBuffer;
 begin
-  if not bufferInitialised then
+  if not bufferInitialised then begin
     getMem(surface, bufferSize);
+    bufferInitialised := true;
+  end;
 end;
 
 procedure FreeBuffer;
 begin
   if bufferInitialised then begin
     freeMem(surface, bufferSize);
-    surface := nil
+    surface := nil;
+    bufferInitialised := false;
   end;
 end;
 

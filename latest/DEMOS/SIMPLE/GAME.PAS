@@ -1,5 +1,9 @@
 program Game;
 
+{$IFDEF FPC}
+{$MODE TP}
+{$ENDIF}
+
 uses
   CRT, DOS,
   P92Core,
@@ -45,8 +49,6 @@ begin
 end;
 
 procedure Draw; far;
-var
-  a: integer;
 begin
   Cls($7D);
 
