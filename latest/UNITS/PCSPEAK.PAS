@@ -20,17 +20,17 @@ type
   end;
 
   TPCSpeaker = object
-    procedure init;
-    procedure playBeep(const freq, durationMs: word);
-    procedure playMelody(const melody: TMelody);
-    procedure stop;
-    procedure update;
+    procedure Init;
+    procedure PlayBeep(const freq, durationMs: word);
+    procedure PlayMelody(const melody: TMelody);
+    procedure Stop;
+    procedure Update;
   end;
 
 var
   PCSpeaker: TPCSpeaker;
 
-procedure initNote(var output: TNote; const freq: word; const duration: double);
+procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
 
 implementation
@@ -45,7 +45,7 @@ var
   toneEnd: longint;
 
 
-procedure initNote(var output: TNote; const freq: word; const duration: double);
+procedure InitNote(var output: TNote; const freq: word; const duration: double);
 begin
   output.rest := freq = 0;
   if not output.rest then
@@ -54,7 +54,7 @@ begin
 end;
 
 
-procedure TPCSpeaker.playBeep(const freq, durationMs: word);
+procedure TPCSpeaker.PlayBeep(const freq, durationMs: word);
 begin
   sound(freq);
   toneEnd := getTicks + (durationMs div 55);
@@ -67,7 +67,7 @@ begin
   inc(currentNote);
 
   if currentNote >= currentMelody.noteCount then begin
-    PCSpeaker.stop;
+    PCSpeaker.Stop;
     exit
   end;
 
@@ -79,13 +79,13 @@ begin
   noteEndTick := getTimer + currentMelody.notes[currentNote].duration;
 end;
 
-procedure TPCSpeaker.init;
+procedure TPCSpeaker.Init;
 begin
   currentNote := -1;
   playing := false;
 end;
 
-procedure TPCSpeaker.playMelody(const melody: TMelody);
+procedure TPCSpeaker.PlayMelody(const melody: TMelody);
 begin
   if playing then exit;
 
@@ -95,13 +95,13 @@ begin
   playNextNote
 end;
 
-procedure TPCSpeaker.update;
+procedure TPCSpeaker.Update;
 begin
   if playing and (getTimer >= noteEndTick) then
     playNextNote;
 end;
 
-procedure TPCSpeaker.stop;
+procedure TPCSpeaker.Stop;
 begin
   noSound;
   playing := false;
