@@ -42,7 +42,8 @@ procedure P92Start(const config: TP92AppConfig);
 implementation
 
 uses
-  Logger, Timing,
+  DOS,
+  Logger, Timing, P92MEM,
   P92KBD, P92Mouse,
   FPS, P92VGA,
   PCSPKR, AdLib
@@ -91,10 +92,8 @@ end;
 { Called by P92Start }
 procedure P92Init;
 begin
-  Randomize;
-
+  SetStackBottom(word(SPtr));
   InitLogger;
-
   InitMode13h;
 {$ifdef P92_MODEX}
   initModeX;
@@ -119,6 +118,8 @@ begin
 
   if bootConfig.EnableAdLib then
     AdlibDrv.init;
+
+  Randomize;
 end;
 
 procedure P92Cleanup;

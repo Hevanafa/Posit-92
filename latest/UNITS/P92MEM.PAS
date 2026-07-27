@@ -4,17 +4,30 @@ unit P92MEM;
 
 interface
 
+{ Called by P92Core.Init }
+procedure SetStackBottom(const value: word);
 function GetHeapSize: longint;
+{ Requires a call to SetStackBottom }
 function GetStackSize: word;
 procedure DrawMemInfo;
 procedure DrawDOSMemInfo;
+
 
 implementation
 
 uses DOS, Conv, P92VGA;
 
 { Assuming that the computer has the conventional 640 KB RAM by default }
-const HeapSize = 655360;
+const
+  HeapSize = 655360;
+
+var
+  stackBottom: word;
+
+procedure SetStackBottom(const value: word);
+begin
+  stackBottom := value
+end;
 
 function GetHeapSize: longint;
 begin
@@ -24,7 +37,7 @@ end;
 { Gets an approximate stack usage }
 function GetStackSize: word;
 begin
-  GetStackSize := SPtr - SSeg * 16
+  GetStackSize := stackBottom - word(SPtr)
 end;
 
 procedure DrawMemInfo;
@@ -57,4 +70,7 @@ begin
   print('DOS conventional mem: ' + i32str(totalMem) + 'B', 10, 64, 7)
 end;
 
+begin
+  stackBottom := 0;
 end.
+
