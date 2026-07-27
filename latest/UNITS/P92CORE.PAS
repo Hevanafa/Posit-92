@@ -43,9 +43,9 @@ implementation
 
 uses
   Logger, Timing,
-  Keyboard, Mouse,
-  FPS, VGA,
-  PCSpkr, AdLib
+  P92KBD, P92Mouse,
+  FPS, P92VGA,
+  PCSPKR, AdLib
 {$ifdef P92_MODEX}
   , ModeX;
 {$else}

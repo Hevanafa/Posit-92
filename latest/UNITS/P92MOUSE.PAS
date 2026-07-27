@@ -29,7 +29,9 @@ procedure ResetMouse;
 
 implementation
 
-uses DOS, Conv, Logger, VGA;
+uses
+  DOS,
+  Conv, Logger, P92VGA;
 
 var
   mouseInitialised: boolean;

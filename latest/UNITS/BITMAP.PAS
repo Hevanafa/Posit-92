@@ -61,7 +61,7 @@ procedure bitmapInfo(const image: PBitmap);
 
 implementation
 
-uses Logger, Conv, Panic, VGA;
+uses Logger, Conv, Panic, P92VGA;
 
 const DEBUG = true;
 

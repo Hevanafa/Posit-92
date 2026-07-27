@@ -146,7 +146,11 @@ const
 var
   { pressed keys }
   keys: array[0..NUM_KEYS - 1] of boolean;
+{$IFDEF FPC}
+  oldKeyHandler: farpointer;
+{$ELSE}
   oldKeyHandler: pointer;
+{$ENDIF}
   keyboardInitialised: boolean;
 
 procedure KeyHandler; interrupt;
