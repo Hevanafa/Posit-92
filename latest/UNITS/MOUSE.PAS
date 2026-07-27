@@ -78,8 +78,8 @@ begin
     exit
   end;
 
-  Print('Mouse: {x:' + i32str(mouseX) + ', y:' + i32str(mouseY) + '}', 0, 0, 15);
-  Print('Buttons: ' + i32str(mouseButton), 0, 8, 15);
+  Print('Mouse: {x:' + I32Str(mouseX) + ', y:' + I32Str(mouseY) + '}', 0, 0, 15);
+  Print('Buttons: ' + I32Str(mouseButton), 0, 8, 15);
 end;
 
 

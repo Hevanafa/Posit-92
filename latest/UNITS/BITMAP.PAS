@@ -94,9 +94,9 @@ begin
   { output^.size := w * h; }
 
   if debug then begin
-    writeLog('Width:' + i32str(output^.width));
-    writeLog('Height:' + i32str(output^.height));
-    writeLog('Palette:' + i32str(output^.palsize));
+    writeLog('Width:' + I32Str(output^.width));
+    writeLog('Height:' + I32Str(output^.height));
+    writeLog('Palette:' + I32Str(output^.palsize));
   end;
 
   start := 54 + palsize * 4;
@@ -106,8 +106,8 @@ begin
     padding := 4 - w mod 4;
 
   if debug then begin
-    writeLog('Start:' + i32str(start));
-    writeLog('Padding:' + i32str(padding));
+    writeLog('Start:' + I32Str(start));
+    writeLog('Padding:' + I32Str(padding));
   end;
 
   for b := 0 to h-1 do begin
@@ -115,7 +115,7 @@ begin
     blockRead(f, buffer, w);
 
     if debug then
-      writeLog('Finished reading line ' + i32str(b));
+      writeLog('Finished reading line ' + I32Str(b));
 
     { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
     { bottom to top }
@@ -761,9 +761,9 @@ begin
   transKey := transparencyKey;
   colour := 0;
 
-  writeLog('dest x and y:' + i32str(destX) + ', ' + i32str(destY));
-  writeLog('img width & height: ' + i32str(imgWidth) + ', ' + i32str(imgHeight));
-  writeLog('transparency key' + i32str(transKey));
+  writeLog('dest x and y:' + I32Str(destX) + ', ' + I32Str(destY));
+  writeLog('img width & height: ' + I32Str(imgWidth) + ', ' + I32Str(imgHeight));
+  writeLog('transparency key' + I32Str(transKey));
 
 asm
   les di, [image]
@@ -852,9 +852,9 @@ begin
   transKey := transparencyKey;
   colour := 0;
 
-  writeLog('dest x and y:' + i32str(destX) + ', ' + i32str(destY));
-  writeLog('img width & height: ' + i32str(imgWidth) + ', ' + i32str(imgHeight));
-  writeLog('transparency key' + i32str(transKey));
+  writeLog('dest x and y:' + I32Str(destX) + ', ' + I32Str(destY));
+  writeLog('img width & height: ' + I32Str(imgWidth) + ', ' + I32Str(imgHeight));
+  writeLog('transparency key' + I32Str(transKey));
 
 asm
   les di, [image]
@@ -952,9 +952,9 @@ begin
   colour := 0;
 
 {
-  writeLog('dest x and y:' + i32str(destX) + ', ' + i32str(destY));
-  writeLog('img width & height: ' + i32str(imgWidth) + ', ' + i32str(imgHeight));
-  writeLog('transparency key' + i32str(transKey));
+  writeLog('dest x and y:' + I32Str(destX) + ', ' + I32Str(destY));
+  writeLog('img width & height: ' + I32Str(imgWidth) + ', ' + I32Str(imgHeight));
+  writeLog('transparency key' + I32Str(transKey));
 }
 
 asm
@@ -1084,7 +1084,7 @@ begin
   for i := 0 to 35 do begin
     sinLUT[i] := sin(i * 10 * Pi / 180);
     cosLUT[i] := cos(i * 10 * Pi / 180);
-    writeLog(i32str(i) + ' - ' + f32str(sinLUT[i]))
+    writeLog(I32Str(i) + ' - ' + F32Str(sinLUT[i]))
   end;
 end;
 
@@ -1236,9 +1236,9 @@ begin
   end;
 
   { print('File name:' + name, 10, 160, 15); }
-  print('Width: ' + i32str(image^.width), 10, 168, 15);
-  print('Height: ' + i32str(image^.height), 10, 176, 15);
-  print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+  print('Width: ' + I32Str(image^.width), 10, 168, 15);
+  print('Height: ' + I32Str(image^.height), 10, 176, 15);
+  print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15)
 end;
 
 

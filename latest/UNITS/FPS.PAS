@@ -40,7 +40,7 @@ end;
 
 procedure DrawFPS;
 begin
-  Print('FPS:' + i32str(lastFPS), 240, 0, $0E)
+  Print('FPS:' + I32Str(lastFPS), 240, 0, $0E)
 end;
 
 

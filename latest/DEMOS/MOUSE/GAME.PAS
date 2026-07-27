@@ -17,9 +17,9 @@ begin
   cls($7D);
 
   print('Mouse', 32, 24, 15);
-  print('x: ' + i32str(mouseX), 32, 32, 15);
-  print('y: ' + i32str(mouseY), 32, 40, 15);
-  print('Button: ' + i32str(mouseButton), 32, 56, 15);
+  print('x: ' + I32Str(mouseX), 32, 32, 15);
+  print('y: ' + I32Str(mouseY), 32, 40, 15);
+  print('Button: ' + I32Str(mouseButton), 32, 56, 15);
 end;
 
 

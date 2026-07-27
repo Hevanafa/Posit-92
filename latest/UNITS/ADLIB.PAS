@@ -317,7 +317,7 @@ begin
   isPercussiveMode := value;
 
 {$IFDEF DEBUG}
-  writeLog('Changed percussive mode to ' + boolStr(value));
+  writeLog('Changed percussive mode to ' + BoolStr(value));
 {$ENDIF}
 
   if value then begin
@@ -957,7 +957,7 @@ begin
     exit
   end;
 
-  asmPrint('$BD: ' + i32str(BDRegister), 0, 8, 7);
+  asmPrint('$BD: ' + I32Str(BDRegister), 0, 8, 7);
 end;
 
 
