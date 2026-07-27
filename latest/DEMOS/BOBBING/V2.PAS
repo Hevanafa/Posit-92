@@ -7,10 +7,14 @@
 
 uses
   CRT, DOS,
-  P92Core, FPS, Graphics, Logger,
+  FPS, Graphics, Logger,
   Keyboard, Mouse, Timing, VGA;
 
+const
+  SC_ESCAPE = $01;
+
 var
+  done: boolean;
   startTime: double;
   sinTable: array[0..255] of integer;
 
@@ -135,10 +139,23 @@ begin
   startTime := getTimer
 end;
 
+{ TODO: Gradually remove these boilerplate procedures }
+procedure OnCleanup; far;
+begin
+  ResetMouse;
+  FreeBuffer;
+  CloseLogger;
+  initTextMode;
+end;
+
 
 procedure Update; far;
 begin
-  if isKeyDown(SC_ESCAPE) then SignalDone;
+  UpdateDeltaTime;
+  UpdateMouse;
+  IncrementFPS;
+
+  if isKeyDown(SC_ESCAPE) then done := true;
 end;
 
 
@@ -150,9 +167,35 @@ begin
   { cls($0f); }
 
   DrawBobbingGrid2((getTimer - startTime) * 3);
+
+  Flush
 end;
 
+var
+  now, nextTick: double;
+begin
+  OnReady;
 
+  now := GetTimer;
+  nextTick := GetTimer;
+
+  repeat
+    now := GetTimer;
+    nextTick := now + 1 / 35.5;
+    Update;
+    Draw;
+
+    while GetTimer < nextTick do
+    asm
+      sti
+      hlt
+    end;
+  until done;
+
+  OnCleanup;
+end.
+
+{
 var
   appConfig: TP92AppConfig;
 begin
@@ -164,4 +207,4 @@ begin
 
   P92Start(appConfig)
 end.
-
+}
