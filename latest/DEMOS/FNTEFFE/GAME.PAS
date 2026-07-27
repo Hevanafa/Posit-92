@@ -1,18 +1,14 @@
 {
-  BMFont + Effects
+  CGA font effects demo
+  Part of Posit-92 game engine
   Referenced from https://blinry.org/50-tic80-carts/
 }
 
 uses
-  CRT, DOS,
-  P92Core, Logger, VGA, Bitmap, BMFont;
+  CRT,
+  P92Core, VGA;
 
-var
-  done: boolean;
-  t: double;
-  font: TBMFont;
-
-procedure printOutline(const t: string; const x, y: integer; const colour, outline: byte);
+procedure PrintOutline(const t: string; const x, y: integer; const colour, outline: byte);
 var
   dx, dy: integer;
 begin
@@ -23,14 +19,14 @@ begin
   Print(t, x, y, colour)
 end;
 
-procedure printShadow(const t: string; const x, y: integer; const colour, shadow: byte);
+procedure PrintShadow(const t: string; const x, y: integer; const colour, shadow: byte);
 begin
-  print(t, x+2, y+2, shadow);
-  print(t, x, y, colour)
+  Print(t, x+2, y+2, shadow);
+  Print(t, x, y, colour)
 end;
 
 { Modified from VGA }
-procedure printStripes(const text: string; const x, y: integer);
+procedure PrintStripes(const text: string; const x, y: integer);
 var
   row, col, idx: integer;
   pos: integer;
@@ -52,14 +48,8 @@ end;
 
 
 procedure Update; far;
-var
-  a: integer;
-  ch: char;
 begin
-  if keyPressed then begin
-    ch := readKey;
-    if ch = #27 then done := true;
-  end;
+  if keyPressed and (ReadKey = #27) then SignalDone;
 end;
 
 
@@ -69,9 +59,9 @@ var
 begin
   cls($7D);
 
-  printOutline('Outline!', 50, 50, 0, $0B);
-  printShadow('Shadow!', 50, 70, $2A, 0);
-  printStripes('Stripes!', 50, 90);
+  PrintOutline('Outline!', 50, 50, 0, $0B);
+  PrintShadow('Shadow!', 50, 70, $2A, 0);
+  PrintStripes('Stripes!', 50, 90);
 end;
 
 
@@ -81,6 +71,7 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.EnableKeyHandler := false;
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
