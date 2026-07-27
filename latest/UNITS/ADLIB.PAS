@@ -669,14 +669,18 @@ const
     $02,$0ab,$02,$0ad,$02);
 
 
-Function TAdLibDriver.CalcNote(const Voice, Note: byte): Word; Assembler;
+Function TAdLibDriver.CalcNote(const Voice, Note: byte): Word;
+var
+  selfPtr: pointer;
+begin
+  selfPtr := @Self;
 (* Calculate the note to output to A0 and B0 registers *)
 (* Taken directly from the SBlaster FM Driver          *)
 (* Possible value is from 0 to 127                     *)
 ASM
     Xor     Ax, Ax
     Xor     Bx, Bx
-    LES     SI, [Self]
+    LES     SI, [selfPtr]
 
     Mov     Bl, [Voice]
     Mov     Al,Byte Ptr [Note]
@@ -726,7 +730,7 @@ ASM
     Mov     Ax,Word Ptr FreqTable[Di]
     Or      Ah,Dl
 end;
-
+end;
 
 function isVoiceMelodic(const voice: byte): boolean;
 begin
