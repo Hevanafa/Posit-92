@@ -3,6 +3,8 @@
   DOSBox's default settings
 }
 
+{}
+
 unit P92KBD;
 
 interface

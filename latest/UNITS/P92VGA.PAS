@@ -1,4 +1,4 @@
-unit VGA;
+unit P92VGA;
 
 interface
 

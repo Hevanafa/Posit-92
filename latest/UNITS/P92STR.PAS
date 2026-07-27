@@ -1,4 +1,4 @@
-unit Strings;
+unit P92STR;
 
 {$IFDEF FPC}
 {$MODE TP}

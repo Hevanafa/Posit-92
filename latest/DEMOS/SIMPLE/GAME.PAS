@@ -3,8 +3,8 @@ program Game;
 uses
   CRT, DOS,
   P92Core,
-  Logger, P92KBD, P92Mouse, Strings,
-  Bitmap, Timing, VGA;
+  Logger, P92KBD, P92Mouse, P92STR,
+  Bitmap, Timing, P92VGA;
 
 var
   { Asset variables }

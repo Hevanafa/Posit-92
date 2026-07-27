@@ -13,7 +13,7 @@ uses
 {$IFDEF P92_MODEX}
   ModeX,
 {$ELSE}
-  VGA,
+  P92VGA,
 {$ENDIF}
   Timing, Conv;
 
