@@ -2,18 +2,15 @@
   Show remaining memory demo
 }
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 uses
   CRT, DOS,
-  P92Core, Logger, VGA, Memory;
+  P92Core, Logger, P92VGA, P92MEM;
 
 procedure Update; far;
-var
-  c: char;
 begin
-  if KeyPressed then begin
-    c := ReadKey;
-    if c = #27 then SignalDone;
-  end;
+  if KeyPressed and (ReadKey = #27) then SignalDone;
 end;
 
 

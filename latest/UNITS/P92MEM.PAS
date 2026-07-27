@@ -1,33 +1,24 @@
 unit P92MEM;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
 function GetHeapSize: longint;
-function GetFreeHeap: longint;
 function GetStackSize: word;
 procedure DrawMemInfo;
 procedure DrawDOSMemInfo;
 
 implementation
 
-uses DOS, Conv, VGA;
+uses DOS, Conv, P92VGA;
 
-const
-  { Assuming that the computer has the conventional 640 KB RAM by default }
-  HeapSize = 655360;
+{ Assuming that the computer has the conventional 640 KB RAM by default }
+const HeapSize = 655360;
 
 function GetHeapSize: longint;
 begin
   GetHeapSize := HeapSize
-end;
-
-function GetFreeHeap: longint;
-begin
-  GetFreeHeap := MemAvail
 end;
 
 { Gets an approximate stack usage }
@@ -48,8 +39,9 @@ begin
   print(
     'Heap: ' + i32str(totalHeap - freeHeap) + 'B ' +
     '/ ' + i32str(heapSize) + 'B ' + 
-    '(' + i32str(round(usedPerc * 100)) + '%)', 10, 10, 15);
-  print('Stack estimate: ' + i32str(GetStackSize) + 'B', 10, 40, 15)
+    '(' + i32str(round(usedPerc * 100)) + '%)', 10, 32, 15);
+
+  print('Stack estimate: ' + i32str(GetStackSize) + 'B', 10, 48, 15)
 end;
 
 procedure DrawDOSMemInfo;
@@ -62,7 +54,7 @@ begin
   Intr($12, regs);
   totalMem := longint(regs.ax) * 1024;
   
-  print('DOS conv mem: ' + i32str(totalMem) + 'B', 10, 60, 7)
+  print('DOS conventional mem: ' + i32str(totalMem) + 'B', 10, 64, 7)
 end;
 
 end.
