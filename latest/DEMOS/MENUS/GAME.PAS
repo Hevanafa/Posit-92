@@ -124,24 +124,24 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        printBMFont(font, s, 13, 33 + a * 12, 11)
+        PrintBMFont(font, s, 13, 33 + a * 12, 13)
       end else
-        printBMFont(font, s, 13, 33 + a * 12, 7);
+        PrintBMFont(font, s, 13, 33 + a * 12, 13);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
   w := measureBMFont(font, s);
-  printBMFont(font, s, 138 - w, 172, 7);
+  PrintBMFont(font, s, 138 - w, 172, 13);
 
   { Desc box }
   rectfillDither(152, 134, 311, 197, 196);
   rect(152, 134, 311, 197, 15);
 
-  printBMFont(font, 'Author: Hevanafa', 155, 137, 15);
-  printBMFont(font, 'Lorem Ipsum will uncover many', 155, 157, 15);
-  printBMFont(font, 'web sites still in their infancy.', 155, 169, 15);
-  printBMFont(font, 'Various versions have evolved', 155, 181, 15);
+  PrintBMFont(font, 'Author: Hevanafa', 155, 137, 13);
+  PrintBMFont(font, 'Lorem Ipsum will uncover many', 155, 157, 13);
+  PrintBMFont(font, 'web sites still in their infancy.', 155, 169, 13);
+  PrintBMFont(font, 'Various versions have evolved', 155, 181, 13);
 end;
 
 
