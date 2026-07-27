@@ -45,7 +45,7 @@ uses
   Logger, Timing,
   Keyboard, Mouse,
   FPS, VGA,
-  PCS, AdLib
+  PCSpkr, AdLib
 {$ifdef P92_MODEX}
   , ModeX;
 {$else}
@@ -115,7 +115,7 @@ begin
   InitFPSCounter;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpeaker.init;
+    PCSpkr.Init;
 
   if bootConfig.EnableAdLib then
     AdlibDrv.init;
@@ -129,7 +129,7 @@ begin
     ResetKeyHandler;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpeaker.stop;
+    PCSpkr.Stop;
 
   if bootConfig.EnableAdLib then
     AdLibDrv.shutdown;
@@ -146,7 +146,7 @@ begin
   IncrementFPS;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpeaker.update;
+    PCSpkr.Update;
 
   if bootConfig.EnableAdLib then
     AdlibDrv.update;

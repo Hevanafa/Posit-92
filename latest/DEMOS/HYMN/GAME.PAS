@@ -2,7 +2,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Logger, PCS, Timing, VGA;
+  P92Core, Bitmap, Logger, PCSpkr, Timing, VGA;
 
 const
   C4 = 262;
@@ -177,7 +177,7 @@ end;
 procedure OnPreload; far;
 begin
   loadBMP(imgPiano, 'IMG\PIANO.BMP');
-  initJerusalemHymn;
+  InitJerusalemHymn;
 end;
 
 procedure OnCleanup; far;
@@ -187,7 +187,7 @@ end;
 
 procedure OnReady; far;
 begin
-  PCSpeaker.playMelody(hymn);
+  PCSpkr.playMelody(hymn);
 end;
 
 procedure Update; far;

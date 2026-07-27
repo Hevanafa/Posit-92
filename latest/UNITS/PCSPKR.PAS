@@ -4,7 +4,7 @@
   By Hevanafa
 }
 
-unit PCSpeaker;
+unit PCSpkr;
 
 interface
 
@@ -62,14 +62,14 @@ begin
   inc(currentNote);
 
   if currentNote >= currentMelody.noteCount then begin
-    PCSpeaker.Stop;
+    Stop;
     exit
   end;
 
-  noSound;
+  NoSound;
 
   if not currentMelody.notes[currentNote].rest then
-    sound(currentMelody.notes[currentNote].freq);
+    Sound(currentMelody.notes[currentNote].freq);
 
   noteEndTick := getTimer + currentMelody.notes[currentNote].duration;
 end;
