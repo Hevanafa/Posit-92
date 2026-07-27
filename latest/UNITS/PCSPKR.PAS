@@ -41,7 +41,6 @@ var
   currentMelody: TMelody;
   noteEndTick: double;
   playing: boolean;
-  toneEnd: longint;
 
 
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
@@ -56,7 +55,7 @@ end;
 procedure PlayBeep(const freq, durationMs: word);
 begin
   sound(freq);
-  toneEnd := getTicks + (durationMs div 55);
+  noteEndTick := GetTimer + durationMs / 1000;
   playing := true
 end;
 
@@ -75,7 +74,7 @@ begin
   if not currentMelody.notes[currentNote].rest then
     Sound(currentMelody.notes[currentNote].freq);
 
-  noteEndTick := getTimer + currentMelody.notes[currentNote].duration;
+  noteEndTick := GetTimer + currentMelody.notes[currentNote].duration;
 end;
 
 procedure Init;
