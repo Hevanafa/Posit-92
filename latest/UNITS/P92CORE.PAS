@@ -92,7 +92,6 @@ end;
 { Called by P92Start }
 procedure P92Init;
 begin
-  SetStackBottom(word(SPtr));
   InitLogger;
   InitMode13h;
 {$ifdef P92_MODEX}

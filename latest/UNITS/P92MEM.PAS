@@ -4,11 +4,25 @@ unit P92MEM;
 
 interface
 
-{ Called by P92Core.Init }
+{
+Used for memory diagnostics, not called by P92Core.Init
+
+This procedure must be called as early as possible in
+the entry point / main programme block for accurate stack usage measurement
+}
 procedure SetStackBottom(const value: word);
-function GetHeapSize: longint;
-{ Requires a call to SetStackBottom }
+
+{
+Requires a call to SetStackBottom
+
+Example:
+SetStackBottom(word(SPtr));
+
+The MEMVIEW demo has it
+}
 function GetStackSize: word;
+function GetHeapSize: longint;
+
 procedure DrawMemInfo;
 procedure DrawDOSMemInfo;
 
@@ -70,6 +84,7 @@ begin
   print('DOS conventional mem: ' + i32str(totalMem) + 'B', 10, 64, 7)
 end;
 
+{ Implicit initialisation block }
 begin
   stackBottom := 0;
 end.

@@ -26,6 +26,8 @@ end;
 var
   appConfig: TP92AppConfig;
 begin
+  SetStackBottom(word(SPtr));
+
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
