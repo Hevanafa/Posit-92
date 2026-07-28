@@ -279,6 +279,7 @@ end;
 
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
+
   lds si, surface: loads DS:SI from surface
   mov es, $a000: targets the VGA framebuffer
   xor di, di: start writing at offset 0000
@@ -289,7 +290,7 @@ procedure AsmFlush;
 var
   y, halfWidth: word;
   srcOffset, destOffset: word;
-  w, defaultW, h: word;
+  w, defaultW, h: word; { Accessible via SS:BP }
 begin
   if useDefaultBufferSize then begin
 asm
@@ -351,14 +352,13 @@ asm
   mov cx, halfWidth
   rep movsw
 
+@y_last:
+  inc y
+
 @y_check:
   mov ax, h
   cmp y, ax
-  jge @skip
-
-@y_last:
-  inc y
-  jmp @y_body
+  jl @y_body
 
 @skip:
   pop es
