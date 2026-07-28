@@ -1,8 +1,8 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, Keyboard, VGA,
-  Strings;
+  P92Core, Logger, P92KBD, P92VGA,
+  P92STR;
 
 
 procedure OnReady; far;
@@ -43,7 +43,9 @@ end;
 
 procedure Draw; far;
 begin
-  cls($0F);
+  cls($4F);
+
+  Print('See LOG.TXT', (VgaWidth - 88) div 2, 100, 0);
 end;
 
 var
