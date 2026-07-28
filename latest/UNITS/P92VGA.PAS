@@ -9,15 +9,15 @@ const
   DefaultVGAHeight = 200;
 
 type
-  PSurfaceBuffer = ^TSurfaceBuffer;
-  TSurfaceBuffer = array[0..0] of byte;
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..0] of byte;
 
   PFont8x8 = ^TFont8x8;
   TFont8x8 = array[0..255, 0..7] of byte;
 
 var
   VGAWidth, VGAHeight: word;
-  surface: PSurfaceBuffer;
+  surface: PByteArray;
 
 procedure InitMode13h;
 procedure InitModeText;
@@ -260,8 +260,16 @@ end;
 
 
 procedure PascalFlush;
+var
+  y, offset: word;
 begin
-  Move(surface^, Mem[$A000:0], BufferSize)
+  if useDefaultBufferSize then
+    Move(surface^, Mem[$A000:0], BufferSize)
+  else
+    for y := 0 to VGAHeight - 1 do begin
+      offset := y * VGAWidth;
+      move(PByteArray(surface)^[offset], mem[$A000:offset], VGAWidth);
+    end;
 end;
 
 { TODO: Flush per scanline }
