@@ -5,8 +5,8 @@ unit P92VGA;
 interface
 
 const
-  DefaultVGAWidth = 320;
-  DefaultVGAHeight = 200;
+  DefaultVGAWidth: word = 320;
+  DefaultVGAHeight: word = 200;
 
 type
   PByteArray = ^TByteArray;
@@ -254,8 +254,8 @@ end;
 
 procedure Flush;
 begin
-  PascalFlush
-  { AsmFlush }
+  { PascalFlush }
+  AsmFlush
 end;
 
 
@@ -287,7 +287,9 @@ end;
 }
 procedure AsmFlush;
 var
-  y, offset, halfWidth: word;
+  y, halfWidth: word;
+  srcOffset, destOffset: word;
+  w, defaultW, h: word;
 begin
   if useDefaultBufferSize then begin
 asm
@@ -298,7 +300,7 @@ asm
 
   mov ax, $a000
   mov es, ax      { Set ES to VGA segment }
-  xor di, di      { Reset DI (Destination offset) }
+  xor di, di      { Reset DI (Destination srcOffset) }
 
   mov cx, 32000   { 64000 bytes / 2 = 32000 words }
   rep movsw       { Copy CX words from DS:SI to ES:DI }
@@ -306,39 +308,61 @@ asm
   pop es
   pop ds
 end;
-  end else begin
-    { Flush per scanline }
-    halfWidth := VGAWidth div 2;
+  exit
+  end;
+
+  { Flush per scanline }
+  w := VGAWidth;
+  defaultW := DefaultVGAWidth;
+  h := VGAHeight;
+
+  halfWidth := VGAWidth div 2;
+
 asm
   push ds
   push es
 
-  lds si, surface
+  { Assign ES:DI to $A000:0000 }
+  mov ax, $A000
+  mov es, ax
+  xor di, di
 
   { for (y = 0; y < VgaWidth; y++) }
 @y_init:
   mov y, 0
+  mov srcOffset, 0
+
+  lds si, surface
+  mov bx, si
 
 @y_body:
-  mov ax, $A000  { Assign ES:DI to $A000:0000 }
-  mov es, ax
-  xor di, di
+  { srcOffset := y * VGAWidth }
+  mov ax, y
+  mul w
+
+  mov si, bx
+  add si, ax
+
+  { destOffset := y * DefaultVGAWidth }
+  mov ax, y
+  mul defaultW
+  mov di, ax
 
   mov cx, halfWidth
   rep movsw
 
 @y_check:
-  mov ax, VGAHeight
+  mov ax, h
   cmp y, ax
   jge @skip
 
 @y_last:
   inc y
+  jmp @y_body
 
 @skip:
   pop es
   pop ds
-end;
 end;
 end;
 
