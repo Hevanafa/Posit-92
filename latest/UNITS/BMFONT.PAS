@@ -38,6 +38,46 @@ implementation
 
 uses Conv, Logger, Panic, P92STR, P92VGA;
 
+procedure ParseBMFontGlyph(var font: PBMFont; const line: string);
+var
+  newGlyph: TBMFontGlyph;
+  pairs: array[0..11] of string;
+  pairCount: word;
+  b: word;
+  kv: array[0..1] of string;
+  glyphID: integer;
+begin
+  { Parse the whole line first, then check bounds }
+  glyphID := -1;
+  fillChar(newGlyph, sizeof(TBMFontGlyph), 0);
+
+  { assign glyph info }
+  pairCount := split(line, ' ', pairs);
+
+  for b:=0 to pairCount-1 do begin
+    split(pairs[b], '=', kv);
+
+    { case-of can't be used with strings in TP7 }
+    if kv[0] = 'id' then begin
+      glyphID := parseInt(kv[1]);
+
+      { writeLog('ID:' + i32str(glyphID)); }
+      newGlyph.id := glyphID;
+    end
+    else if kv[0] = 'x' then newGlyph.x := parseInt(kv[1])
+    else if kv[0] = 'y' then newGlyph.y := parseInt(kv[1])
+    else if kv[0] = 'width' then newGlyph.width := parseInt(kv[1])
+    else if kv[0] = 'height' then newGlyph.height := parseInt(kv[1])
+    else if kv[0] = 'xoffset' then newGlyph.xoffset := parseInt(kv[1])
+    else if kv[0] = 'yoffset' then newGlyph.yoffset := parseInt(kv[1])
+    else if kv[0] = 'xadvance' then newGlyph.xadvance := parseInt(kv[1]);
+  end;
+
+  if (low(font^.glyphs) <= newGlyph.id) and
+      (newGlyph.id <= high(font^.glyphs)) then
+    font^.glyphs[newGlyph.id] := newGlyph;
+end;
+
 procedure LoadBMFont(var font: PBMFont; const filename: string);
 var
   b: integer;
@@ -48,11 +88,8 @@ var
   pairs: array[0..11] of string;
   pairCount: word;
   kv: array[0..1] of string; { key-value pair }
-  key, value: string;  { separated key-value pair }
 
   bitmapPath: string;
-  newGlyph: TBMFontGlyph;
-  glyphID: integer;
 begin
   if font <> nil then
     writeLog('LoadBMFont: font isn''t nil!');
@@ -113,41 +150,8 @@ begin
     while contains(line, '  ') do
       line := replaceAll(line, '  ', ' ');
 
-    if startsWith(line, 'char') then begin
-      { Parse the whole line first, then check bounds }
-      glyphID := -1;
-      fillChar(newGlyph, sizeof(TBMFontGlyph), 0);
-
-      { assign glyph info }
-      pairCount := split(line, ' ', pairs);
-
-      for b:=0 to pairCount-1 do begin
-        split(pairs[b], '=', kv);
-        key := kv[0]; value := kv[1];
-
-        { case-of can't be used with strings in TP7 }
-        if key = 'id' then begin
-          glyphID := parseInt(value);
-
-          { writeLog('ID:' + i32str(glyphID)); }
-          newGlyph.id := glyphID;
-        end
-        else if key = 'x' then newGlyph.x := parseInt(value)
-        else if key = 'y' then newGlyph.y := parseInt(value)
-        else if key = 'width' then newGlyph.width := parseInt(value)
-        else if key = 'height' then newGlyph.height := parseInt(value)
-        else if key = 'xoffset' then newGlyph.xoffset := parseInt(value)
-        else if key = 'yoffset' then newGlyph.yoffset := parseInt(value)
-        else if key = 'xadvance' then newGlyph.xadvance := parseInt(value);
-      end;
-
-      if (low(font^.glyphs) <= newGlyph.id) and
-          (newGlyph.id <= high(font^.glyphs)) then begin
-        font^.glyphs[newGlyph.id] := newGlyph;
-        { writeLog('Applied ID ' + i32str(newGlyph.id)); }
-        inc(count);
-      end;
-    end;
+    if startsWith(line, 'char') then
+      ParseBMFontGlyph(font, line);
   end;
   close(f);
 
