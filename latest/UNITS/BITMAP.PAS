@@ -749,95 +749,6 @@ begin
   end;
 end;
 
-procedure asmSpr(
-  const image: PBitmap;
-  const x, y: integer;
-  const transparencyKey: byte);
-var
-  srcX, srcY, imgWidth, imgHeight: word;
-  destX, destY: integer;
-  transKey, colour: byte;
-begin
-  destX := x;
-  destY := y;
-  imgWidth := image^.width;
-  imgHeight := image^.height;
-  transKey := transparencyKey;
-  colour := 0;
-
-  writeLog('dest x and y:' + I32Str(destX) + ', ' + I32Str(destY));
-  writeLog('img width & height: ' + I32Str(imgWidth) + ', ' + I32Str(imgHeight));
-  writeLog('transparency key' + I32Str(transKey));
-
-asm
-  les di, [image]
-
-  { Check if image is nil }
-  mov ax, es
-  or ax, di
-  je @skip
-
-  mov srcY, 0  { row counter }
-
-@row_start:
-  mov ax, imgHeight
-  cmp srcY, ax
-  jge @row_end
-
-  mov srcX, 0  { col counter }
-
-@col_start:
-  mov ax, imgWidth
-  cmp srcX, ax
-  jge @col_end
-
-  { Get pixel }
-  { Obtain the `data` offset }
-  mov ax, srcY
-  mov bx, imgWidth
-  mul bx
-  add ax, srcX  { ax = b * imgWidth + a }
-
-  mov di, 6  { Skip width, height & palsize }
-  add di, ax
-
-  { Check if transparent }
-  mov al, es:[di]
-  mov colour, al
-  cmp colour, 13
-  je @skip_draw
-
-  { TODO: Check bounds }
-  { PSET }
-  mov ax, destY
-  add ax, srcY
-  mov bx, 320
-  mul bx
-  add ax, destX
-  add ax, srcX
-  mov bx, ax
-
-  les di, surface
-  mov al, colour
-  mov es:[di+bx], al
-
-
-@skip_draw:
-
-  inc srcX
-  jmp @col_start
-
-@col_end:
-
-  inc srcY
-  jmp @row_start
-
-@row_end:
-@skip:
-end;
-
-end;
-
 
 procedure asmSprUnsafe(
   const image: PBitmap;
@@ -901,8 +812,6 @@ asm
   mov colour, al
   cmp al, 13
   je @skip_draw
-
-  { TODO: Check bounds }
 
   { Screen dest }
   mov bx, destY
