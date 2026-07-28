@@ -105,16 +105,22 @@ begin
   FillChar(surface^, BufferSize, colour)
 end;
 
-procedure AsmCls(const colour: byte); assembler;
+procedure AsmCls(const colour: byte);
+var
+  size: word;
+begin
+  size := bufferSize div 2;
 asm
   push es
   les di, surface  { Set ES:DI to surface pointer }
   cld  { Make sure DI move forward }
   mov al, colour
   mov ah, colour
-  mov cx, 32000
+  { mov cx, 32000 }  { 320x200/2 }
+  mov cx, size
   rep stosw
   pop es
+end;
 end;
 
 procedure Print(const text: string; const x, y: integer; const colour: byte);
