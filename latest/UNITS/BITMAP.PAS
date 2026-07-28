@@ -15,10 +15,13 @@ type
     data: TByteArray;
   end;
 
-procedure loadBMP(var output: PBitmap; const filename: string);
-procedure drawBMP(const image: PBitmap);
-procedure freeBMP(var image: PBitmap);
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure LoadBMP(var output: PBitmap; const filename: string);
+procedure DrawBMP(const image: PBitmap);
+procedure FreeBMP(var image: PBitmap);
+
+procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+
 { procedure fastSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); }
 procedure fastSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -69,7 +72,7 @@ var
   sinLUT, cosLUT: array[0..35] of double;
 
 { var makes it pass-by-reference }
-procedure loadBMP(var output: PBitmap; const filename: string);
+procedure LoadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -129,7 +132,7 @@ begin
   close(f)
 end;
 
-procedure drawBMP(const image: PBitmap);
+procedure DrawBMP(const image: PBitmap);
 var
   a, b: integer;
 begin
@@ -139,14 +142,19 @@ begin
     pset(a, b, image^.data[a + b * image^.width]);
 end;
 
-procedure freeBMP(var image: PBitmap);
+procedure FreeBMP(var image: PBitmap);
 begin
   if image = nil then exit;
   freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1);
   image := nil  { avoids dangling pointer }
 end;
 
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+begin
+  PascalSpr(image, x, y, transparencyKey)
+end;
+
+procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
@@ -154,9 +162,9 @@ begin
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
+
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, image^.data[pos]);  { 1000 ops: 1.1959s }
-      { pset_legacy(x+a, y+b, image^.data[pos]); } { 1000 ops: 1.2320s }
+      pset(x+a, y+b, image^.data[pos]);
   end;
 end;
 
@@ -970,7 +978,7 @@ begin
   end;
 end;
 
-{ Improved version of spr with partial sprite drawing }
+{ Improved version of PascalSpr with partial sprite drawing }
 procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;

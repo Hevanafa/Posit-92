@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Graphics, Logger, Mouse, Timing, VGA;
+  P92Core, Bitmap, Conv, Graphics, Logger, P92Mouse, Timing, P92VGA;
 
 var
   { Asset variables }
@@ -13,14 +13,14 @@ var
 
 procedure OnPreload; far;
 begin
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 end;
 
 
@@ -34,7 +34,7 @@ begin
 
   {
   for a:=0 to 1000 do
-    spr(dosuEXE[0], random(300), random(180), 13);
+    PascalSpr(dosuEXE[0], random(300), random(180), 13);
   }
 
   { for a:=1 to 1000 do begin
@@ -52,15 +52,10 @@ begin
 
   {fastSpr6(dosuEXE[0], 150, 50, 13);}
 
-  {
-  spr(dosuEXE[0], 150, 50, 13);
-  }
-
-  { asmSprUnsafe(dosuEXE[0], 150, 50, 13); }
   for a:=1 to 1000 do begin
     x := random(300);
     y := random(180);
-    { spr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, Pset: 1.3095s }
+    { PascalSpr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, Pset: 1.3095s }
     asmSprSafe(dosuEXE[0], x, y, 13);  { 0.6819s, 0.6826s }
   end;
 
@@ -73,6 +68,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.EnableKeyHandler := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.DrawOnce := @DrawOnce;

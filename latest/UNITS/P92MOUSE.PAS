@@ -38,12 +38,12 @@ var
 
 procedure LoadCursor;
 begin
-  loadBMP(cursor, 'CURSOR.BMP')
+  LoadBMP(cursor, 'CURSOR.BMP')
 end;
 
 procedure FreeCursor;
 begin
-  freeBMP(cursor)
+  FreeBMP(cursor)
 end;
 
 procedure InitMouse;
@@ -92,7 +92,7 @@ end;
 procedure DrawMouse;
 begin
   if not mouseInitialised then exit;
-  spr(cursor, mouseX, mouseY, 13);
+  PascalSpr(cursor, mouseX, mouseY, 13);
 end;
 
 {

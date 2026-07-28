@@ -55,7 +55,7 @@ procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 implementation
 
-uses Maths, VGA;
+uses Maths, P92VGA;
 
 
 procedure circ(const cx, cy, radius: integer; const colour: byte);
