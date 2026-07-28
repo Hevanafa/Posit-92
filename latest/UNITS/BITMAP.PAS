@@ -24,6 +24,12 @@ procedure BitmapInfo(const image: PBitmap);
 procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
+procedure Tic80Spr(
+  const image: PBitmap;
+  const x, y: integer;
+  const transparencyKey: byte;
+  const scale: integer);
+
 procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -162,6 +168,32 @@ begin
     if image^.data[pos] <> transparencyKey then
       PSet(x+a, y+b, image^.data[pos]);
   end;
+end;
+
+procedure Tic80Spr(
+  const image: PBitmap;
+  const x, y: integer;
+  const transparencyKey: byte;
+  const scale: integer);
+var
+  a, b, c, d, imgPos: integer;
+  destX, destY: integer;
+begin
+  if (image = nil) or (scale = 0) then exit;
+  if scale < 0 then panicHalt('tic80spr: Scale cannot be negative!');
+
+  for b := 0 to image^.height-1 do
+    for a := 0 to image^.width-1 do begin
+      imgPos := a + b * image^.width;
+      destX := x + a * scale;
+      destY := y + b * scale;
+
+      if image^.data[imgPos] <> transparencyKey then begin
+        for d := 1 to scale do
+	  for c := 1 to scale do
+            pset(destX + c - 1, destY + d - 1, image^.data[imgPos]);
+      end;
+    end;
 end;
 
 procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
