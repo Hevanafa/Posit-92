@@ -160,18 +160,18 @@ asm
 { AsmPset }
   cmp x, 0
   jl @skip_pixel
-  cmp x, DefaultVGAWidth
+  cmp x, VGAWidth
   jge @skip_pixel
   cmp y, 0
   jl @skip_pixel
-  cmp y, DefaultVGAHeight
+  cmp y, VGAHeight
   jge @skip_pixel
 
   { Calculate pixel offset }
   { y + row }
   mov ax, y
   add ax, row
-  mov bx, DefaultVGAWidth
+  mov bx, VGAWidth
   mul bx
   mov cx, ax
 
@@ -204,8 +204,8 @@ end;
 
 procedure PascalPset(const x, y: integer; const colour: byte);
 begin
-  if (x < 0) or (x >= DefaultVGAWidth) or (y < 0) or (y >= DefaultVGAHeight) then exit;
-  surface^[y * DefaultVGAWidth + x] := colour;
+  if (x < 0) or (x >= VGAWidth) or (y < 0) or (y >= VGAHeight) then exit;
+  surface^[y * VGAWidth + x] := colour;
 end;
 
 procedure AsmPset(const x, y: integer; const colour: byte); assembler;
@@ -213,17 +213,17 @@ asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, DefaultVGAHeight
+  cmp y, VGAHeight
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, DefaultVGAWidth
+  cmp x, VGAWidth
   jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
-  mov bx, DefaultVGAWidth
+  mov bx, VGAWidth
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 
