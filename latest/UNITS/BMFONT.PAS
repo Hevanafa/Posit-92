@@ -10,6 +10,7 @@ uses Bitmap;
 
 type
   PBMFontGlyph = ^TBMFontGlyph;
+  { Record types in Turbo Pascal aren't padded by default }
   TBMFontGlyph = record
     id: word;
     x, y, width, height: word;  { 2, 4, 6, 8 }
@@ -20,13 +21,13 @@ type
 
   PBMFont = ^TBMFont;
   TBMFont = record
-    glyphs: array[0..255] of PBMFontGlyph;
-    { filename: string; }
+    glyphs: array[0..255] of TBMFontGlyph;
     lineHeight: word;
     bitmap: PBitmap;
   end;
 
 procedure LoadBMFont(var font: PBMFont; const filename: string);
+{ This also frees the bitmap handle }
 procedure FreeBMFont(var font: PBMFont);
 
 procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
@@ -51,7 +52,7 @@ var
 
   bitmapPath: string;
   newGlyph: TBMFontGlyph;
-  glyphID, parseResult, tempI32: integer;
+  glyphID: integer;
 begin
   if font <> nil then
     writeLog('LoadBMFont: font isn''t nil!');
@@ -64,8 +65,9 @@ begin
   if font = nil then
     panicHalt('loadBMFont: Out of memory!');
 
-  for b:=low(font^.glyphs) to high(font^.glyphs) do
-    font^.glyphs[b] := nil;
+  for b := low(font^.glyphs) to high(font^.glyphs) do
+    fillchar(font^.glyphs[b], sizeof(TBMFontGlyph), 0);
+
   font^.bitmap := nil;
 
   assign(f, filename);
@@ -129,9 +131,8 @@ begin
 
       if (low(font^.glyphs) <= newGlyph.id) and
           (newGlyph.id <= high(font^.glyphs)) then begin
-        new(font^.glyphs[newGlyph.id]);
-        font^.glyphs[newGlyph.id]^ := newGlyph;
-        writeLog('Applied ID ' + i32str(newGlyph.id));
+        font^.glyphs[newGlyph.id] := newGlyph;
+        { writeLog('Applied ID ' + i32str(newGlyph.id)); }
         inc(count);
       end;
     end;
@@ -150,6 +151,7 @@ begin
   if font = nil then exit;
 
   count:=0;
+  {
   for a:=low(font^.glyphs) to high(font^.glyphs) do begin
     if font^.glyphs[a] <> nil then begin
       writeLog('Freeing glyph ' + i32str(a) + '...');
@@ -159,11 +161,10 @@ begin
       inc(count)
     end;
   end;
-  freeBMP(font^.bitmap);
-  {
-  font^.filename := '';
-  font^.lineHeight := 0;
   }
+
+  freeBMP(font^.bitmap);
+
   dispose(font);
   font := nil;
 
@@ -174,7 +175,7 @@ end;
 procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
 var
   a, row, col, dx, dy: integer;
-  ch: char;
+  c: char;
   g: PBMFontGlyph;
   srcX, srcY: word;
   colour: byte;
@@ -183,11 +184,8 @@ begin
 
   dx := x;
   for a:=1 to length(text) do begin
-    ch := text[a];
-    if (ord(ch) < low(font^.glyphs)) or (ord(ch) > high(font^.glyphs)) then continue;
-
-    g := font^.glyphs[ord(ch)];
-    if g = nil then continue;
+    c := text[a];
+    g := @(font^.glyphs[ord(c)]);
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
@@ -222,7 +220,7 @@ begin
   for a:=1 to length(text) do begin
     ch := text[a];
     if (low(font^.glyphs) <= ord(ch)) and (ord(ch) <= high(font^.glyphs)) then begin
-      glyph := font^.glyphs[ord(ch)];
+      glyph := @(font^.glyphs[ord(ch)]);
       if glyph <> nil then
         inc(result, glyph^.xadvance);
     end;
