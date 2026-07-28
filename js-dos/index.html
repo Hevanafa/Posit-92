@@ -13,11 +13,13 @@
 </head>
 
 <body>
-  <div id="dos" style="width: 640px; height: 400px;"></div>
+  <!-- Note: The sidebar is 48px -->
+  <div id="dos" style="width: 688px; height: 400px;"></div>
+
   <script>
     const emulator = Dos(document.getElementById("dos"), {
       // url: "https://v8.js-dos.com/bundles/digger.jsdos",
-      url: "./[your js-dos bundle].jsdos",  // LID_07-06-2025.jsdos
+      url: "./[your_js-dos_bundle].jsdos",  // LID_07-06-2025.jsdos
       volume: 0.5,
       thinSidebar: true
     });
