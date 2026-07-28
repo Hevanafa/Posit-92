@@ -7,16 +7,14 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Mouse, Timing, VGA,
-  Bitmap, FPS;
+  P92Core, Logger,
+  P92KBD, P92Mouse,
+  Timing, P92VGA, Bitmap, FPS;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
+  { Game state variables }
   sinTable: array[0..255] of integer;
   startTime, t: double;
-  { TODO: More of your game state here }
 
 procedure buildSinTable;
 var
@@ -27,41 +25,21 @@ begin
 end;
 
 
-procedure INIT;
+procedure OnReady; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-
-  initFPSCounter;
-
-  { TODO: Your init code here }
   startTime := getTimer;
-  buildSinTable;
+  buildSinTable
 end;
 
-
-procedure update;
-var
-  a: integer;
+procedure Update; far;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  { TODO: Your update code here }
-
-  if isKeyDown(K_ESC) then done := true;
-  t:=getTimer - startTime
+  t := getTimer - startTime
 end;
 
 
-procedure draw;
+procedure Draw; far;
 const
   step = 2;
 var
@@ -93,31 +71,18 @@ begin
     end;
     inc(b, step)
   end;
-
-  drawMouse;
-  drawFPS;
-
-  flush
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
 
-  { TODO: Your cleanup code here }
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
