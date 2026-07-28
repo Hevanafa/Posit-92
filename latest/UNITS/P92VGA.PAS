@@ -254,21 +254,26 @@ end;
 
 procedure Flush;
 begin
-  { PascalFlush }
-  AsmFlush
+  PascalFlush
+  { AsmFlush }
 end;
 
 
 procedure PascalFlush;
 var
-  y, offset: word;
+  y, srcOffset, destOffset: word;
 begin
   if useDefaultBufferSize then
     Move(surface^, Mem[$A000:0], BufferSize)
   else
     for y := 0 to VGAHeight - 1 do begin
-      offset := y * VGAWidth;
-      move(PByteArray(surface)^[offset], mem[$A000:offset], VGAWidth);
+      srcOffset := y * VGAWidth;
+      destOffset := y * DefaultVGAWidth;
+
+      Move(
+        PByteArray(surface)^[srcOffset],
+        mem[$A000:destOffset],
+        VGAWidth);
     end;
 end;
 
