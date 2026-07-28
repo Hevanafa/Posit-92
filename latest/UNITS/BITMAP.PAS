@@ -24,7 +24,7 @@ procedure BitmapInfo(const image: PBitmap);
 procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-procedure Tic80Spr(
+procedure SprScaled(
   const image: PBitmap;
   const x, y: integer;
   const transparencyKey: byte;
@@ -170,7 +170,7 @@ begin
   end;
 end;
 
-procedure Tic80Spr(
+procedure SprScaled(
   const image: PBitmap;
   const x, y: integer;
   const transparencyKey: byte;

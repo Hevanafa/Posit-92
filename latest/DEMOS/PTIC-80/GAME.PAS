@@ -40,9 +40,9 @@ begin
   cls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    tic80spr(dosuEXE[0], 96, 24, 13, 2)
+    SprScaled(dosuEXE[0], 96, 24, 13, 2)
   else
-    tic80spr(dosuEXE[1], 96, 24, 13, 2);
+    SprScaled(dosuEXE[1], 96, 24, 13, 2);
 
   print('Hello world!', (240-96) div 2, 84, 15);
 end;
