@@ -21,6 +21,9 @@ type
       using the CRT unit }
     EnableKeyHandler: boolean;
 
+    EnableDrawFPS: boolean;
+    EnableDefaultPresent: boolean;
+
     { Callbacks }
     OnPreload: TP92Callback;
     OnReady: TP92Callback;
@@ -81,6 +84,9 @@ begin
   config.EnablePCSpeaker := true;
   config.EnableAdLib := false;
   config.EnableKeyHandler := true;
+
+  config.EnableDrawFPS := true;
+  config.EnableDefaultPresent := true;
 
   @config.OnPreload := nil;
   @config.OnReady := nil;
@@ -162,12 +168,14 @@ begin
   if bootConfig.LoadDefaultCursor then
     DrawMouse;
 
-  DrawFPS;
+  if bootConfig.EnableDrawFPS then
+    DrawFPS;
 
 {$ifdef P92_MODEX}
   FlipModeXPage;
 {$else}
-  Flush;
+  if bootConfig.EnableDefaultPresent then
+    Flush;
 {$endif}
 end;
 
