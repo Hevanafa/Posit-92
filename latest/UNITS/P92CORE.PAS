@@ -111,6 +111,7 @@ begin
   LoadCGAFont;
 
   InitBuffer(bootConfig.BufferWidth, bootConfig.BufferHeight);
+
   InitDeltaTime;
 
   if bootConfig.EnableKeyHandler then

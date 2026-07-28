@@ -55,6 +55,7 @@ implementation
 uses DOS, Panic;
 
 var
+  useDefaultBufferSize: boolean;
   bufferInitialised: boolean;
   bufferSize: word;
   font8x8: TFont8x8;
@@ -286,6 +287,9 @@ end;
 procedure InitBuffer(const width, height: word);
 begin
   if not bufferInitialised then begin
+    if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
+      useDefaultBufferSize := false;
+
     VGAWidth := width;
     VGAHeight := height;
     bufferSize := width * height;
@@ -303,6 +307,17 @@ begin
     surface := nil;
     bufferInitialised := false;
   end;
+end;
+
+begin
+  useDefaultBufferSize := true;
+  VGAWidth := DefaultVGAWidth;
+  VGAHeight := DefaultVGAHeight;
+  bufferSize := VGAWidth * VGAHeight;
+end;
+
+end;
+
 end;
 
 end.
