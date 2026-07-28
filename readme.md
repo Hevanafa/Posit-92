@@ -1,6 +1,8 @@
 ![Posit-92](./posit-92_logo.png) **Posit-92**
 
-![preview](./preview.png)
+![preview 1](./preview_1.png)
+
+![preview 2](./preview_2.png)
 
 _"Not retro for nostalgia. Retro for power."_
 
