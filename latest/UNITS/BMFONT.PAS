@@ -77,6 +77,7 @@ begin
 
   count := 0;
 
+  { First pass }
   while not eof(f) do begin
     readln(f, line);
 
@@ -100,6 +101,17 @@ begin
           bitmapPath := replaceAll(kv[1], '"', '');
       end;
     end;
+  end;
+
+  { Second pass: parse the glyphs }
+  close(f);
+  reset(f);
+
+  while not eof(f) do begin
+    readln(f, line);
+
+    while contains(line, '  ') do
+      line := replaceAll(line, '  ', ' ');
 
     if startsWith(line, 'char') then begin
       { Parse the whole line first, then check bounds }
