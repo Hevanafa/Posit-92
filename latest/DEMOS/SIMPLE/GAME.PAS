@@ -1,14 +1,11 @@
 program Game;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 uses
   CRT, DOS,
-  P92Core,
-  Logger, P92KBD, P92Mouse, P92STR,
-  Bitmap, Timing, P92VGA;
+  P92Core, Logger, P92STR, Bitmap, Timing, P92VGA,
+  P92KBD, P92Mouse;
 
 var
   { Asset variables }
@@ -59,8 +56,6 @@ begin
     Spr(SpecimenP92[1], 148, 76, 13);
 
   Print('Hello world!', 160-48, 120, 15);
-
-  DrawMouse;
 end;
 
 
