@@ -12,7 +12,8 @@ uses
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
+  { DosuEXE: array[0..1] of PBitmap; }
+  SpecimenP92: array[0..1] of PBitmap;
 
   { Game state variables }
   t: double;
@@ -21,8 +22,8 @@ var
 procedure OnPreload; far;
 begin
   { Load assets here }
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(SpecimenP92[0], 'IMG/SPP92_1.BMP');
+  LoadBMP(SpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
 procedure OnReady; far;
@@ -34,8 +35,8 @@ end;
 procedure OnCleanup; far;
 begin
   { Free all the resources here }
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeBMP(SpecimenP92[0]);
+  FreeBMP(SpecimenP92[1]);
 end;
 
 procedure Update; far;
@@ -50,14 +51,12 @@ end;
 
 procedure Draw; far;
 begin
-  Cls($7D);
-
-  { Your drawing code here }
+  Cls($4F);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(dosuEXE[0], 148, 76, 13)
+    Spr(SpecimenP92[0], 148, 76, 13)
   else
-    Spr(dosuEXE[1], 148, 76, 13);
+    Spr(SpecimenP92[1], 148, 76, 13);
 
   Print('Hello world!', 160-48, 120, 15);
 
