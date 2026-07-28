@@ -24,20 +24,17 @@ procedure BitmapInfo(const image: PBitmap);
 procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-procedure fastSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure fastSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure fastSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSprUnsafe2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr7(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-{ Use this for UI elements in general }
-procedure fastSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure fastSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure fastSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure fastSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-
-procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure asmSprSafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
@@ -167,7 +164,7 @@ begin
   end;
 end;
 
-procedure fastSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
+procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
 asm
   les di, image
   mov ax, es
@@ -250,7 +247,7 @@ end;
 
 
 { Simpler version with cleaner bounds checking }
-procedure fastSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
+procedure AsmSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
 asm
   push ds
   push bp             { save BP so we can use it }
@@ -361,7 +358,7 @@ asm
 end;
 
 
-procedure fastSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
+procedure AsmSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;
 asm
   push ds
   
@@ -461,7 +458,7 @@ end;
 
 
 { This version works, but doesn't check bounds }
-procedure fastSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   screenOffset: word;
   imgSeg, imgOfs: word;
@@ -522,7 +519,7 @@ end;
 
 
 { This version works, but only once }
-procedure fastSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   screenBase: word;
   imgSeg, imgOfs: word;
@@ -606,7 +603,7 @@ end;
 
 
 { This version works but only once }
-procedure fastSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   trans: byte;
 begin
@@ -697,7 +694,7 @@ begin
 end;
 
 { This version works }
-procedure fastSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure AsmSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 var
   screenOffset: word;
   imgSeg, imgOfs: word;
@@ -757,7 +754,7 @@ begin
 end;
 
 
-procedure asmSprUnsafe(
+procedure AsmSprUnsafe2(
   const image: PBitmap;
   const x, y: integer;
   const transparencyKey: byte);
@@ -854,7 +851,7 @@ end;
 end;
 
 
-procedure asmSprSafe(
+procedure AsmSpr7(
   const image: PBitmap;
   const x, y: integer;
   const transparencyKey: byte);
@@ -964,7 +961,7 @@ end;
 end;
 
 
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin

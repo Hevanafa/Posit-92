@@ -42,21 +42,22 @@ begin
     y := random(180); }
 
     { TODO: This only works once }
-    { fastSpr4(dosuEXE[0], x, y, 13); }
-    { fastSpr5(dosuEXE[0], x, y, 13); }
+    { AsmSpr4(dosuEXE[0], x, y, 13); }
+    { AsmSpr5(dosuEXE[0], x, y, 13); }
     { Print(i32str(a), x, y, 15); }
   { end; }
 
-  { fastSpr5(dosuEXE[0], 100, 50, 13);
-  fastSpr5(dosuEXE[0], 150, 50, 13); }
+  { AsmSpr5(dosuEXE[0], 100, 50, 13);
+  AsmSpr5(dosuEXE[0], 150, 50, 13); }
 
-  {fastSpr6(dosuEXE[0], 150, 50, 13);}
+  {AsmSpr6(dosuEXE[0], 150, 50, 13);}
 
   for a:=1 to 1000 do begin
     x := random(300);
     y := random(180);
+
     { PascalSpr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, Pset: 1.3095s }
-    asmSprSafe(dosuEXE[0], x, y, 13);  { 0.6819s, 0.6826s }
+    AsmSpr7(dosuEXE[0], x, y, 13);  { 0.6819s, 0.6826s }
   end;
 
   { Black rectangle behind the text below }
