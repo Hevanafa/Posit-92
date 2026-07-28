@@ -103,7 +103,7 @@ end;
 procedure PascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
-  fillChar(surface^, bufferSize, colour)
+  FillChar(surface^, bufferSize, colour)
 end;
 
 procedure AsmCls(const colour: byte); assembler;
@@ -133,13 +133,10 @@ begin
 
     for row := 0 to 7 do begin
       mask := font8x8[ord(text[idx]), row];
+
       for col := 0 to 7 do
-        if (mask and (1 shl (7 - col))) <> 0 then begin
+        if (mask and (1 shl (7 - col))) <> 0 then
           AsmPset((idx-1) * 8 + x + col, y + row, colour);
-          { pos := (y+row) * 320 + (idx-1)*8 + (x+col);
-          surface^[pos] := colour; }
-          { Pset((idx-1) * 8 + x + col, y + row, colour); }
-          end;
     end;
   end;
 end;
@@ -165,18 +162,18 @@ asm
 { AsmPset }
   cmp x, 0
   jl @skip_pixel
-  cmp x, 320
+  cmp x, VgaWidth
   jge @skip_pixel
   cmp y, 0
   jl @skip_pixel
-  cmp y, 200
+  cmp y, VgaHeight
   jge @skip_pixel
 
   { Calculate pixel offset }
   { y + row }
   mov ax, y
   add ax, row
-  mov bx, 320
+  mov bx, VgaWidth
   mul bx
   mov cx, ax
 
@@ -209,8 +206,8 @@ end;
 
 procedure PascalPset(const x, y: integer; const colour: byte);
 begin
-  if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then exit;
-  surface^[y * 320 + x] := colour;
+  if (x < 0) or (x >= VgaWidth) or (y < 0) or (y >= VgaHeight) then exit;
+  surface^[y * VgaWidth + x] := colour;
 end;
 
 procedure AsmPset(const x, y: integer; const colour: byte); assembler;
@@ -218,17 +215,17 @@ asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, 200
+  cmp y, VgaHeight
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, 320
+  cmp x, VgaWidth
   jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
-  mov bx, 320
+  mov bx, VgaWidth
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 
