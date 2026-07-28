@@ -1,54 +1,42 @@
 {$DEFINE DEBUG}
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 uses
   CRT, DOS,
-  Bitmap, Conv, Graphics,
-  Logger, Mouse, Timing, VGA;
+  P92Core, Bitmap, Conv, Graphics,
+  Logger, P92Mouse, Timing, P92VGA;
 
-const
-  SC_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
+  { Game state variables }
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initMouse;
-
-  { TODO: Your init code here }
-
-  randomize;
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
-
-procedure update;
+procedure OnCleanup; far;
 begin
-  updateDeltaTime;
-  updateMouse;
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
+end;
 
-  { TODO: Your update code here }
-
-  if keyPressed then if readKey = #27 then done := true;
+procedure Update; far;
+begin
+  if keyPressed and (ReadKey = #27) then SignalDone;
   
-  t:=t+dt
+  t:=t + DeltaTime;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);
-
-  { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
     spr(dosuEXE[0], 148, 76, 13)
@@ -56,28 +44,15 @@ begin
     spr(dosuEXE[1], 148, 76, 13);
 
   print('Hello world!', 160-48, 120, 15);
-  drawMouse;
-
-  flush
 end;
 
-
+procedure DrawOnce; far;
 var
   a, b: word;
   startTime, diff: double;
   image: PBitmap;
   imgWidth: word;
 begin
-  INIT;
-  done := false;
-
-  {
-  repeat
-    update;
-    draw
-  until done;
-  }
-
   cls($00);
   startTime := getTimer;
 
@@ -92,7 +67,7 @@ begin
     mov imgWidth, dx
   end;
   writeLog('Width: ' + i32str(imgWidth));
-  
+
   for b:=1 to 9 do
   for a:=1 to 15 do
     { 135 ops: 0.0235s }
@@ -161,17 +136,19 @@ begin
   { print(i32str(9 * 15) + ' operations done in ' + f32str(diff) + 's', 0, 0, 15); }
   { Full test }
   print('1000 operations done in ' + f32str(diff) + 's', 0, 0, 15);
-  
-  flush;
+end;
 
-  readLn;
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
 
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  appConfig.EnableKeyHandler := false;
 
-  resetMouse;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.DrawOnce := @DrawOnce;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
 end.
+
