@@ -16,7 +16,7 @@ type
   TFont8x8 = array[0..255, 0..7] of byte;
 
 var
-  VgaWidth, VgaHeight: word;
+  VGAWidth, VGAHeight: word;
   surface: PSurfaceBuffer;
 
 procedure InitMode13h;
@@ -40,9 +40,9 @@ procedure PascalPrint(const text: string; const x, y: integer; const colour: byt
 procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 
 { Forwards call to AsmPset }
-procedure Pset(const x, y: integer; const colour: byte);
-procedure PascalPset(const x, y: integer; const colour: byte);
-procedure AsmPset(const x, y: integer; const colour: byte);
+procedure PSet(const x, y: integer; const colour: byte);
+procedure PascalPSet(const x, y: integer; const colour: byte);
+procedure AsmPSet(const x, y: integer; const colour: byte);
 
 { Forwards call to AsmFlush }
 procedure Flush;
@@ -134,7 +134,7 @@ begin
 
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
-          AsmPset((idx-1) * 8 + x + col, y + row, colour);
+          AsmPSet((idx-1) * 8 + x + col, y + row, colour);
     end;
   end;
 end;
@@ -157,14 +157,18 @@ begin
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then
 asm
-{ AsmPset }
+{ AsmPSet }
   cmp x, 0
   jl @skip_pixel
-  cmp x, VGAWidth
+
+  mov ax, VGAWidth
+  cmp x, ax
   jge @skip_pixel
+
   cmp y, 0
   jl @skip_pixel
-  cmp y, VGAHeight
+  mov ax, VGAHeight
+  cmp y, ax
   jge @skip_pixel
 
   { Calculate pixel offset }
@@ -197,28 +201,30 @@ end;
 end;
 
 
-procedure Pset(const x, y: integer; const colour: byte);
+procedure PSet(const x, y: integer; const colour: byte);
 begin
-  AsmPset(x, y, colour)
+  AsmPSet(x, y, colour)
 end;
 
-procedure PascalPset(const x, y: integer; const colour: byte);
+procedure PascalPSet(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= VGAWidth) or (y < 0) or (y >= VGAHeight) then exit;
   surface^[y * VGAWidth + x] := colour;
 end;
 
-procedure AsmPset(const x, y: integer; const colour: byte); assembler;
+procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, VGAHeight
+  mov ax, VGAHeight
+  cmp y, ax
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, VGAWidth
+  mov ax, VGAWidth
+  cmp x, ax
   jge @skip
 
   { Calculate offset: y * 320 + x }
@@ -241,8 +247,8 @@ end;
 
 procedure Flush;
 begin
-  { PascalFlush }
-  AsmFlush
+  PascalFlush
+  { AsmFlush }
 end;
 
 
@@ -251,6 +257,7 @@ begin
   Move(surface^, Mem[$A000:0], BufferSize)
 end;
 
+{ TODO: Flush per scanline }
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
   lds si, surface: loads DS:SI from surface
@@ -279,8 +286,8 @@ end;
 procedure InitBuffer(const width, height: word);
 begin
   if not bufferInitialised then begin
-    VgaWidth := width;
-    VgaHeight := height;
+    VGAWidth := width;
+    VGAHeight := height;
     bufferSize := width * height;
 
     GetMem(surface, bufferSize);

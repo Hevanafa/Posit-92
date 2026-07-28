@@ -120,7 +120,7 @@ begin
     if debug then
       writeLog('Finished reading line ' + I32Str(b));
 
-    { for a:=1 to 256 do pset(a-1, h-b-1, buffer[a]); }
+    { for a:=1 to 256 do PSet(a-1, h-b-1, buffer[a]); }
     { bottom to top }
     Move(buffer[1], output^.data[(h-b-1) * w], w);
   end;
@@ -135,7 +135,7 @@ begin
   if image = nil then exit;
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do
-    pset(a, b, image^.data[a + b * image^.width]);
+    PSet(a, b, image^.data[a + b * image^.width]);
 end;
 
 procedure FreeBMP(var image: PBitmap);
@@ -160,7 +160,7 @@ begin
     pos := a + b * image^.width;
 
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, image^.data[pos]);
+      PSet(x+a, y+b, image^.data[pos]);
   end;
 end;
 
@@ -828,7 +828,7 @@ asm
   add ax, srcX
   mov bx, ax
 
-  { PSET }
+  { PSet }
   push es
   les di, surface
   mov al, colour
@@ -938,7 +938,7 @@ asm
   add ax, srcX
   mov bx, ax
 
-  { PSET }
+  { PSet }
   push es
   les di, surface
   mov al, colour
@@ -970,7 +970,7 @@ begin
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
     if image^.data[pos] <> transparencyKey then
-      pset(x+a, y+b, tint);
+      PSet(x+a, y+b, tint);
   end;
 end;
 
@@ -989,7 +989,7 @@ begin
   for a := 0 to srcW - 1 do begin
     pos := (srcX + a) + ((srcY + b) * image^.width);
     if image^.data[pos] <> transparencyKey then
-      pset(destX + a, destY + b, image^.data[pos]);
+      PSet(destX + a, destY + b, image^.data[pos]);
   end;
 end;
 
@@ -1041,7 +1041,7 @@ begin
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
       colour := image^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+        PSet(x+ix, y+iy, colour);
     end;
   end;
 end;
@@ -1078,10 +1078,10 @@ begin
 
   { Debug bounding box }
   {
-  pset(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
-  pset( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
-  pset(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  PSet(-trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  PSet( trunc(sw/2 * scaleX), -trunc(sh/2*scaleY), $0E);
+  PSet( trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
+  PSet(-trunc(sw/2 * scaleX),  trunc(sh/2*scaleY), $0E);
   }
 
   { bounding box }
@@ -1094,7 +1094,7 @@ begin
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
       colour := image^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+        PSet(x+ix, y+iy, colour);
     end;
   end;
 end;
@@ -1140,7 +1140,7 @@ begin
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
       colour := image^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+        PSet(x+ix, y+iy, colour);
     end;
   end;
 end;
