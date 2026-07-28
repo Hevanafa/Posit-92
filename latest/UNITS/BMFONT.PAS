@@ -30,13 +30,18 @@ procedure LoadBMFont(var font: PBMFont; const filename: string);
 { This also frees the bitmap handle }
 procedure FreeBMFont(var font: PBMFont);
 
-procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer);
 function MeasureBMFont(const font: PBMFont; const text: string): integer;
+
+procedure SetTransparencyKey(const value: byte);
 
 
 implementation
 
 uses Conv, Logger, Panic, P92STR, P92VGA;
+
+var
+  transparencyKey: byte;
 
 procedure ParseBMFontGlyph(var font: PBMFont; line: string);
 var
@@ -188,7 +193,7 @@ begin
 end;
 
 
-procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer; const transparencyKey: byte);
+procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer);
 var
   a, row, col, dx, dy: integer;
   c: char;
@@ -245,4 +250,11 @@ begin
   MeasureBMFont := result
 end;
 
+procedure SetTransparencyKey(const value: byte);
+begin
+  transparencyKey := value
+end;
+
+begin
+  transparencyKey := $0D;
 end.

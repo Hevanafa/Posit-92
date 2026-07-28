@@ -45,17 +45,17 @@ begin
 
   s := 'BMFont test';
   w := measureBMFont(font, s);
-  PrintBMFont(font, s, 160 - w div 2, 120, 13);
+  PrintBMFont(font, s, 160 - w div 2, 120);
 
   scoreStr := f32str(t);
   w := measureBMFont(font, scoreStr);
-  PrintBMFont(font, scoreStr, 160 - w div 2, 8, 13);
+  PrintBMFont(font, scoreStr, 160 - w div 2, 8);
 
   { Edge case tests }
-  PrintBMFont(font, 'Left edge', -20, 10, 13);
-  PrintBMFont(font, 'Top edge', 10, -8, 13);
-  PrintBMFont(font, 'Right edge', 310, 10, 13);
-  PrintBMFont(font, 'Bottom edge', 10, 192, 13);
+  PrintBMFont(font, 'Left edge', -20, 10);
+  PrintBMFont(font, 'Top edge', 10, -8);
+  PrintBMFont(font, 'Right edge', 310, 10);
+  PrintBMFont(font, 'Bottom edge', 10, 192);
 end;
 
 
