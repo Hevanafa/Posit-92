@@ -13,8 +13,10 @@ type
   TP92Callback = procedure;
 
   TP92AppConfig = record
-    LoadDefaultCursor: boolean;
+    BufferWidth: word;
+    BufferHeight: word;
 
+    LoadDefaultCursor: boolean;
     EnablePCSpeaker: boolean;
     EnableAdLib: boolean;
     { Turning this off enables the KeyPressed and ReadKey pattern
@@ -79,6 +81,9 @@ end;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
+  config.BufferWidth := DefaultVGAWidth;
+  config.BufferHeight := DefaultVGAHeight;
+
   config.LoadDefaultCursor := true;
 
   config.EnablePCSpeaker := true;
@@ -105,7 +110,7 @@ begin
 {$endif}
   LoadCGAFont;
 
-  InitBuffer;
+  InitBuffer(bootConfig.BufferWidth, bootConfig.BufferHeight);
   InitDeltaTime;
 
   if bootConfig.EnableKeyHandler then
@@ -204,7 +209,7 @@ begin
 
   if @config.DrawOnce <> nil then begin
     config.DrawOnce;
-    Print('Press Enter to exit', 0, DefaultVgaHeight - 8, $0F);
+    Print('Press Enter to exit', 0, DefaultVGAHeight - 8, $0F);
     Flush;
     ResetKeyHandler;
     ReadLn;

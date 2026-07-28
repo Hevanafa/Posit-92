@@ -5,9 +5,8 @@ unit P92VGA;
 interface
 
 const
-  DefaultVgaWidth = 320;
-  DefaultVgaHeight = 200;
-  BufferSize = DefaultVgaWidth * DefaultVgaHeight;
+  DefaultVGAWidth = 320;
+  DefaultVGAHeight = 200;
 
 type
   PSurfaceBuffer = ^TSurfaceBuffer;
@@ -17,6 +16,7 @@ type
   TFont8x8 = array[0..255, 0..7] of byte;
 
 var
+  VgaWidth, VgaHeight: word;
   surface: PSurfaceBuffer;
 
 procedure InitMode13h;
@@ -26,7 +26,7 @@ procedure InitModeText;
 procedure LoadCGAFont;
 function BorrowCGAFont: PFont8x8;
 
-procedure InitBuffer;
+procedure InitBuffer(const width, height: word);
 procedure FreeBuffer;
 
 { Forwards call to AsmCls }
@@ -55,8 +55,9 @@ implementation
 uses DOS, Panic;
 
 var
-  font8x8: TFont8x8;
   bufferInitialised: boolean;
+  bufferSize: word;
+  font8x8: TFont8x8;
 
 procedure InitMode13h; assembler;
 asm
@@ -159,18 +160,18 @@ asm
 { AsmPset }
   cmp x, 0
   jl @skip_pixel
-  cmp x, DefaultVgaWidth
+  cmp x, DefaultVGAWidth
   jge @skip_pixel
   cmp y, 0
   jl @skip_pixel
-  cmp y, DefaultVgaHeight
+  cmp y, DefaultVGAHeight
   jge @skip_pixel
 
   { Calculate pixel offset }
   { y + row }
   mov ax, y
   add ax, row
-  mov bx, DefaultVgaWidth
+  mov bx, DefaultVGAWidth
   mul bx
   mov cx, ax
 
@@ -203,8 +204,8 @@ end;
 
 procedure PascalPset(const x, y: integer; const colour: byte);
 begin
-  if (x < 0) or (x >= DefaultVgaWidth) or (y < 0) or (y >= DefaultVgaHeight) then exit;
-  surface^[y * DefaultVgaWidth + x] := colour;
+  if (x < 0) or (x >= DefaultVGAWidth) or (y < 0) or (y >= DefaultVGAHeight) then exit;
+  surface^[y * DefaultVGAWidth + x] := colour;
 end;
 
 procedure AsmPset(const x, y: integer; const colour: byte); assembler;
@@ -212,17 +213,17 @@ asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, DefaultVgaHeight
+  cmp y, DefaultVGAHeight
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, DefaultVgaWidth
+  cmp x, DefaultVGAWidth
   jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
-  mov bx, DefaultVgaWidth
+  mov bx, DefaultVGAWidth
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 
@@ -275,10 +276,15 @@ asm
   pop ds
 end;
 
-procedure InitBuffer;
+procedure InitBuffer(const width, height: word);
 begin
   if not bufferInitialised then begin
-    getMem(surface, BufferSize);
+    VgaWidth := width;
+    VgaHeight := height;
+    bufferSize := width * height;
+
+    GetMem(surface, bufferSize);
+
     bufferInitialised := true;
   end;
 end;
@@ -286,7 +292,7 @@ end;
 procedure FreeBuffer;
 begin
   if bufferInitialised then begin
-    freeMem(surface, BufferSize);
+    freeMem(surface, bufferSize);
     surface := nil;
     bufferInitialised := false;
   end;
