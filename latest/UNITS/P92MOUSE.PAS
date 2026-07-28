@@ -92,7 +92,7 @@ end;
 procedure DrawMouse;
 begin
   if not mouseInitialised then exit;
-  PascalSpr(cursor, mouseX, mouseY, 13);
+  Spr(cursor, mouseX, mouseY, 13);
 end;
 
 {

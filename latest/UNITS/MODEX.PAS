@@ -20,7 +20,7 @@ procedure FlipModeXPage;
 implementation
 
 uses
-  DOS, VGA;
+  DOS, P92VGA;
 
 {
   Mode X page start addresses (19200 bytes each):

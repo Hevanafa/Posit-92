@@ -1,64 +1,40 @@
+{
+  Mode X demo
+  Requires P92_MODEX custom directive enabled
+}
+
 {$DEFINE DEBUG}
-{$DEFINE MODEX}
 
 uses
   CRT,
-  Conv, Logger, Timing, ModeX, XBitmap, XFPS, XMouse;
+  P92Core, P92Mouse, Conv, Logger, Timing, ModeX, XBitmap;
 
-var
-  done: boolean;
-
-procedure INIT;
+procedure Update; far;
 begin
-  initLogger;
-  initModeX;
-  loadFont;
-  initMouse;
-
-  initDeltaTime;
-  initFPSCounter;
-
-  randomize;
+  if keyPressed and (readKey = #27) then SignalDone;
 end;
 
 
-procedure update;
-begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
-  if keyPressed then if readKey = #27 then done := true;
-end;
-
-
-procedure draw;
+procedure Draw; far;
 begin
   cls($7D);
 
   { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
   print('Top area', 0, 20, 15);
   print('Hello world!', 160-48, 120, 15);
-  
-  { Might disappear due to screen tearing, often happens in slower CPU's }
-  drawMouse;
-  drawFPS
 end;
 
+
 var
-  a, b: integer;
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    limit(35);
-    update;
-    draw;
-    flipPages
-  until done;
+  appConfig.EnableKeyHandler := false;
 
-  resetMouse;
-  closeLogger;
-  initTextMode
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+
+  P92Start(appConfig)
 end.
+
