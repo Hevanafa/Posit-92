@@ -281,12 +281,17 @@ end;
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
-procedure AsmFlush; assembler;
+procedure AsmFlush;
+var
+  y, offset: word;
+begin
+  if useDefaultBufferSize then begin
 asm
   push ds
   push es
 
   lds si, surface { Load DS:SI with source pointer }
+
   mov ax, $a000
   mov es, ax      { Set ES to VGA segment }
   xor di, di      { Reset DI (Destination offset) }
@@ -296,6 +301,31 @@ asm
 
   pop es
   pop ds
+end;
+  end else begin
+asm
+  push ds
+  push es
+
+@y_init:
+  mov y, 0
+
+@y_body:
+  { TODO: Fill in the loop body}
+
+@y_check:
+  mov ax, VGAHeight
+  cmp y, ax
+  jge @skip
+
+@y_last:
+  inc y
+
+@skip:
+  pop es
+  pop ds
+end;
+end;
 end;
 
 procedure InitBuffer(const width, height: word);
