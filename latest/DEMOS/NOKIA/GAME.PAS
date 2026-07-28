@@ -3,19 +3,15 @@
 
 uses
   CRT, DOS,
-  Conv, Logger, Keyboard, Timing,
-  BMFont, { VGA } NokiaVGA;
+  P92Core, Conv, Logger, P92KBD, Timing,
+  BMFont, P92VGA;
 
-const
-  SC_ESC = $01;
 var
-  done: boolean;
-  startTick, t: double;
+  { Asset variables }
   nokiaFont, p8Font: PBMFont;
-
+  { Game state variables }
+  startTick, t: double;
   palette: array[0..1] of byte;
-  { DosuEXE: array[0..1] of PBitmap; }
-  { TODO: More of your game state here }
 
 
 procedure clearVGAMem; assembler;
@@ -35,63 +31,142 @@ asm
   pop es
 end;
 
-procedure INIT;
+procedure nokiaFlush;
+var
+  y: word;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
+asm
+  push es
 
-  { TODO: Your init code here }
+  { Assign ES:DI to VGA memory }
+  mov ax, $A000
+  mov es, ax
+  xor di, di
+
+  push ds
+  lds si, surface
+  { mov si, offset surface }
+
+@y_init:
+  mov y, 0
+
+@y_condition:
+  cmp y, 48
+  jge @y_end
+
+@y_loop:
+  mov cx, 42
+  cld
+  rep movsw
+
+@y_next:
+  add di, 236
+  inc y
+  jmp @y_condition
+
+@y_end:
+
+  pop ds
+  pop es
+end;
+end;
+
+
+procedure nokiaFlushX2;
+var
+  x, y: word;
+begin
+asm
+  push es
+
+  { Assign ES:DI to VGA memory }
+  mov ax, $A000
+  mov es, ax
+  xor di, di
+
+  push ds
+  lds si, surface
+  { mov si, offset surface }
+
+@y_init:
+  { reset y to 0 }
+  { xor y, y }  { Not possible with TP7 }
+  mov y, 0
+
+@y_condition:
+  cmp y, 48
+  jge @y_end
+
+@y_loop:
+
+  mov cx, 84  { Used together with `loop` }
+
+@x_loop:
+  mov bx, di
+
+  mov al, ds:[si]  { obtain the source colour }
+  mov es:[di], al
+  inc di
+  mov es:[di], al
+  inc di
+  mov es:[bx+320], al
+  mov es:[bx+321], al
+
+  add bx, 2
+  inc si
+
+  loop @x_loop  { decrement cx, pass if cx = 0 }
+
+@y_next:
+  add di, 472  { (320 - 168) + 320 = 152 + 320 }
+  inc y
+  jmp @y_condition
+
+@y_end:
+
+  pop ds
+  pop es
+end;
+end;
+
+
+procedure OnPreload; far;
+begin
   loadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
   loadBMFont(p8Font, 'FONTS\P8.TXT');
+end;
 
-  randomize;
+procedure OnCleanup; far;
+begin
+  freeBMFont(nokiaFont);
+  freeBMFont(p8Font);
+end;
+
+procedure OnReady; far;
+begin
   palette[0] := 98;
   palette[1] := 8;
-  {
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  }
+
   clearVGAMem;
 
   startTick := getTimer;
 end;
 
 
-
-procedure update;
+procedure Update; far;
 begin
-  updateDeltaTime;
-
-  { TODO: Your update code here }
-
-  if isKeyDown(SC_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
   
   t := getTimer - startTick
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   x: double;
   a: byte;
 begin
   cls(palette[0]);
-
-  { TODO: Your drawing code here }
-
-  {
-  if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76, 13)
-  else
-    spr(dosuEXE[1], 148, 76, 13);
-  }
-
-  { print('Hello world!', 4, 4, 8); }
-  { print(f32str(t), 4, 4, 8); }
 
   printBMFont(nokiaFont, 'Hello Nokia!', 4, 4, 13);
   printBMFont(p8Font, 'hello pico-8!', 4, 16, 13);
@@ -102,31 +177,26 @@ begin
     pset(trunc(x), a, palette[1]);
   end;
 
-  { flush }
-  nokiaFlushX2
+  { nokiaFlush; }
+  nokiaFlushX2;
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
+  DefaultP92AppConfig(appConfig);
 
-  done := false;
+  appConfig.LoadDefaultCursor := false;
+  appConfig.EnableDrawFPS := false;
+  appConfig.EnableDefaultPresent := false;
 
-  repeat
-    update;
-    draw
-  until done;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  { TODO: Your cleanup code here }
-  {
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-  }
-  freeBMFont(nokiaFont);
-  freeBMFont(p8Font);
-
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
