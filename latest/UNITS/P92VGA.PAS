@@ -5,13 +5,13 @@ unit P92VGA;
 interface
 
 const
-  VgaWidth = 320;
-  VgaHeight = 200;
-  BufferSize = VgaWidth * VgaHeight;
+  DefaultVgaWidth = 320;
+  DefaultVgaHeight = 200;
+  BufferSize = DefaultVgaWidth * DefaultVgaHeight;
 
 type
   PSurfaceBuffer = ^TSurfaceBuffer;
-  TSurfaceBuffer = array[0..BufferSize-1] of byte;
+  TSurfaceBuffer = array[0..0] of byte;
 
   PFont8x8 = ^TFont8x8;
   TFont8x8 = array[0..255, 0..7] of byte;
@@ -159,18 +159,18 @@ asm
 { AsmPset }
   cmp x, 0
   jl @skip_pixel
-  cmp x, VgaWidth
+  cmp x, DefaultVgaWidth
   jge @skip_pixel
   cmp y, 0
   jl @skip_pixel
-  cmp y, VgaHeight
+  cmp y, DefaultVgaHeight
   jge @skip_pixel
 
   { Calculate pixel offset }
   { y + row }
   mov ax, y
   add ax, row
-  mov bx, VgaWidth
+  mov bx, DefaultVgaWidth
   mul bx
   mov cx, ax
 
@@ -203,8 +203,8 @@ end;
 
 procedure PascalPset(const x, y: integer; const colour: byte);
 begin
-  if (x < 0) or (x >= VgaWidth) or (y < 0) or (y >= VgaHeight) then exit;
-  surface^[y * VgaWidth + x] := colour;
+  if (x < 0) or (x >= DefaultVgaWidth) or (y < 0) or (y >= DefaultVgaHeight) then exit;
+  surface^[y * DefaultVgaWidth + x] := colour;
 end;
 
 procedure AsmPset(const x, y: integer; const colour: byte); assembler;
@@ -212,17 +212,17 @@ asm
   { Bounds check }
   cmp y, 0
   jl @skip
-  cmp y, VgaHeight
+  cmp y, DefaultVgaHeight
   jge @skip
 
   cmp x, 0
   jl @skip
-  cmp x, VgaWidth
+  cmp x, DefaultVgaWidth
   jge @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
-  mov bx, VgaWidth
+  mov bx, DefaultVgaWidth
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 

@@ -204,7 +204,7 @@ begin
 
   if @config.DrawOnce <> nil then begin
     config.DrawOnce;
-    Print('Press Enter to exit', 0, vgaheight - 8, $0F);
+    Print('Press Enter to exit', 0, DefaultVgaHeight - 8, $0F);
     Flush;
     ResetKeyHandler;
     ReadLn;
