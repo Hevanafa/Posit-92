@@ -1,6 +1,13 @@
 {
   Mode X demo
-  Requires P92_MODEX custom directive enabled
+  Part of Posit-92 game engine
+
+  Requires P92_MODEX custom directive enabled in Turbo Pascal:
+  1. Options menu > Compiler...
+  2. Conditional defines
+
+  Also, all the TPU files must be cleaned up first
+  since stale units may have the version without P92_MODEX enabled
 }
 
 {$DEFINE DEBUG}
