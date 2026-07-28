@@ -254,8 +254,8 @@ end;
 
 procedure Flush;
 begin
-  PascalFlush
-  { AsmFlush }
+  { PascalFlush }
+  AsmFlush
 end;
 
 
@@ -272,7 +272,6 @@ begin
     end;
 end;
 
-{ TODO: Flush per scanline }
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
   lds si, surface: loads DS:SI from surface
@@ -283,7 +282,7 @@ end;
 }
 procedure AsmFlush;
 var
-  y, offset: word;
+  y, offset, halfWidth: word;
 begin
   if useDefaultBufferSize then begin
 asm
@@ -303,15 +302,25 @@ asm
   pop ds
 end;
   end else begin
+    { Flush per scanline }
+    halfWidth := VGAWidth div 2;
 asm
   push ds
   push es
 
+  lds si, surface
+
+  { for (y = 0; y < VgaWidth; y++) }
 @y_init:
   mov y, 0
 
 @y_body:
-  { TODO: Fill in the loop body}
+  mov ax, $A000  { Assign ES:DI to $A000:0000 }
+  mov es, ax
+  xor di, di
+
+  mov cx, halfWidth
+  rep movsw
 
 @y_check:
   mov ax, VGAHeight
