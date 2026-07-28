@@ -1,21 +1,20 @@
 unit P92VGA;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
-
-type
-  PSurfaceBuffer = ^TSurfaceBuffer;
-  TSurfaceBuffer = array[0..63999] of byte;
-
-  PFont8x8 = ^TFont8x8;
-  TFont8x8 = array[0..255, 0..7] of byte;
 
 const
   VgaWidth = 320;
   VgaHeight = 200;
+  BufferSize = VgaWidth * VgaHeight;
+
+type
+  PSurfaceBuffer = ^TSurfaceBuffer;
+  TSurfaceBuffer = array[0..BufferSize-1] of byte;
+
+  PFont8x8 = ^TFont8x8;
+  TFont8x8 = array[0..255, 0..7] of byte;
 
 var
   surface: PSurfaceBuffer;
@@ -30,22 +29,22 @@ function BorrowCGAFont: PFont8x8;
 procedure InitBuffer;
 procedure FreeBuffer;
 
-{ Routes to AsmCls }
+{ Forwards call to AsmCls }
 procedure Cls(const colour: byte);
 procedure PascalCls(const colour: byte);
 procedure AsmCls(const colour: byte);
 
-{ Routes to AsmPrint }
+{ Forwards call to AsmPrint }
 procedure Print(const text: string; const x, y: integer; const colour: byte);
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
 procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 
-{ Routes to AsmPset }
+{ Forwards call to AsmPset }
 procedure Pset(const x, y: integer; const colour: byte);
 procedure PascalPset(const x, y: integer; const colour: byte);
 procedure AsmPset(const x, y: integer; const colour: byte);
 
-{ Routes to PascalFlush }
+{ Forwards call to AsmFlush }
 procedure Flush;
 procedure PascalFlush;
 procedure AsmFlush;
@@ -55,8 +54,6 @@ implementation
 
 uses DOS, Panic;
 
-const
-  bufferSize = 64000;
 var
   font8x8: TFont8x8;
   bufferInitialised: boolean;
@@ -103,7 +100,7 @@ end;
 procedure PascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
-  FillChar(surface^, bufferSize, colour)
+  FillChar(surface^, BufferSize, colour)
 end;
 
 procedure AsmCls(const colour: byte); assembler;
@@ -243,14 +240,14 @@ end;
 
 procedure Flush;
 begin
-  PascalFlush
-  { AsmFlush }
+  { PascalFlush }
+  AsmFlush
 end;
 
 
 procedure PascalFlush;
 begin
-  Move(surface^, Mem[$A000:0], 64000)
+  Move(surface^, Mem[$A000:0], BufferSize)
 end;
 
 {
@@ -269,7 +266,7 @@ asm
   lds si, surface { Load DS:SI with source pointer }
   mov ax, $a000
   mov es, ax      { Set ES to VGA segment }
-  xor di, di      { DI = 0 (Destination offset) }
+  xor di, di      { Reset DI (Destination offset) }
 
   mov cx, 32000   { 64000 bytes / 2 = 32000 words }
   rep movsw       { Copy CX words from DS:SI to ES:DI }
@@ -281,7 +278,7 @@ end;
 procedure InitBuffer;
 begin
   if not bufferInitialised then begin
-    getMem(surface, bufferSize);
+    getMem(surface, BufferSize);
     bufferInitialised := true;
   end;
 end;
@@ -289,7 +286,7 @@ end;
 procedure FreeBuffer;
 begin
   if bufferInitialised then begin
-    freeMem(surface, bufferSize);
+    freeMem(surface, BufferSize);
     surface := nil;
     bufferInitialised := false;
   end;
