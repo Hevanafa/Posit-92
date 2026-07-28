@@ -286,18 +286,18 @@ end;
 
 procedure InitBuffer(const width, height: word);
 begin
-  if not bufferInitialised then begin
-    if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
-      useDefaultBufferSize := false;
+  if bufferInitialised then exit;
 
-    VGAWidth := width;
-    VGAHeight := height;
-    bufferSize := width * height;
+  if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
+    useDefaultBufferSize := false;
 
-    GetMem(surface, bufferSize);
+  VGAWidth := width;
+  VGAHeight := height;
+  bufferSize := width * height;
 
-    bufferInitialised := true;
-  end;
+  GetMem(surface, bufferSize);
+
+  bufferInitialised := true;
 end;
 
 procedure FreeBuffer;
@@ -314,10 +314,5 @@ begin
   VGAWidth := DefaultVGAWidth;
   VGAHeight := DefaultVGAHeight;
   bufferSize := VGAWidth * VGAHeight;
-end;
-
-end;
-
-end;
-
 end.
+
