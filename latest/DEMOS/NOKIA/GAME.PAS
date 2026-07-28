@@ -4,7 +4,7 @@
 uses
   CRT, DOS,
   P92Core, Conv, Logger, P92KBD, Timing,
-  BMFont, P92VGA;
+  BMFont, P92VGA; { , NokiaVGA; }
 
 var
   { Asset variables }
@@ -31,51 +31,13 @@ asm
   pop es
 end;
 
-procedure nokiaFlush;
-var
-  y: word;
-begin
-asm
-  push es
-
-  { Assign ES:DI to VGA memory }
-  mov ax, $A000
-  mov es, ax
-  xor di, di
-
-  push ds
-  lds si, surface
-  { mov si, offset surface }
-
-@y_init:
-  mov y, 0
-
-@y_condition:
-  cmp y, 48
-  jge @y_end
-
-@y_loop:
-  mov cx, 42
-  cld
-  rep movsw
-
-@y_next:
-  add di, 236
-  inc y
-  jmp @y_condition
-
-@y_end:
-
-  pop ds
-  pop es
-end;
-end;
-
 
 procedure nokiaFlushX2;
 var
   x, y: word;
+  surfacePtr: pointer;
 begin
+  surfacePtr := surface;
 asm
   push es
 
@@ -178,7 +140,7 @@ begin
   end;
 
   { nokiaFlush; }
-  nokiaFlushX2;
+  { nokiaFlushX2; }
 end;
 
 
@@ -189,7 +151,10 @@ begin
 
   appConfig.LoadDefaultCursor := false;
   appConfig.EnableDrawFPS := false;
-  appConfig.EnableDefaultPresent := false;
+  { appConfig.EnableDefaultPresent := false; }
+
+  appConfig.BufferWidth := 84;
+  appConfig.BufferHeight := 48;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
