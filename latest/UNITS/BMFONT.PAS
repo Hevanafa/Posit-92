@@ -38,24 +38,27 @@ implementation
 
 uses Conv, Logger, Panic, P92STR, P92VGA;
 
-procedure ParseBMFontGlyph(var font: PBMFont; const line: string);
+procedure ParseBMFontGlyph(var font: PBMFont; line: string);
 var
   newGlyph: TBMFontGlyph;
   pairs: array[0..11] of string;
   pairCount: word;
   b: word;
-  kv: array[0..1] of string;
+  kv: array[0..1] of string; { key-value pair }
   glyphID: integer;
 begin
+  while Contains(line, '  ') do
+    line := ReplaceAll(line, '  ', ' ');
+
   { Parse the whole line first, then check bounds }
   glyphID := -1;
   fillChar(newGlyph, sizeof(TBMFontGlyph), 0);
 
   { assign glyph info }
-  pairCount := split(line, ' ', pairs);
+  pairCount := Split(line, ' ', pairs);
 
   for b:=0 to pairCount-1 do begin
-    split(pairs[b], '=', kv);
+    Split(pairs[b], '=', kv);
 
     { case-of can't be used with strings in TP7 }
     if kv[0] = 'id' then begin
@@ -118,24 +121,24 @@ begin
   while not eof(f) do begin
     readln(f, line);
 
-    while contains(line, '  ') do
-      line := replaceAll(line, '  ', ' ');
+    while Contains(line, '  ') do
+      line := ReplaceAll(line, '  ', ' ');
 
-    if startsWith(line, 'common') then begin
-      pairCount := split(line, ' ', pairs);
+    if StartsWith(line, 'common') then begin
+      pairCount := Split(line, ' ', pairs);
       for b:=0 to pairCount-1 do begin
-        split(pairs[b], '=', kv);
+        Split(pairs[b], '=', kv);
         if kv[0] = 'lineHeight' then
           font^.lineHeight := parseInt(kv[1]);
       end;
     end;
 
-    if startsWith(line, 'page') then begin
-      pairCount := split(line, ' ', pairs);
+    if StartsWith(line, 'page') then begin
+      pairCount := Split(line, ' ', pairs);
       for b:=0 to pairCount-1 do begin
-        split(pairs[b], '=', kv);
+        Split(pairs[b], '=', kv);
         if kv[0] = 'file' then
-          bitmapPath := replaceAll(kv[1], '"', '');
+          bitmapPath := ReplaceAll(kv[1], '"', '');
       end;
     end;
   end;
@@ -147,10 +150,7 @@ begin
   while not eof(f) do begin
     readln(f, line);
 
-    while contains(line, '  ') do
-      line := replaceAll(line, '  ', ' ');
-
-    if startsWith(line, 'char') then
+    if StartsWith(line, 'char') then
       ParseBMFontGlyph(font, line);
   end;
   close(f);
