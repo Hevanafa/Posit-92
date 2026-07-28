@@ -19,21 +19,21 @@ procedure LoadBMP(var output: PBitmap; const filename: string);
 procedure DrawBMP(const image: PBitmap);
 procedure FreeBMP(var image: PBitmap);
 
+procedure BitmapInfo(const image: PBitmap);
+
 procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-{ procedure fastSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); }
+procedure fastSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 { Use this for UI elements in general }
-{ procedure fastSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte); }
 procedure fastSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr5(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSpr6(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure fastSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-procedure asmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprUnsafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure asmSprSafe(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
@@ -59,7 +59,6 @@ procedure sprProLUT(
   const scaleX, scaleY: double;
   const angle10: integer;
   const transparencyKey: byte);
-procedure bitmapInfo(const image: PBitmap);
 
 
 implementation
@@ -1149,7 +1148,7 @@ begin
   end;
 end;
 
-procedure bitmapInfo(const image: PBitmap);
+procedure BitmapInfo(const image: PBitmap);
 begin
   if image = nil then begin
     print('image is nil!', 10, 168, 15);
