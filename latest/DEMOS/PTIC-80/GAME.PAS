@@ -1,53 +1,41 @@
 
 uses
   CRT, DOS,
-  Logger, Keyboard, Mouse, Timing, VGA,
-  Bitmap;
+  P92Core, Logger, P92KBD, P92Mouse, Timing, P92VGA, Bitmap;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
-  { TODO: More of your game state here }
+  { Game state variables }
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-
-  { TODO: Your init code here }
-
   loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
   loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
-
-procedure update;
-var
-  a: integer;
+procedure OnCleanup; far;
 begin
-  updateDeltaTime;
-  updateMouse;
+  freeBMP(dosuEXE[0]);
+  freeBMP(dosuEXE[1]);
+end;
 
-  { TODO: Your update code here }
+procedure OnReady; far;
+begin
+  t := 0.0;
+end;
 
-  if isKeyDown(K_ESC) then done := true;
-  t:=t+dt
+procedure Update; far;
+begin
+  if isKeyDown(SC_ESCAPE) then SignalDone;
+
+  t:=t+DeltaTime
 end;
 
 
-procedure draw;
-var
-  a: integer;
+procedure Draw; far;
 begin
   cls($7D);
 
@@ -57,26 +45,23 @@ begin
     tic80spr(dosuEXE[1], 96, 24, 13, 2);
 
   print('Hello world!', (240-96) div 2, 84, 15);
-  drawMouse;
-  tic80Flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.BufferWidth := 240;
+  appConfig.BufferHeight := 136;
 
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
