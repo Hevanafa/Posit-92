@@ -35,7 +35,7 @@ function MeasureBMFont(const font: PBMFont; const text: string): integer;
 
 implementation
 
-uses Conv, Logger, Panic, Strings, VGA;
+uses Conv, Logger, Panic, P92STR, P92VGA;
 
 procedure LoadBMFont(var font: PBMFont; const filename: string);
 var
