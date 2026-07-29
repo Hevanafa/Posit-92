@@ -1059,11 +1059,13 @@ var
   a, b, pos: integer;
 begin
   if image = nil then exit;
+
   for b := 0 to image^.height-1 do
   for a := 0 to image^.width-1 do begin
     pos := a + b * image^.width;
+
     if image^.data[pos] <> transparencyKey then
-      PSet(x+a, y+b, tint);
+      AsmPSet(x+a, y+b, tint);
   end;
 end;
 
@@ -1080,6 +1082,7 @@ begin
   
   for b := 0 to srcH - 1 do begin
     rowOffset := (srcY + b) * image^.width;
+
     for a := 0 to srcW - 1 do begin
       pxOffset := rowOffset + (srcX + a);
 
