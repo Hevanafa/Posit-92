@@ -22,7 +22,7 @@ procedure FreeBMP(var image: PBitmap);
 procedure BitmapInfo(const image: PBitmap);
 
 procedure Spr(const image: PBitmap; const x, y: integer);
-procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure PascalSpr(const image: PBitmap; const x, y: integer);
 
 procedure SprScaled(
   const image: PBitmap;
@@ -157,12 +157,12 @@ begin
   image := nil  { avoids dangling pointer }
 end;
 
-procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure Spr(const image: PBitmap; const x, y: integer);
 begin
-  PascalSpr(image, x, y, transparencyKey)
+  PascalSpr(image, x, y)
 end;
 
-procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure PascalSpr(const image: PBitmap; const x, y: integer);
 var
   a, b, pos: integer;
 begin
