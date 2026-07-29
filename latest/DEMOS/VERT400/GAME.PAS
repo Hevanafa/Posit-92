@@ -65,8 +65,8 @@ begin
   print('Hello world!', 160-48, 120, 15);
   print('Mouse: ' + i32str(mouseX) + ', ' + i32str(mouseY), 0, 8, 15);
 
-  drawMouse;
-  doubleFlush
+  doubleFlush;
+  drawMouse
 end;
 
 
