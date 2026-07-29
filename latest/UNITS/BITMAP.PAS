@@ -165,17 +165,27 @@ end;
 
 procedure PascalSpr(const image: PBitmap; const x, y: integer);
 var
-  a, b, pos: integer;
+  srcX, srcY: integer;
+  rowOffset, pOffset: word;
 begin
   if image = nil then exit;
 
-  for b := 0 to image^.height-1 do
-    for a := 0 to image^.width-1 do begin
-      pos := a + b * image^.width;
+  for srcY := 0 to image^.height-1 do begin
+    if y + srcY >= VGAHeight then break;
+    if y + srcY < 0 then continue;
 
-      if image^.data[pos] <> transparencyKey then
-        PSet(x+a, y+b, image^.data[pos]);
+    rowOffset := srcY * image^.width;
+
+    for srcX := 0 to image^.width-1 do begin
+      if x + srcX >= VGAWidth then break;
+      if x + srcX < 0 then continue;
+
+      pOffset := rowOffset + srcX;
+
+      if image^.data[pOffset] <> transparencyKey then
+        UnsafeAsmPSet(x+srcX, y+srcY, image^.data[pOffset]);
     end;
+  end;
 end;
 
 procedure VGASpr(const image: PBitmap; const x, y: integer);

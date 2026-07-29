@@ -37,7 +37,7 @@ begin
   Cls($7D);
   startTime := getTimer;
 
-  { 2.5406s }
+  { 1.8692s, 1.8704s }
   for a:=0 to 1000 do
     PascalSpr(dosuEXE[0], random(300), random(180));
 
