@@ -1,6 +1,6 @@
 {
   AdLib FM synthesiser interface utility unit
-  Part of Posit-92 game framework
+  Part of Posit-92 game engine
   Some parts are adapted from ccodere/pascal-adlib's GitHub repo
 
   20-06-2025: The current version doesn't support playing percussion alongside melodic mode

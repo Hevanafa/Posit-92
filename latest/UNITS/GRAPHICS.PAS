@@ -1,6 +1,6 @@
 {
   Primitives
-  Part of Posit-92 game framework
+  Part of Posit-92 game engine
 }
 
 unit Graphics;

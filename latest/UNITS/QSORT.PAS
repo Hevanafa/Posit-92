@@ -1,6 +1,6 @@
 {
   Quicksort unit implementation
-  Part of Posit-92 game framework
+  Part of Posit-92 game engine
 }
 
 unit QSort;
