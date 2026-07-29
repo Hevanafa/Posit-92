@@ -84,14 +84,23 @@ begin
       random(DefaultVGAHeight + 40) - 20,
       random(360)); }
 
-  { 5.1285s }
-  for a:=1 to 100 do
+  { 5.1285s, 5.0451s }
+  { for a:=1 to 100 do
     SprScaleRot(
       DosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
       2, 2,
-      random(360));
+      random(360)); }
+
+  { 5.1915s }
+  for a:=1 to 100 do
+    SprScaleRotLUT(
+      DosuEXE[0],
+      random(DefaultVGAWidth + 40) - 20,
+      random(DefaultVGAHeight + 40) - 20,
+      2, 2,
+      random(36));
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);

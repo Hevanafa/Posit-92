@@ -13,10 +13,23 @@ procedure InitTrigLUT;
 { angle: in degrees }
 procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
 
-{ angle: in degrees }
-procedure SprScaleRot(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
+{
+  Performs scaling and rotation on the fly (very heavy!)
+  I recommend you to scale the image first, cache it, and then use SprRot instead
 
-{ angle: in degrees [0..35] }
+  angle: in degrees
+}
+procedure SprScaleRot(
+  const image: PBitmap;
+  const x, y: integer;
+  const scaleX, scaleY: double;
+  angle: double);
+
+{
+  Similar to SprScaleRot but with lookup tables
+  Perf note: Laggy despite with lookup tables
+  angle: in degrees [0..35]
+}
 procedure SprScaleRotLUT(
   const image: PBitmap;
   const x, y: integer;
@@ -87,7 +100,6 @@ begin
 end;
 
 
-{ Laggy }
 procedure SprScaleRot(
   const image: PBitmap;
   const x, y: integer;
@@ -145,7 +157,7 @@ begin
     end;
 end;
 
-{ Laggy despite with lookup tables }
+
 procedure SprScaleRotLUT(
   const image: PBitmap;
   const x, y: integer;
