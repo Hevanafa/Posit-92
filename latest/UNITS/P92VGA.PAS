@@ -45,6 +45,7 @@ procedure PascalPSet(const x, y: integer; const colour: byte);
 procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
 
 procedure AsmPSet(const x, y: integer; const colour: byte);
+procedure AsmPSetOffset(const offset: Word; const colour: byte); assembler;
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
 { Forwards call to AsmFlush }
@@ -257,6 +258,14 @@ asm
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
 @skip:
+end;
+
+procedure AsmPSetOffset(const offset: Word; const colour: byte); assembler;
+asm
+  les di, surface
+  add di, offset
+  mov al, colour
+  mov es:[di], al
 end;
 
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte); assembler;
