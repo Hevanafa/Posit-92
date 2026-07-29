@@ -22,6 +22,8 @@ var
 procedure InitMode13h;
 procedure InitModeText;
 
+procedure Vert400;
+
 { This loads the 8x8 font }
 procedure LoadCGAFont;
 function BorrowCGAFont: PFont8x8;
@@ -53,6 +55,9 @@ procedure Flush;
 procedure PascalFlush;
 procedure AsmFlush;
 
+{ Only applicable to the 400 scanlines mode }
+procedure DoubleFlush;
+
 
 implementation
 
@@ -74,6 +79,18 @@ procedure InitModeText; assembler;
 asm
   mov ax, 0003h
   int 10h
+end;
+
+{ Taken from https://github.com/skoelle/turbopascal-xlib-unit/blob/main/xlibunit.pas }
+procedure Vert400; assembler;
+asm
+  mov dx,3d4h
+  mov al,9
+  out dx,al
+  inc dx
+  in al,dx
+  and al,01110000b
+  out dx,al
 end;
 
 { Load 8x8 font }
@@ -399,6 +416,21 @@ asm
   pop ds
 end;
 end;
+
+
+procedure DoubleFlush;
+var
+  y, offset, screenOffset: longint;
+begin
+  for y:=0 to DefaultVGAHeight - 1 do begin
+    offset := y * DefaultVGAWidth;
+    screenOffset := y * DefaultVGAWidth;
+
+    Move(surface^[offset], Mem[$A000:screenOffset], DefaultVGAWidth);
+    { Move(surface^[offset], Mem[$B000:screenOffset], DefaultVGAWidth); }
+  end;
+end;
+
 
 procedure InitBuffer(const width, height: word);
 begin
