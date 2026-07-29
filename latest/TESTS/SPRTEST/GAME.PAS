@@ -70,10 +70,18 @@ begin
     bounds check + UnsafeAsmPSet: 0.7505s
     AsmPset: 0.5550s
   }
-  for a:=0 to 100 do
+  { for a:=0 to 100 do
     SprScaled(dosuEXE[0],
       random(DefaultVGAWidth) - 20,
-      random(DefaultVGAHeight) - 20, 2);
+      random(DefaultVGAHeight) - 20, 2); }
+
+  { 0.6443s }
+  for a:=0 to 100 do
+    sprPro(
+      DosuEXE[0],
+      random(DefaultVGAWidth + 40) - 80,
+      random(DefaultVGAHeight + 40) - 80,
+      random(360), $0D);
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
@@ -88,8 +96,8 @@ var
 begin
   Cls($7D);
 
-  { Draw100; }
-  Draw1000;
+  Draw100;
+  { Draw1000; }
 
   { for a:=1 to 1000 do begin
     x := random(300);

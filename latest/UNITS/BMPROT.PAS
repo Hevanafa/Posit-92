@@ -6,7 +6,11 @@ unit BMPROT;
 
 interface
 
+uses Bitmap;
+
 procedure initTrigLUT;
+
+{ angle: in degrees }
 procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
 procedure sprPro2(
   const image: PBitmap;
@@ -24,6 +28,8 @@ procedure sprProLUT(
 
 
 implementation
+
+uses Logger, Conv, P92VGA;
 
 var
   sinLUT, cosLUT: array[0..35] of double;
