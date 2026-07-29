@@ -171,9 +171,6 @@ end;
 
 procedure P92AfterDraw;
 begin
-  if bootConfig.LoadDefaultCursor then
-    DrawMouse;
-
   if bootConfig.EnableDrawFPS then
     DrawFPS;
 
@@ -183,6 +180,9 @@ begin
   if bootConfig.EnableDefaultPresent then
     Flush;
 {$endif}
+
+  if bootConfig.LoadDefaultCursor then
+    DrawMouse;
 end;
 
 { Game engine entry point }
