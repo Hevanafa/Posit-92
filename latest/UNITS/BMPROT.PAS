@@ -73,13 +73,14 @@ begin
       dx:=ix-cx;
 
       { inverse rotation }
-      srcX:=round(dx*ca - dy*sa + cx);
-      srcY:=round(dx*sa + dy*ca + cy);
+      srcX := round(dx*ca - dy*sa + cx);
+      srcY := round(dx*sa + dy*ca + cy);
 
       if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
         colour := image^.data[srcY*sw + srcX];
+
         if colour <> transparencyKey then
-          pset(x+ix, y+iy, colour);
+          AsmPSet(x+ix, y+iy, colour);
       end;
     end;
   end;

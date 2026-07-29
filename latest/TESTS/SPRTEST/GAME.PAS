@@ -75,7 +75,8 @@ begin
       random(DefaultVGAWidth) - 20,
       random(DefaultVGAHeight) - 20, 2); }
 
-  { After each optimisation step: 0.6443s, 0.5956s, 0.5389s }
+  { After each optimisation step: 0.6443s, 0.5956s, 0.5389s
+    with AsmPSet: 0.4958s }
   for a:=0 to 100 do
     SprRot(
       DosuEXE[0],
