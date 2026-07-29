@@ -1,10 +1,12 @@
 {
   Sprite stress test
-  All the benchmarks here are done with 20000 cycles / s
+
+  All the benchmarks here are done with:
+  DOSBox-X 2026.07.02 running fixed 20000 cycles/s
 }
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Graphics, Logger, P92Mouse, Timing, P92VGA;
+  P92Core, Bitmap, BMPROT, Conv, Graphics, Logger, P92Mouse, Timing, P92VGA;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
