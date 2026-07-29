@@ -1052,17 +1052,18 @@ end;
 
 procedure SprTint(const image: PBitmap; const x, y: integer; const tint: byte);
 var
-  a, b, pos: integer;
+  a, b: integer;
+  rowOffset, pxOffset: word;
 begin
   if image = nil then exit;
 
   for b := 0 to image^.height-1 do begin
-    { TODO: row-level optimisation }
+    rowOffset := b * image^.width;
 
     for a := 0 to image^.width-1 do begin
-      pos := a + b * image^.width;
+      pxOffset := rowOffset + a;
 
-      if image^.data[pos] <> transparencyKey then
+      if image^.data[pxOffset] <> transparencyKey then
         AsmPSet(x+a, y+b, tint);
     end;
   end;
