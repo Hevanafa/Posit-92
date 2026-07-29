@@ -180,12 +180,15 @@ end;
 procedure VGASpr(const image: PBitmap; const x, y: integer);
 var
   a, b, pos: integer;
+  rowOffset: word;
 begin
   if image = nil then exit;
 
   for b := 0 to image^.height-1 do begin
     if y + b >= DefaultVGAHeight then break;
     if y + b < 0 then continue;
+
+    rowOffset := (y + b) * DefaultVGAWidth;
 
     for a := 0 to image^.width-1 do begin
       if x + a >= DefaultVGAWidth then break;
@@ -194,7 +197,7 @@ begin
       pos := a + b * image^.width;
 
       if image^.data[pos] <> transparencyKey then
-        Mem[$A000: (y + b) * DefaultVGAWidth + (x+a)] := image^.data[pos];
+        Mem[$A000:rowOffset + (x+a)] := image^.data[pos];
     end;
   end;
 end;
