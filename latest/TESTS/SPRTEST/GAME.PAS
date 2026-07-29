@@ -77,11 +77,11 @@ begin
 
   { 0.6443s }
   for a:=0 to 100 do
-    sprPro(
+    SprPro(
       DosuEXE[0],
       random(DefaultVGAWidth + 40) - 80,
       random(DefaultVGAHeight + 40) - 80,
-      random(360), $0D);
+      random(360));
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);

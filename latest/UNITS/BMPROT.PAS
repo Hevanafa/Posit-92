@@ -11,7 +11,7 @@ uses Bitmap;
 procedure initTrigLUT;
 
 { angle: in degrees }
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprPro(const image: PBitmap; const x, y: integer; angle: double);
 { angle: in degrees }
 procedure sprPro2(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
 
@@ -21,8 +21,7 @@ procedure sprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
-  const angle10: integer;
-  const transparencyKey: byte);
+  const angle10: integer);
 
 
 implementation
@@ -45,7 +44,7 @@ begin
   end;
 end;
 
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
+procedure sprPro(const image: PBitmap; const x, y: integer; angle: double);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -91,9 +90,8 @@ end;
 procedure sprPro2(
   const image: PBitmap;
   const x, y: integer;
-  const scaleX, scaleY:
-  double; angle: double;
-  const transparencyKey: byte);
+  const scaleX, scaleY: double;
+  angle: double);
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
@@ -144,8 +142,7 @@ procedure sprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
-  const angle10: integer;
-  const transparencyKey: byte);
+  const angle10: integer);
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
@@ -187,6 +184,4 @@ end;
 
 begin
   transparencyKey := $0D
-end;
-
 end.
