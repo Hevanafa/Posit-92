@@ -183,13 +183,20 @@ var
 begin
   if image = nil then exit;
 
-  for b := 0 to image^.height-1 do
+  for b := 0 to image^.height-1 do begin
+    if y + b >= DefaultVGAHeight then break;
+    if y + b < 0 then continue;
+
     for a := 0 to image^.width-1 do begin
+      if x + a >= DefaultVGAWidth then break;
+      if x + a < 0 then continue;
+
       pos := a + b * image^.width;
 
       if image^.data[pos] <> transparencyKey then
         Mem[$A000: (y + b) * DefaultVGAWidth + (x+a)] := image^.data[pos];
     end;
+  end;
 end;
 
 procedure SprScaled(
