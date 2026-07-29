@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, Bitmap, FPS, Logger, Mouse, Timing, VGA;
+  P92Core, Conv, Bitmap, FPS, Logger, Timing, P92VGA;
 
 type
   TExplosion = record
@@ -86,16 +86,11 @@ var
 begin
   cls($7D);
 
-  for a:=0 to high(explosions) do begin
-    { spr(imgExplosion, explosions[a].x, explosions[a].y, 13); }
-
+  for a:=0 to high(explosions) do
     SprRegion(
       imgExplosion,
       GetFrame(explosions[a]) * 16, 0, 16, 16,
-      explosions[a].x, explosions[a].y, 13);
-      
-      { print(i32str(GetFrame(explosions[a])), explosions[a].x, explosions[a].y, 15); }
-  end;
+      explosions[a].x, explosions[a].y);
 end;
 
 

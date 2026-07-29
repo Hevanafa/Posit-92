@@ -39,11 +39,11 @@ procedure AsmSprUnsafe2(const image: PBitmap; const x, y: integer; const transpa
 procedure AsmSpr7(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+
 procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
-  const destX, destY: integer;
-  const transparencyKey: byte);
+  const destX, destY: integer);
 
 procedure initTrigLUT;
 procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
@@ -1071,18 +1071,21 @@ end;
 procedure SprRegion(
   const image: PBitmap;
   const srcX, srcY, srcW, srcH: integer;
-  const destX, destY: integer;
-  const transparencyKey: byte);
+  const destX, destY: integer);
 var
-  a, b, pos: integer;
+  a, b: integer;
+  rowOffset, pxOffset: word;
 begin
   if image = nil then exit;
   
-  for b := 0 to srcH - 1 do
-  for a := 0 to srcW - 1 do begin
-    pos := (srcX + a) + ((srcY + b) * image^.width);
-    if image^.data[pos] <> transparencyKey then
-      PSet(destX + a, destY + b, image^.data[pos]);
+  for b := 0 to srcH - 1 do begin
+    rowOffset := (srcY + b) * image^.width;
+    for a := 0 to srcW - 1 do begin
+      pxOffset := rowOffset + (srcX + a);
+
+      if image^.data[pxOffset] <> transparencyKey then
+        AsmPSet(destX + a, destY + b, image^.data[pxOffset]);
+    end;
   end;
 end;
 
