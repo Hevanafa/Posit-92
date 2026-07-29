@@ -84,13 +84,16 @@ end;
 { Taken from https://github.com/skoelle/turbopascal-xlib-unit/blob/main/xlibunit.pas }
 procedure Vert400; assembler;
 asm
-  mov dx,3d4h
-  mov al,9
-  out dx,al
+  { Assign the maximum scanline }
+  mov dx, 3D4h
+  mov al, 9  { This selects register 9, which is the "maximum scanlines" register }
+  out dx, al
+
+  { Switch to port 3D5h }
   inc dx
-  in al,dx
-  and al,01110000b
-  out dx,al
+  in al, dx
+  and al, 01110000b  { This clears bits 0-3, preserving bits 4-6 }
+  out dx, al
 end;
 
 { Load 8x8 font }
