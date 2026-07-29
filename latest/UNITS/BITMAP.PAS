@@ -21,15 +21,12 @@ procedure FreeBMP(var image: PBitmap);
 
 procedure BitmapInfo(const image: PBitmap);
 
+{ Forwards call to PascalSpr }
 procedure Spr(const image: PBitmap; const x, y: integer);
 procedure PascalSpr(const image: PBitmap; const x, y: integer);
 procedure VGASpr(const image: PBitmap; const x, y: integer);
 
-procedure SprScaled(
-  const image: PBitmap;
-  const x, y: integer;
-  const transparencyKey: byte;
-  const scale: integer);
+procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
 
 procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -213,11 +210,7 @@ begin
   end;
 end;
 
-procedure SprScaled(
-  const image: PBitmap;
-  const x, y: integer;
-  const transparencyKey: byte;
-  const scale: integer);
+procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
 var
   a, b, c, d, imgPos: integer;
   destX, destY: integer;
