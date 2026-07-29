@@ -256,5 +256,5 @@ begin
 end;
 
 begin
-  transparencyKey := $0D;
+  SetTransparencyKey($0D);
 end.

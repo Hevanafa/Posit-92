@@ -21,7 +21,7 @@ procedure FreeBMP(var image: PBitmap);
 
 procedure BitmapInfo(const image: PBitmap);
 
-procedure Spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure Spr(const image: PBitmap; const x, y: integer);
 procedure PascalSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
 procedure SprScaled(
@@ -72,6 +72,12 @@ const DEBUG = true;
 
 var
   sinLUT, cosLUT: array[0..35] of double;
+  transparencyKey: byte;
+
+procedure SetTransparencyKey(const value: byte);
+begin
+  transparencyKey := value
+end;
 
 { var makes it pass-by-reference }
 procedure LoadBMP(var output: PBitmap; const filename: string);
@@ -1190,5 +1196,6 @@ begin
   print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15)
 end;
 
-
+begin
+  SetTransparencyKey($0D);
 end.
