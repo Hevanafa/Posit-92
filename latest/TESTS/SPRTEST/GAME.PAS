@@ -70,18 +70,27 @@ begin
     bounds check + UnsafeAsmPSet: 0.7505s
     AsmPset: 0.5550s
   }
-  { for a:=0 to 100 do
+  { for a:=1 to 100 do
     SprScaled(dosuEXE[0],
       random(DefaultVGAWidth) - 20,
       random(DefaultVGAHeight) - 20, 2); }
 
   { After each optimisation step: 0.6443s, 0.5956s, 0.5389s
     with AsmPSet: 0.4958s }
-  for a:=0 to 100 do
+  { for a:=1 to 100 do
     SprRot(
       DosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
+      random(360)); }
+
+  { 5.1285s }
+  for a:=1 to 100 do
+    SprScaleRot(
+      DosuEXE[0],
+      random(DefaultVGAWidth + 40) - 20,
+      random(DefaultVGAHeight + 40) - 20,
+      2, 2,
       random(360));
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';

@@ -95,8 +95,8 @@ procedure SprScaleRot(
   angle: double);
 var
   sw, sh, cx, cy: integer;
-  sa, ca: double;
-  ix, iy: integer; { offset from image centre }
+  sinth, costh: double;
+  icx, icy: integer; { offset from image centre }
   srcX, srcY: integer;
   hw, hh: integer;
   colour: byte;
@@ -113,12 +113,13 @@ begin
   cx:=sw div 2;
   cy:=sh div 2;
 
-  angle:=angle/180*pi;
-  sa:=sin(-angle); { inverse rotation }
-  ca:=cos(-angle);
+  angle := angle/180*pi;
+  { inverse rotation }
+  sinth := sin(-angle);
+  costh := cos(-angle);
 
-  hw:=trunc(sw*scaleX*abs(ca) + sh*scaleY*abs(sa));
-  hh:=trunc(sw*scaleX*abs(sa) + sh*scaleY*abs(ca));
+  hw:=trunc(sw*scaleX*abs(costh) + sh*scaleY*abs(sinth));
+  hh:=trunc(sw*scaleX*abs(sinth) + sh*scaleY*abs(costh));
 
   { Debug bounding box }
   {
@@ -129,18 +130,19 @@ begin
   }
 
   { bounding box }
-  for iy:=-hh to hh do
-  for ix:=-hw to hw do begin
-    { scaling, then inverse rotation }
-    srcX:=round((ix*ca - iy*sa) / scaleX + cx);
-    srcY:=round((ix*sa + iy*ca) / scaleY + cy);
+  for icy:=-hh to hh do
+    for icx:=-hw to hw do begin
+      { scaling, then inverse rotation }
+      srcX := round((icx*costh - icy*sinth) / scaleX + cx);
+      srcY := round((icx*sinth + icy*costh) / scaleY + cy);
 
-    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
-      if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+      if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
+        colour := image^.data[srcY*sw + srcX];
+
+        if colour <> transparencyKey then
+          AsmPSet(x+icx, y+icy, colour);
+      end;
     end;
-  end;
 end;
 
 { Laggy despite with lookup tables }
