@@ -42,12 +42,13 @@ begin
       AsmPSet: 1.6775s }
     { PascalSpr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0D); }
 
-  for a:=0 to 1000 do
-    { 1.8869s
-      AsmPSet: 1.4280s, 1.4451s }
-    SprTint(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C);
+  { 1.8869s
+    AsmPSet: 1.4280s, 1.4451s }
+  { for a:=0 to 1000 do
+    SprTint(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C); }
 
-  { Black rectangle behind the text below }
+  for a:=0 to 1000 do
+    Spr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
 
   s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
