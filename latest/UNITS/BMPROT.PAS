@@ -46,7 +46,7 @@ end;
 
 procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
 const
-  halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
+  HalfSqrt2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
   sw, sh, cx, cy: integer;
   sa, ca, dx, dy: double;
@@ -66,21 +66,21 @@ begin
   ca:=cos(-angle);
 
   { bounding box }
-  { for iy:=0 to sh-1 do
-  for ix:=0 to sw-1 do begin }
-  for iy:=trunc(cy-sh * halfsqr2) to trunc(cy+sh * halfsqr2) do
-  for ix:=trunc(cx-sw * halfsqr2) to trunc(cx+sw * halfsqr2) do begin
-    dx:=ix-cx;
+  for iy:=trunc(cy-sh * HalfSqrt2) to trunc(cy+sh * HalfSqrt2) do begin
     dy:=iy-cy;
 
-    { inverse rotation }
-    srcX:=round(dx*ca - dy*sa + cx);
-    srcY:=round(dx*sa + dy*ca + cy);
+    for ix:=trunc(cx-sw * HalfSqrt2) to trunc(cx+sw * HalfSqrt2) do begin
+      dx:=ix-cx;
 
-    if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
-      if colour <> transparencyKey then
-        pset(x+ix, y+iy, colour);
+      { inverse rotation }
+      srcX:=round(dx*ca - dy*sa + cx);
+      srcY:=round(dx*sa + dy*ca + cy);
+
+      if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
+        colour := image^.data[srcY*sw + srcX];
+        if colour <> transparencyKey then
+          pset(x+ix, y+iy, colour);
+      end;
     end;
   end;
 end;
