@@ -75,12 +75,12 @@ begin
       random(DefaultVGAWidth) - 20,
       random(DefaultVGAHeight) - 20, 2); }
 
-  { 0.6443s }
+  { 0.6443s, 0.5956s }
   for a:=0 to 100 do
-    SprPro(
+    SprRot(
       DosuEXE[0],
-      random(DefaultVGAWidth + 40) - 80,
-      random(DefaultVGAHeight + 40) - 80,
+      random(DefaultVGAWidth + 40) - 20,
+      random(DefaultVGAHeight + 40) - 20,
       random(360));
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';

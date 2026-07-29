@@ -11,13 +11,13 @@ uses Bitmap;
 procedure InitTrigLUT;
 
 { angle: in degrees }
-procedure SprPro(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
 
 { angle: in degrees }
-procedure SprPro2(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
+procedure SprScaleRot(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
 
 { angle: in degrees [0..35] }
-procedure SprProLUT(
+procedure SprScaleRotLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -44,7 +44,7 @@ begin
   end;
 end;
 
-procedure SprPro(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -87,7 +87,7 @@ end;
 
 
 { Laggy }
-procedure SprPro2(
+procedure SprScaleRot(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -138,7 +138,7 @@ begin
 end;
 
 { Laggy despite with lookup tables }
-procedure SprProLUT(
+procedure SprScaleRotLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
