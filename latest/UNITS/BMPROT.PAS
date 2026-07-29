@@ -11,14 +11,12 @@ uses Bitmap;
 procedure initTrigLUT;
 
 { angle: in degrees }
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
-procedure sprPro2(
-  const image: PBitmap;
-  const x, y: integer;
-  const scaleX, scaleY: double;
-  angle: double;
-  const transparencyKey: byte);
+procedure sprPro(const image: PBitmap; const x, y: integer; angle: double);
+{ angle: in degrees }
+procedure sprPro2(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
+
 { procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte); }
+{ angle: in degrees [0..35] }
 procedure sprProLUT(
   const image: PBitmap;
   const x, y: integer;
@@ -32,6 +30,7 @@ implementation
 uses Logger, Conv, P92VGA;
 
 var
+  transparencyKey: byte;
   sinLUT, cosLUT: array[0..35] of double;
 
 procedure initTrigLUT;
@@ -186,5 +185,8 @@ begin
   end;
 end;
 
+begin
+  transparencyKey := $0D
+end;
 
 end.
