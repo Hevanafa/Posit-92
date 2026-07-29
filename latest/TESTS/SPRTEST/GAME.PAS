@@ -37,7 +37,7 @@ var
 begin
   startTime := GetTimer;
 
-  { Previous: 0.8631s, 0.8244s }
+  { After each optimisation step: 0.8631s, 0.8244s, 0.7626s }
   for a:=0 to 100 do
     SprScaled(dosuEXE[0],
       random(DefaultVGAWidth) - 20,

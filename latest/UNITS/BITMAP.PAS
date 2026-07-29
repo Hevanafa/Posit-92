@@ -213,19 +213,27 @@ end;
 procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
 var
   srcX, srcY, c, d: integer;
-  destX, destY: integer;
+  destX, destY: integer; { top left corner of the scaled pixel }
   rowOffset, pxOffset: word;
 begin
   if (image = nil) or (scale = 0) then exit;
   if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
 
   for srcY := 0 to image^.height-1 do begin
+    destY := y + srcY * scale;
+
+    if destY >= VGAHeight then break;
+    if destY < 0 then continue;
+
     rowOffset := srcY * image^.width;
 
     for srcX := 0 to image^.width-1 do begin
-      pxOffset := rowOffset + srcX;
       destX := x + srcX * scale;
-      destY := y + srcY * scale;
+
+      if destX >= VGAWidth then break;
+      if destX < 0 then continue;
+
+      pxOffset := rowOffset + srcX;
 
       if image^.data[pxOffset] <> transparencyKey then begin
         for d := 1 to scale do
