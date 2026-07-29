@@ -15,6 +15,7 @@ type
   end;
 
 procedure LoadBMP(var output: PBitmap; const filename: string);
+procedure CloneBMP(var src, dest: PBitmap);
 procedure FreeBMP(var image: PBitmap);
 
 procedure DrawBitmapInfo(const image: PBitmap);
@@ -111,6 +112,14 @@ begin
   end;
 
   close(f)
+end;
+
+procedure CloneBMP(var src, dest: PBitmap);
+begin
+  if src = nil then exit;
+  if dest <> nil then FreeBMP(dest);
+
+  move(src, dest, sizeof(src))
 end;
 
 procedure FreeBMP(var image: PBitmap);
