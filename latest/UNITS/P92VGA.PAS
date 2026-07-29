@@ -425,6 +425,10 @@ procedure DoubleFlush;
 var
   y, offset, screenOffset: longint;
 begin
+  port[$3C4] := 2;    { Select Map Mask register }
+  { port[$3C5] := $02; }  { Enable plane 1 only }
+  port[$3C5] := $0F;  { Enable all planes }
+
   for y:=0 to DefaultVGAHeight - 1 do begin
     offset := y * DefaultVGAWidth;
     screenOffset := y * DefaultVGAWidth;
