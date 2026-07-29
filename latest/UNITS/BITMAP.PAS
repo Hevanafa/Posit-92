@@ -1,8 +1,7 @@
 unit Bitmap;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+{$DEFINE DEBUG}
 
 interface
 
@@ -11,7 +10,7 @@ type
 
   PBitmap = ^TBitmap;
   TBitmap = record
-    width, height, palsize: word;
+    width, height: word; { palsize }
     data: TByteArray;
   end;
 
@@ -19,7 +18,7 @@ procedure LoadBMP(var output: PBitmap; const filename: string);
 procedure DrawBMP(const image: PBitmap);
 procedure FreeBMP(var image: PBitmap);
 
-procedure BitmapInfo(const image: PBitmap);
+procedure DrawBitmapInfo(const image: PBitmap);
 
 { Forwards call to PascalSpr }
 procedure Spr(const image: PBitmap; const x, y: integer);
@@ -90,18 +89,18 @@ begin
   seek(f, 22); blockRead(f, h, 2);
   seek(f, 50); blockRead(f, palsize, 2);
 
-  size := sizeOf(TBitmap) + (w * h) - 1;
+  size := sizeOf(TBitmap) + (w * h);
   getMem(output, size);
   output^.width := w;
   output^.height := h;
-  output^.palsize := palsize;
+  { output^.palsize := palsize; }
   { output^.size := w * h; }
 
-  if debug then begin
-    writeLog('Width:' + I32Str(output^.width));
-    writeLog('Height:' + I32Str(output^.height));
-    writeLog('Palette:' + I32Str(output^.palsize));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Width:' + I32Str(output^.width));
+  writeLog('Height:' + I32Str(output^.height));
+  { writeLog('Palette:' + I32Str(output^.palsize)); }
+{$ENDIF}
 
   start := 54 + palsize * 4;
   if w mod 4 = 0 then
@@ -142,7 +141,8 @@ end;
 procedure FreeBMP(var image: PBitmap);
 begin
   if image = nil then exit;
-  freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1);
+
+  FreeMem(image, sizeOf(TBitmap) + (image^.width * image^.height));
   image := nil  { avoids dangling pointer }
 end;
 
@@ -437,7 +437,7 @@ begin
   end;
 end;
 
-procedure BitmapInfo(const image: PBitmap);
+procedure DrawBitmapInfo(const image: PBitmap);
 begin
   if image = nil then begin
     print('image is nil!', 10, 168, 15);
@@ -447,7 +447,7 @@ begin
   { print('File name:' + name, 10, 160, 15); }
   print('Width: ' + I32Str(image^.width), 10, 168, 15);
   print('Height: ' + I32Str(image^.height), 10, 176, 15);
-  print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15)
+  { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
 begin
