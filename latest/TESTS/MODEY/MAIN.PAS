@@ -3,7 +3,8 @@ const
   PageSize = 16000;
 
 var
-  activePage: word;
+  drawPage: word;
+  drawOffset: word;
 
 procedure InitMode13h; assembler;
 asm
@@ -17,6 +18,7 @@ asm
   int 10h
 end;
 
+{ TODO: Explain the magic numbers }
 procedure InitModeY;
 begin
   port[$3C4] := $04;
@@ -41,17 +43,31 @@ begin
 end;
 
 procedure FlipPage;
+var
+  startAddr: word;
 begin
-  activePage := activePage xor 1;
-  { TODO: Set the start address }
+  startAddr := drawPage * PageSize;
+
+  WaitVSync;
+
+  { Set the CRTC start address }
+  port[$3D4] := $0C;
+  port[$3D5] := hi(startAddr);
+  port[$3D4] := $0D;
+  port[$3D5] := lo(startAddr);
+
+  drawPage := drawPage xor 1;
+  drawOffset := drawPage * PageSize;
 end;
 
 begin
-  activePage := 0;
+  drawPage := 0;
 
   InitMode13h;
   InitModeY;
+
   writeln('Hello!');
+
   readln;
   InitModeText;
 end.
