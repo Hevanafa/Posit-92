@@ -163,24 +163,18 @@ end;
 procedure PascalSpr(const image: PBitmap; const x, y: integer);
 var
   srcX, srcY: integer;
-  rowOffset, pOffset: word;
+  rowOffset, pxOffset: word;
 begin
   if image = nil then exit;
 
   for srcY := 0 to image^.height-1 do begin
-    if y + srcY >= VGAHeight then break;
-    if y + srcY < 0 then continue;
-
     rowOffset := srcY * image^.width;
 
     for srcX := 0 to image^.width-1 do begin
-      if x + srcX >= VGAWidth then break;
-      if x + srcX < 0 then continue;
+      pxOffset := rowOffset + srcX;
 
-      pOffset := rowOffset + srcX;
-
-      if image^.data[pOffset] <> transparencyKey then
-        UnsafeAsmPSet(x+srcX, y+srcY, image^.data[pOffset]);
+      if image^.data[pxOffset] <> transparencyKey then
+        AsmPSet(x+srcX, y+srcY, image^.data[pxOffset]);
     end;
   end;
 end;

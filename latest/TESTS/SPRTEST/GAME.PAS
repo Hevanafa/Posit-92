@@ -37,7 +37,8 @@ var
 begin
   startTime := getTimer;
 
-  { 1.8706s }
+  { bounds check + UnsafeAsmPSet: 1.8706s
+    AsmPSet: 1.6775s }
   for a:=0 to 1000 do
     PascalSpr(dosuEXE[0], random(300), random(180));
 
