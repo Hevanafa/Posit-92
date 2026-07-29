@@ -51,9 +51,9 @@ begin
   Cls($4F);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[0], 148, 76, 13)
+    Spr(SpecimenP92[0], 148, 76)
   else
-    Spr(SpecimenP92[1], 148, 76, 13);
+    Spr(SpecimenP92[1], 148, 76);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
