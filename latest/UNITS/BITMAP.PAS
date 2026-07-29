@@ -23,6 +23,7 @@ procedure BitmapInfo(const image: PBitmap);
 
 procedure Spr(const image: PBitmap; const x, y: integer);
 procedure PascalSpr(const image: PBitmap; const x, y: integer);
+procedure VGASpr(const image: PBitmap; const x, y: integer);
 
 procedure SprScaled(
   const image: PBitmap;
@@ -187,8 +188,7 @@ begin
       pos := a + b * image^.width;
 
       if image^.data[pos] <> transparencyKey then
-        { TODO: Replace this by writing directly on the VGA memory }
-        PSet(x+a, y+b, image^.data[pos]);
+        Mem[$A000: (y + b) * DefaultVGAWidth + (x+a)] := image^.data[pos];
     end;
 end;
 
