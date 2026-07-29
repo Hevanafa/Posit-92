@@ -8,16 +8,16 @@ interface
 
 uses Bitmap;
 
-procedure initTrigLUT;
+procedure InitTrigLUT;
 
 { angle: in degrees }
 procedure SprPro(const image: PBitmap; const x, y: integer; angle: double);
-{ angle: in degrees }
-procedure sprPro2(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
 
-{ procedure sprProLUT(image: PBitmap; x, y: integer; scaleX, scaleY, angle: double; transparencyKey: byte); }
+{ angle: in degrees }
+procedure SprPro2(const image: PBitmap; const x, y: integer; const scaleX, scaleY: double; angle: double);
+
 { angle: in degrees [0..35] }
-procedure sprProLUT(
+procedure SprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -32,7 +32,7 @@ var
   transparencyKey: byte;
   sinLUT, cosLUT: array[0..35] of double;
 
-procedure initTrigLUT;
+procedure InitTrigLUT;
 var
   i: integer;
 begin
@@ -44,7 +44,7 @@ begin
   end;
 end;
 
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprPro(const image: PBitmap; const x, y: integer; angle: double);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -87,7 +87,7 @@ end;
 
 
 { Laggy }
-procedure sprPro2(
+procedure SprPro2(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -138,7 +138,7 @@ begin
 end;
 
 { Laggy despite with lookup tables }
-procedure sprProLUT(
+procedure SprProLUT(
   const image: PBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
@@ -183,5 +183,6 @@ begin
 end;
 
 begin
-  transparencyKey := $0D
+  transparencyKey := $0D;
+  InitTrigLUT
 end.
