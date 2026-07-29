@@ -1,7 +1,12 @@
-
+{
+  Sprite stress test
+  All the benchmarks here are done with 20000 cycles / s
+}
 uses
   CRT, DOS,
   P92Core, Bitmap, Conv, Graphics, Logger, P92Mouse, Timing, P92VGA;
+
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 var
   { Asset variables }
@@ -32,10 +37,9 @@ begin
   Cls($7D);
   startTime := getTimer;
 
-  {
+  { 2.5406s }
   for a:=0 to 1000 do
-    PascalSpr(dosuEXE[0], random(300), random(180), 13);
-  }
+    PascalSpr(dosuEXE[0], random(300), random(180));
 
   { for a:=1 to 1000 do begin
     x := random(300);
@@ -52,13 +56,15 @@ begin
 
   {AsmSpr6(dosuEXE[0], 150, 50, 13);}
 
+  { 0.6819s, 0.6826s }
+  {
   for a:=1 to 1000 do begin
     x := random(300);
     y := random(180);
 
-    { PascalSpr(dosuEXE[0], x, y, 13); }  { pset_legacy:1.3392s, Pset: 1.3095s }
-    AsmSpr7(dosuEXE[0], x, y, 13);  { 0.6819s, 0.6826s }
+    AsmSpr7(dosuEXE[0], x, y, 13);
   end;
+  }
 
   { Black rectangle behind the text below }
   rectfill(0, 0, 240, 8, 0);

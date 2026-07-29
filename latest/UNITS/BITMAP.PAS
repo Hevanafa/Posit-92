@@ -168,13 +168,14 @@ var
   a, b, pos: integer;
 begin
   if image = nil then exit;
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do begin
-    pos := a + b * image^.width;
 
-    if image^.data[pos] <> transparencyKey then
-      PSet(x+a, y+b, image^.data[pos]);
-  end;
+  for b := 0 to image^.height-1 do
+    for a := 0 to image^.width-1 do begin
+      pos := a + b * image^.width;
+
+      if image^.data[pos] <> transparencyKey then
+        PSet(x+a, y+b, image^.data[pos]);
+    end;
 end;
 
 procedure VGASpr(const image: PBitmap; const x, y: integer);
