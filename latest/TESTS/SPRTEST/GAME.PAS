@@ -32,6 +32,7 @@ end;
 procedure DrawOnce; far;
 var
   a, x, y: integer;
+  s: string;
   startTime: double;
 begin
   Cls($7D);
@@ -67,8 +68,9 @@ begin
   }
 
   { Black rectangle behind the text below }
-  rectfill(0, 0, 240, 8, 0);
-  Print('1000 operations done in ' + f32str(getTimer - startTime) + 's', 0, 0, 15);
+  s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
+  rectfill(0, 0, length(s) * 8 - 1, 8, 0);
+  Print(s, 0, 0, 15);
 end;
 
 var
