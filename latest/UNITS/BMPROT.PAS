@@ -103,6 +103,11 @@ var
 begin
   if image = nil then exit;
 
+  if (scaleX = 1) and (scaleY = 1) then begin
+    SprRot(image, x, y, angle);
+    exit
+  end;
+
   sw:=image^.width;
   sh:=image^.height;
   cx:=sw div 2;
