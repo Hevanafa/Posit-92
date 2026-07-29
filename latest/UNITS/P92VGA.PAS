@@ -45,7 +45,7 @@ procedure PascalPSet(const x, y: integer; const colour: byte);
 procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
 
 procedure AsmPSet(const x, y: integer; const colour: byte);
-procedure AsmPSetOffset(const offset: Word; const colour: byte); assembler;
+procedure AsmPSetOffset(const bufOffset: Word; const colour: byte);
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
 { Forwards call to AsmFlush }
@@ -260,10 +260,10 @@ asm
 @skip:
 end;
 
-procedure AsmPSetOffset(const offset: Word; const colour: byte); assembler;
+procedure AsmPSetOffset(const bufOffset: Word; const colour: byte); assembler;
 asm
   les di, surface
-  add di, offset
+  add di, bufOffset
   mov al, colour
   mov es:[di], al
 end;
