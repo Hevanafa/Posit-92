@@ -18,7 +18,10 @@ asm
   int 10h
 end;
 
-{ TODO: Explain the magic numbers }
+{
+  Start the unchained mode 13h
+  TODO: Explain the magic numbers
+}
 procedure InitModeY;
 begin
   port[$3C4] := $04;
