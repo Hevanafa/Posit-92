@@ -28,7 +28,9 @@ procedure VGASpr(const image: PBitmap; const x, y: integer);
 
 procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
 
-procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+{ This hangs up the VM }
+{ procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); }
+
 procedure AsmSpr2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr3(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr4(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
@@ -38,7 +40,7 @@ procedure AsmSprUnsafe(const image: PBitmap; const x, y: integer; const transpar
 procedure AsmSprUnsafe2(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 procedure AsmSpr7(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
 
-procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const tint: byte);
 
 procedure SprRegion(
   const image: PBitmap;
@@ -1048,18 +1050,21 @@ end;
 end;
 
 
-procedure SprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure SprTint(const image: PBitmap; const x, y: integer; const tint: byte);
 var
   a, b, pos: integer;
 begin
   if image = nil then exit;
 
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do begin
-    pos := a + b * image^.width;
+  for b := 0 to image^.height-1 do begin
+    { TODO: row-level optimisation }
 
-    if image^.data[pos] <> transparencyKey then
-      AsmPSet(x+a, y+b, tint);
+    for a := 0 to image^.width-1 do begin
+      pos := a + b * image^.width;
+
+      if image^.data[pos] <> transparencyKey then
+        AsmPSet(x+a, y+b, tint);
+    end;
   end;
 end;
 

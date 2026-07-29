@@ -37,10 +37,14 @@ var
 begin
   startTime := getTimer;
 
-  { bounds check + UnsafeAsmPSet: 1.8706s
-    AsmPSet: 1.6775s }
+  { for a:=0 to 1000 do }
+    { bounds check + UnsafeAsmPSet: 1.8706s
+      AsmPSet: 1.6775s }
+    { PascalSpr(dosuEXE[0], random(300), random(180), $0D); }
+
   for a:=0 to 1000 do
-    PascalSpr(dosuEXE[0], random(300), random(180));
+    { 1.8869s }
+    SprTint(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C);
 
   { Black rectangle behind the text below }
 
