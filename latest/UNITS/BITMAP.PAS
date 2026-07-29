@@ -15,10 +15,11 @@ type
   end;
 
 procedure LoadBMP(var output: PBitmap; const filename: string);
-procedure DrawBMP(const image: PBitmap);
 procedure FreeBMP(var image: PBitmap);
 
 procedure DrawBitmapInfo(const image: PBitmap);
+
+procedure SprOpaque(const image: PBitmap);
 
 { Forwards call to PascalSpr }
 procedure Spr(const image: PBitmap; const x, y: integer);
@@ -112,22 +113,40 @@ begin
   close(f)
 end;
 
-procedure DrawBMP(const image: PBitmap);
-var
-  a, b: integer;
-begin
-  if image = nil then exit;
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do
-    PSet(a, b, image^.data[a + b * image^.width]);
-end;
-
 procedure FreeBMP(var image: PBitmap);
 begin
   if image = nil then exit;
 
   FreeMem(image, sizeOf(TBitmap) + (image^.width * image^.height));
   image := nil  { avoids dangling pointer }
+end;
+
+procedure DrawBitmapInfo(const image: PBitmap);
+begin
+  if image = nil then begin
+    print('image is nil!', 10, 168, 15);
+    exit
+  end;
+
+  { print('File name:' + name, 10, 160, 15); }
+  print('Width: ' + I32Str(image^.width), 10, 168, 15);
+  print('Height: ' + I32Str(image^.height), 10, 176, 15);
+  { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
+end;
+
+procedure SprOpaque(const image: PBitmap);
+var
+  a, b: integer;
+  rowOffset: word;
+begin
+  if image = nil then exit;
+
+  for b := 0 to image^.height-1 do begin
+    rowOffset := b * image^.width;
+
+    for a := 0 to image^.width-1 do
+      AsmPSet(a, b, image^.data[rowOffset + a]);
+  end;
 end;
 
 procedure Spr(const image: PBitmap; const x, y: integer);
@@ -267,19 +286,6 @@ begin
         AsmPSet(destX + a, destY + b, image^.data[pxOffset]);
     end;
   end;
-end;
-
-procedure DrawBitmapInfo(const image: PBitmap);
-begin
-  if image = nil then begin
-    print('image is nil!', 10, 168, 15);
-    exit
-  end;
-
-  { print('File name:' + name, 10, 160, 15); }
-  print('Width: ' + I32Str(image^.width), 10, 168, 15);
-  print('Height: ' + I32Str(image^.height), 10, 176, 15);
-  { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
 begin
