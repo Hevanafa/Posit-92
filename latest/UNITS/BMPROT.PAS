@@ -1,8 +1,8 @@
 { Bitmap rotation + scale render procedures }
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+unit BMPROT;
+
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
