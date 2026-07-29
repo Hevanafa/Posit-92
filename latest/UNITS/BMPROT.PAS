@@ -8,8 +8,6 @@ interface
 
 uses Bitmap;
 
-procedure InitTrigLUT;
-
 { angle: in degrees }
 procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
 
