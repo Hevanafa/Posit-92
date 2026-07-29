@@ -42,6 +42,8 @@ procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 { Forwards call to AsmPset }
 procedure PSet(const x, y: integer; const colour: byte);
 procedure PascalPSet(const x, y: integer; const colour: byte);
+procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
+
 procedure AsmPSet(const x, y: integer; const colour: byte);
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
@@ -217,7 +219,12 @@ end;
 procedure PascalPSet(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= VGAWidth) or (y < 0) or (y >= VGAHeight) then exit;
-  surface^[y * VGAWidth + x] := colour;
+  surface^[y * VGAWidth + x] := colour
+end;
+
+procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
+begin
+  surface^[y * VGAWidth + x] := colour
 end;
 
 procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
