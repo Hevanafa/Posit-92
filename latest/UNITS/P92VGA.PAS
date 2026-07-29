@@ -43,6 +43,7 @@ procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 procedure PSet(const x, y: integer; const colour: byte);
 procedure PascalPSet(const x, y: integer; const colour: byte);
 procedure AsmPSet(const x, y: integer; const colour: byte);
+procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
 { Forwards call to AsmFlush }
 procedure Flush;
@@ -240,7 +241,7 @@ asm
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 
-  { Copy AX to BX because ES:[BX] is valid, not ES:[DI+AX] }
+  { Copy AX to BX because ES:[DI+BX] is valid, not ES:[DI+AX] }
   mov bx, ax
 
   { Write byte to the `surface` array }
@@ -251,6 +252,26 @@ asm
 @skip:
 end;
 
+procedure UnsafeAsmPSet(const x, y: integer; const colour: byte); assembler;
+asm
+
+{ Calculate offset: y * 320 + x }
+mov ax, y
+mov bx, VGAWidth
+mul bx
+add ax, x
+
+{ Copy AX to BX because ES:[DI+BX] is valid, not ES:[DI+AX] }
+mov bx, ax
+
+{ Write byte to the `surface` array }
+les di, surface { ES:DI = surface^ }
+mov al, colour
+{ mov es:[di+ax], colour } { <-- Invalid register combination }
+mov es:[di+bx], al
+@skip:
+
+end;
 
 procedure Flush;
 begin
