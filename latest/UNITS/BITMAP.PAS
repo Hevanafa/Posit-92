@@ -212,24 +212,28 @@ end;
 
 procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
 var
-  a, b, c, d, imgPos: integer;
+  srcX, srcY, c, d: integer;
   destX, destY: integer;
+  rowOffset, pxOffset: word;
 begin
   if (image = nil) or (scale = 0) then exit;
-  if scale < 0 then panicHalt('tic80spr: Scale cannot be negative!');
+  if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
 
-  for b := 0 to image^.height-1 do
-    for a := 0 to image^.width-1 do begin
-      imgPos := a + b * image^.width;
-      destX := x + a * scale;
-      destY := y + b * scale;
+  for srcY := 0 to image^.height-1 do begin
+    rowOffset := srcY * image^.width;
 
-      if image^.data[imgPos] <> transparencyKey then begin
+    for srcX := 0 to image^.width-1 do begin
+      pxOffset := rowOffset + srcX;
+      destX := x + srcX * scale;
+      destY := y + srcY * scale;
+
+      if image^.data[pxOffset] <> transparencyKey then begin
         for d := 1 to scale do
 	  for c := 1 to scale do
-            pset(destX + c - 1, destY + d - 1, image^.data[imgPos]);
+            pset(destX + c - 1, destY + d - 1, image^.data[pxOffset]);
       end;
     end;
+  end;
 end;
 
 procedure AsmSpr(const image: PBitmap; const x, y: integer; const transparencyKey: byte); assembler;

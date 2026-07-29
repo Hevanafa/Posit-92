@@ -37,8 +37,11 @@ var
 begin
   startTime := GetTimer;
 
+  { Previous: 0.8631s, 0.8244s }
   for a:=0 to 100 do
-    SprScaled(dosuEXE[0], random(300), random(180), 2);
+    SprScaled(dosuEXE[0],
+      random(DefaultVGAWidth) - 20,
+      random(DefaultVGAHeight) - 20, 2);
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
