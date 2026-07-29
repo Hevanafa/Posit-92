@@ -29,6 +29,25 @@ begin
 end;
 
 
+procedure Draw1000;
+var
+  a: word;
+  s: string;
+  startTime: double;
+begin
+  startTime := getTimer;
+
+  { 1.8706s }
+  for a:=0 to 1000 do
+    PascalSpr(dosuEXE[0], random(300), random(180));
+
+  { Black rectangle behind the text below }
+
+  s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
+  rectfill(0, 0, length(s) * 8 - 1, 8, 0);
+  Print(s, 0, 0, 15);
+end;
+
 procedure Draw100;
 var
   a: word;
@@ -59,13 +78,9 @@ var
   startTime: double;
 begin
   Cls($7D);
-  startTime := getTimer;
 
-  { 1.8692s, 1.8704s }
-  { for a:=0 to 1000 do
-    PascalSpr(dosuEXE[0], random(300), random(180)); }
-
-  Draw100;
+  { Draw100; }
+  Draw1000;
 
   { for a:=1 to 1000 do begin
     x := random(300);
@@ -90,13 +105,6 @@ begin
 
     AsmSpr7(dosuEXE[0], x, y, 13);
   end;
-  }
-
-  { Black rectangle behind the text below }
-  {
-  s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
-  rectfill(0, 0, length(s) * 8 - 1, 8, 0);
-  Print(s, 0, 0, 15);
   }
 end;
 
