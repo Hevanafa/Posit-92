@@ -60,13 +60,29 @@ begin
   drawOffset := drawPage * PageSize;
 end;
 
+procedure ModeYPSet(const x, y: integer; const colour: byte);
+var
+  offset: word;
+begin
+  port[$3C4] := $02;
+  port[$3C5] := 1 shl (x and 3);
+
+  offset := drawOffset + y * 80 + x shr 2;
+  mem[$A000:offset] := colour
+end;
+
 begin
   drawPage := 0;
 
   InitMode13h;
   InitModeY;
 
-  writeln('Hello!');
+  ModeYPSet(160, 100, 14);
+  ModeYPSet(161, 100, 14);
+  ModeYPSet(162, 100, 12);
+  ModeYPSet(163, 100, 12);
+
+  FlipPage;
 
   readln;
   InitModeText;
