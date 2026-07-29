@@ -235,10 +235,19 @@ begin
 
       pxOffset := rowOffset + srcX;
 
-      if image^.data[pxOffset] <> transparencyKey then begin
-        for d := 1 to scale do
-	  for c := 1 to scale do
-            pset(destX + c - 1, destY + d - 1, image^.data[pxOffset]);
+      if image^.data[pxOffset] = transparencyKey then continue;
+
+      { Begin drawing the scaled pixels }
+      for d := 0 to scale-1 do begin
+        if destY + d >= VGAHeight then break;
+        if destY + d < 0 then continue;
+
+	for c := 0 to scale-1 do begin
+          if destX + c >= VGAWidth then break;
+          if destX + c < 0 then continue;
+
+          UnsafeAsmPSet(destX + c, destY + d, image^.data[pxOffset]);
+        end;
       end;
     end;
   end;
