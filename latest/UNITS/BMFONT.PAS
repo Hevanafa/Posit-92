@@ -26,14 +26,15 @@ type
     bitmap: PBitmap;
   end;
 
-procedure LoadBMFont(var font: PBMFont; const filename: string);
+procedure DefaultBMFont(var font: TBMFont);
+procedure LoadBMFont(var font: TBMFont; const filename: string);
 { This also frees the bitmap handle }
-procedure FreeBMFont(var font: PBMFont);
+procedure FreeBMFont(var font: TBMFont);
 
-procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer);
-procedure PrintBMFontTint(const font: PBMFont; const text: string; x, y: integer; const tint: byte);
+procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
+procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
 
-function MeasureBMFont(const font: PBMFont; const text: string): integer;
+function MeasureBMFont(const font: TBMFont; const text: string): integer;
 
 procedure SetTransparencyKey(const value: byte);
 
@@ -45,7 +46,7 @@ uses Conv, Logger, Panic, P92STR, P92VGA;
 var
   transparencyKey: byte;
 
-procedure ParseBMFontGlyph(var font: PBMFont; line: string);
+procedure ParseBMFontGlyph(const font: PBMFont; line: string);
 var
   newGlyph: TBMFontGlyph;
   pairs: array[0..11] of string;
@@ -88,7 +89,17 @@ begin
     font^.glyphs[newGlyph.id] := newGlyph;
 end;
 
-procedure LoadBMFont(var font: PBMFont; const filename: string);
+procedure DefaultBMFont(var font: TBMFont);
+var
+  len: integer;
+begin
+  len := high(font.glyphs) - Low(font.glyphs) + 1;
+  FillChar(font.glyphs, SizeOf(TBMFontGlyph) * len, 0);
+  font.lineHeight := 0;
+  font.bitmap := nil;
+end;
+
+procedure LoadBMFont(var font: TBMFont; const filename: string);
 var
   b: integer;
   f: text;
@@ -101,21 +112,23 @@ var
 
   bitmapPath: string;
 begin
-  if font <> nil then
-    writeLog('LoadBMFont: font isn''t nil!');
+  { if font <> nil then writeLog('LoadBMFont: font isn''t nil!'); }
 
   WriteLog('LoadBMFont: Loading font from ' + filename);
 
   { getMem(font, sizeof(TBMFont)); }
-  new(font);
+  { new(font); }
 
-  if font = nil then
-    panicHalt('loadBMFont: Out of memory!');
+  { if font = nil then
+    panicHalt('loadBMFont: Out of memory!'); }
 
-  for b := low(font^.glyphs) to high(font^.glyphs) do
-    fillchar(font^.glyphs[b], sizeof(TBMFontGlyph), 0);
+  for b := low(font.glyphs) to high(font.glyphs) do
+    fillchar(font.glyphs[b], sizeof(TBMFontGlyph), 0);
 
-  font^.bitmap := nil;
+  if Assigned(font.bitmap) then begin
+    FreeBMP(font.bitmap);
+    font.bitmap := nil;
+  end;
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
@@ -136,7 +149,7 @@ begin
       for b:=0 to pairCount-1 do begin
         Split(pairs[b], '=', kv);
         if kv[0] = 'lineHeight' then
-          font^.lineHeight := parseInt(kv[1]);
+          font.lineHeight := parseInt(kv[1]);
       end;
     end;
 
@@ -158,22 +171,21 @@ begin
     readln(f, line);
 
     if StartsWith(line, 'char') then
-      ParseBMFontGlyph(font, line);
+      ParseBMFontGlyph(@font, line);
   end;
   close(f);
 
-  loadBMP(font^.bitmap, bitmapPath);
+  LoadBMP(font.bitmap, bitmapPath);
   writeLog('Loaded ' + i32str(count) + ' glyphs');
 end;
 
 
-procedure FreeBMFont(var font: PBMFont);
+procedure FreeBMFont(var font: TBMFont);
 var
   a, count: word;
 begin
-  if font = nil then exit;
-
   count:=0;
+
   {
   for a:=low(font^.glyphs) to high(font^.glyphs) do begin
     if font^.glyphs[a] <> nil then begin
@@ -186,16 +198,13 @@ begin
   end;
   }
 
-  freeBMP(font^.bitmap);
-
-  dispose(font);
-  font := nil;
+  freeBMP(font.bitmap);
 
   writeLog('Freed ' + i32str(count) + ' glyphs')
 end;
 
 
-procedure PrintBMFont(const font: PBMFont; const text: string; x, y: integer);
+procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
 var
   a, row, col, dx, dy: integer;
   c: char;
@@ -203,18 +212,17 @@ var
   srcX, srcY: word;
   colour: byte;
 begin
-  if font = nil then exit;
-
   dx := x;
+
   for a:=1 to length(text) do begin
     c := text[a];
-    g := @(font^.glyphs[ord(c)]);
+    g := @(font.glyphs[ord(c)]);
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font^.bitmap^.data[srcY * font^.bitmap^.width + srcX];
+        colour := font.bitmap^.data^[srcY * font.bitmap^.width + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
@@ -225,7 +233,7 @@ begin
   end;
 end;
 
-procedure PrintBMFontTint(const font: PBMFont; const text: string; x, y: integer; const tint: byte);
+procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
 var
   a, row, col, dx, dy: integer;
   c: char;
@@ -233,18 +241,17 @@ var
   srcX, srcY: word;
   colour: byte;
 begin
-  if font = nil then exit;
-
   dx := x;
+
   for a:=1 to length(text) do begin
     c := text[a];
-    g := @(font^.glyphs[ord(c)]);
+    g := @(font.glyphs[ord(c)]);
 
     for row := 0 to g^.height - 1 do begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font^.bitmap^.data[srcY * font^.bitmap^.width + srcX];
+        colour := font.bitmap^.data^[srcY * font.bitmap^.width + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, tint);
@@ -256,24 +263,21 @@ begin
 end;
 
 
-function MeasureBMFont(const font: PBMFont; const text: string): integer;
+function MeasureBMFont(const font: TBMFont; const text: string): integer;
 var
   a: integer;
   ch: char;
   glyph: PBMFontGlyph;
   result: integer;
 begin
-  if font = nil then begin
-    MeasureBMFont := 0;
-    exit
-  end;
-
   result := 0;
 
   for a:=1 to length(text) do begin
     ch := text[a];
-    if (low(font^.glyphs) <= ord(ch)) and (ord(ch) <= high(font^.glyphs)) then begin
-      glyph := @(font^.glyphs[ord(ch)]);
+
+    if (low(font.glyphs) <= ord(ch)) and (ord(ch) <= high(font.glyphs)) then begin
+      glyph := @(font.glyphs[ord(ch)]);
+
       if glyph <> nil then
         inc(result, glyph^.xadvance);
     end;

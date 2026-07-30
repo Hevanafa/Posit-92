@@ -7,13 +7,14 @@ uses
 
 var
   bootTime, t: double;
-  font: PBMFont;
+  font: TBMFont;
 
 procedure OnPreload; far;
 begin
   { loadBMFont(font, 'COMMOD64.FNT'); }
   { loadBMFont(font, 'FR12.FNT'); }
-  loadBMFont(font, 'NOKIA.TXT')
+  DefaultBMFont(font);
+  LoadBMFont(font, 'NOKIA.TXT')
 end;
 
 procedure OnReady; far;
@@ -44,11 +45,11 @@ begin
   cls($7D);
 
   s := 'BMFont test';
-  w := measureBMFont(font, s);
+  w := MeasureBMFont(font, s);
   PrintBMFont(font, s, 160 - w div 2, 120);
 
   scoreStr := f32str(t);
-  w := measureBMFont(font, scoreStr);
+  w := MeasureBMFont(font, scoreStr);
   PrintBMFont(font, scoreStr, 160 - w div 2, 8);
 
   { Edge case tests }
