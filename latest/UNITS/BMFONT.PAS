@@ -23,10 +23,12 @@ type
   TBMFont = record
     glyphs: array[0..255] of TBMFontGlyph;
     lineHeight: word;
-    bitmap: PBitmap;
+    bitmap: TBitmap;
   end;
 
 procedure DefaultBMFont(var font: TBMFont);
+
+{ This calls DefaultBMFont internally }
 procedure LoadBMFont(var font: TBMFont; const filename: string);
 { This also frees the bitmap handle }
 procedure FreeBMFont(var font: TBMFont);
@@ -46,7 +48,7 @@ uses Conv, Logger, Panic, P92STR, P92VGA;
 var
   transparencyKey: byte;
 
-procedure ParseBMFontGlyph(const font: PBMFont; line: string);
+procedure ParseBMFontGlyph(var destFont: TBMFont; line: string);
 var
   newGlyph: TBMFontGlyph;
   pairs: array[0..11] of string;
@@ -84,9 +86,9 @@ begin
     else if kv[0] = 'xadvance' then newGlyph.xadvance := parseInt(kv[1]);
   end;
 
-  if (low(font^.glyphs) <= newGlyph.id) and
-      (newGlyph.id <= high(font^.glyphs)) then
-    font^.glyphs[newGlyph.id] := newGlyph;
+  if (low(destFont.glyphs) <= newGlyph.id) and
+      (newGlyph.id <= high(destFont.glyphs)) then
+    destFont.glyphs[newGlyph.id] := newGlyph;
 end;
 
 procedure DefaultBMFont(var font: TBMFont);
@@ -96,7 +98,7 @@ begin
   len := high(font.glyphs) - Low(font.glyphs) + 1;
   FillChar(font.glyphs, SizeOf(TBMFontGlyph) * len, 0);
   font.lineHeight := 0;
-  font.bitmap := nil;
+  DefaultBMP(font.bitmap);
 end;
 
 procedure LoadBMFont(var font: TBMFont; const filename: string);
@@ -112,23 +114,9 @@ var
 
   bitmapPath: string;
 begin
-  { if font <> nil then writeLog('LoadBMFont: font isn''t nil!'); }
-
   WriteLog('LoadBMFont: Loading font from ' + filename);
 
-  { getMem(font, sizeof(TBMFont)); }
-  { new(font); }
-
-  { if font = nil then
-    panicHalt('loadBMFont: Out of memory!'); }
-
-  for b := low(font.glyphs) to high(font.glyphs) do
-    fillchar(font.glyphs[b], sizeof(TBMFontGlyph), 0);
-
-  if Assigned(font.bitmap) then begin
-    FreeBMP(font.bitmap);
-    font.bitmap := nil;
-  end;
+  DefaultBMFont(font);
 
   assign(f, filename);
   {$I-} reset(f); {$I+}

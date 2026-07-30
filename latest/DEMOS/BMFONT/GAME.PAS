@@ -13,7 +13,6 @@ procedure OnPreload; far;
 begin
   { loadBMFont(font, 'COMMOD64.FNT'); }
   { loadBMFont(font, 'FR12.FNT'); }
-  DefaultBMFont(font);
   LoadBMFont(font, 'NOKIA.TXT')
 end;
 
