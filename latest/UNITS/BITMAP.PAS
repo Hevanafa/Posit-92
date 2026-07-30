@@ -15,27 +15,27 @@ type
     data: PByteArray;
   end;
 
-procedure LoadBMP(var output: PBitmap; const filename: string);
-procedure CloneBMP(var src, dest: PBitmap);
-procedure FreeBMP(var image: PBitmap);
+procedure LoadBMP(var image: TBitmap; const filename: string);
+procedure CloneBMP(const src: TBitmap; var dest: TBitmap);
+procedure FreeBMP(var image: TBitmap);
 
-procedure DrawBitmapInfo(const image: PBitmap);
+procedure DrawBitmapInfo(const image: TBitmap);
 
-procedure SprOpaque(const image: PBitmap);
+procedure SprOpaque(const image: TBitmap);
 
 { Forwards call to PascalSpr }
-procedure Spr(const image: PBitmap; const x, y: integer);
-procedure PascalSpr(const image: PBitmap; const x, y: integer);
+procedure Spr(const image: TBitmap; const x, y: integer);
+procedure PascalSpr(const image: TBitmap; const x, y: integer);
 
 { Blit directly to the VGA memory }
-procedure VGASpr(const image: PBitmap; const x, y: integer);
+procedure VGASpr(const image: TBitmap; const x, y: integer);
 
-procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
+procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: integer);
 
-procedure SprTint(const image: PBitmap; const x, y: integer; const tint: byte);
+procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
 
 procedure SprRegion(
-  const image: PBitmap;
+  const image: TBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 
@@ -52,15 +52,15 @@ begin
   transparencyKey := value
 end;
 
-{ var makes it pass-by-reference }
-procedure LoadBMP(var output: PBitmap; const filename: string);
+procedure LoadBMP(var image: TBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
-  { bytesRead: word; }
   a, b: integer;
-  w, h, palsize, size: integer;
-  start, padding: integer;
+  palsize: word;
+  size: longint;
+  start, padding: longint;
+  rowOffset: longint;
 
 begin
   assign(f, filename);
@@ -68,88 +68,72 @@ begin
   if IOResult <> 0 then
     panicHalt('loadBMP: Couldn''t find "' + filename + '"!');
 
-  { blockRead(f, buffer, sizeOf(buffer), bytesRead); }
-  { writeLn('Read ', bytesRead, ' bytes from sample.bmp'); }
-  seek(f, 18); blockRead(f, w, 2);
-  seek(f, 22); blockRead(f, h, 2);
+  seek(f, 18); blockRead(f, image.width, 2);
+  seek(f, 22); blockRead(f, image.height, 2);
   seek(f, 50); blockRead(f, palsize, 2);
 
-  size := sizeOf(TBitmap) + (w * h);
-  getMem(output, size);
-  output^.width := w;
-  output^.height := h;
-  { output^.palsize := palsize; }
-  { output^.size := w * h; }
+  size := image.width * image.height;
+  getMem(image.data, size);
+  { image^.palsize := palsize; }
 
 {$IFDEF DEBUG}
-  writeLog('Width:' + I32Str(output^.width));
-  writeLog('Height:' + I32Str(output^.height));
-  { writeLog('Palette:' + I32Str(output^.palsize)); }
+  writeLog('Width:' + I32Str(image.width));
+  writeLog('Height:' + I32Str(image.height));
+  { writeLog('Palette:' + I32Str(image^.palsize)); }
 {$ENDIF}
 
   start := 54 + palsize * 4;
-  if w mod 4 = 0 then
+  if image.width mod 4 = 0 then
     padding := 0
   else
-    padding := 4 - w mod 4;
+    padding := 4 - image.width mod 4;
 
 {$IFDEF DEBUG}
   writeLog('Start:' + I32Str(start));
   writeLog('Padding:' + I32Str(padding));
 {$ENDIF}
 
-  for b := 0 to h-1 do begin
-    seek(f, start + (b * (w + padding)));
-    blockRead(f, buffer, w);
+  for b := 0 to image.height - 1 do begin
+    seek(f, start + (b * (image.width + padding)));
+    blockRead(f, buffer, image.width);
 
     {$IFDEF DEBUG}
       writeLog('Finished reading line ' + I32Str(b));
     {$ENDIF}
 
-    { for a:=1 to 256 do PSet(a-1, h-b-1, buffer[a]); }
-    { bottom to top }
-    Move(buffer[1], output^.data^[(h-b-1) * w], w);
+    { Read from bottom to top }
+    rowOffset := (image.height - b - 1) * image.width;
+    Move(buffer[1], image.data^[rowOffset], image.width);
   end;
 
   close(f)
 end;
 
-procedure CloneBMP(var src, dest: PBitmap);
+procedure CloneBMP(const src: TBitmap; var dest: TBitmap);
 begin
-  if src = nil then exit;
-  if dest <> nil then FreeBMP(dest);
-
-  move(src, dest, sizeof(src))
+  dest := src;
+  { dest.data := nil; }
+  move(src.data, dest.data, src.width * src.height)
 end;
 
-procedure FreeBMP(var image: PBitmap);
+procedure FreeBMP(var image: TBitmap);
 begin
-  if image = nil then exit;
-
-  FreeMem(image, sizeOf(TBitmap) + (image^.width * image^.height));
-  image := nil  { avoids dangling pointer }
+  FreeMem(image.data, image.width * image.height);
 end;
 
-procedure DrawBitmapInfo(const image: PBitmap);
+procedure DrawBitmapInfo(const image: TBitmap);
 begin
-  if image = nil then begin
-    print('image is nil!', 10, 168, 15);
-    exit
-  end;
-
   { print('File name:' + name, 10, 160, 15); }
   print('Width: ' + I32Str(image^.width), 10, 168, 15);
   print('Height: ' + I32Str(image^.height), 10, 176, 15);
   { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
-procedure SprOpaque(const image: PBitmap);
+procedure SprOpaque(const image: TBitmap);
 var
   a, b: integer;
   rowOffset: word;
 begin
-  if image = nil then exit;
-
   for b := 0 to image^.height-1 do begin
     rowOffset := b * image^.width;
 
@@ -158,18 +142,16 @@ begin
   end;
 end;
 
-procedure Spr(const image: PBitmap; const x, y: integer);
+procedure Spr(const image: TBitmap; const x, y: integer);
 begin
   PascalSpr(image, x, y)
 end;
 
-procedure PascalSpr(const image: PBitmap; const x, y: integer);
+procedure PascalSpr(const image: TBitmap; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: word;
 begin
-  if image = nil then exit;
-
   for srcY := 0 to image^.height-1 do begin
     rowOffset := srcY * image^.width;
 
@@ -182,13 +164,11 @@ begin
   end;
 end;
 
-procedure VGASpr(const image: PBitmap; const x, y: integer);
+procedure VGASpr(const image: TBitmap; const x, y: integer);
 var
   a, b, pos: integer;
   rowOffset: word;
 begin
-  if image = nil then exit;
-
   for b := 0 to image^.height-1 do begin
     if y + b >= DefaultVGAHeight then break;
     if y + b < 0 then continue;
@@ -207,13 +187,13 @@ begin
   end;
 end;
 
-procedure SprScaled(const image: PBitmap; const x, y: integer; const scale: integer);
+procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: integer);
 var
   srcX, srcY, c, d: integer;
   destX, destY: integer; { top left corner of the scaled pixel }
   rowOffset, pxOffset: word;
 begin
-  if (image = nil) or (scale = 0) then exit;
+  if scale = 0 then exit;
   if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
 
   for srcY := 0 to image^.height-1 do begin
