@@ -104,6 +104,8 @@ const
 var
   offset: word;
 begin
+  if (y < 0) or (y >= 200) or (x < 0) or (x >= 320) then exit;
+
   port[SequencerIndexReg] := MapMask;
   port[SequencerDataReg] := PlaneMask[x and 3];  { 1 shl (x and 3); }
 
