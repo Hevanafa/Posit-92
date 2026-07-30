@@ -1,7 +1,8 @@
 
 uses
   CRT, DOS,
-  P92Core, AdLib, Conv, FPS, Logger, Maths, Mouse, Timing, VGA,
+  P92Core, Conv, FPS, Maths, Timing, P92VGA,
+  P92Mouse,
   Bitmap, BMFont, Graphics;
 
 var
@@ -92,11 +93,11 @@ end;
 
 procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  printBMFont(outlineFont, txt, x-1, y, 13);
-  printBMFont(outlineFont, txt, x+1, y, 13);
-  printBMFont(outlineFont, txt, x, y-1, 13);
-  printBMFont(outlineFont, txt, x, y+1, 13);
-  printBMFont(font, txt, x, y, 13);
+  PrintBMFont(outlineFont, txt, x-1, y);
+  PrintBMFont(outlineFont, txt, x+1, y);
+  PrintBMFont(outlineFont, txt, x, y-1);
+  PrintBMFont(outlineFont, txt, x, y+1);
+  PrintBMFont(font, txt, x, y);
 end;
 
 
@@ -124,24 +125,24 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        PrintBMFont(font, s, 13, 33 + a * 12, 13)
+        PrintBMFont(font, s, 13, 33 + a * 12)
       end else
-        PrintBMFont(font, s, 13, 33 + a * 12, 13);
+        PrintBMFont(font, s, 13, 33 + a * 12);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
   w := measureBMFont(font, s);
-  PrintBMFont(font, s, 138 - w, 172, 13);
+  PrintBMFont(font, s, 138 - w, 172);
 
   { Desc box }
   rectfillDither(152, 134, 311, 197, 196);
   rect(152, 134, 311, 197, 15);
 
-  PrintBMFont(font, 'Author: Hevanafa', 155, 137, 13);
-  PrintBMFont(font, 'Lorem Ipsum will uncover many', 155, 157, 13);
-  PrintBMFont(font, 'web sites still in their infancy.', 155, 169, 13);
-  PrintBMFont(font, 'Various versions have evolved', 155, 181, 13);
+  PrintBMFont(font, 'Author: Hevanafa', 155, 137);
+  PrintBMFont(font, 'Lorem Ipsum will uncover many', 155, 157);
+  PrintBMFont(font, 'web sites still in their infancy.', 155, 169);
+  PrintBMFont(font, 'Various versions have evolved', 155, 181);
 end;
 
 

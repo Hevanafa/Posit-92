@@ -130,8 +130,8 @@ var
 begin
   cls(palette[0]);
 
-  printBMFont(nokiaFont, 'Hello Nokia!', 4, 4, 13);
-  printBMFont(p8Font, 'hello pico-8!', 4, 16, 13);
+  PrintBMFont(nokiaFont, 'Hello Nokia!', 4, 4);
+  PrintBMFont(p8Font, 'hello pico-8!', 4, 16);
 
   { Sine wave demo }
   for a:=0 to 47 do begin
