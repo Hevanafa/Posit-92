@@ -43,8 +43,6 @@ implementation
 
 uses Logger, Conv, Panic, P92VGA;
 
-const DEBUG = true;
-
 var
   transparencyKey: byte;
 
@@ -94,17 +92,18 @@ begin
   else
     padding := 4 - w mod 4;
 
-  if debug then begin
-    writeLog('Start:' + I32Str(start));
-    writeLog('Padding:' + I32Str(padding));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Start:' + I32Str(start));
+  writeLog('Padding:' + I32Str(padding));
+{$ENDIF}
 
   for b := 0 to h-1 do begin
     seek(f, start + (b * (w + padding)));
     blockRead(f, buffer, w);
 
-    if debug then
+    {$IFDEF DEBUG}
       writeLog('Finished reading line ' + I32Str(b));
+    {$ENDIF}
 
     { for a:=1 to 256 do PSet(a-1, h-b-1, buffer[a]); }
     { bottom to top }
