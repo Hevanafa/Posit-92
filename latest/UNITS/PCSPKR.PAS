@@ -100,7 +100,7 @@ end;
 
 procedure CreateMelody(var mel: TMelody; const noteCount: byte);
 begin
-  getmem(mel.notes, sizeof(TNote));
+  getmem(mel.notes, sizeof(TNote) * noteCount);
   mel.noteCount := noteCount;
 end;
 
