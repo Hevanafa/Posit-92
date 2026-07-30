@@ -73,16 +73,19 @@ begin
   end;
 
   { D4 F#4 A4 }
-  mel2: TCoinMelody = (
-    (freq: 293; rest: false; duration: 0.1),
-    (freq: 370; rest: false; duration: 0.1),
-    (freq: 440; rest: false; duration: 0.1)
-  );
-  mel3: TCoinMelody = (
-    (freq: 329; rest: false; duration: 0.1),
-    (freq: 415; rest: false; duration: 0.1),
-    (freq: 494; rest: false; duration: 0.1)
-  );
+  CreateMelody(coinMelodyList[1], 3);
+  with coinMelodyList[1] do begin
+    InitNote(notes^[0], 293, 0.1);
+    InitNote(notes^[1], 370, 0.1);
+    InitNote(notes^[2], 440, 0.1);
+  end;
+
+  CreateMelody(coinMelodyList[2], 3);
+  with coinMelodyList[2] do begin
+    InitNote(notes^[0], 329, 0.1);
+    InitNote(notes^[1], 415, 0.1);
+    InitNote(notes^[2], 494, 0.1);
+  end;
 end;
 
 procedure OnCleanup; far;
@@ -205,6 +208,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
