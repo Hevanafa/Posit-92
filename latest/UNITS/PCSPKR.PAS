@@ -23,18 +23,23 @@ type
     { in seconds }
     duration: double;
   end;
+
+  PMelodyNotes = ^TMelodyNotes;
+  TMelodyNotes = array[0..0] of TNote;
   TMelody = record
-    notes: array[0..127] of TNote;
+    notes: PMelodyNotes;
     noteCount: byte;
   end;
 
 procedure Init;
 procedure PlayBeep(const freq, durationMs: word);
-procedure PlayMelody(const melody: TMelody);
 procedure Stop;
 procedure Update;
 
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
+
+procedure CreateMelody(var mel: TMelody; const noteCount: byte);
+procedure PlayMelody(const melody: TMelody);
 
 
 implementation
@@ -76,16 +81,22 @@ begin
 
   NoSound;
 
-  if not currentMelody.notes[currentNote].rest then
-    Sound(currentMelody.notes[currentNote].freq);
+  if not currentMelody.notes^[currentNote].rest then
+    Sound(currentMelody.notes^[currentNote].freq);
 
-  noteEndTick := GetTimer + currentMelody.notes[currentNote].duration;
+  noteEndTick := GetTimer + currentMelody.notes^[currentNote].duration;
 end;
 
 procedure Init;
 begin
   currentNote := -1;
   playing := false;
+end;
+
+procedure CreateMelody(var mel: TMelody; const noteCount: byte);
+begin
+  getmem(mel.notes, sizeof(TNote));
+  mel.noteCount := noteCount;
 end;
 
 procedure PlayMelody(const melody: TMelody);
