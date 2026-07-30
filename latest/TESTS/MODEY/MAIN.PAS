@@ -115,6 +115,7 @@ procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
 asm
   { TODO: Check bounds }
 
+
   mov dx, 03C4h
 
   { This enables all 4 planes: 0Fh
@@ -149,8 +150,8 @@ asm
 
   mov bx, x
   mov ax, bx
-  { This requres 286 instructions enabled }
-  shr ax, 2
+  mov cl, 2
+  shr ax, cl  { `shr ax, 2` requires 286 instructions enabled }
   add di, ax
 
   mov al, colour
@@ -168,7 +169,7 @@ begin
   InitModeY;
 
   for a:=1 to 10 do
-    AsmPSet(160 + a, 100, 14);
+    AsmPSet(160 + a, 100, $0C);
 
   {
   AsmPSet(161, 100, 14);
