@@ -118,13 +118,15 @@ asm
   { TODO: Check bounds }
 
 
-  mov dx, 03C4h
-
   { This enables all 4 planes: 0Fh
     and also assigns the MapMask: 02h}
-{ mov ax, 0F02h
-  out dx, ax }
+{
+  mov dx, 03C4h
+  mov ax, 0F02h
+  out dx, ax
+}
 
+  mov dx, 03C4h
   mov al, 02h
   out dx, al
 
