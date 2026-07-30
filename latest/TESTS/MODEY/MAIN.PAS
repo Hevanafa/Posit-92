@@ -20,22 +20,42 @@ end;
 
 {
   Start the unchained mode 13h
-  TODO: Explain the magic numbers
+  Requres InitMode13h call
 }
 procedure InitModeY;
+const
+  SequencerIndexReg = $3C4;
+  SequencerDataReg = $3C5;
+  { CRT Controller index and data ports }
+  CRTCIndexReg = $3D4;
+  CRTCDataReg = $3D5;
+
+  { Sequencer magic numbers }
+  MemoryMode = $04;
+  MapMask = $02;
+  { CRTC magic numbers }
+  UnderlineLocation = $14;
+  CRTCModeControl = $17;
 begin
-  port[$3C4] := $04;
-  port[$3C5] := $06;
+  port[SequencerIndexReg] := MemoryMode;
+  port[SequencerDataReg] := $06;
 
-  port[$3D4] := $14;
-  port[$3D5] := $00;
+  { Turning this off switches from DWord addressing to byte addressing }
+  port[CRTCIndexReg] := UnderlineLocation;
+  port[CRTCDataReg] := $00;
 
-  port[$3D4] := $17;
-  port[$3D5] := $E3;
+  { $E3 = 0b1110_0011
+    The key here is bit 6 set, which selects byte mode addressing that
+    works together with the previous register to fully linearise
+    the CRTC address counter accross planes }
+  port[CRTCIndexReg] := CRTCModeControl;
+  port[CRTCDataReg] := $E3;
 
-  port[$3C4] := $02;
-  port[$3C5] := $0F;
+  { This enables all four planes for writing: 0b1111 }
+  port[SequencerIndexReg] := MapMask;
+  port[SequencerDataReg] := $0F;
 
+  { Fill all the surface with white }
   FillChar(mem[$A000:0000], $FFFF, $0F);
 end;
 
