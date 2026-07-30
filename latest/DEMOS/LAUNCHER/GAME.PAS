@@ -1,21 +1,19 @@
 
 uses
   CRT, DOS,
-  Conv, FPS, Graphics, Logger, Mouse,
-  Timing, VGA, Bitmap, BMFont, Maths,
+  P92Core, Conv, FPS, Graphics, Logger, P92Mouse,
+  Timing, P92VGA, Bitmap, BMFont, Maths,
   Bobbing;
 
-const
-  K_ESC = $01;
-  TARGET_FPS = 60;
-  MAX_FRAME_SKIP = 5;
 var
-  done: boolean;
-  startTime, nextGameTick, t: double;
-  loops: word;
+  { Asset variables }
   imgLogo, imgArrows, imgEnter, imgPreview: PBitmap;
   font: TBMFont;
-  menuItems: array [0..99] of string;
+
+  { Game state variables }
+  startTime, nextGameTick, t: double;
+  loops: word;
+  menuItems: array [0..49] of string;
   menuCount: integer;
   firstIdx, selectedIdx: integer;
 
@@ -76,20 +74,10 @@ begin
 end;
 
 
-procedure INIT;
+procedure OnPreload; far;
 var
   a: integer;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  { initKeyHandler; }
-  initMouse;
-  initFPSCounter;
-
   loadBMP(imgLogo, 'IMG\LOGO.BMP');
   loadBMP(imgArrows, 'IMG\ARROWS.BMP');
   loadBMP(imgEnter, 'IMG\ENTER.BMP');
@@ -107,6 +95,14 @@ begin
     menuItems[a] := 'Menu item ' + i32str(a);
 end;
 
+procedure OnCleanup; far;
+begin
+  freeBMFont(font);
+  freeBMP(imgLogo);
+  freeBMP(imgArrows);
+  freeBMP(imgEnter);
+  freeBMP(imgPreview);
+end;
 
 procedure drawMenuBox;
 var
@@ -158,11 +154,6 @@ var
   ch: char;
   relativeIdx: integer;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
-
   if keyPressed then begin
     ch := readKey;
 
@@ -194,7 +185,7 @@ begin
         if relativeIdx >= 9 then firstIdx := selectedIdx - 9;
         if relativeIdx < 2  then firstIdx := selectedIdx - 2;
       end;
-      27: done := true;
+      27: SignalDone;
     end;
   end;
 end;
@@ -229,42 +220,22 @@ begin
   font.print('NAVIGATE', 24, 185, 15);
   spr(imgEnter, 90, 187, 13);
   font.print('OPEN', 107, 185, 15);
-
-  drawMouse;
-  drawFPS;
-  flush
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    loops := 0;
-	
-	while (getTimer > nextGameTick) and (loops < MAX_FRAME_SKIP) do begin
-      update;
-	  nextGameTick := nextGameTick + (1 / TARGET_FPS);
-	  inc(loops)
-	end;
-	
-    draw
-  until done;
+  appConfig.EnableKeyHandler := false;
 
-  { TODO: Clean-up more images }
-  freeBMFont(font);
-  freeBMP(imgLogo);
-  freeBMP(imgArrows);
-  freeBMP(imgEnter);
-  freeBMP(imgPreview);
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  resetMouse;
-  { resetKeyHandler; }
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+
