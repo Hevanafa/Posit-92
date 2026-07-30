@@ -46,6 +46,11 @@ begin
 end;
 
 procedure FlipPage;
+const
+  CRTCIndexReg = $3D4;
+  CRTCDataReg = $3D5;
+  StartAddrHigh = $0C;
+  StartAddrLow = $0D;
 var
   startAddr: word;
 begin
@@ -54,12 +59,12 @@ begin
   WaitVSync;
 
   { Set the CRTC start address }
-  port[$3D4] := $0C;
-  port[$3D5] := hi(startAddr);
-  port[$3D4] := $0D;
-  port[$3D5] := lo(startAddr);
+  port[CRTCIndexReg] := StartAddrHigh;
+  port[CRTCDataReg] := hi(startAddr);
+  port[CRTCIndexReg] := StartAddrLow;
+  port[CRTCDataReg] := lo(startAddr);
 
-  drawPage := drawPage xor 1;
+  drawPage := drawPage xor 1;  { Flips the page from 0 to 1, and vice versa }
   drawOffset := drawPage * PageSize;
 end;
 
