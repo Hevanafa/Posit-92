@@ -28,7 +28,6 @@
       <Unit>
         <Filename Value="MAIN.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Hello"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -56,6 +55,9 @@
         <RunWithoutDebug Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dP92_MODEY"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>
