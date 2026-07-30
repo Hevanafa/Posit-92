@@ -111,6 +111,23 @@ begin
   mem[$A000:offset] := colour
 end;
 
+procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
+asm
+  mov dx, 03C4h
+
+  { This enables all 4 planes: 0Fh
+    and also assigns the MapMask: 02h}
+{ mov ax, 0F02h
+  out dx, ax }
+
+  mov al, 02h
+  out dx
+
+  { TODO: Assign PlaneMask }
+  { TODO: Assign offset }
+  { TODO: Assign the colour }
+end;
+
 begin
   drawPage := 0;
 
