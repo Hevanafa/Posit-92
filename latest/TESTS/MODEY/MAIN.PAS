@@ -123,7 +123,7 @@ asm
   out dx, ax }
 
   mov al, 02h
-  out dx
+  out dx, al
 
   { Assign PlaneMask }
   mov dx, 03C5h
@@ -134,22 +134,47 @@ asm
   shl al, cl   { 1 shl (x and 3). In 8086, the count must be in `cl` }
   out dx, al
 
-  out dx
+  { PSet }
+  push es
+  mov ax, 0A000h
+  mov es, ax
 
-  { TODO: Assign offset }
-  { TODO: Assign the colour }
+  mov di, [drawOffset]
+
+  mov cx, y
+  mov ax, cx
+  mov cx, 80
+  mul cx
+  add di, ax
+
+  mov bx, x
+  mov ax, bx
+  { This requres 286 instructions enabled }
+  shr ax, 2
+  add di, ax
+
+  mov al, colour
+  mov es:[di], al
+  pop es
 end;
 
+
+var
+  a: word;
 begin
   drawPage := 0;
 
   InitMode13h;
   InitModeY;
 
-  PSet(160, 100, 14);
-  PSet(161, 100, 14);
-  PSet(162, 100, 12);
-  PSet(163, 100, 12);
+  for a:=1 to 10 do
+    AsmPSet(160 + a, 100, 14);
+
+  {
+  AsmPSet(161, 100, 14);
+  AsmPSet(162, 100, 12);
+  AsmPSet(163, 100, 12);
+  }
 
   FlipPage;
 
