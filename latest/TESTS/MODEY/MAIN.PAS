@@ -63,12 +63,17 @@ begin
   drawOffset := drawPage * PageSize;
 end;
 
-procedure ModeYPSet(const x, y: integer; const colour: byte);
+{ ModeYPSet }
+procedure PSet(const x, y: integer; const colour: byte);
+const
+  SequencerIndexReg = $3C4;
+  SequencerDataReg = $3C5;
+  MapMask = $02;
 var
   offset: word;
 begin
-  port[$3C4] := $02;
-  port[$3C5] := 1 shl (x and 3);
+  port[SequencerIndexReg] := MapMask;
+  port[SequencerDataReg] := 1 shl (x and 3);
 
   offset := drawOffset + y * 80 + x shr 2;
   mem[$A000:offset] := colour
@@ -80,10 +85,10 @@ begin
   InitMode13h;
   InitModeY;
 
-  ModeYPSet(160, 100, 14);
-  ModeYPSet(161, 100, 14);
-  ModeYPSet(162, 100, 12);
-  ModeYPSet(163, 100, 12);
+  PSet(160, 100, 14);
+  PSet(161, 100, 14);
+  PSet(162, 100, 12);
+  PSet(163, 100, 12);
 
   FlipPage;
 
