@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Logger,
+  P92Core, Bitmap, Conv, Logger,
   P92KBD, P92Mouse,
   Timing, P92VGA,
   AdLib;
@@ -96,6 +96,10 @@ end;
 
 procedure OnPreload; far;
 begin
+  LoadBMP(DosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadBMP(DosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadBMP(imgCoin, 'IMG\COIN.BMP');
+
   InitInstruments;
   { AdlibDrv.assignInstrument(0, @PianoInstrument); }
 
@@ -106,10 +110,13 @@ begin
     initNote(notes[1], NOTE_E, 5, 0.3, 127);
     initNote(notes[2], NOTE_F, 5, 0.3, 127)
   end;
+end;
 
-  LoadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
-  LoadBMP(imgCoin, 'IMG\COIN.BMP');
+procedure OnCleanup; far;
+begin
+  FreeBMP(DosuEXE[0]);
+  FreeBMP(DosuEXE[1]);
+  FreeBMP(imgCoin);
 end;
 
 procedure OnReady; far;
@@ -147,23 +154,16 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 13)
+      spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y)
     else
-      sprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 13, 15);
+      sprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
 end;
 
 procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
-  { PCSpeaker.updateMelody; }
-  AdlibDrv.update;
-
-  if isKeyDown(K_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
   {
   if lastB <> isKeydown($30) then begin
@@ -182,11 +182,11 @@ begin
     }
   end;
 
-  if isKeyDown($11) then playerY := playerY - dt * 60;
-  if isKeyDown($1F) then playerY := playerY + dt * 60;
+  if isKeyDown($11) then playerY := playerY - DeltaTime * 60;
+  if isKeyDown($1F) then playerY := playerY + DeltaTime * 60;
 
-  if isKeyDown($1E) then playerX := playerX - dt * 60;
-  if isKeyDown($20) then playerX := playerX + dt * 60;
+  if isKeyDown($1E) then playerX := playerX - DeltaTime * 60;
+  if isKeyDown($20) then playerX := playerX + DeltaTime * 60;
 
   { Check bounds }
   if playerX < 0 then playerX := 0;
@@ -197,9 +197,9 @@ begin
   playerHitbox.x := trunc(playerX);
   playerHitbox.y := trunc(playerY);
 
-  t:=t+dt;
-
   UpdateCoins;
+
+  t:=t+DeltaTime;
 end;
 
 
@@ -216,9 +216,9 @@ begin
   { print('B - beep', 160-32, 130, 15); }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], trunc(playerX), trunc(playerY), 13)
+    spr(dosuEXE[0], trunc(playerX), trunc(playerY))
   else
-    spr(dosuEXE[1], trunc(playerX), trunc(playerY), 13);
+    spr(dosuEXE[1], trunc(playerX), trunc(playerY));
 
   DrawCoins;
 
@@ -238,11 +238,6 @@ begin
   { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
   scoreStr := i32str(score);
   print(scoreStr, (320 - length(scoreStr) * 8) div 2, 8, 15);
-
-  drawMouse;
-  drawFPS;
-  
-  flush
 end;
 
 
