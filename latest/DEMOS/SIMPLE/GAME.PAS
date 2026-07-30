@@ -10,7 +10,7 @@ uses
 var
   { Asset variables }
   { DosuEXE: array[0..1] of PBitmap; }
-  SpecimenP92: array[0..1] of PBitmap;
+  SpecimenP92: array[0..1] of TBitmap;
 
   { Game state variables }
   t: double;

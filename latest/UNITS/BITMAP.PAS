@@ -56,7 +56,7 @@ procedure LoadBMP(var image: TBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
-  a, b: integer;
+  row: integer;
   palsize: word;
   size: longint;
   start, padding: longint;
@@ -93,16 +93,16 @@ begin
   writeLog('Padding:' + I32Str(padding));
 {$ENDIF}
 
-  for b := 0 to image.height - 1 do begin
-    seek(f, start + (b * (image.width + padding)));
+  for row := 0 to image.height - 1 do begin
+    seek(f, start + (row * (image.width + padding)));
     blockRead(f, buffer, image.width);
 
     {$IFDEF DEBUG}
-      writeLog('Finished reading line ' + I32Str(b));
+      writeLog('Finished reading line ' + I32Str(row));
     {$ENDIF}
 
     { Read from bottom to top }
-    rowOffset := (image.height - b - 1) * image.width;
+    rowOffset := (image.height - row - 1) * image.width;
     Move(buffer[1], image.data^[rowOffset], image.width);
   end;
 
@@ -123,9 +123,8 @@ end;
 
 procedure DrawBitmapInfo(const image: TBitmap);
 begin
-  { print('File name:' + name, 10, 160, 15); }
-  print('Width: ' + I32Str(image^.width), 10, 168, 15);
-  print('Height: ' + I32Str(image^.height), 10, 176, 15);
+  print('Width: ' + I32Str(image.width), 10, 168, 15);
+  print('Height: ' + I32Str(image.height), 10, 176, 15);
   { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
@@ -134,11 +133,11 @@ var
   a, b: integer;
   rowOffset: word;
 begin
-  for b := 0 to image^.height-1 do begin
-    rowOffset := b * image^.width;
+  for b := 0 to image.height - 1 do begin
+    rowOffset := b * image.width;
 
-    for a := 0 to image^.width-1 do
-      AsmPSet(a, b, image^.data^[rowOffset + a]);
+    for a := 0 to image.width - 1 do
+      AsmPSet(a, b, image.data^[rowOffset + a]);
   end;
 end;
 
@@ -152,14 +151,14 @@ var
   srcX, srcY: integer;
   rowOffset, pxOffset: word;
 begin
-  for srcY := 0 to image^.height-1 do begin
-    rowOffset := srcY * image^.width;
+  for srcY := 0 to image.height - 1 do begin
+    rowOffset := srcY * image.width;
 
-    for srcX := 0 to image^.width-1 do begin
+    for srcX := 0 to image.width - 1 do begin
       pxOffset := rowOffset + srcX;
 
-      if image^.data^[pxOffset] <> transparencyKey then
-        AsmPSet(x+srcX, y+srcY, image^.data^[pxOffset]);
+      if image.data^[pxOffset] <> transparencyKey then
+        AsmPSet(x+srcX, y+srcY, image.data^[pxOffset]);
     end;
   end;
 end;
@@ -169,20 +168,20 @@ var
   a, b, pos: integer;
   rowOffset: word;
 begin
-  for b := 0 to image^.height-1 do begin
+  for b := 0 to image.height - 1 do begin
     if y + b >= DefaultVGAHeight then break;
     if y + b < 0 then continue;
 
     rowOffset := (y + b) * DefaultVGAWidth;
 
-    for a := 0 to image^.width-1 do begin
+    for a := 0 to image.width - 1 do begin
       if x + a >= DefaultVGAWidth then break;
       if x + a < 0 then continue;
 
-      pos := a + b * image^.width;
+      pos := a + b * image.width;
 
-      if image^.data^[pos] <> transparencyKey then
-        Mem[$A000:rowOffset + (x+a)] := image^.data^[pos];
+      if image.data^[pos] <> transparencyKey then
+        Mem[$A000:rowOffset + (x+a)] := image.data^[pos];
     end;
   end;
 end;
@@ -196,15 +195,15 @@ begin
   if scale = 0 then exit;
   if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
 
-  for srcY := 0 to image^.height-1 do begin
+  for srcY := 0 to image.height-1 do begin
     destY := y + srcY * scale;
 
     if destY >= VGAHeight then break;
     if destY < 0 then continue;
 
-    rowOffset := srcY * image^.width;
+    rowOffset := srcY * image.width;
 
-    for srcX := 0 to image^.width-1 do begin
+    for srcX := 0 to image.width-1 do begin
       destX := x + srcX * scale;
 
       if destX >= VGAWidth then break;
@@ -212,12 +211,12 @@ begin
 
       pxOffset := rowOffset + srcX;
 
-      if image^.data^[pxOffset] = transparencyKey then continue;
+      if image.data^[pxOffset] = transparencyKey then continue;
 
       { Begin drawing the scaled pixels }
       for d := 0 to scale-1 do
         for c := 0 to scale-1 do
-          AsmPSet(destX + c, destY + d, image^.data^[pxOffset]);
+          AsmPSet(destX + c, destY + d, image.data^[pxOffset]);
 
       { for d := 0 to scale-1 do begin
         if destY + d >= VGAHeight then break;
@@ -235,20 +234,18 @@ begin
 end;
 
 
-procedure SprTint(const image: PBitmap; const x, y: integer; const tint: byte);
+procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
 var
   a, b: integer;
   rowOffset, pxOffset: word;
 begin
-  if image = nil then exit;
+  for b := 0 to image.height - 1 do begin
+    rowOffset := b * image.width;
 
-  for b := 0 to image^.height-1 do begin
-    rowOffset := b * image^.width;
-
-    for a := 0 to image^.width-1 do begin
+    for a := 0 to image.width - 1 do begin
       pxOffset := rowOffset + a;
 
-      if image^.data^[pxOffset] <> transparencyKey then
+      if image.data^[pxOffset] <> transparencyKey then
         AsmPSet(x+a, y+b, tint);
     end;
   end;
@@ -256,23 +253,21 @@ end;
 
 { Improved version of PascalSpr with partial sprite drawing }
 procedure SprRegion(
-  const image: PBitmap;
+  const image: TBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
   a, b: integer;
   rowOffset, pxOffset: word;
 begin
-  if image = nil then exit;
-  
   for b := 0 to srcH - 1 do begin
-    rowOffset := (srcY + b) * image^.width;
+    rowOffset := (srcY + b) * image.width;
 
     for a := 0 to srcW - 1 do begin
       pxOffset := rowOffset + (srcX + a);
 
-      if image^.data^[pxOffset] <> transparencyKey then
-        AsmPSet(destX + a, destY + b, image^.data^[pxOffset]);
+      if image.data^[pxOffset] <> transparencyKey then
+        AsmPSet(destX + a, destY + b, image.data^[pxOffset]);
     end;
   end;
 end;
