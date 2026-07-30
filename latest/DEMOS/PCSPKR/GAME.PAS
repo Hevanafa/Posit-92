@@ -60,9 +60,9 @@ end;
 
 procedure OnPreload; far;
 begin
-  loadBMP(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
-  loadBMP(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
-  loadBMP(imgCoin, 'IMG\COIN.BMP');
+  LoadBMP(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadBMP(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadBMP(imgCoin, 'IMG\COIN.BMP');
 
   { C4 E4 G4 }
   CreateMelody(coinMelodyList[0], 3);
@@ -83,6 +83,18 @@ begin
     (freq: 415; rest: false; duration: 0.1),
     (freq: 494; rest: false; duration: 0.1)
   );
+end;
+
+procedure OnCleanup; far;
+var
+  a: word;
+begin
+  for a:=0 to high(coinMelodyList) do
+    FreeMelody(coinMelodyList[a]);
+
+  FreeBMP(imgDosuEXE[0]);
+  FreeBMP(imgDosuEXE[1]);
+  FreeBMP(imgCoin);
 end;
 
 procedure OnReady; far;
@@ -110,12 +122,7 @@ begin
     if coins[a].hitbox.Intersects(playerHitbox) then begin
       inc(score, 1);
       InitCoin(coins[a]);
-
-      case random(3) of
-        0: PlayMelody(mel1);
-        1: PlayMelody(mel2);
-        2: PlayMelody(mel3);
-      end;
+      PlayMelody(coinMelodyList[random(3)]);
     end;
 end;
 
@@ -203,6 +210,7 @@ begin
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
 end.
