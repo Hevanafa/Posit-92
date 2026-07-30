@@ -40,9 +40,15 @@ begin
 end;
 
 procedure WaitVSync;
+const
+  InputStatusReg1 = $3DA;
+  VSyncBit = $08;
 begin
-  while (port[$3DA] and $08) <> 0 do; { wait for retrace to end }
-  while (port[$3DA] and $08) = 0 do;  { wait for next retrace }
+  { wait for retrace to end }
+  while (port[InputStatusReg1] and VSyncBit) <> 0 do;
+
+  { wait for next retrace to begin }
+  while (port[InputStatusReg1] and VSyncBit) = 0 do;
 end;
 
 procedure FlipPage;
