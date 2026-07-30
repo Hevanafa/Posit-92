@@ -2,20 +2,19 @@ unit Bobbing;
 
 interface
 
-procedure buildSinTable;
-procedure initBobbing;
-procedure waitSeconds(dur: double);
-procedure drawBobbingGrid(t: double);
+procedure WaitSeconds(dur: double);
+procedure DrawBobbingGrid(t: double);
+
 
 implementation
 
-uses Graphics, Timing, VGA;
+uses Graphics, Timing, P92VGA;
 
 var
   sinTable: array[0..255] of integer;
 
 { Used in drawBobbingGrid2 }
-procedure buildSinTable;
+procedure BuildSinTable;
 const
   HEIGHT_SCALE = 8;
 var
@@ -26,13 +25,13 @@ begin
 end;
 
 
-procedure initBobbing;
+procedure InitBobbing;
 begin
-  buildSinTable;
+  BuildSinTable;
   { startTime := getTimer }
 end;
 
-procedure waitSeconds(dur: double);
+procedure WaitSeconds(dur: double);
 var
   t0: double;
 begin
@@ -41,7 +40,7 @@ begin
 end;
 
 
-procedure drawBobbingGrid(t: double);
+procedure DrawBobbingGrid(t: double);
 const
   GRID_COLS = 16;
   GRID_ROWS = 8;
@@ -90,5 +89,9 @@ begin
       { line(sx1, sy1, sx2, sy2, COLOUR + gy * 2) }
     end;
 end;
+
+
+begin
+  InitBobbing;
 
 end.

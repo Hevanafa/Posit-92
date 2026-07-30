@@ -66,11 +66,11 @@ end;
 
 procedure printOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  font.print(txt, x-1, y, outline);
-  font.print(txt, x+1, y, outline);
-  font.print(txt, x, y-1, outline);
-  font.print(txt, x, y+1, outline);
-  font.print(txt, x, y, colour)
+  PrintBMFontTint(@font, txt, x-1, y, outline);
+  PrintBMFontTint(@font, txt, x+1, y, outline);
+  PrintBMFontTint(@font, txt, x, y-1, outline);
+  PrintBMFontTint(@font, txt, x, y+1, outline);
+  PrintBMFont(@font, txt, x, y)
 end;
 
 
@@ -82,17 +82,9 @@ begin
   loadBMP(imgArrows, 'IMG\ARROWS.BMP');
   loadBMP(imgEnter, 'IMG\ENTER.BMP');
   loadBMP(imgPreview, 'IMG\EXAMPLE.BMP');
-  loadBMFont(font, 'FONTS\ARIAL10.FNT');
 
-  initBobbing;
-  startTime := getTimer;
-
-  selectedIdx := 0;
-  firstIdx := -2;
-  menuCount := 30;
-
-  for a:=0 to menuCount-1 do
-    menuItems[a] := 'Menu item ' + i32str(a);
+  DefaultBMFont(font);
+  LoadBMFont(font, 'FONTS\ARIAL10.FNT');
 end;
 
 procedure OnCleanup; far;
@@ -103,6 +95,21 @@ begin
   freeBMP(imgEnter);
   freeBMP(imgPreview);
 end;
+
+procedure OnReady; far;
+var
+  a: word;
+begin
+  startTime := getTimer;
+
+  selectedIdx := 0;
+  firstIdx := -2;
+  menuCount := 30;
+
+  for a:=0 to menuCount-1 do
+    menuItems[a] := 'Menu item ' + i32str(a);
+end;
+
 
 procedure drawMenuBox;
 var
@@ -123,15 +130,15 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        font.print(s, 13, 33 + a * 12, 11)
+        PrintBMFont(@font, s, 13, 33 + a * 12)
       end else
-        font.print(s, 13, 33 + a * 12, 7);
+        PrintBMFont(@font, s, 13, 33 + a * 12);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
-  w := font.textWidth(s);
-  font.print(s, 138 - w, 172, 7);
+  w := MeasureBMFont(@font, s);
+  PrintBMFont(@font, s, 138 - w, 172);
 end;
 
 procedure drawDescriptionBox;
@@ -142,14 +149,14 @@ begin
 
   { TODO: Update with the actual content }
 
-  font.print('Author: Hevanafa', 155, 137, 15);
-  font.print('Lorem Ipsum will uncover many', 155, 157, 15);
-  font.print('web sites still in their infancy.', 155, 169, 15);
-  font.print('Various versions have evolved', 155, 181, 15);
+  PrintBMFont(@font, 'Author: Hevanafa', 155, 137);
+  PrintBMFont(@font, 'Lorem Ipsum will uncover many', 155, 157);
+  PrintBMFont(@font, 'web sites still in their infancy.', 155, 169);
+  PrintBMFont(@font, 'Various versions have evolved', 155, 181);
 end;
 
 
-procedure update;
+procedure Update; far;
 var
   ch: char;
   relativeIdx: integer;
@@ -191,7 +198,7 @@ begin
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   s: string;
   w: integer;
@@ -199,7 +206,7 @@ begin
   cls($00);
 
   { BG }
-  drawBobbingGrid((getTimer - startTime) * 3);
+  { DrawBobbingGrid((getTimer - startTime) * 3); }
 
   drawMenuBox;
   drawDescriptionBox;
@@ -207,19 +214,19 @@ begin
   printOutline(menuItems[selectedIdx], 152, 119, 15, 0);
 
   { Header }
-  spr(imgLogo, 8, 4, 13);
-  spr(imgPreview, 152, 32, 13);
+  spr(imgLogo, 8, 4);
+  spr(imgPreview, 152, 32);
 
   s := getClockStr;
 
-  w := font.textWidth(s);
-  font.print(s, 320-8-w, 10, 15);
+  w := MeasureBMFont(@font, s);
+  PrintBMFont(@font, s, 320-8-w, 10);
 
   { Footer }
-  spr(imgArrows, 8, 187, 13);
-  font.print('NAVIGATE', 24, 185, 15);
-  spr(imgEnter, 90, 187, 13);
-  font.print('OPEN', 107, 185, 15);
+  spr(imgArrows, 8, 187);
+  PrintBMFont(@font, 'NAVIGATE', 24, 185);
+  spr(imgEnter, 90, 187);
+  PrintBMFont(@font, 'OPEN', 107, 185);
 end;
 
 
