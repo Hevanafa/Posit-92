@@ -39,6 +39,7 @@ procedure Update;
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
 procedure CreateMelody(var mel: TMelody; const noteCount: byte);
+procedure FreeMelody(var mel: TMelody);
 procedure PlayMelody(const melody: TMelody);
 
 
@@ -97,6 +98,14 @@ procedure CreateMelody(var mel: TMelody; const noteCount: byte);
 begin
   getmem(mel.notes, sizeof(TNote));
   mel.noteCount := noteCount;
+end;
+
+procedure FreeMelody(var mel: TMelody);
+begin
+  if mel.noteCount = 0 then exit;
+
+  FreeMem(mel.notes, sizeof(TNote) * mel.noteCount);
+  mel.noteCount := 0;
 end;
 
 procedure PlayMelody(const melody: TMelody);
