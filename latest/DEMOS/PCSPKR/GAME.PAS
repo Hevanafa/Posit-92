@@ -26,32 +26,11 @@ begin
 end;
 
 
-type
-  TCoinMelody = array[0..2] of TNote;
-
-const
-  { C4 E4 G4 }
-  mel1: TCoinMelody = (
-    (freq: 261; rest: false; duration: 0.1),
-    (freq: 329; rest: false; duration: 0.1),
-    (freq: 392; rest: false; duration: 0.1)
-  );
-  { D4 F#4 A4 }
-  mel2: TCoinMelody = (
-    (freq: 293; rest: false; duration: 0.1),
-    (freq: 370; rest: false; duration: 0.1),
-    (freq: 440; rest: false; duration: 0.1)
-  );
-  mel3: TCoinMelody = (
-    (freq: 329; rest: false; duration: 0.1),
-    (freq: 415; rest: false; duration: 0.1),
-    (freq: 494; rest: false; duration: 0.1)
-  );
-
 var
   { Asset variables }
   imgDosuEXE: array[0..1] of PBitmap;
   imgCoin: PBitmap;
+  coinMelodyList: array[0..2] of TMelody;
 
   { Game state variables }
   t: double;
@@ -84,6 +63,25 @@ begin
   loadBMP(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
   loadBMP(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
   loadBMP(imgCoin, 'IMG\COIN.BMP');
+
+  CreateMelody(coinMelodyList[0], 3);
+
+  { C4 E4 G4 }
+  InitNote(coinMelodyList[0].notes^[0], 261, 0.1);
+  InitNote(coinMelodyList[0].notes^[1], 329, 0.1);
+  InitNote(coinMelodyList[0].notes^[2], 392, 0.1);
+
+  { D4 F#4 A4 }
+  mel2: TCoinMelody = (
+    (freq: 293; rest: false; duration: 0.1),
+    (freq: 370; rest: false; duration: 0.1),
+    (freq: 440; rest: false; duration: 0.1)
+  );
+  mel3: TCoinMelody = (
+    (freq: 329; rest: false; duration: 0.1),
+    (freq: 415; rest: false; duration: 0.1),
+    (freq: 494; rest: false; duration: 0.1)
+  );
 end;
 
 procedure OnReady; far;

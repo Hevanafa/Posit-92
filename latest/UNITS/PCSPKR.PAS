@@ -36,6 +36,10 @@ procedure PlayBeep(const freq, durationMs: word);
 procedure Stop;
 procedure Update;
 
+{
+  freq: in Hz
+  duration: in seconds
+}
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
 procedure CreateMelody(var mel: TMelody; const noteCount: byte);
@@ -111,6 +115,7 @@ end;
 procedure PlayMelody(const melody: TMelody);
 begin
   if playing then exit;
+  if melody.noteCount = 0 then exit;
 
   currentNote := -1;
   currentMelody := melody;
