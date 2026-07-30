@@ -129,10 +129,12 @@ asm
   { Assign PlaneMask }
   mov dx, 03C5h
 
-  mov cx, bx
+  { Solve for 1 shl (x and 3), then write to Port[$03C5] }
+  mov cx, x
   and cx, 03h  { x and 3 }
-  mov al, 01h  { start with 1 }
-  shl al, cl   { 1 shl (x and 3). In 8086, the count must be in `cl` }
+  { 1 shl (x and 3). In 8086, the count must be in `cl` }
+  mov al, 01h
+  shl al, cl
   out dx, al
 
   { PSet }
@@ -142,12 +144,14 @@ asm
 
   mov di, [drawOffset]
 
+  { Solve for y * 80, then add to DI }
   mov cx, y
   mov ax, cx
   mov cx, 80
   mul cx
   add di, ax
 
+  { Solve for x shr 2, then add to DI }
   mov bx, x
   mov ax, bx
   mov cl, 2
