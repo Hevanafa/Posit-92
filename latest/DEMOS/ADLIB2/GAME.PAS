@@ -1,8 +1,9 @@
 
 uses
   CRT, DOS,
-  AdLib, Bitmap, Logger, Keyboard, Mouse,
-  Timing, VGA, Conv, FPS;
+  P92Core, Bitmap, Logger, P92KBD, P92Mouse,
+  Timing, P92VGA, Conv, FPS,
+  AdLib;
 
 type
   TRect = object
@@ -22,22 +23,21 @@ begin
     (self.y < other.y + other.height)
 end;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
+  imgCoin: PBitmap;
+  PianoInstrument: TInstrument;
+  sfxCoin: TMelody;
+
+  { Game state variables }
+  t: double;
   score: integer;
   playerX, playerY: single;
   playerHitbox: TRect;
   lastB: boolean;
-  imgCoin: PBitmap;
   coins: array[0..9] of TCoin;
   rotation: double;
-
-  PianoInstrument: TInstrument;
-  sfxCoin: TMelody;
 
 
 procedure initInstruments;
@@ -93,19 +93,12 @@ begin
     initCoin(coins[a]);
 end;
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
+  loadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
+  loadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
+  loadBMP(imgCoin, 'IMG\COIN.BMP');
 
-  randomize;
-  AdlibDrv.init;
   initInstruments;
   { AdlibDrv.assignInstrument(0, @PianoInstrument); }
 
@@ -116,11 +109,10 @@ begin
     initNote(notes[1], NOTE_E, 5, 0.3, 127);
     initNote(notes[2], NOTE_F, 5, 0.3, 127)
   end;
+end;
 
-  loadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
-  loadBMP(imgCoin, 'IMG\COIN.BMP');
-
+procedure OnReady; far;
+begin
   playerX := 148;
   playerY := 76;
   with playerHitbox do begin
@@ -154,23 +146,16 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 13)
+      Spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y)
     else
-      sprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 13, 15);
+      SprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
 end;
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
-
-  { PCSpeaker.updateMelody; }
-  AdlibDrv.update;
-
-  if isKeyDown(K_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
   {
   if lastB <> isKeydown($30) then begin
@@ -189,11 +174,11 @@ begin
     }
   end;
 
-  if isKeyDown($11) then playerY := playerY - dt * 60;
-  if isKeyDown($1F) then playerY := playerY + dt * 60;
+  if isKeyDown($11) then playerY := playerY - DeltaTime * 60;
+  if isKeyDown($1F) then playerY := playerY + DeltaTime * 60;
 
-  if isKeyDown($1E) then playerX := playerX - dt * 60;
-  if isKeyDown($20) then playerX := playerX + dt * 60;
+  if isKeyDown($1E) then playerX := playerX - DeltaTime * 60;
+  if isKeyDown($20) then playerX := playerX + DeltaTime * 60;
 
   { Check bounds }
   if playerX < 0 then playerX := 0;
@@ -204,71 +189,46 @@ begin
   playerHitbox.x := trunc(playerX);
   playerHitbox.y := trunc(playerY);
 
-  t:=t+dt;
+  t:=t+DeltaTime;
 
   updateCoins;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
   scoreStr: string;
 begin
   cls($7D);
 
-  { TODO: Your drawing code here }
-
   print('WASD - Move', 160-48, 120, 15);
-  { print('B - beep', 160-32, 130, 15); }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], trunc(playerX), trunc(playerY), 13)
+    spr(dosuEXE[0], trunc(playerX), trunc(playerY))
   else
-    spr(dosuEXE[1], trunc(playerX), trunc(playerY), 13);
+    spr(dosuEXE[1], trunc(playerX), trunc(playerY));
 
   drawCoins;
 
-  { Optional rotated sprite }
-  { sprPro(dosuEXE[0], 48, 48, rotation, 13); }
-
-  { Rotated sprites test }
-  { for a:=0 to 3 do
-    sprPro2(dosuEXE[0], 144 + a * 40, 48, 1.5, 1, rotation + 90, 13); }
-
-  { for a:=0 to 3 do
-    sprProLUT(dosuEXE[0], 144 + a * 40, 48, 1.5, 1, trunc(rotation) mod 360 div 10, 13); }
-
-  { Debug rotation }
-  { print('Rotation:' + f32str(rotation), 0, 0, 15); }
-
-  { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
   scoreStr := i32str(score);
   print(scoreStr, (320 - length(scoreStr) * 8) div 2, 8, 15);
-
-  drawMouse;
-  drawFPS;
-  
-  flush
 end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.EnableAdLib := true;
 
-  resetMouse;
-  AdlibDrv.shutdown;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  { @appConfig.OnCleanup := @OnCleanup; }
+
+  P92Start(appConfig)
 end.
+
