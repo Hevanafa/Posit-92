@@ -69,13 +69,14 @@ const
   SequencerIndexReg = $3C4;
   SequencerDataReg = $3C5;
   MapMask = $02;
+  PlaneMask: array[0..3] of byte = (1, 2, 4, 8);
 var
   offset: word;
 begin
   port[SequencerIndexReg] := MapMask;
-  port[SequencerDataReg] := 1 shl (x and 3);
+  port[SequencerDataReg] := PlaneMask[x and 3];  { 1 shl (x and 3); }
 
-  offset := drawOffset + y * 80 + x shr 2;
+  offset := drawOffset + y * 80 + x shr 2;  { This is the same as x div 4 }
   mem[$A000:offset] := colour
 end;
 
