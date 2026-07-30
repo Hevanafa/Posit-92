@@ -64,12 +64,13 @@ begin
   loadBMP(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
   loadBMP(imgCoin, 'IMG\COIN.BMP');
 
-  CreateMelody(coinMelodyList[0], 3);
-
   { C4 E4 G4 }
-  InitNote(coinMelodyList[0].notes^[0], 261, 0.1);
-  InitNote(coinMelodyList[0].notes^[1], 329, 0.1);
-  InitNote(coinMelodyList[0].notes^[2], 392, 0.1);
+  CreateMelody(coinMelodyList[0], 3);
+  with coinMelodyList[0] do begin
+    InitNote(notes^[0], 261, 0.1);
+    InitNote(notes^[1], 329, 0.1);
+    InitNote(notes^[2], 392, 0.1);
+  end;
 
   { D4 F#4 A4 }
   mel2: TCoinMelody = (

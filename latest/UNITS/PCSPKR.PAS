@@ -25,7 +25,8 @@ type
   end;
 
   PMelodyNotes = ^TMelodyNotes;
-  TMelodyNotes = array[0..0] of TNote;
+  { Placeholder range. The actual implementation relies on noteCount }
+  TMelodyNotes = array[0..255] of TNote;
   TMelody = record
     notes: PMelodyNotes;
     noteCount: byte;
@@ -37,7 +38,7 @@ procedure Stop;
 procedure Update;
 
 {
-  freq: in Hz
+  freq: in Hz, 0 makes it a "rest"
   duration: in seconds
 }
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
