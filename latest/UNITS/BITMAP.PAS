@@ -6,12 +6,13 @@ unit Bitmap;
 interface
 
 type
+  PByteArray = ^TByteArray;
   TByteArray = array[0..0] of byte;
 
   PBitmap = ^TBitmap;
   TBitmap = record
     width, height: word; { palsize }
-    data: TByteArray;
+    data: PByteArray;
   end;
 
 procedure LoadBMP(var output: PBitmap; const filename: string);
@@ -107,7 +108,7 @@ begin
 
     { for a:=1 to 256 do PSet(a-1, h-b-1, buffer[a]); }
     { bottom to top }
-    Move(buffer[1], output^.data[(h-b-1) * w], w);
+    Move(buffer[1], output^.data^[(h-b-1) * w], w);
   end;
 
   close(f)
@@ -153,7 +154,7 @@ begin
     rowOffset := b * image^.width;
 
     for a := 0 to image^.width-1 do
-      AsmPSet(a, b, image^.data[rowOffset + a]);
+      AsmPSet(a, b, image^.data^[rowOffset + a]);
   end;
 end;
 
@@ -175,8 +176,8 @@ begin
     for srcX := 0 to image^.width-1 do begin
       pxOffset := rowOffset + srcX;
 
-      if image^.data[pxOffset] <> transparencyKey then
-        AsmPSet(x+srcX, y+srcY, image^.data[pxOffset]);
+      if image^.data^[pxOffset] <> transparencyKey then
+        AsmPSet(x+srcX, y+srcY, image^.data^[pxOffset]);
     end;
   end;
 end;
@@ -200,8 +201,8 @@ begin
 
       pos := a + b * image^.width;
 
-      if image^.data[pos] <> transparencyKey then
-        Mem[$A000:rowOffset + (x+a)] := image^.data[pos];
+      if image^.data^[pos] <> transparencyKey then
+        Mem[$A000:rowOffset + (x+a)] := image^.data^[pos];
     end;
   end;
 end;
@@ -231,12 +232,12 @@ begin
 
       pxOffset := rowOffset + srcX;
 
-      if image^.data[pxOffset] = transparencyKey then continue;
+      if image^.data^[pxOffset] = transparencyKey then continue;
 
       { Begin drawing the scaled pixels }
       for d := 0 to scale-1 do
         for c := 0 to scale-1 do
-          AsmPSet(destX + c, destY + d, image^.data[pxOffset]);
+          AsmPSet(destX + c, destY + d, image^.data^[pxOffset]);
 
       { for d := 0 to scale-1 do begin
         if destY + d >= VGAHeight then break;
@@ -267,7 +268,7 @@ begin
     for a := 0 to image^.width-1 do begin
       pxOffset := rowOffset + a;
 
-      if image^.data[pxOffset] <> transparencyKey then
+      if image^.data^[pxOffset] <> transparencyKey then
         AsmPSet(x+a, y+b, tint);
     end;
   end;
@@ -290,8 +291,8 @@ begin
     for a := 0 to srcW - 1 do begin
       pxOffset := rowOffset + (srcX + a);
 
-      if image^.data[pxOffset] <> transparencyKey then
-        AsmPSet(destX + a, destY + b, image^.data[pxOffset]);
+      if image^.data^[pxOffset] <> transparencyKey then
+        AsmPSet(destX + a, destY + b, image^.data^[pxOffset]);
     end;
   end;
 end;
