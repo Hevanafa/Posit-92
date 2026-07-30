@@ -115,8 +115,12 @@ end;
 
 procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
 asm
-  { TODO: Check bounds }
-
+  { Check bounds }
+  { The way jae works is that -1 resets to 65535 }
+  cmp y, 200
+  jae @skip
+  cmp x, 320
+  jae @skip
 
   { This enables all 4 planes: 0Fh
     and also assigns the MapMask: 02h}
@@ -165,6 +169,7 @@ asm
   mov al, colour
   mov es:[di], al
   pop es
+@skip:
 end;
 
 
