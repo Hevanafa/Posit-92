@@ -251,17 +251,13 @@ end;
 procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
 asm
   { Bounds check }
-  cmp y, 0
-  jl @skip
   mov ax, VGAHeight
   cmp y, ax
-  jge @skip
+  jae @skip
 
-  cmp x, 0
-  jl @skip
   mov ax, VGAWidth
   cmp x, ax
-  jge @skip
+  jae @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -269,11 +265,14 @@ asm
   mul bx      { DX:AX = y * 320 --> result in AX }
   add ax, x   { AX = y * 320 + x }
 
-  { Load BX with AX because ES:[DI+BX] is valid, but not ES:[DI+AX] }
+{
+  Load BX with AX because the ES:[DI+BX] syntax is valid,
+  but not ES:[DI+AX]
+}
   mov bx, ax
 
-  { Write byte to the `surface` array }
-  les di, surface { ES:DI = surface^ }
+  { Load ES:DI with the address to the backbuffer (surface) }
+  les di, surface
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
@@ -299,8 +298,8 @@ add ax, x
 { Load BX with AX because ES:[DI+BX] is valid, but not ES:[DI+AX] }
 mov bx, ax
 
-{ Write byte to the `surface` array }
-les di, surface { ES:DI = surface^ }
+{ Load ES:DI with the address to the backbuffer (surface) }
+les di, surface
 mov al, colour
 { mov es:[di+ax], colour } { <-- Invalid register combination }
 mov es:[di+bx], al

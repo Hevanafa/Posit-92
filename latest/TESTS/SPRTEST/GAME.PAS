@@ -93,7 +93,8 @@ begin
       2, 2,
       random(360)); }
 
-  { 5.1915s }
+  { 5.1915s, 5.2167s
+    After `jae` optimisation on PSet: 5.0971s }
   for a:=1 to 100 do
     SprScaleRotLUT(
       DosuEXE[0],
