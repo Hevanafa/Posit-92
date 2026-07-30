@@ -27,6 +27,8 @@ type
   PMelodyNotes = ^TMelodyNotes;
   { Placeholder range. The actual implementation relies on noteCount }
   TMelodyNotes = array[0..255] of TNote;
+
+  PMelody = ^TMelody;
   TMelody = record
     notes: PMelodyNotes;
     noteCount: byte;
@@ -45,7 +47,9 @@ procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
 procedure CreateMelody(var mel: TMelody; const noteCount: byte);
 procedure FreeMelody(var mel: TMelody);
-procedure PlayMelody(const melody: TMelody);
+
+{ The melody is borrowed from the user's assets }
+procedure PlayMelody(const mel: PMelody);
 
 
 implementation
@@ -53,10 +57,10 @@ implementation
 uses CRT, DOS, Timing;
 
 var
+  isPlaying: boolean;
   currentNote: integer;
-  currentMelody: TMelody;
+  currentMelody: PMelody;
   noteEndTick: double;
-  playing: boolean;
 
 
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
@@ -72,7 +76,7 @@ procedure PlayBeep(const freq, durationMs: word);
 begin
   sound(freq);
   noteEndTick := GetTimer + durationMs / 1000;
-  playing := true
+  isPlaying := true
 end;
 
 
@@ -80,23 +84,23 @@ procedure PlayNextNote;
 begin
   inc(currentNote);
 
-  if currentNote >= currentMelody.noteCount then begin
+  if currentNote >= currentMelody^.noteCount then begin
     Stop;
     exit
   end;
 
   NoSound;
 
-  if not currentMelody.notes^[currentNote].rest then
-    Sound(currentMelody.notes^[currentNote].freq);
+  if not currentMelody^.notes^[currentNote].rest then
+    Sound(currentMelody^.notes^[currentNote].freq);
 
-  noteEndTick := GetTimer + currentMelody.notes^[currentNote].duration;
+  noteEndTick := GetTimer + currentMelody^.notes^[currentNote].duration;
 end;
 
 procedure Init;
 begin
   currentNote := -1;
-  playing := false;
+  isPlaying := false;
 end;
 
 procedure CreateMelody(var mel: TMelody; const noteCount: byte);
@@ -113,27 +117,27 @@ begin
   mel.noteCount := 0;
 end;
 
-procedure PlayMelody(const melody: TMelody);
+procedure PlayMelody(const mel: PMelody);
 begin
-  if playing then exit;
-  if melody.noteCount = 0 then exit;
+  if isPlaying then exit;
+  if mel^.noteCount = 0 then exit;
 
   currentNote := -1;
-  currentMelody := melody;
-  playing := true;
+  currentMelody := mel;
+  isPlaying := true;
   playNextNote
 end;
 
 procedure Update;
 begin
-  if playing and (getTimer >= noteEndTick) then
+  if isPlaying and (getTimer >= noteEndTick) then
     playNextNote;
 end;
 
 procedure Stop;
 begin
   noSound;
-  playing := false;
+  isPlaying := false;
 end;
 
 end.
