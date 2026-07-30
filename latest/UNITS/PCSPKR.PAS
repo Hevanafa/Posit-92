@@ -14,9 +14,14 @@ interface
 
 type
   TNote = record
-    freq: word; { in Hz }
+    { in Hz }
+    freq: word;
+
+    { this field makes the note silent }
     rest: boolean;
-    duration: double; { in seconds }
+
+    { in seconds }
+    duration: double;
   end;
   TMelody = record
     notes: array[0..127] of TNote;

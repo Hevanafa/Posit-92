@@ -25,6 +25,29 @@ begin
     (self.y < other.y + other.height)
 end;
 
+
+type
+  TCoinMelody = array[0..2] of TNote;
+
+const
+  { C4 E4 G4 }
+  mel1: TCoinMelody = (
+    (freq: 261; rest: false; duration: 0.1),
+    (freq: 329; rest: false; duration: 0.1),
+    (freq: 392; rest: false; duration: 0.1)
+  );
+  { D4 F#4 A4 }
+  mel2: TCoinMelody = (
+    (freq: 293; rest: false; duration: 0.1),
+    (freq: 370; rest: false; duration: 0.1),
+    (freq: 440; rest: false; duration: 0.1)
+  );
+  mel3: TCoinMelody = (
+    (freq: 329; rest: false; duration: 0.1),
+    (freq: 415; rest: false; duration: 0.1),
+    (freq: 494; rest: false; duration: 0.1)
+  );
+
 var
   { Asset variables }
   imgDosuEXE: array[0..1] of PBitmap;
@@ -88,7 +111,12 @@ begin
     if coins[a].hitbox.Intersects(playerHitbox) then begin
       inc(score, 1);
       InitCoin(coins[a]);
-      PlayMelody(SoundIDs(random(3)));
+
+      case random(3) of
+        0: PlayMelody(mel1);
+        1: PlayMelody(mel2);
+        2: PlayMelody(mel3);
+      end;
     end;
 end;
 
