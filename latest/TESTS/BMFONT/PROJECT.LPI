@@ -28,7 +28,7 @@
       <Unit>
         <Filename Value="MAIN.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Game"/>
+        <UnitName Value="BMFont"/>
       </Unit>
     </Units>
   </ProjectOptions>
