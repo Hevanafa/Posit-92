@@ -113,6 +113,8 @@ end;
 
 procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
 asm
+  { TODO: Check bounds }
+
   mov dx, 03C4h
 
   { This enables all 4 planes: 0Fh
@@ -123,7 +125,17 @@ asm
   mov al, 02h
   out dx
 
-  { TODO: Assign PlaneMask }
+  { Assign PlaneMask }
+  mov dx, 03C5h
+
+  mov cx, bx
+  and cx, 03h  { x and 3 }
+  mov al, 01h  { start with 1 }
+  shl al, cl   { 1 shl (x and 3). In 8086, the count must be in `cl` }
+  out dx, al
+
+  out dx
+
   { TODO: Assign offset }
   { TODO: Assign the colour }
 end;
