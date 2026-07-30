@@ -255,14 +255,15 @@ asm
   cmp y, ax
   jae @skip
 
-  mov ax, VGAWidth
-  cmp x, ax
+  mov bx, VGAWidth
+  cmp x, bx
   jae @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
-  mov bx, VGAWidth
-  mul bx      { DX:AX = y * 320 --> result in AX }
+  { BX still has the value of VGAWidth,
+  and the result goes to AX }
+  mul bx
   add ax, x   { AX = y * 320 + x }
 
 {
