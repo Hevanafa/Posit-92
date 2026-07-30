@@ -58,7 +58,7 @@ procedure LoadBMP(var output: PBitmap; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
-  bytesRead: word;
+  { bytesRead: word; }
   a, b: integer;
   w, h, palsize, size: integer;
   start, padding: integer;
