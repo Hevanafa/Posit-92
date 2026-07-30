@@ -159,7 +159,7 @@ begin
     readln(f, line);
 
     if StartsWith(line, 'char') then
-      ParseBMFontGlyph(@font, line);
+      ParseBMFontGlyph(font, line);
   end;
   close(f);
 
@@ -210,7 +210,7 @@ begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font.bitmap^.data^[srcY * font.bitmap^.width + srcX];
+        colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
@@ -239,7 +239,7 @@ begin
       for col := 0 to g^.width - 1 do begin
         srcX := g^.x + col;
         srcY := g^.y + row;
-        colour := font.bitmap^.data^[srcY * font.bitmap^.width + srcX];
+        colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, tint);
