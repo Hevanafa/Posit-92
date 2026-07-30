@@ -1,8 +1,10 @@
 
 uses
   CRT, DOS,
-  AdLib, Bitmap, Logger, Keyboard, Mouse,
-  Timing, VGA, Conv, FPS;
+  P92Core, Bitmap, Logger,
+  P92KBD, P92Mouse,
+  Timing, P92VGA,
+  AdLib;
 
 type
   TRect = object
@@ -22,25 +24,24 @@ begin
     (self.y < other.y + other.height)
 end;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   DosuEXE: array[0..1] of PBitmap;
+  imgCoin: PBitmap;
+  PianoInstrument: TInstrument;
+  sfxCoin: TMelody;
+
+  { Game state variables }
+  t: double;
   score: integer;
   playerX, playerY: single;
   playerHitbox: TRect;
   lastB: boolean;
-  imgCoin: PBitmap;
   coins: array[0..9] of TCoin;
   rotation: double;
 
-  PianoInstrument: TInstrument;
-  sfxCoin: TMelody;
 
-
-procedure initInstruments;
+procedure InitInstruments;
 begin
   with PianoInstrument do begin
     with modulator do begin
@@ -77,7 +78,7 @@ begin
 end;
 
 
-procedure initCoin(var c: TCoin);
+procedure InitCoin(var c: TCoin);
 begin
   c.hitbox.x := random(300);
   c.hitbox.y := random(180);
@@ -85,28 +86,17 @@ begin
   c.hitbox.height := 16
 end;
 
-procedure randomiseCoins;
+procedure RandomiseCoins;
 var
   a: word;
 begin
   for a:=0 to high(coins) do
-    initCoin(coins[a]);
+    InitCoin(coins[a]);
 end;
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
-  randomize;
-  AdlibDrv.init;
-  initInstruments;
+  InitInstruments;
   { AdlibDrv.assignInstrument(0, @PianoInstrument); }
 
   with sfxCoin do begin
@@ -117,10 +107,13 @@ begin
     initNote(notes[2], NOTE_F, 5, 0.3, 127)
   end;
 
-  loadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
-  loadBMP(imgCoin, 'IMG\COIN.BMP');
+  LoadBMP(dosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadBMP(imgCoin, 'IMG\COIN.BMP');
+end;
 
+procedure OnReady; far;
+begin
   playerX := 148;
   playerY := 76;
   with playerHitbox do begin
@@ -132,23 +125,23 @@ begin
 
   rotation := 45;
 
-  randomiseCoins;
+  RandomiseCoins;
 end;
 
-procedure updateCoins;
+procedure UpdateCoins;
 var
   a: word;
 begin
   for a:=0 to high(coins) do
     if coins[a].hitbox.intersects(playerHitbox) then begin
       inc(score, 1);
-      initCoin(coins[a]);
+      InitCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
       AdlibDrv.playMelody(@sfxCoin, 0);
     end;
 end;
 
-procedure drawCoins;
+procedure DrawCoins;
 var
   a: word;
 begin
@@ -159,7 +152,7 @@ begin
       sprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 13, 15);
 end;
 
-procedure update;
+procedure Update; far;
 var
   a: integer;
 begin
@@ -206,11 +199,11 @@ begin
 
   t:=t+dt;
 
-  updateCoins;
+  UpdateCoins;
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   a: integer;
   scoreStr: string;
@@ -227,7 +220,7 @@ begin
   else
     spr(dosuEXE[1], trunc(playerX), trunc(playerY), 13);
 
-  drawCoins;
+  DrawCoins;
 
   { Optional rotated sprite }
   { sprPro(dosuEXE[0], 48, 48, rotation, 13); }
@@ -254,21 +247,18 @@ end;
 
 
 var
-  a: integer;
-
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.EnableAdLib := true;
 
-  resetMouse;
-  AdlibDrv.shutdown;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
 end.
+
