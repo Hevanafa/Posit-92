@@ -15,6 +15,7 @@ type
     data: PByteArray;
   end;
 
+procedure DefaultBMP(var image: TBitmap);
 procedure LoadBMP(var image: TBitmap; const filename: string);
 procedure CloneBMP(const src: TBitmap; var dest: TBitmap);
 procedure FreeBMP(var image: TBitmap);
@@ -50,6 +51,13 @@ var
 procedure SetTransparencyKey(const value: byte);
 begin
   transparencyKey := value
+end;
+
+procedure DefaultBMP(var image: TBitmap);
+begin
+  image.width := 0;
+  image.height := 0;
+  image.data := nil;
 end;
 
 procedure LoadBMP(var image: TBitmap; const filename: string);

@@ -13,7 +13,7 @@ uses Bitmap;
 {$endif}
 
 var
-  cursor: PBitmap;
+  cursor: TBitmap;
   mouseX, mouseY: word;
   mouseButton: byte;
 
