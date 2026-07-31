@@ -6,7 +6,7 @@ unit Timing;
 
 interface
 
-function GetTicks: Longint;
+function GetBIOSTicks: Longint;
 function Timer: real;
 function GetTimer: real;
 function GetTimerMS: Longint;
@@ -31,28 +31,47 @@ var
   nextGameTick: double; { Used in `Limit()` }
 
 { Ticks since the last boot }
-function GetTicks: Longint;
+function GetBIOSTicks: Longint;
 begin
-  getTicks := MemL[$0040:$006C]
+  GetBIOSTicks := MemL[$0040:$006C]
 end;
 
 { Seconds since the midnight from the last boot }
 function Timer: real;
+const
+  PITFreq = 1193182.0 / 65536.0;
 begin
-  Timer := MemL[$0040:$006C] / 18.2065
+  Timer := MemL[$0040:$006C] / PITFreq
 end;
 
 { Higher resolution TIMER with microsecond precision }
 function GetTimer: real;
+const
+  PITFreq = 1193182.0 / 65536.0;
 var
   counter: word;
+  ticks: longint;
+  pending: boolean;
 begin
-  { Read current PIT countdown }
-  Port[$43] := $00;  { Set up channel 0 latch command }
+  { Begin atomic section }
+  asm cli end;
+
+  { Latch & read PIT channel 0 }
+  Port[$43] := $00;
   counter := Port[$40];
   counter := counter or (Port[$40] shl 8);  { Read low & high bytes }
-  { MemL accesses BIOS tick count }
-  GetTimer := (MemL[$0040:$006C] + (65536 - counter) / 65536) / 18.2065;
+
+  { Read BIOS tick count }
+  ticks := MemL[$0040:$006C];
+
+  { Check if IRQ0 is pending (PIT wrapped but ISR hasn't run yet) }
+  Port[$20] := $0A;
+  pending := (Port[$20] and $01) <> 0;
+
+  { End atomic section }
+  asm sti end;
+
+  GetTimer := (ticks + (65536 - counter) / 65536) / PITFreq;
 end;
 
 function GetTimerMS: Longint;
