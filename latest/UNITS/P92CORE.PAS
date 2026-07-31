@@ -71,6 +71,17 @@ var
   done: boolean;
   bootConfig: TP92AppConfig;
 
+{
+  Sleep in HLT while waiting for the next frame
+  HLT introduces a wake up delay
+  Waiting for a full 1/35 second produces about 25 FPS
+  Poll at twice the target frequency to obtain approximately 35 FPS
+
+  Note: This only applies to P92WaitHLT
+}
+  WaitFrequency: word;
+
+
 procedure SignalDone;
 begin
   done := true
@@ -92,6 +103,10 @@ procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.BufferWidth := DefaultVGAWidth;
   config.BufferHeight := DefaultVGAHeight;
+
+  config.TargetFPS := 35;
+  config.WaitMode := P92WaitHLT;
+  WaitFrequency := config.TargetFPS * 2;
 
   config.LoadDefaultCursor := true;
 
@@ -196,15 +211,6 @@ end;
 
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
-const
-  TargetFPS = 35;
-  {
-    Sleep in HLT while waiting for the next frame
-    HLT introduces a wake up delay
-    Waiting for a full 1/35 second produces about 25 FPS
-    Poll at twice the target frequency to obtain approximately 35 FPS
-  }
-  WaitFrequency = TargetFPS * 2;
 var
   now, nextTick: double;
 begin
