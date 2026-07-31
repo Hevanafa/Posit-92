@@ -167,7 +167,8 @@ begin
   if bootConfig.EnableAdLib then
     AdlibDrv.init;
 
-  Randomize;
+  { Randomize; }
+  RandSeed := trunc(GetTimer);
 end;
 
 procedure P92Cleanup;
