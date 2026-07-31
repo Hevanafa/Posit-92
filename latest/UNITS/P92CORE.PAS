@@ -212,7 +212,9 @@ end;
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
 var
-  now, nextTick: double;
+  now: double;
+  { ignored by P92WaitVSync }
+  nextTick: double;
 begin
   bootConfig := config;
   P92Init;
@@ -235,7 +237,11 @@ begin
 
     repeat
       now := GetTimer;
-      nextTick := now + 1 / WaitFrequency;
+
+      if bootConfig.WaitMode = P92WaitHLT then
+        nextTick := now + 1 / WaitFrequency
+      else if bootConfig.WaitMode = P92WaitBusy then
+        nextTick := now + 1 / TargetFPS;
 
       P92Update;
       config.Update;
@@ -245,11 +251,17 @@ begin
       P92AfterDraw;
 
       { Wait for the next frame }
-      while GetTimer < nextTick do
-      asm
-        sti
-        hlt
-      end;
+
+      if bootConfig.WaitMode = P92WaitHLT then begin
+        while GetTimer < nextTick do
+        asm
+          sti
+          hlt
+        end;
+      end else if bootConfig.WaitMode = P92WaitBusy then begin
+        while GetTimer < nextTick do ;
+      end else if bootConfig.WaitMode = P92WaitVSync then
+        WaitVSync;
     until done;
 
   {
