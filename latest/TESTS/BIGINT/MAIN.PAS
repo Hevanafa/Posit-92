@@ -173,9 +173,27 @@ begin
 end;
 
 
+procedure Int240RawAdd(const a, b: TInt240; var c: TInt240);
 var
-  numA, numB: TInt240;
+  limbIdx: integer;
+  carry, sum: longint;
 begin
+  Int240Zero(c);
+  carry := 0;
+
+  for limbIdx := 0 to Int240Limbs - 1 do begin
+    sum := longint(a.digits[limbIdx]) + longint(b.digits[limbIdx]) + carry;
+    c.digits[limbIdx] := word(sum mod 10000);
+    carry := sum div 10000
+  end;
+
+  { carry > 0 at this point means overflow past the 60th digit }
+end;
+
+var
+  numA, numB, numC: TInt240;
+begin
+  writeln('SizeOf(TInt240): ', sizeof(TInt240));
   Int240FromLongInt(numA, 1234987);
   Int240Zero(numB);
 
@@ -185,6 +203,7 @@ begin
   Int240FromString(numA, '18446744673709551616');
   writeln('What is numA? ' + Int240ToString(numA));
 
+  { Test for invalid inputs }
   Int240FromString(numA, ' -abcdef');
   Int240FromString(numA, ' - ');
 
@@ -193,4 +212,9 @@ begin
   writeln(Int240ToString(numA));
   { Expected overflow error }
   Int240FromString(numA, '1234567890123456789012345678901234567890123456789012345678901');
+
+  Int240FromLongInt(numA, 5100);
+  Int240FromLongInt(numB, 6700);
+  Int240RawAdd(numa, numb, numc);
+  writeln('5100 + 6700 = ' + Int240ToString(numc));
 end.
