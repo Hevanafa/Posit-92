@@ -25,7 +25,7 @@ begin
   FreeBMP(dosuEXE[0]);
   FreeBMP(dosuEXE[1]);
 
-  freeRLEBitmap(sampleRLE);
+  FreeRLEBitmap(sampleRLE);
   FreeBMP(image);
 end;
 
@@ -53,7 +53,7 @@ begin
   else
     Spr(dosuEXE[1], 148, 76);
 
-  blitRLE(sampleRLE, 178, 76);
+  SprRLEOpaque(sampleRLE, 178, 76);
 
   print('Hello world!', 160-48, 120, 15);
 end;
@@ -64,7 +64,7 @@ var
 begin
   LoadBMP(image, 'IMG/DOSU_1.BMP');
 
-  convertToRLE(image, sampleRLE);
+  ConvertToRLE(image, sampleRLE);
 
   InitLogger;
   InitMode13h;
@@ -73,31 +73,31 @@ begin
 
   cls($00);
 
-  { blitRLE(sampleRLE, 10, 10); }
+  { SprRLEOpaque(sampleRLE, 10, 10); }
 
   { Edge cases }
-  { blitRLE(sampleRLE, -10, -10);
-  blitRLE(sampleRLE, 10, -10); }
+  { SprRLEOpaque(sampleRLE, -10, -10);
+  SprRLEOpaque(sampleRLE, 10, -10); }
 
-  { blitRLE(sampleRLE, -10, 10);
-  blitRLE(sampleRLE, 310, 10); }
+  { SprRLEOpaque(sampleRLE, -10, 10);
+  SprRLEOpaque(sampleRLE, 310, 10); }
 
-  { blitRLE(sampleRLE, 10, 190); }
-  { blitRLEUnsafe(sampleRLE, 10, 10); }
+  { SprRLEOpaque(sampleRLE, 10, 190); }
+  { UnsafeSprRLE(sampleRLE, 10, 10); }
 
   startTime := getTimer;
   for a:=1 to 1000 do begin
     { 1.5595s }
     { pascalDrawBMP(image, random(320), 10 + random(190)); }
     { 0.5694s }
-    { blitRLE(sampleRLE, random(320), 10 + random(190), 13); }
+    { SprRLEOpaque(sampleRLE, random(320), 10 + random(190), 13); }
 
-    { 1.5592s }
+    { 0s }
     { pascalSpr(image, random(320), random(200), 13); }
-    { 0.5962s }
-    { asmSpr(image, random(320), 10 + random(190), 13) }
-    { 0.5352s }
-    blitRLE2(sampleRLE, random(320), 10 + random(190), 13);
+    { 0.9467s }
+    SprRLEOpaque(sampleRLE, random(320), 10 + random(190))
+    { 0.8637s }
+    { SprRLE(sampleRLE, random(320), 10 + random(190), 13); }
   end;
   diff := getTimer - startTime;
 

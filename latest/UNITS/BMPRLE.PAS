@@ -1,8 +1,6 @@
 unit BMPRLE;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
@@ -16,22 +14,23 @@ type
     data: array[0..0] of byte;
   end;
 
-procedure convertToRLE(const src: TBitmap; var output: PRLEBitmap);
-{ Currently there's no way to convert a RLE bitmap back to a PBitmap }
+{
+  Convert from TBitmap to TRLEBitmap
+  Currently there's no way to convert a RLE bitmap back to a PBitmap
+}
+procedure ConvertToRLE(const src: TBitmap; var output: PRLEBitmap);
 
-procedure freeRLEBitmap(var image: PRLEBitmap);
+procedure FreeRLEBitmap(var image: PRLEBitmap);
 
-procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
-procedure blitRLE2(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
-procedure blitRLEUnsafe(const image: PRLEBitmap; const x, y: integer);
-{ Missing assembly version }
+procedure SprRLEOpaque(const image: PRLEBitmap; const x, y: integer);
+procedure SprRLE(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
+procedure UnsafeSprRLE(const image: PRLEBitmap; const x, y: integer);
 
 implementation
 
 uses Conv, Logger, P92VGA;
 
-{ PBitmap to TRLEBitmap conversion }
-procedure convertToRLE(const src: TBitmap; var output: PRLEBitmap);
+procedure ConvertToRLE(const src: TBitmap; var output: PRLEBitmap);
 var
   a, b, offset: word;
   count, colour: byte;
@@ -128,14 +127,14 @@ begin
   writeLog('Pass 2 writePos: ' + i32str(writePos));
 end;
 
-procedure freeRLEBitmap(var image: PRLEBitmap);
+procedure FreeRLEBitmap(var image: PRLEBitmap);
 begin
   if image = nil then exit;
   freeMem(image, sizeof(TRLEBitmap) + image^.dataSize);
   image := nil
 end;
 
-procedure blitRLE(const image: PRLEBitmap; const x, y: integer);
+procedure SprRLEOpaque(const image: PRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -180,7 +179,7 @@ begin
 end;
 
 
-procedure blitRLE2(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
+procedure SprRLE(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -228,7 +227,7 @@ begin
 end;
 
 
-procedure blitRLEUnsafe(const image: PRLEBitmap; const x, y: integer);
+procedure UnsafeSprRLE(const image: PRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
