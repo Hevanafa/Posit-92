@@ -112,8 +112,19 @@ begin
 
   src := Trim(src);
 
-  { TODO: Perform integer validation }
+  { Perform integer validation }
+  a := 1;
+  if src[a] = '-' then inc(a);
+  while a <= length(src) do begin
+    if not (src[a] in ['0'..'9']) then begin
+      WriteLn('"' + src + '" is not a valid integer!');
+      exit
+    end;
 
+    inc(a);
+  end;
+
+  { Begin parser }
   if src[1] = '-' then begin
     n.isNegative := true;
     delete(src, 1, 1)
@@ -152,4 +163,6 @@ begin
 
   Int240FromString(numA, '18446744673709551616');
   writeln('What is numA? ' + Int240ToString(numA));
+
+  Int240FromString(numA, ' -abcdef');
 end.
