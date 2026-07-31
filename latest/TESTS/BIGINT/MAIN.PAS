@@ -102,6 +102,31 @@ begin
   Int240ToString := result
 end;
 
+procedure Int240FromString(var n: TInt240; src: string);
+var
+  a, limb: integer;
+  start, code: integer;
+  chunk: string;
+begin
+  Int240Zero(n);
+
+  src := Trim(src);
+
+  { TODO: Perform integer validation }
+
+  if src[1] = '-' then begin
+    n.isNegative := true;
+    delete(src, 1, 1)
+  end;
+
+  { Trim leading zeroes }
+  while (length(src) > 1) and (src[1] = '0') do
+    delete(src, 1, 1);
+
+  { TODO: Process numbers right-to-left }
+
+end;
+
 
 var
   numA, numB: TInt240;
