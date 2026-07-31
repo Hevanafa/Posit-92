@@ -20,6 +20,7 @@ function Trim(const txt: string): string;
 function Lower(const txt: string): string;
 function Upper(const txt: string): string;
 function PadStart(const source: string; const targetLen: integer; const padChar: char): string;
+function PadEnd(const source: string; const targetLen: integer; const padChar: char): string;
 
 
 implementation
@@ -166,6 +167,23 @@ begin
     result := padChar + result;
 
   PadStart := result
+end;
+
+function PadEnd(const source: string; const targetLen: integer; const padChar: char): string;
+var
+  result: string;
+begin
+  if targetLen <= length(source) then begin
+    PadEnd := source;
+    exit
+  end;
+
+  result := source;
+
+  while length(result) < targetLen do
+    result := result + padChar;
+
+  PadEnd := result
 end;
 
 end.
