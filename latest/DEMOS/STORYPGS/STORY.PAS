@@ -7,11 +7,11 @@ uses BMFont;
 type
   TStoryManager = object
     isStory: boolean;
-    font: PBMFont;
+    fFont: TBMFont;
     procedure startPage(const page: word);
     procedure nextPage;
     procedure tryNextPage;
-    procedure init(const fontPtr: PBMFont);
+    procedure init(font: TBMFont);
     procedure update;
     procedure draw;
     procedure drawDebug;
@@ -23,7 +23,7 @@ var
 
 implementation
 
-uses Conv, Timing, VGA;
+uses Conv, Timing, P92VGA;
 
 const
   charInterval = 0.016;
@@ -77,13 +77,13 @@ begin
     storyRow := lineCount;
 end;
 
-procedure TStoryManager.init(const fontPtr: PBMFont);
+procedure TStoryManager.init(font: TBMFont);
 begin
   isStory := false;
   storyRow := 0;
   storyCol := 1;
   elapsed := 0;
-  self.font := fontPtr
+  self.fFont := font
 end;
 
 procedure TStoryManager.update;
@@ -112,15 +112,14 @@ begin
 
   { Render full text }
   for a:=0 to storyRow - 1 do
-    PrintBMFont(font, lines[a], 0, font^.lineHeight * a, 0);
+    PrintBMFont(fFont, lines[a], 0, fFont.lineHeight * a);
 
   { Render partially }
   if storyRow < lineCount then
     PrintBMFont(
-      font,
+      fFont,
       copy(lines[storyRow], 1, storyCol),
-      0, storyRow * font^.lineHeight,
-      0);
+      0, storyRow * fFont.lineHeight);
 end;
 
 

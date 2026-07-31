@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Logger, Keyboard, FPS, Timing, VGA;
+  P92Core, Bitmap, Logger, FPS, Timing, P92VGA;
 
 type
   TVec2 = record
@@ -13,7 +13,7 @@ type
 
 var
   { Asset variables }
-  imgGrass: PBitmap;
+  imgGrass: TBitmap;
   { Game state variables }
   positions: array[0..99] of TVec2;
 
@@ -37,12 +37,12 @@ end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(imgGrass)
+  FreeBMP(imgGrass)
 end;
 
 procedure Update; far;
 begin
-  if IsKeyDown(SC_ESCAPE) then SignalDone;
+  if KeyPressed and (ReadKey = #27) then SignalDone;
 end;
 
 
@@ -53,7 +53,7 @@ begin
   cls($7D);
   
   for a:=0 to high(positions) do
-    spr(imgGrass, trunc(positions[a].x), trunc(positions[a].y), 13);
+    spr(imgGrass, trunc(positions[a].x), trunc(positions[a].y));
 end;
 
 var
@@ -62,6 +62,8 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
+  appConfig.EnableKeyHandler := false;
+
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;

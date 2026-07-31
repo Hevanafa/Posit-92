@@ -28,8 +28,8 @@ end;
 
 var
   { Asset variables }
-  imgDosuEXE: array[0..1] of PBitmap;
-  imgCoin: PBitmap;
+  imgDosuEXE: array[0..1] of TBitmap;
+  imgCoin: TBitmap;
   coinMelodyList: array[0..2] of TMelody;
 
   { Game state variables }

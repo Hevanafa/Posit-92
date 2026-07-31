@@ -1,13 +1,13 @@
 
 uses
   CRT, DOS,
-  P92Core, BMFont, Logger, Keyboard, Mouse, Timing, VGA, Bitmap,
+  P92Core, BMFont, Logger, P92KBD, P92Mouse, Timing, P92VGA, Bitmap,
   Story;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
-  font: PBMFont;
+  DosuEXE: array[0..1] of TBitmap;
+  font: TBMFont;
 
   { Game state variables }
   t: double;
@@ -16,15 +16,15 @@ var
 
 procedure OnPreload; far;
 begin
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  loadBMFont(font, 'FONTS\FGB12.FNT');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMFont(font, 'FONTS\FGB12.FNT');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 end;
 
 procedure OnReady; far;

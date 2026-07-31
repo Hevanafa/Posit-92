@@ -1,9 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Logger,
-  P92KBD, P92Mouse,
-  Timing, P92VGA,
+  P92Core, Bitmap, Conv, Logger, P92KBD, P92Mouse, Timing, P92VGA,
   AdLib;
 
 type
@@ -26,8 +24,8 @@ end;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
-  imgCoin: PBitmap;
+  DosuEXE: array[0..1] of TBitmap;
+  imgCoin: TBitmap;
   PianoInstrument: TInstrument;
   sfxCoin: TMelody;
 

@@ -4,9 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, Bitmap,
-  Keyboard, Mouse,
-  Timing, VGA;
+  P92Core, Conv, Bitmap, P92KBD, P92Mouse, Timing, P92VGA;
 
 type
   TExplosion = record
@@ -19,7 +17,7 @@ const
   maxSpritesPerFrame = 50;
 var
   { Asset variables }
-  imgExplosion: PBitmap;
+  imgExplosion: TBitmap;
 
   { Game state variables }
   startTime, nextGameTick: double;
@@ -45,7 +43,7 @@ begin
   SprRegion(
     imgExplosion,
     GetFrame(e) * 16, 0, 16, 16,
-    e.x, e.y, 13);
+    e.x, e.y);
 end;
 
 procedure InitExplosion(var e: TExplosion);
@@ -59,12 +57,12 @@ end;
 
 procedure OnPreload; far;
 begin
-  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
+  LoadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(imgExplosion);
+  FreeBMP(imgExplosion);
 end;
 
 procedure OnReady; far;
@@ -137,6 +135,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.WaitMode := P92WaitVSync;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

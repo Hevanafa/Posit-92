@@ -5,21 +5,21 @@ uses
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
+  DosuEXE: array[0..1] of TBitmap;
   { Game state variables }
   t: double;
 
 
 procedure OnPreload; far;
 begin
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -40,9 +40,9 @@ begin
   cls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    SprScaled(dosuEXE[0], 96, 24, 13, 2)
+    SprScaled(dosuEXE[0], 96, 24, 2)
   else
-    SprScaled(dosuEXE[1], 96, 24, 13, 2);
+    SprScaled(dosuEXE[1], 96, 24, 2);
 
   print('Hello world!', (240-96) div 2, 84, 15);
 end;
