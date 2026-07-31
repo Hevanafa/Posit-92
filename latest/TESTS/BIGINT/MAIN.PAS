@@ -112,6 +112,12 @@ begin
 
   src := Trim(src);
 
+  { Edge case }
+  if length(src) = 0 then begin
+    WriteLn('Empty input!');
+    exit
+  end;
+
   { Perform integer validation }
   a := 1;
   if src[a] = '-' then inc(a);
@@ -128,6 +134,18 @@ begin
   if src[1] = '-' then begin
     n.isNegative := true;
     delete(src, 1, 1)
+  end;
+
+  { Edge case for "-" string }
+  if length(src) = 0 then begin
+    WriteLn('Bare minus sign is invalid!');
+    exit
+  end;
+
+  { Edge case for overflow }
+  if length(src) > Int240Limbs * 4 then begin
+    WriteLn('Number is too large!');
+    exit
   end;
 
   { Trim leading zeroes }
@@ -149,6 +167,9 @@ begin
     val(chunk, n.digits[limb], code);
     inc(limb)
   end;
+
+  { Edge case for "-0" }
+  if Int240IsZero(n) then n.isNegative := false;
 end;
 
 
@@ -165,4 +186,11 @@ begin
   writeln('What is numA? ' + Int240ToString(numA));
 
   Int240FromString(numA, ' -abcdef');
+  Int240FromString(numA, ' - ');
+
+  { Valid big number }
+  Int240FromString(numA, '123456789012345678901234567890123456789012345678901234567890');
+  writeln(Int240ToString(numA));
+  { Expected overflow error }
+  Int240FromString(numA, '1234567890123456789012345678901234567890123456789012345678901');
 end.
