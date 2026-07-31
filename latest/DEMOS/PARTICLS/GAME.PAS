@@ -97,7 +97,7 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
-  appConfig.WaitMode := P92WaitVSync;
+  appConfig.WaitMode := P92WaitUncapped;
 
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;

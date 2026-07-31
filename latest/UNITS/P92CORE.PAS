@@ -15,7 +15,8 @@ type
   TP92WaitMode = (
     P92WaitHLT,
     P92WaitBusy,
-    P92WaitVSync
+    P92WaitVSync,
+    P92WaitUncapped
   );
 
   TP92AppConfig = record
@@ -225,7 +226,7 @@ end;
 procedure P92Start(const config: TP92AppConfig);
 var
   now: double;
-  { ignored by P92WaitVSync }
+  { ignored by P92WaitVSync and Uncapped }
   nextTick: double;
 begin
   bootConfig := config;
