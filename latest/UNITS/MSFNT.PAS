@@ -68,22 +68,28 @@ type
     glyphs: array[0..255] of PMSFontGlyph;
   end;
 
-procedure loadMSFont(var output: PMSFont; const filename: string);
-procedure freeMSFont(var font: PMSFont);
-procedure testMSFontDisplay(const font: PMSFont; const ch: char);
-procedure printMSFont(
-  const font: PMSFont;
-  const text: string;
-  const x, y: integer;
-  const colour: byte);
-function measureMSFont(const font: PMSFont; const text: string): word;
+procedure LoadMSFont(var font: TMSFont; const filename: string);
+procedure FreeMSFont(var font: TMSFont);
+procedure TestMSFontDisplay(const font: TMSFont; const ch: char);
+procedure PrintMSFont(const font: TMSFont; const text: string; const x, y: integer; const colour: byte);
+function MeasureMSFont(const font: TMSFont; const text: string): word;
 
 
 implementation
 
-uses Conv, Maths, Panic, VGA;
+uses Conv, Maths, Panic, P92VGA;
 
-procedure loadMSFont(var output: PMSFont; const filename: string);
+procedure DefaultMSFont(var font: TMSFont);
+var
+  len: word;
+begin
+  fillchar(font.header, sizeof(TMSFontHeader), 0);
+
+  len := high(font.glyphs) - low(font.glyphs) + 1;
+  fillchar(font.glyphs, sizeof(TMSFontGlyph) * len, 0);
+end;
+
+procedure LoadMSFont(var font: TMSFont; const filename: string);
 var
   fntFile: file;
   c, charIndex: word;
@@ -92,19 +98,16 @@ var
   size: integer;
 
 begin
-  assign(fntFile, filename);
-  {$I-} reset(fntFile, 1); {$I+}
+  Assign(fntFile, filename);
+  {$I-} Reset(fntFile, 1); {$I+}
+
   if IOResult <> 0 then
     panicHalt('loadMSFont: Cannot open file ' + filename);
 
-  if output = nil then begin
-    getMem(output, sizeof(TMSFont));
-    for c:=0 to high(output^.glyphs) do
-      output^.glyphs[c] := nil;
-  end;
+  DefaultMSFont(font);
 
-  blockRead(fntFile, output^.header, sizeof(TMSFontHeader));
-  charHeight := output^.header.pixHeight;
+  blockRead(fntFile, font.header, sizeof(TMSFontHeader));
+  charHeight := font.header.pixHeight;
 
 {$IFDEF DEBUG}
   writeLog('--- Begin loadMSFont "' + filename + '"');
@@ -112,45 +115,41 @@ begin
   writeLog('Pixel height: ', output^.header.pixHeight);
 {$ENDIF}
 
-  for charIndex := output^.header.firstChar to output^.header.lastChar do begin
-  { for charIndex := output^.header.firstChar to output^.header.firstChar + 9 do begin }
-    seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - output^.header.firstChar) * 4);
+  for charIndex := font.header.firstChar to font.header.lastChar do begin
+  { for charIndex := font.header.firstChar to font^.header.firstChar + 9 do begin }
+    seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - font.header.firstChar) * 4);
     blockRead(fntFile, bitsWidth, 2);
     blockRead(fntFile, charOffset, 2);
 
     { writeLn(charIndex, ' - width: ', bitsWidth, ' offset: ', charOffset); }
 
     size := sizeof(TMSFontGlyph) + ceil(bitsWidth / 8) * charHeight - 1;
-    getMem(output^.glyphs[charIndex], size);
-    if output^.glyphs[charIndex] = nil then begin
+
+    GetMem(font.glyphs[charIndex], size);
+    if font.glyphs[charIndex] = nil then begin
       writeLn('Unable to getMem with the size ', size, '!');
       exit
     end;
 
-    with output^ do begin
+    with font do begin
       glyphs[charIndex]^.width := bitsWidth;
       glyphs[charIndex]^.height := charHeight;
     end;
 
     seek(fntFile, charOffset);
-    blockRead(fntFile, output^.glyphs[charIndex]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
+    blockRead(fntFile, font.glyphs[charIndex]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
   end;
 
   close(fntFile)
 end;
 
 { This test can only be done in text mode }
-procedure testMSFontDisplay(const font: PMSFont; const ch: char);
+procedure TestMSFontDisplay(const font: TMSFont; const ch: char);
 var
   a, b: word;
   glyph: PMSFontGlyph;
   currentByte, bitMask: byte;
 begin
-  if font = nil then begin
-    panicHalt('testMSFontDisplay: font is nil!');
-    exit
-  end;
-
   { Test char sizes }
   {
   for b:=0 to 15 do begin
@@ -166,13 +165,15 @@ begin
   end;
   }
 
-  if font^.glyphs[ord(ch)] = nil then begin
+  {
+  if font.glyphs[ord(ch)] = nil then begin
     panicHalt('testMSFontDisplay glyph ' + i32str(ord(ch)) + ' is nil!');
     exit
   end;
+  }
 
   { Display the char }
-  glyph := font^.glyphs[ord(ch)];
+  glyph := @(font.glyphs[ord(ch)]);
   for b:=0 to glyph^.height - 1 do begin
     for a:=0 to glyph^.width - 1 do begin
       currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
@@ -187,12 +188,14 @@ begin
   end;
 end;
 
-procedure freeMSFont(var font: PMSFont);
-var
-  a: word;
+procedure FreeMSFont(var font: TMSFont);
+{ var
+  a: word; }
 begin
-  if font = nil then exit;
+  { Replaced reset on each glyph since it's of the type TMSFontGlyph }
+  DefaultMSFont(font);
 
+  {
   for a:=0 to high(font^.glyphs) do
     if font^.glyphs[a] <> nil then begin
       freeMem(font^.glyphs[a], sizeof(font^.glyphs[a]));
@@ -201,10 +204,11 @@ begin
 
   freeMem(font, sizeof(TMSFont));
   font := nil
+  }
 end;
 
-procedure printMSFont(
-  const font: PMSFont;
+procedure PrintMSFont(
+  const font: TMSFont;
   const text: string;
   const x, y: integer;
   const colour: byte);
@@ -213,19 +217,15 @@ var
   charcode, currentByte, bitMask: byte;
   glyph: PMSFontGlyph;
 begin
-  if font = nil then begin
-    panicHalt('printMSFont: font is nil!');
-    exit
-  end;
-
   left := 0;
+
   for c:=1 to length(text) do begin
     charcode := ord(text[c]);
 
-    if font^.glyphs[charcode] = nil then
-      glyph := font^.glyphs[font^.header.defaultChar]
+    if font.glyphs[charcode] = nil then
+      glyph := font.glyphs[font.header.defaultChar]
     else
-      glyph := font^.glyphs[charcode];
+      glyph := font.glyphs[charcode];
 
     for b:=0 to glyph^.height - 1 do
       for a:=0 to glyph^.width - 1 do begin
@@ -236,33 +236,29 @@ begin
           asmPset(x + left + a, y + b, colour);
       end;
 
-    inc(left, font^.glyphs[charcode]^.width)
+    inc(left, font.glyphs[charcode]^.width)
   end;
 end;
 
-function measureMSFont(const font: PMSFont; const text: string): word;
+function MeasureMSFont(const font: TMSFont; const text: string): word;
 var
   a, result, width: word;
   charcode: byte;
 begin
-  if font = nil then begin
-    panicHalt('measureMSFont: font is nil!');
-    exit
-  end;
-
   result := 0;
+
   for a:=1 to length(text) do begin
     charcode := ord(text[a]);
 
-    if font^.glyphs[charcode] = nil then
-      width := font^.glyphs[font^.header.defaultChar]^.width
+    if font.glyphs[charcode] = nil then
+      width := font.glyphs[font.header.defaultChar]^.width
     else
-      width := font^.glyphs[charcode]^.width;
+      width := font.glyphs[charcode]^.width;
 
     inc(result, width)
   end;
   
-  measureMSFont := result
+  MeasureMSFont := result
 end;
 
 end.

@@ -28,7 +28,6 @@
       <Unit>
         <Filename Value="GAME.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Game"/>
       </Unit>
     </Units>
   </ProjectOptions>

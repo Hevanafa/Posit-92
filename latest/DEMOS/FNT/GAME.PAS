@@ -5,21 +5,21 @@
 
 uses
   CRT, DOS,
-  P92Core, MSFNT, Keyboard, VGA;
+  P92Core, MSFNT, P92KBD, P92VGA;
 
 var
-  font: PMSFont;
+  font: TMSFont;
 
 
 procedure OnPreload; far;
 begin
-  { loadMSFont(font, 'FONTS\8514OEM.FNT'); }
-  loadMSFont(font, 'FONTS\VGASYS.FNT');
+  { LoadMSFont(font, 'FONTS\8514OEM.FNT'); }
+  LoadMSFont(font, 'FONTS\VGASYS.FNT');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeMSFont(font);
+  FreeMSFont(font);
 end;
 
 procedure Update; far;
@@ -36,8 +36,8 @@ begin
   Cls($7D);
 
   s := 'Hello world with System font!';
-  w := measureMSFont(font, s);
-  printMSFont(font, s, 160 - (w div 2), 120, 15);
+  w := MeasureMSFont(font, s);
+  PrintMSFont(font, s, 160 - (w div 2), 120, 15);
 end;
 
 var
