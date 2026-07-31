@@ -1,5 +1,5 @@
 {
-  Primitives
+  Drawing primitives
   Part of Posit-92 game engine
 }
 

@@ -4,7 +4,7 @@
 }
 
 uses
-  P92Core, Graphics, FPS, Keyboard, Logger, Timing, VGA;
+  P92Core, Graphics, FPS, P92KBD, Logger, Timing, P92VGA;
 
 var
   done: boolean;
