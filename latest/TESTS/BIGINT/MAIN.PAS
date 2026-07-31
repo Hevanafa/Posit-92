@@ -18,6 +18,16 @@ begin
   n.isNegative := false;
 end;
 
+procedure Int240FromWord(var n: TInt240; const value: word; const negative: boolean);
+begin
+  Int240Zero(n);
+  a.digits[0] := value;
+
+  if value <> 0 then
+    if negative then n.isNegative:= true
+    else n.isNegative := false;
+end;
+
 var
   numA, numB: TInt240;
 begin
