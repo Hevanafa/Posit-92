@@ -1,5 +1,7 @@
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
+uses P92STR;
+
 const
   Int240Limbs = 15;
 
@@ -41,7 +43,7 @@ begin
     else n.isNegative := false;
 end;
 
-procedure Int24FromLongInt(var n: TInt240; value: longint);
+procedure Int240FromLongInt(var n: TInt240; value: longint);
 var
   a: word;
 begin
@@ -72,11 +74,11 @@ end;
 function Int240ToString(const n: TInt240): string;
 var
   a, top: integer;
-  s, tmp: string;
+  result, tmp: string;
 begin
   { Edge case: zero }
   if Int240IsZero(n) then begin
-    Int240ToString := 0;
+    Int240ToString := '0';
     exit
   end;
 
@@ -86,12 +88,27 @@ begin
   while (top > 0) and (n.digits[top] = 0) do
     dec(top);
 
-  { TODO: Start working on the conversion }
+  { Top limb: no leading zeroes }
+  str(n.digits[top], result);
+
+  for a:=top - 1 downto 0 do begin
+    str(n.digits[a], tmp);
+    result := result + PadStart(tmp, 4, '0');
+  end;
+
+  if n.isNegative then
+    result := '-' + result;
+
+  Int240ToString := result
 end;
 
 
 var
   numA, numB: TInt240;
 begin
+  Int240FromLongInt(numA, 1234987);
+  Int240Zero(numB);
 
+  writeln('numA: ' + Int240ToString(numA));
+  writeln('numB: ' + Int240ToString(numB));
 end.
