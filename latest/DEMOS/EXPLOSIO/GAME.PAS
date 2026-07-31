@@ -15,7 +15,7 @@ type
 
 var
   { Asset variables }
-  imgExplosion: PBitmap;
+  imgExplosion: TBitmap;
 
   { Game state variables }
   nextGameTick: double;
@@ -100,6 +100,7 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.EnableKeyHandler := false;
+  appConfig.WaitMode := P92WaitVSync;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

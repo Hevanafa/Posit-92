@@ -1,9 +1,7 @@
-{$DEFINE DEBUG}
-
 uses
   CRT, DOS,
   P92Core, Bitmap, Conv, FPS, Graphics, Logger,
-  Keyboard, Mouse, Timing, VGA;
+  P92KBD, P92Mouse, Timing, P92VGA;
 
 type
   TPoint = record
