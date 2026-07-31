@@ -142,15 +142,15 @@ begin
     exit
   end;
 
+  { Trim leading zeroes }
+  while (length(src) > 1) and (src[1] = '0') do
+    delete(src, 1, 1);
+
   { Edge case for overflow }
   if length(src) > Int240Limbs * 4 then begin
     WriteLn('Number is too large!');
     exit
   end;
-
-  { Trim leading zeroes }
-  while (length(src) > 1) and (src[1] = '0') do
-    delete(src, 1, 1);
 
   { Process numbers right to left }
   limb := 0;
