@@ -1,18 +1,17 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, FPS, Maths, Timing, P92VGA,
-  P92Mouse,
-  Bitmap, BMFont, Graphics;
+  P92Core, Conv, FPS, Maths, Timing, P92VGA, P92Mouse, Bitmap, BMFont, P92STR, Graphics;
 
+const
+  MenuCount = 50;
 var
   { Asset variables }
-  font, outlineFont: PBMFont;
+  font, outlineFont: TBMFont;
 
   { Game state variables }
   t: double;
-  menuItems: array[0..99] of string;
-  menuCount: integer;
+  menuItems: array[0..MenuCount - 1] of string;
   selectedIdx, firstIdx: integer;
 
 
@@ -23,9 +22,10 @@ begin
   LoadBMFont(font, 'FONTS\ARIAL10.FNT');
   LoadBMFont(outlineFont, 'FONTS\ARIAL10.FNT');
 
-  for a:=0 to outlineFont^.bitmap^.width * outlineFont^.bitmap^.height - 1 do
-    if outlineFont^.bitmap^.data[a] = 15 then
-      outlineFont^.bitmap^.data[a] := 0;
+  { Replace white pixels with black }
+  for a:=0 to outlineFont.bitmap.width * outlineFont.bitmap.height - 1 do
+    if outlineFont.bitmap.data^[a] = 15 then
+      outlineFont.bitmap.data^[a] := 0;
 end;
 
 procedure OnCleanup; far;
@@ -39,10 +39,9 @@ var
 begin
   selectedIdx := 0;
   firstIdx := -2;
-  menuCount := 100;
 
-  for a:=0 to 99 do
-    menuItems[a] := 'Menu item ' + i32str(a);
+  for a:=0 to high(menuItems) do
+    menuItems[a] := 'Menu item ' + upper(I8HexStr(a));
 end;
 
 

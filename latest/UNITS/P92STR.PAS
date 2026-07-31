@@ -1,3 +1,8 @@
+{
+  String utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92STR;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

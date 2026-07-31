@@ -3,12 +3,11 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, Logger, P92KBD, Timing,
-  BMFont, P92VGA; { , NokiaVGA; }
+  P92Core, Conv, Logger, P92KBD, Timing, BMFont, P92VGA; { , NokiaVGA; }
 
 var
   { Asset variables }
-  nokiaFont, p8Font: PBMFont;
+  nokiaFont, p8Font: TBMFont;
   { Game state variables }
   startTick, t: double;
   palette: array[0..1] of byte;
