@@ -99,6 +99,18 @@ begin
   {$I+}
 end;
 
+procedure WaitVSync;
+const
+  InputStatusReg1 = $3DA;
+  VSyncBit = $08;
+begin
+  { wait for retrace to end }
+  while (port[InputStatusReg1] and VSyncBit) <> 0 do;
+
+  { wait for next retrace to begin }
+  while (port[InputStatusReg1] and VSyncBit) = 0 do;
+end;
+
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.BufferWidth := DefaultVGAWidth;
@@ -241,7 +253,7 @@ begin
       if bootConfig.WaitMode = P92WaitHLT then
         nextTick := now + 1 / WaitFrequency
       else if bootConfig.WaitMode = P92WaitBusy then
-        nextTick := now + 1 / TargetFPS;
+        nextTick := now + 1 / bootConfig.TargetFPS;
 
       P92Update;
       config.Update;
