@@ -69,6 +69,27 @@ begin
   end;
 end;
 
+function Int240ToString(const n: TInt240): string;
+var
+  a, top: integer;
+  s, tmp: string;
+begin
+  { Edge case: zero }
+  if Int240IsZero(n) then begin
+    Int240ToString := 0;
+    exit
+  end;
+
+  { Find the most significant non-zero limb }
+  top := Int240Limbs - 1;
+
+  while (top > 0) and (n.digits[top] = 0) do
+    dec(top);
+
+  { TODO: Start working on the conversion }
+end;
+
+
 var
   numA, numB: TInt240;
 begin
