@@ -42,16 +42,31 @@ begin
 end;
 
 procedure Int24FromLongInt(var n: TInt240; value: longint);
+var
+  a: word;
 begin
   Int240Zero(n);
 
+  { Edge case for -2147483648 }
+  if value = low(longint) then begin
+    n.isNegative := true;
+    n.digits[0] := 3648;
+    n.digits[1] := 4748;
+    n.digits[2] := 21;
+    exit
+  end;
+
   if value < 0 then begin
     n.isNegative := true;
-    value := -value;  { Note that -2147483648 overflows here }
-  end else if value > 0 then
-    n.isNegative := false;
+    value := -value;
+  end;
 
-  { TODO: Perform div 10000 }
+  a := 0;
+  while value > 0 do begin
+    n.digits[a] := word(value mod 10000);
+    value := value div 10000;
+    inc(a)
+  end;
 end;
 
 var
