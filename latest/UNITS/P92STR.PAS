@@ -19,6 +19,7 @@ function TrimEnd(const txt: string): string;
 function Trim(const txt: string): string;
 function Lower(const txt: string): string;
 function Upper(const txt: string): string;
+function PadStart(const source: string; const targetLen: integer; const padChar: char): string;
 
 
 implementation
@@ -148,6 +149,23 @@ begin
     if ('a' <= result[a]) and (result[a] <= 'z') then
       result[a] := chr(ord(result[a]) - 32);
   Upper := result
+end;
+
+function PadStart(const source: string; const targetLen: integer; const padChar: char): string;
+var
+  result: string;
+begin
+  if targetLen <= length(source) then begin
+    PadStart := source;
+    exit
+  end;
+
+  result := source;
+
+  while length(result) < targetLen do
+    result := padChar + result;
+
+  PadStart := result
 end;
 
 end.
