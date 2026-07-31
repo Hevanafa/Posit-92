@@ -12,9 +12,18 @@ const
 type
   TP92Callback = procedure;
 
+  TP92WaitMode = (
+    P92WaitHLT,
+    P92WaitBusy,
+    P92WaitVSync
+  );
+
   TP92AppConfig = record
     BufferWidth: word;
     BufferHeight: word;
+
+    TargetFPS: word;
+    WaitMode: TP92WaitMode;
 
     LoadDefaultCursor: boolean;
     EnablePCSpeaker: boolean;
