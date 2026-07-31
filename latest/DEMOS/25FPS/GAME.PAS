@@ -1,13 +1,10 @@
-{$DEFINE DEBUG}
-
 uses
   CRT, DOS,
-  P92Core,
-  Bitmap, FPS, Logger, Keyboard, Mouse, Timing, VGA;
+  P92Core, Bitmap, FPS, Logger, P92KBD, P92Mouse, Timing, P92VGA;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
+  DosuEXE: array[0..1] of TBitmap;
   { Game state variables }
   t: double;
 
@@ -25,8 +22,8 @@ end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 end;
 
 procedure Update; far;
@@ -45,18 +42,20 @@ begin
   Cls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76, 13)
+    Spr(dosuEXE[0], 148, 76)
   else
-    spr(dosuEXE[1], 148, 76, 13);
+    Spr(dosuEXE[1], 148, 76);
 
-  print('Hello world!', 160-48, 120, 15);
-  drawMouse;
+  Print('Hello world!', 160-48, 120, 15);
 end;
 
 var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.TargetFPS := 25;
+  appConfig.WaitMode := P92WaitBusy;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

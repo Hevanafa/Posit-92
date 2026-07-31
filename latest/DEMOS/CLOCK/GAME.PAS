@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, Keyboard, Logger, Timing, VGA;
+  P92Core, Conv, Logger, Timing, P92VGA;
 
 function GetHours: byte;
 begin
@@ -28,25 +28,22 @@ end;
 
 
 procedure Update; far;
-var
-  a: integer;
 begin
-  if IsKeyDown(SC_ESCAPE) then SignalDone;
+  if KeyPressed and (ReadKey = #27) then SignalDone;
 end;
 
 procedure Draw; far;
 var
-  a: integer;
   s: string;
 begin
   cls($7D);
 
-  print(
-    Format2Digits(GetHours) + ':' +
+  s := Format2Digits(GetHours) + ':' +
     Format2Digits(GetMinutes) + ':' +
-    Format2Digits(GetSeconds), 160-32, 96, 15);
+    Format2Digits(GetSeconds);
+  Print(s, (VGAWidth - length(s) * 8) div 2, 96, 15);
 
-  print('Esc - Exit', 0, 191, 15);
+  Print('Esc - Exit', 0, 191, 15);
 end;
 
 
@@ -56,6 +53,8 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
+  appConfig.EnableKeyHandler := false;
+
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
 

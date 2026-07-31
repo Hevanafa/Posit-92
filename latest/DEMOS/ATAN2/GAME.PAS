@@ -1,11 +1,11 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, FPS, Graphics, Logger, Keyboard, Maths, Mouse, Timing, VGA;
+  P92Core, Bitmap, Conv, FPS, Graphics, Logger, P92KBD, P92Mouse, Maths, Timing, P92VGA;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
+  DosuEXE: array[0..1] of TBitmap;
   { Game state variables }
   t: double;
   x, y: double;
@@ -13,8 +13,8 @@ var
 
 procedure OnPreload; far;
 begin
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
@@ -80,18 +80,12 @@ var
 begin
   cls($7D);
 
-  { TODO: Your drawing code here }
-
   circfill(160, 100, 20, 12);
   circfill(trunc(x), trunc(y), 8, 15);
 
   angle := GetAngle(x, y, 160, 100);
   print('Angle: ' + f32str(angle), 0, 8, 7);
   print('Angle (deg): ' + f32str(rad2deg(angle)), 0, 16, 7);
-
-  drawMouse;
-  drawFPS;
-  flush
 end;
 
 
