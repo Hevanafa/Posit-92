@@ -123,8 +123,21 @@ begin
   while (length(src) > 1) and (src[1] = '0') do
     delete(src, 1, 1);
 
-  { TODO: Process numbers right-to-left }
+  { Process numbers right to left }
+  limb := 0;
 
+  while length(src) > 0 do begin
+    if length(src) >= 4 then begin
+      chunk := copy(src, length(src) - 3, 4);
+      delete(src, length(src) - 3, 4);
+    end else begin
+      chunk := src;
+      src := '';
+    end;
+
+    val(chunk, n.digits[limb], code);
+    inc(limb)
+  end;
 end;
 
 
@@ -136,4 +149,7 @@ begin
 
   writeln('numA: ' + Int240ToString(numA));
   writeln('numB: ' + Int240ToString(numB));
+
+  Int240FromString(numA, '18446744673709551616');
+  writeln('What is numA? ' + Int240ToString(numA));
 end.
