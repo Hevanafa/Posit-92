@@ -11,26 +11,26 @@ type
   TRLEBitmap = record
     width, height: word;
     dataSize: word;
-    data: array[0..0] of byte;
+    data: PByteArray;
   end;
 
 {
   Convert from TBitmap to TRLEBitmap
   Currently there's no way to convert a RLE bitmap back to a PBitmap
 }
-procedure ConvertToRLE(const src: TBitmap; var output: PRLEBitmap);
+procedure ConvertToRLE(const src: TBitmap; var dest: TRLEBitmap);
 
-procedure FreeRLEBitmap(var image: PRLEBitmap);
+procedure FreeRLEBitmap(var image: TRLEBitmap);
 
-procedure SprRLEOpaque(const image: PRLEBitmap; const x, y: integer);
-procedure SprRLE(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
-procedure UnsafeSprRLE(const image: PRLEBitmap; const x, y: integer);
+procedure SprRLEOpaque(const image: TRLEBitmap; const x, y: integer);
+procedure SprRLE(const image: TRLEBitmap; const x, y: integer; const transparencyKey: byte);
+procedure UnsafeSprRLE(const image: TRLEBitmap; const x, y: integer);
 
 implementation
 
 uses Conv, Logger, P92VGA;
 
-procedure ConvertToRLE(const src: TBitmap; var output: PRLEBitmap);
+procedure ConvertToRLE(const src: TBitmap; var dest: TRLEBitmap);
 var
   a, b, offset: word;
   count, colour: byte;
@@ -80,10 +80,10 @@ begin
 
   writeLog('Pass 1 writePos: ' + i32str(writePos));
 
-  getMem(output, sizeof(TRLEBitmap) + writePos);
-  output^.width := src.width;
-  output^.height := src.height;
-  output^.dataSize := writePos;
+  getMem(dest.data, writePos);
+  dest.width := src.width;
+  dest.height := src.height;
+  dest.dataSize := writePos;
 
 
   { Pass 2 }
@@ -102,8 +102,8 @@ begin
         inc(count)
       else begin
         { Different pixel in the same scanline }
-        output^.data[writePos] := count;
-        output^.data[writePos+1] := colour;
+        dest.data^[writePos] := count;
+        dest.data^[writePos+1] := colour;
         inc(writePos, 2);
 
         count := 1;
@@ -115,8 +115,8 @@ begin
     end;
 
     { Change of scanline }
-    output^.data[writePos] := count;
-    output^.data[writePos+1] := colour;
+    dest.data^[writePos] := count;
+    dest.data^[writePos+1] := colour;
     inc(writePos, 2);
 
     { Reset the counter }
@@ -127,59 +127,56 @@ begin
   writeLog('Pass 2 writePos: ' + i32str(writePos));
 end;
 
-procedure FreeRLEBitmap(var image: PRLEBitmap);
+procedure FreeRLEBitmap(var image: TRLEBitmap);
 begin
-  if image = nil then exit;
-  freeMem(image, sizeof(TRLEBitmap) + image^.dataSize);
-  image := nil
+  Freemem(image.data, image.dataSize);
 end;
 
-procedure SprRLEOpaque(const image: PRLEBitmap; const x, y: integer);
+procedure SprRLEOpaque(const image: TRLEBitmap; const x, y: integer);
 var
-  { Not yet using longint for prototyping }
   a: integer;
   left: integer; { similar to top & left coords like in a terminal }
-  readPos, destX, destY: integer;
+  readPos: integer;
+  destX, destY: integer;
   count, colour: byte;
 begin
-  if image = nil then exit;
-  if y >= 200 then exit;
-  if x >= 320 then exit;
+  if (y >= VGAHeight) or (x >= VGAWidth) then exit;
 
   destX := x; destY := y;
-  readPos := 0; left := 0;
+  readPos := 0;
+  left := 0;
 
-  while readPos < image^.dataSize do begin
-    count := image^.data[readPos];
-    colour := image^.data[readPos+1];
+  while readPos < image.dataSize do begin
+    count := image.data^[readPos];
+    colour := image.data^[readPos+1];
 
     if destY >= 0 then begin
       for a:=1 to count do begin
         if (destX + left < 0) or
-          (destX + left >= 320) then begin
+          (destX + left >= VGAWidth) then begin
           inc(left);
           continue
         end;
 
-        surface^[destY * 320 + destX + left] := colour;
+        surface^[destY * VGAWidth + destX + left] := colour;
         inc(left)
       end;
     end else
       inc(left, count);
 
-    if left >= image^.width then begin
+    if left >= image.width then begin
       left := 0;
       inc(destY)
     end;
 
-    if destY >= 200 then break;
+    if destY >= VGAHeight then break;
 
     inc(readPos, 2)
   end;
 end;
 
 
-procedure SprRLE(const image: PRLEBitmap; const x, y: integer; const transparencyKey: byte);
+procedure SprRLE(const image: TRLEBitmap; const x, y: integer; const transparencyKey: byte);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -187,27 +184,25 @@ var
   readPos, destX, destY: integer;
   count, colour: byte;
 begin
-  if image = nil then exit;
-  if y >= 200 then exit;
-  if x >= 320 then exit;
+  if (y >= VGAHeight) or (x >= VGAWidth) then exit;
 
   destX := x; destY := y;
   readPos := 0; left := 0;
 
-  while readPos < image^.dataSize do begin
-    count := image^.data[readPos];
-    colour := image^.data[readPos+1];
+  while readPos < image.dataSize do begin
+    count := image.data^[readPos];
+    colour := image.data^[readPos+1];
 
     if colour <> transparencyKey then begin
       if destY >= 0 then begin
         for a:=1 to count do begin
           if (destX + left < 0) or
-            (destX + left >= 320) then begin
+            (destX + left >= VGAWidth) then begin
             inc(left);
             continue
           end;
 
-          surface^[destY * 320 + destX + left] := colour;
+          surface^[destY * VGAWidth + destX + left] := colour;
           inc(left)
         end;
       end else
@@ -215,19 +210,19 @@ begin
     end else
       inc(left, count);
 
-    if left >= image^.width then begin
+    if left >= image.width then begin
       left := 0;
       inc(destY)
     end;
 
-    if destY >= 200 then break;
+    if destY >= VGAHeight then break;
 
     inc(readPos, 2)
   end;
 end;
 
 
-procedure UnsafeSprRLE(const image: PRLEBitmap; const x, y: integer);
+procedure UnsafeSprRLE(const image: TRLEBitmap; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -235,23 +230,22 @@ var
   readPos, left: integer;
   count, colour: byte;
 begin
-  if image = nil then exit;
-
   destX := x; destY := y;
 
   left := 0;
   readPos := 0;
-  while readPos < image^.dataSize do begin
-    count := image^.data[readPos];
-    colour := image^.data[readPos+1];
+
+  while readPos < image.dataSize do begin
+    count := image.data^[readPos];
+    colour := image.data^[readPos+1];
 
     { Dangerous: no bounds check }
     for a:=1 to count do
-      surface^[destY * 320 + destX + left + a - 1] := colour;
+      surface^[destY * VGAWidth + destX + left + a - 1] := colour;
     
     inc(left, count);
 
-    if left >= image^.width then begin
+    if left >= image.width then begin
       left := 0;
       inc(destY)
     end;

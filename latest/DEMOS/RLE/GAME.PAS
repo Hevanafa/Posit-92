@@ -5,7 +5,7 @@ uses
 var
   { Asset variables }
   image: TBitmap;
-  sampleRLE: PRLEBitmap;
+  sampleRLE: TRLEBitmap;
   DosuEXE: array[0..1] of TBitmap;
 
   { Game state variables }
@@ -24,9 +24,6 @@ procedure OnCleanup; far;
 begin
   FreeBMP(dosuEXE[0]);
   FreeBMP(dosuEXE[1]);
-
-  FreeRLEBitmap(sampleRLE);
-  FreeBMP(image);
 end;
 
 procedure OnReady; far;
@@ -104,6 +101,10 @@ begin
   print('1000 operations done in ' + f32str(diff) + 's', 0, 0, 15);
 
   flush;
+
+  { Cleanup }
+  FreeRLEBitmap(sampleRLE);
+  FreeBMP(image);
 
   readln;
   exit;
