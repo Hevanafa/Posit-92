@@ -1,16 +1,12 @@
-{$DEFINE DEBUG}
-
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Logger, Keyboard, Mouse,
-  Panic, Timing, VGA,
-  BMPRLE;
+  P92Core, Bitmap, Conv, Logger, P92KBD, P92Mouse, Panic, Timing, P92VGA, BMPRLE;
 
 var
   { Asset variables }
-  image: PBitmap;
+  image: TBitmap;
   sampleRLE: PRLEBitmap;
-  DosuEXE: array[0..1] of PBitmap;
+  DosuEXE: array[0..1] of TBitmap;
 
   { Game state variables }
   t: double;
@@ -20,17 +16,17 @@ var
 
 procedure OnPreload; far;
 begin
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeBMP(dosuEXE[0]);
+  FreeBMP(dosuEXE[1]);
 
   freeRLEBitmap(sampleRLE);
-  freeBMP(image);
+  FreeBMP(image);
 end;
 
 procedure OnReady; far;
@@ -53,9 +49,11 @@ begin
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    asmDrawBMP(dosuEXE[0], 148, 76)
+    Spr(dosuEXE[0], 148, 76)
   else
-    asmDrawBMP(dosuEXE[1], 148, 76);
+    Spr(dosuEXE[1], 148, 76);
+
+  blitRLE(sampleRLE, 178, 76);
 
   print('Hello world!', 160-48, 120, 15);
 end;
@@ -64,14 +62,14 @@ end;
 var
   appConfig: TP92AppConfig;
 begin
-  loadBMP(image, 'IMG/DOSU_1.BMP');
+  LoadBMP(image, 'IMG/DOSU_1.BMP');
 
   convertToRLE(image, sampleRLE);
 
-  initLogger;
-  initVGAMode;
-  initBuffer;
-  loadFont;
+  InitLogger;
+  InitMode13h;
+  InitBuffer(DefaultVGAWidth, DefaultVGAHeight);
+  LoadCGAFont;
 
   cls($00);
 
