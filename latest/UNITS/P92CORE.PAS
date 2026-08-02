@@ -223,6 +223,18 @@ begin
     DrawMouse;
 end;
 
+{ Various timing techniques }
+
+procedure P92RunFrame;
+begin
+  P92Update;
+  config.Update;
+
+  P92Draw;
+  config.Draw;
+  P92AfterDraw;
+end;
+
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
 var
@@ -257,12 +269,7 @@ begin
       else if bootConfig.WaitMode = P92WaitBusy then
         nextTick := now + 1 / bootConfig.TargetFPS;
 
-      P92Update;
-      config.Update;
-
-      P92Draw;
-      config.Draw;
-      P92AfterDraw;
+      P92RunFrame;
 
       { Wait for the next frame }
 
