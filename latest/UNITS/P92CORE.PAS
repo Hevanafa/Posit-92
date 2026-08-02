@@ -100,18 +100,6 @@ begin
   {$I+}
 end;
 
-procedure WaitVSync;
-const
-  InputStatusReg1 = $3DA;
-  VSyncBit = $08;
-begin
-  { wait for retrace to end }
-  while (port[InputStatusReg1] and VSyncBit) <> 0 do;
-
-  { wait for next retrace to begin }
-  while (port[InputStatusReg1] and VSyncBit) = 0 do;
-end;
-
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.BufferWidth := DefaultVGAWidth;
@@ -235,7 +223,7 @@ begin
   P92AfterDraw;
 end;
 
-{ Performs the sti/hlt pair loop
+{ Perform the sti/hlt pair loop
   This is the default for demos and games }
 procedure P92RunHLT;
 var
@@ -257,7 +245,7 @@ begin
   until done;
 end;
 
-{ Performs the busy-wait loop}
+{ Perform the busy-wait loop}
 procedure P92RunBusy;
 var
   now, nextTick: double;
@@ -269,6 +257,30 @@ begin
     P92RunFrame;
 
     while GetTimer < nextTick do ;
+  until done;
+end;
+
+
+procedure WaitVSync;
+const
+  InputStatusReg1 = $3DA;
+  VSyncBit = $08;
+begin
+  { wait for retrace to end }
+  while (port[InputStatusReg1] and VSyncBit) <> 0 do;
+
+  { wait for next retrace to begin }
+  while (port[InputStatusReg1] and VSyncBit) = 0 do;
+end;
+
+{ Perform the VSync loop }
+procedure P92RunVSync;
+begin
+  repeat
+    P92RunFrame;
+
+    if bootConfig.WaitMode = P92WaitVSync then
+      WaitVSync;
   until done;
 end;
 
@@ -301,18 +313,14 @@ begin
     case bootConfig.WaitMode of
     P92WaitHLT:
       P92RunHLT;
-    else begin
+    P92WaitBusy:
+      P92RunBusy;
+    P92WaitVSync:
+      P92RunVSync;
+    else
       repeat
-        now := GetTimer;
-
         P92RunFrame;
-
-        { Wait for the next frame }
-
-        if bootConfig.WaitMode = P92WaitVSync then
-          WaitVSync;
       until done;
-    end;
     end;
   end;
 
