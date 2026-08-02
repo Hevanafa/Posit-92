@@ -228,11 +228,31 @@ end;
 procedure P92RunFrame;
 begin
   P92Update;
-  config.Update;
+  bootConfig.Update;
 
   P92Draw;
-  config.Draw;
+  bootConfig.Draw;
   P92AfterDraw;
+end;
+
+procedure P92RunHLT;
+var
+  now, nextTick: double;
+begin
+  repeat
+    now := GetTimer;
+
+    if bootConfig.WaitMode = P92WaitHLT then
+      nextTick := now + 1 / WaitFrequency;
+
+    P92RunFrame;
+
+    while GetTimer < nextTick do
+    asm
+      sti
+      hlt
+    end;
+  until done;
 end;
 
 { Game engine entry point }
@@ -261,42 +281,27 @@ begin
     now := GetTimer;
     nextTick := now;
 
-    repeat
-      now := GetTimer;
+    case bootConfig.WaitMode of
+    P92WaitHLT:
+      P92RunHLT;
+    else begin
+      repeat
+        now := GetTimer;
 
-      if bootConfig.WaitMode = P92WaitHLT then
-        nextTick := now + 1 / WaitFrequency
-      else if bootConfig.WaitMode = P92WaitBusy then
-        nextTick := now + 1 / bootConfig.TargetFPS;
+        if bootConfig.WaitMode = P92WaitBusy then
+          nextTick := now + 1 / bootConfig.TargetFPS;
 
-      P92RunFrame;
+        P92RunFrame;
 
-      { Wait for the next frame }
+        { Wait for the next frame }
 
-      if bootConfig.WaitMode = P92WaitHLT then begin
-        while GetTimer < nextTick do
-        asm
-          sti
-          hlt
-        end;
-      end else if bootConfig.WaitMode = P92WaitBusy then begin
-        while GetTimer < nextTick do ;
-      end else if bootConfig.WaitMode = P92WaitVSync then
-        WaitVSync;
-    until done;
-
-  {
-    done := false;
-
-    repeat
-      P92Update;
-      config.Update;
-
-      P92Draw;
-      config.Draw;
-      P92AfterDraw;
-    until done;
-  }
+        if bootConfig.WaitMode = P92WaitBusy then begin
+          while GetTimer < nextTick do ;
+        end else if bootConfig.WaitMode = P92WaitVSync then
+          WaitVSync;
+      until done;
+    end;
+    end;
   end;
 
   if @config.OnCleanup <> nil then
