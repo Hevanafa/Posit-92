@@ -235,6 +235,8 @@ begin
   P92AfterDraw;
 end;
 
+{ Performs the sti/hlt pair loop
+  This is the default for demos and games }
 procedure P92RunHLT;
 var
   now, nextTick: double;
@@ -252,6 +254,21 @@ begin
       sti
       hlt
     end;
+  until done;
+end;
+
+{ Performs the busy-wait loop}
+procedure P92RunBusy;
+var
+  now, nextTick: double;
+begin
+  repeat
+    now := GetTimer;
+    nextTick := now + 1 / bootConfig.TargetFPS;
+
+    P92RunFrame;
+
+    while GetTimer < nextTick do ;
   until done;
 end;
 
@@ -288,16 +305,11 @@ begin
       repeat
         now := GetTimer;
 
-        if bootConfig.WaitMode = P92WaitBusy then
-          nextTick := now + 1 / bootConfig.TargetFPS;
-
         P92RunFrame;
 
         { Wait for the next frame }
 
-        if bootConfig.WaitMode = P92WaitBusy then begin
-          while GetTimer < nextTick do ;
-        end else if bootConfig.WaitMode = P92WaitVSync then
+        if bootConfig.WaitMode = P92WaitVSync then
           WaitVSync;
       until done;
     end;
