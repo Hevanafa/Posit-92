@@ -11,46 +11,46 @@ unit Graphics;
 
 interface
 
-procedure circ(const cx, cy, radius: integer; const colour: byte);
-procedure pascalCirc(const cx, cy, radius: integer; const colour: byte);
-procedure asmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
-procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
+procedure Circ(const cx, cy, radius: integer; const colour: byte);
+procedure PascalCirc(const cx, cy, radius: integer; const colour: byte);
+procedure AsmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
+procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 
-procedure circfill(const cx, cy, radius: integer; const colour: byte);
-procedure pascalCircfill(const cx, cy, radius: integer; const colour: byte);
-procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
+procedure CircFill(const cx, cy, radius: integer; const colour: byte);
+procedure PascalCircFill(const cx, cy, radius: integer; const colour: byte);
+procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 
-procedure circFillDither(const cx, cy, radius: integer; const colour: byte);
+procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
-procedure hline(const x0, x1, y: integer; const colour: byte);
-procedure pascalHline(x0, x1, y: integer; const colour: byte);
-procedure asmHline(const x0, x1, y: integer; const colour: byte);
-procedure asmHline2(const x0, x1, y: integer; const colour: byte);
+procedure HLine(const x0, x1, y: integer; const colour: byte);
+procedure PascalHLine(x0, x1, y: integer; const colour: byte);
+procedure AsmHLine(const x0, x1, y: integer; const colour: byte);
+procedure AsmHLine2(const x0, x1, y: integer; const colour: byte);
 
-procedure vline(const x, y0, y1: integer; const colour: byte);
-procedure pascalVline(x, y0, y1: integer; const colour: byte);
-procedure asmVline(const x, y0, y1: integer; const colour: byte);
-procedure asmVline2(const x, y0, y1: integer; const colour: byte);
+procedure VLine(const x, y0, y1: integer; const colour: byte);
+procedure PascalVLine(x, y0, y1: integer; const colour: byte);
+procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
+procedure AsmVLine2(const x, y0, y1: integer; const colour: byte);
 
-procedure line(const x0, y0, x1, y1: integer; const colour: byte);
-procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
-procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
+procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
+procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 
-procedure rect(x0, y0, x1, y1: integer; const colour: byte);
-procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
-procedure asmRect(const x0, y0, x1, y1: integer; const colour: byte);
+procedure Rect(x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRect(x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRect(const x0, y0, x1, y1: integer; const colour: byte);
 
-procedure rectfill(const x0, y0, x1, y1: integer; const colour: byte);
-procedure pascalRectfill(x0, y0, x1, y1: integer; const colour: byte);
-procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
-procedure asmRectfill2(const x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRectFill(x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectFill2(const x0, y0, x1, y1: integer; const colour: byte);
 
-procedure rectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
-procedure pascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
-procedure asmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
-procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
-procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 
 implementation
@@ -58,12 +58,12 @@ implementation
 uses Maths, P92VGA;
 
 
-procedure circ(const cx, cy, radius: integer; const colour: byte);
+procedure Circ(const cx, cy, radius: integer; const colour: byte);
 begin
-  asmCirc(cx, cy, radius, colour)
+  AsmCirc(cx, cy, radius, colour)
 end;
 
-procedure pascalCirc(const cx, cy, radius: integer; const colour: byte);
+procedure PascalCirc(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -92,7 +92,7 @@ begin
 end;
 
 { Unsafe: No bounds check (faster) }
-procedure asmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
+procedure AsmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -196,7 +196,7 @@ end;
 end;
 
 
-procedure asmCirc(const cxi, cyi, radius: integer; const colour: byte);
+procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -410,12 +410,12 @@ end;
 end;
 
 
-procedure circfill(const cx, cy, radius: integer; const colour: byte);
+procedure CircFill(const cx, cy, radius: integer; const colour: byte);
 begin
-  asmCircfill(cx, cy, radius, colour)
+  AsmCircFill(cx, cy, radius, colour)
 end;
 
-procedure pascalCircfill(const cx, cy, radius: integer; const colour: byte);
+procedure PascalCircFill(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   a: integer;
@@ -445,7 +445,7 @@ begin
   end;
 end;
 
-procedure asmCircfill(const cxi, cyi, radius: integer; const colour: byte);
+procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   startX, endX: word;
@@ -473,7 +473,7 @@ asm
   jge @segment_2
 
 @segment_1:
-  { hline(startX, endX, cyi + y, colour); }
+  { HLine(startX, endX, cyi + y, colour); }
   { Start offset: y * 320 + x }
   mov ax, cyi
   add ax, y
@@ -501,7 +501,7 @@ asm
   cmp ax, 0
   jl @skip
 
-  { hline(startX, endX, cyi - y, colour); }
+  { HLine(startX, endX, cyi - y, colour); }
   { Start offset: y * 320 + x }
   mov ax, cyi
   sub ax, y
@@ -541,7 +541,7 @@ asm
   jge @segment_2
 
 @segment_1:
-  { hline(startX, endX, cyi + x, colour); }
+  { HLine(startX, endX, cyi + x, colour); }
   { Start offset: y * 320 + x }
   mov ax, cyi
   add ax, x
@@ -569,7 +569,7 @@ asm
   cmp ax, 0
   jl @skip
 
-  { hline(startX, endX, cyi - x, colour); }
+  { HLine(startX, endX, cyi - x, colour); }
   { Start offset: y * 320 + x }
   mov ax, cyi
   sub ax, x
@@ -606,7 +606,7 @@ end;
 end;
 
 
-procedure circfillDither(const cx, cy, radius: integer; const colour: byte);
+procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
   a: integer;
@@ -642,17 +642,17 @@ begin
 end;
 
 
-procedure line(const x0, y0, x1, y1: integer; const colour: byte);
+procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
 begin
   if x0 = x1 then
-    vline(x0, y0, y1, colour)
+    VLine(x0, y0, y1, colour)
   else if y0 = y1 then
-    hline(x0, x1, y0, colour)
+    HLine(x0, x1, y0, colour)
   else
-    asmLine(x0, y0, x1, y1, colour);
+    AsmLine(x0, y0, x1, y1, colour);
 end;
 
-procedure pascalLine(x1, y1, x2, y2: integer; const colour: byte);
+procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
 var
   dx, dy, sx, sy, err, e2: integer;
 begin
@@ -682,7 +682,7 @@ begin
   AsmPset(x1, y1, colour)
 end;
 
-procedure asmLine(x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 var
   dxi, dyi, sx, sy, err, e2: integer;
 begin
@@ -793,12 +793,12 @@ end;
 end;
 
 
-procedure hline(const x0, x1, y: integer; const colour: byte);
+procedure HLine(const x0, x1, y: integer; const colour: byte);
 begin
-  asmHline2(x0, x1, y, colour)
+  AsmHLine2(x0, x1, y, colour)
 end;
 
-procedure pascalHline(x0, x1, y: integer; const colour: byte);
+procedure PascalHLine(x0, x1, y: integer; const colour: byte);
 var
   x: integer;
 begin
@@ -810,7 +810,7 @@ begin
     AsmPset(x, y, colour);
 end;
 
-procedure asmHline(const x0, x1, y: integer; const colour: byte); assembler;
+procedure AsmHLine(const x0, x1, y: integer; const colour: byte); assembler;
 var
   x: integer;
 asm
@@ -867,7 +867,7 @@ asm
 end;
 
 
-procedure asmHline2(const x0, x1, y: integer; const colour: byte);
+procedure AsmHLine2(const x0, x1, y: integer; const colour: byte);
 var
   x: integer;
   startX, endX: integer;
@@ -922,12 +922,12 @@ end;
 end;
 
 
-procedure vline(const x, y0, y1: integer; const colour: byte);
+procedure VLine(const x, y0, y1: integer; const colour: byte);
 begin
-  asmVline2(x, y0, y1, colour)
+  AsmVLine2(x, y0, y1, colour)
 end;
 
-procedure pascalVline(x, y0, y1: integer; const colour: byte);
+procedure PascalVLine(x, y0, y1: integer; const colour: byte);
 var
   temp, a: integer;
 begin
@@ -943,7 +943,7 @@ begin
   end;
 end;
 
-procedure asmVline(const x, y0, y1: integer; const colour: byte);
+procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
 var
   yStart, yEnd, y: integer;
 begin
@@ -998,7 +998,7 @@ end;
 
 end;
 
-procedure asmVline2(const x, y0, y1: integer; const colour: byte);
+procedure AsmVLine2(const x, y0, y1: integer; const colour: byte);
 var
   yStart, yEnd, y: integer;
 begin
@@ -1048,12 +1048,12 @@ end;
 end;
 
 
-procedure rect(x0, y0, x1, y1: integer; const colour: byte);
+procedure Rect(x0, y0, x1, y1: integer; const colour: byte);
 begin
-  asmRect(x0, y0, x1, y1, colour)
+  AsmRect(x0, y0, x1, y1, colour)
 end;
 
-procedure pascalRect(x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRect(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -1073,7 +1073,7 @@ begin
   end;
 end;
 
-procedure asmRect(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRect(const x0, y0, x1, y1: integer; const colour: byte);
 var
   xStart, xEnd, yStart, yEnd: integer;
   x, y: integer;
@@ -1349,12 +1349,12 @@ end;
 end;
 
 
-procedure rectfill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
 begin
-  asmRectfill2(x0, y0, x1, y1, colour)
+  AsmRectFill2(x0, y0, x1, y1, colour)
 end;
 
-procedure pascalRectfill(x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRectFill(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -1365,10 +1365,10 @@ begin
     temp := y0; y0 := y1; y1 := temp
   end;
   for b:=y0 to y1 do
-    hline(x0, x1, b, colour);
+    HLine(x0, x1, b, colour);
 end;
 
-procedure asmRectfill(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);
 var
   x, y,
   startX, endX,
@@ -1447,7 +1447,7 @@ end;
 end;
 
 
-procedure asmRectfill2(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectFill2(const x0, y0, x1, y1: integer; const colour: byte);
 var
   x, y,
   startX, endX,
@@ -1524,12 +1524,12 @@ end;
 end;
 
 
-procedure rectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 begin
-  asmRectfillDither(x0, y0, x1, y1, colour)
+  AsmRectfillDither(x0, y0, x1, y1, colour)
 end;
 
-procedure pascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
+procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -1549,7 +1549,7 @@ begin
         surface^[b*320+a] := colour;
 end;
 
-procedure asmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
   x, y, temp: integer;
   startX, endX, startY, endY: integer;
@@ -1630,15 +1630,15 @@ end;
 end;
 
 
-procedure tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 begin
-  line(x0, y0, x1, y1, colour);
-  line(x1, y1, x2, y2, colour);
-  line(x2, y2, x0, y0, colour);
+  Line(x0, y0, x1, y1, colour);
+  Line(x1, y1, x2, y2, colour);
+  Line(x2, y2, x0, y0, colour);
 end;
 
 
-procedure trifill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 const
   FIX_SHIFT = 8;
   FIX_SCALE = 1 shl FIX_SHIFT;
