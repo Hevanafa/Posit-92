@@ -69,7 +69,8 @@ begin
     After row-level opt: 1.0842s, 1.0609s
     After Word bounds check: 0.9086s, 0.9418s
     With AsmPSet call: 0.7352s, 0.7405s
-    With early exits: 0.7821s, 0.7369s, 0.6990s
+    With early exits: 0.7821s, 0.7369s, 0.6990s, 0.7139s
+    With precomputed offset: 0.7583s, 0.7725s
   }
   for a:=1 to 1000 do
     PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);

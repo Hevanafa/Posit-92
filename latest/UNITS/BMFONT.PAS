@@ -203,6 +203,7 @@ var
 
   startRow, endRow, startCol, endCol: integer;
   drawX, drawY: integer;
+  { vgaRowOffset: word; }
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
@@ -242,6 +243,21 @@ begin
         AsmPSet(drawX + col, drawY + row, colour);
     end;
   end;
+
+  { Same as above, but with a precomputed offset }
+  {
+  for row := startRow to endRow do begin
+    rowBase := (g^.y + row) * font.bitmap.width + g^.x;
+    vgaRowOffset := (drawY + row) * VGAWidth + drawX;
+
+    for col := startCol to endCol do begin
+      colour := font.bitmap.data^[rowBase + col];
+
+      if colour <> transparencyKey then
+        AsmPSetOffset(vgaRowOffset + col, colour);
+    end;
+  end;
+  }
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
