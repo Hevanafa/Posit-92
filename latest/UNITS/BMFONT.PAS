@@ -33,6 +33,8 @@ procedure LoadBMFont(var font: TBMFont; const filename: string);
 { This also frees the bitmap handle }
 procedure FreeBMFont(var font: TBMFont);
 
+procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
+
 { Returns xadvance }
 function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
 procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
@@ -174,26 +176,20 @@ end;
 procedure FreeBMFont(var font: TBMFont);
 var
   a, count: word;
+  len: word;
 begin
-  count:=0;
+  len := high(font.glyphs) + 1;
+  fillchar(font.glyphs, sizeof(TBMFontGlyph) * len, 0);
+  font.lineHeight := 0;
 
-  {
-  for a:=low(font^.glyphs) to high(font^.glyphs) do begin
-    if font^.glyphs[a] <> nil then begin
-      writeLog('Freeing glyph ' + i32str(a) + '...');
-
-      dispose(font^.glyphs[a]);
-      font^.glyphs[a] := nil;
-      inc(count)
-    end;
-  end;
-  }
-
-  freeBMP(font.bitmap);
-
-  writeLog('Freed ' + i32str(count) + ' glyphs')
+  FreeBMP(font.bitmap)
 end;
 
+procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
+begin
+  dest := src;
+  CloneBMP(src.bitmap, dest.bitmap);
+end;
 
 function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
 var
