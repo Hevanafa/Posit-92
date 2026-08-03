@@ -303,7 +303,7 @@ begin
           colour := image.data^[pxOffset];
 
           if image.data^[pxOffset] <> transparencyKey then
-            pset(x + col, y + row);
+            pset(x + col, y + row, colour);
         end;
     end;
     else
