@@ -24,7 +24,8 @@ begin
     (VGAWidth - imgTabby.width) div 2,
     (VGAHeight - imgTabby.height) div 2);
 
-  SprFlipped(imgTabby, 144, 172, SprFlipHorizontal);
+  SprFlipped(imgTabby, 144, 128, SprFlipHorizontal);
+  SprFlipped(imgTabby, 176, 128, SprFlipVertical);
 end;
 
 var
