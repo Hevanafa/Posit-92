@@ -46,7 +46,11 @@ begin
 
     { Original: 2.3968s
       After row-level opt: 1.6557s }
-    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipVertical);
+    { SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipVertical); }
+
+    { Original: 2.6996s
+      After row-level opt: 1.9632s }
+    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipBoth);
   end;
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';

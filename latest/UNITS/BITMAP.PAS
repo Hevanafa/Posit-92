@@ -324,20 +324,22 @@ begin
     end;
 
     SprFlipBoth: begin
-      for row := 0 to image.height - 1 do
+      for row := 0 to image.height - 1 do begin
+        pxOffset := srcY * image.width;
+
         for col := 0 to image.width - 1 do begin
           srcX := (image.width - 1) - col;
           srcY := (image.height - 1) - row;
 
-          pxOffset := srcY * image.width + srcX;
-          colour := image.data^[pxOffset];
+          colour := image.data^[pxOffset + srcX];
 
-          if image.data^[pxOffset] <> transparencyKey then
+          if colour <> transparencyKey then
             pset(x + col, y + row, colour);
         end;
+      end;
     end
     else
-      { Not implemented! }
+      { Invalid state! }
   end;
 end;
 
