@@ -58,16 +58,26 @@ begin
   PrintBMFont(font, 'Bottom edge', 10, 192);
 end;
 
+procedure DrawOnce; far;
+begin
+  cls($00);
+
+  PrintBMFont(font, 'Hello world!', 10, 10);
+end;
 
 var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
 
+  appConfig.EnableKeyHandler := false;
+  appConfig.LoadDefaultCursor := false;
+
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
-  @appConfig.Update := @Update;
-  @appConfig.Draw := @Draw;
+  { @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw; }
+  @appConfig.DrawOnce := @DrawOnce;
   @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
