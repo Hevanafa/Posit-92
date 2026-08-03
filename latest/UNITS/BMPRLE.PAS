@@ -7,30 +7,30 @@ interface
 uses P92TEX, Panic;
 
 type
-  PRLEBitmap = ^TRLEBitmap;
-  TRLEBitmap = record
+  PRLETexture = ^TRLETexture;
+  TRLETexture = record
     width, height: word;
     dataSize: word;
     data: PByteArray;
   end;
 
 {
-  Convert from TTexture to TRLEBitmap
-  Currently there's no way to convert a RLE bitmap back to a PBitmap
+  Convert from TTexture to TRLETexture
+  Currently there's no way to convert a RLE bitmap back to a TTexture
 }
-procedure ConvertToRLE(const src: TTexture; var dest: TRLEBitmap);
+procedure ConvertToRLE(const src: TTexture; var dest: TRLETexture);
 
-procedure FreeRLEBitmap(var image: TRLEBitmap);
+procedure FreeRLEBitmap(var image: TRLETexture);
 
-procedure SprRLEOpaque(const image: TRLEBitmap; const x, y: integer);
-procedure SprRLE(const image: TRLEBitmap; const x, y: integer; const transparencyKey: byte);
-procedure UnsafeSprRLE(const image: TRLEBitmap; const x, y: integer);
+procedure SprRLEOpaque(const image: TRLETexture; const x, y: integer);
+procedure SprRLE(const image: TRLETexture; const x, y: integer; const transparencyKey: byte);
+procedure UnsafeSprRLE(const image: TRLETexture; const x, y: integer);
 
 implementation
 
 uses Conv, Logger, P92VGA;
 
-procedure ConvertToRLE(const src: TTexture; var dest: TRLEBitmap);
+procedure ConvertToRLE(const src: TTexture; var dest: TRLETexture);
 var
   a, b, offset: word;
   count, colour: byte;
@@ -127,12 +127,12 @@ begin
   writeLog('Pass 2 writePos: ' + i32str(writePos));
 end;
 
-procedure FreeRLEBitmap(var image: TRLEBitmap);
+procedure FreeRLEBitmap(var image: TRLETexture);
 begin
   Freemem(image.data, image.dataSize);
 end;
 
-procedure SprRLEOpaque(const image: TRLEBitmap; const x, y: integer);
+procedure SprRLEOpaque(const image: TRLETexture; const x, y: integer);
 var
   a: integer;
   left: integer; { similar to top & left coords like in a terminal }
@@ -176,7 +176,7 @@ begin
 end;
 
 
-procedure SprRLE(const image: TRLEBitmap; const x, y: integer; const transparencyKey: byte);
+procedure SprRLE(const image: TRLETexture; const x, y: integer; const transparencyKey: byte);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -222,7 +222,7 @@ begin
 end;
 
 
-procedure UnsafeSprRLE(const image: TRLEBitmap; const x, y: integer);
+procedure UnsafeSprRLE(const image: TRLETexture; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;

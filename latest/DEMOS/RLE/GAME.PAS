@@ -1,11 +1,11 @@
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Logger, P92KBD, P92Mouse, Panic, Timing, P92VGA, BMPRLE;
+  P92Core, P92TEX, Conv, Logger, P92KBD, P92Mouse, Panic, Timing, P92VGA, BMPRLE;
 
 var
   { Asset variables }
   image: TTexture;
-  sampleRLE: TRLEBitmap;
+  sampleRLE: TRLETexture;
   DosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
