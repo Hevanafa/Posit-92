@@ -33,6 +33,11 @@ type
   end;
 
 procedure DefaultBMP(var image: TTexture);
+
+{
+  Loads an indexed bitmap file into a TTexture
+  This requires the bitmap to be an indexed 256 colours
+}
 procedure LoadBMP(var image: TTexture; const filename: string);
 procedure CloneBMP(const src: TTexture; var dest: TTexture);
 procedure FreeBMP(var image: TTexture);
@@ -102,7 +107,8 @@ var
 
 begin
   if Assigned(image.data) then begin
-    WriteLog('LoadBMP: Warning: image has been previously assigned');
+    WriteLog('LoadBMP: Warning: texture has been previously assigned');
+    WriteLog('About to load "' + filename + '"');
     { FreeBMP(image) }
   end;
 
