@@ -196,7 +196,7 @@ end;
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
-  rowOffset: longint;
+  rowOffset, rowBase: longint;
   colour: byte;
   { Avoid copying of the record type }
   g: PBMFontGlyph;
@@ -231,14 +231,16 @@ begin
   if drawY + endRow >= VGAHeight then
     endRow := VGAHeight - 1 - drawY;
 
+  { Begin loop }
   for row := startRow to endRow do begin
     rowOffset := (g^.y + row) * font.bitmap.width;
+    rowBase := rowOffset + g^.x;
 
     for col := startCol to endCol do begin
-      colour := font.bitmap.data^[rowOffset + (g^.x + col)];
+      colour := font.bitmap.data^[rowBase + col];
 
       if colour <> transparencyKey then
-        AsmPSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
+        AsmPSet(drawX + col, drawY + row, colour);
     end;
   end;
 end;
