@@ -1,9 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger,
-  P92KBD, P92Mouse,
-  Timing, P92VGA, Bitmap, Conv, FPS, BMFont;
+  P92Core, Logger, P92KBD, P92Mouse, Graphics, Timing, P92VGA, Bitmap, Conv, FPS, BMFont;
 
 var
   bootTime, t: double;
@@ -59,10 +57,25 @@ begin
 end;
 
 procedure DrawOnce; far;
+var
+  startTick: double;
+  a: Integer;
+  s: string;
 begin
   cls($00);
+  startTick := GetTimer;
 
-  PrintBMFont(font, 'Hello world!', 10, 10);
+  for a:=1 to 1000 do
+    PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
+
+  s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
+
+  RectFill(
+    0,
+    VGAHeight - font.lineHeight * 2,
+    MeasureBMFont(font, s),
+    VGAHeight - font.lineHeight, $00);
+  PrintBMFont(font, s, 0, VGAHeight - font.lineHeight * 2);
 end;
 
 var
