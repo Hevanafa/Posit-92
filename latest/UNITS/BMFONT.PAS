@@ -196,7 +196,7 @@ end;
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
-  rowOffset, rowBase: longint;
+  rowBase: longint;
   colour: byte;
   { Avoid copying of the record type }
   g: PBMFontGlyph;
@@ -233,8 +233,7 @@ begin
 
   { Begin loop }
   for row := startRow to endRow do begin
-    rowOffset := (g^.y + row) * font.bitmap.width;
-    rowBase := rowOffset + g^.x;
+    rowBase := (g^.y + row) * font.bitmap.width + g^.x;
 
     for col := startCol to endCol do begin
       colour := font.bitmap.data^[rowBase + col];
