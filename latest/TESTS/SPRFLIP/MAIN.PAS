@@ -40,7 +40,8 @@ begin
   startTick := GetTimer;
 
   for a:=1 to 1000 do begin
-    { 2.3945s }
+    { Original: 2.3945s
+      After row-level opt: 1.6550s }
     SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal);
   end;
 

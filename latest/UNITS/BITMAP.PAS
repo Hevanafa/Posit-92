@@ -296,16 +296,17 @@ var
 begin
   case flip of
     SprFlipHorizontal: begin
-      { TODO: Optimise row-level offset retrieval }
-      for row := 0 to image.height - 1 do
+      for row := 0 to image.height - 1 do begin
+        pxOffset := row * image.width;
+
         for col := 0 to image.width - 1 do begin
           srcX := (image.width - 1) - col;
-          pxOffset := row * image.width + srcX;
-          colour := image.data^[pxOffset];
+          colour := image.data^[pxOffset + srcX];
 
-          if image.data^[pxOffset] <> transparencyKey then
+          if colour <> transparencyKey then
             pset(x + col, y + row, colour);
         end;
+      end;
     end;
     SprFlipVertical: begin
       { TODO: Optimise row-level offset retrieval }
