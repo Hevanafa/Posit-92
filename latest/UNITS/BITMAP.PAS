@@ -33,6 +33,10 @@ procedure SprOpaque(const image: TBitmap);
 procedure Spr(const image: TBitmap; const x, y: integer);
 procedure PascalSpr(const image: TBitmap; const x, y: integer);
 
+{ Handle the edge cases
+  Hot spot with inline ASM }
+procedure AsmSpr(const image: TBitmap; const x, y: integer);
+
 { Blit directly to the VGA memory }
 procedure VGASpr(const image: TBitmap; const x, y: integer);
 
@@ -172,6 +176,23 @@ begin
 end;
 
 procedure PascalSpr(const image: TBitmap; const x, y: integer);
+var
+  srcX, srcY: integer;
+  rowOffset, pxOffset: longint;
+begin
+  for srcY := 0 to image.height - 1 do begin
+    rowOffset := srcY * image.width;
+
+    for srcX := 0 to image.width - 1 do begin
+      pxOffset := rowOffset + srcX;
+
+      if image.data^[pxOffset] <> transparencyKey then
+        AsmPSet(x+srcX, y+srcY, image.data^[pxOffset]);
+    end;
+  end;
+end;
+
+procedure AsmSpr(const image: TBitmap; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
