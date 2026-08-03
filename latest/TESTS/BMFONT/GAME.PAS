@@ -1,3 +1,11 @@
+{
+  BMFont test programme
+  Part of Posit-92 game engine
+
+  The tests here use DOSBox-X with fixed 20000 cycles/s, so that
+  the tests have the same amount of cycles
+}
+
 uses
   CRT, DOS,
   P92Core, Logger, P92KBD, P92Mouse, Graphics, Timing, P92VGA, Bitmap, Conv, FPS, BMFont;
