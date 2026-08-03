@@ -40,6 +40,7 @@ procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: inte
 
 procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
 
+{ Improved version of Spr with partial sprite drawing }
 procedure SprRegion(
   const image: TBitmap;
   const srcX, srcY, srcW, srcH: integer;
@@ -164,7 +165,7 @@ end;
 procedure PascalSpr(const image: TBitmap; const x, y: integer);
 var
   srcX, srcY: integer;
-  rowOffset, pxOffset: word;
+  rowOffset, pxOffset: longint;
 begin
   for srcY := 0 to image.height - 1 do begin
     rowOffset := srcY * image.width;
@@ -181,7 +182,7 @@ end;
 procedure VGASpr(const image: TBitmap; const x, y: integer);
 var
   a, b, pos: integer;
-  rowOffset: word;
+  rowOffset: longint;
 begin
   for b := 0 to image.height - 1 do begin
     if y + b >= DefaultVGAHeight then break;
@@ -205,7 +206,7 @@ procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: inte
 var
   srcX, srcY, c, d: integer;
   destX, destY: integer; { top left corner of the scaled pixel }
-  rowOffset, pxOffset: word;
+  rowOffset, pxOffset: longint;
 begin
   if scale = 0 then exit;
   if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
@@ -252,7 +253,7 @@ end;
 procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
 var
   a, b: integer;
-  rowOffset, pxOffset: word;
+  rowOffset, pxOffset: longint;
 begin
   for b := 0 to image.height - 1 do begin
     rowOffset := b * image.width;
@@ -266,14 +267,13 @@ begin
   end;
 end;
 
-{ Improved version of PascalSpr with partial sprite drawing }
 procedure SprRegion(
   const image: TBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
   a, b: integer;
-  rowOffset, pxOffset: word;
+  rowOffset, pxOffset: longint;
 begin
   for b := 0 to srcH - 1 do begin
     rowOffset := (srcY + b) * image.width;
