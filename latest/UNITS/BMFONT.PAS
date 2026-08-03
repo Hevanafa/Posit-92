@@ -35,8 +35,15 @@ procedure FreeBMFont(var font: TBMFont);
 
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 
-{ Returns xadvance }
+{ returns: xadvance }
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
+
+{ Optimised variant of PrintBMFontGlyph
+  Uses inline asm for the inner loop
+  See PrintBMFontGlyph for reference
+
+  returns: xadvance }
+function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 
 function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
@@ -193,6 +200,7 @@ begin
   CloneBMP(src.bitmap, dest.bitmap);
 end;
 
+
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
@@ -203,15 +211,9 @@ var
 
   startRow, endRow, startCol, endCol: integer;
   drawX, drawY: integer;
-  { vgaRowOffset: word; }
-
-  screenX, screenY: integer;
-  colCount: word;
-  pixelData: pointer;
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
-  pixelData := font.bitmap.data;
 
   { Edge case: Handle space }
   if (g^.width = 0) and (g^.height = 0) then exit;
@@ -238,7 +240,6 @@ begin
     endRow := VGAHeight - 1 - drawY;
 
   { Begin loop }
-  {
   for row := startRow to endRow do begin
     rowBase := (g^.y + row) * font.bitmap.width + g^.x;
 
@@ -249,62 +250,92 @@ begin
         AsmPSet(drawX + col, drawY + row, colour);
     end;
   end;
-  }
+end;
 
-  { Same as above, but with a precomputed offset }
-  {
+function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
+var
+  row, col: integer;
+  rowBase: word;
+  colour: byte;
+  { Avoid copying of the record type }
+  g: PBMFontGlyph;
+
+  startRow, endRow, startCol, endCol: integer;
+  drawX, drawY: integer;
+
+  { Used by inline assembly }
+  screenX, screenY: integer;
+  colCount: word;
+  pixelData: pointer;
+begin
+  g := @(font.glyphs[ord(ch)]);
+  PrintBMFontGlyphFast := g^.xadvance;
+  pixelData := font.bitmap.data;
+
+  { Edge case: Handle space }
+  if (g^.width = 0) and (g^.height = 0) then exit;
+
+  drawX := x + g^.xoffset;
+  drawY := y + g^.yoffset;
+
+  { Handle early exit }
+  if (drawX >= VGAWidth) or (drawY >= VGAHeight) then exit;
+  if (drawX + g^.width <= 0) or (drawY + g^.height <= 0) then exit;
+
+  { Clip to visible region }
+  startCol := 0;
+  endCol := g^.width - 1;
+  startRow := 0;
+  endRow := g^.height - 1;
+
+  if drawX < 0 then startCol := -drawX;
+  if drawX + endCol >= VGAWidth then
+    endCol := VGAWidth - 1 - drawX;
+
+  if drawY < 0 then startRow := -drawY;
+  if drawY + endRow >= VGAHeight then
+    endRow := VGAHeight - 1 - drawY;
+
+  { Begin loop - See PrintBMFontGlyph for reference }
   for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.bitmap.width + g^.x;
-    vgaRowOffset := (drawY + row) * VGAWidth + drawX;
+    rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
+    screenY := drawY + row;
+    screenX := drawX + startCol;
+    colCount := endCol - startCol + 1;
 
-    for col := startCol to endCol do begin
-      colour := font.bitmap.data^[rowBase + col];
+    asm
+      { Load ES:DI with surface + screen offset }
+      les di, surface
+      mov ax, screenY
+      mov bx, VGAWidth
+      mul bx
+      add ax, screenX
+      add di, ax
 
-      if colour <> transparencyKey then
-        AsmPSetOffset(vgaRowOffset + col, colour);
+      { Load the transparency key to DH (just because it's a spare register) }
+      mov dh, transparencyKey
+
+      { Load DS:SI with bitmap data + rowBase }
+      push ds
+      lds si, pixelData
+      mov bx, rowBase
+      add si, bx
+
+      mov cx, colCount
+
+    @col_loop:
+      lodsb
+      cmp al, dh
+      je @skip
+      mov es:[di], al
+
+    @skip:
+      inc di
+      loop @col_loop
+
+      pop ds
     end;
   end;
-  }
-
-for row := startRow to endRow do begin
-  rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
-  screenY := drawY + row;
-  screenX := drawX + startCol;
-  colCount := endCol - startCol + 1;
-
-  asm
-    { Load ES:DI with surface + screen offset }
-    les di, surface
-    mov ax, screenY
-    mov bx, VGAWidth
-    mul bx
-    add ax, screenX
-    add di, ax
-
-    { Load the transparency key to DH (just because it's a spare register) }
-    mov dh, transparencyKey
-
-    { Load DS:SI with bitmap data + rowBase }
-    push ds
-    lds si, pixelData
-    mov bx, rowBase
-    add si, bx
-
-    mov cx, colCount
-
-  @col_loop:
-    lodsb
-    cmp al, dh
-    je @skip
-    mov es:[di], al
-
-  @skip:
-    inc di
-    loop @col_loop
-
-    pop ds
-  end;
-end;
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
@@ -315,7 +346,7 @@ begin
   xOffset := 0;
 
   for a:=1 to length(text) do
-    inc(xOffset, PrintBMFontGlyph(font, text[a], x + xOffset, y));
+    inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y));
 end;
 
 
