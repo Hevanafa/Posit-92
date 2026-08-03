@@ -1,3 +1,10 @@
+{
+  SprFlipped tests
+  Part of Posit-92 game engine
+
+  All the tests here are using DOSBox-X, 20000 cycles per second
+}
+
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 uses
