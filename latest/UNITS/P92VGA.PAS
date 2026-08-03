@@ -158,7 +158,7 @@ var
   mask: byte;
 begin
   for idx := 1 to length(text) do begin
-    if (idx < 0) or (idx > 127) then continue;
+    if (idx < 0) or (idx > high(byte)) then continue;
 
     for row := 0 to 7 do begin
       mask := font8x8[ord(text[idx]), row];
