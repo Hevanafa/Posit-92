@@ -36,9 +36,11 @@ procedure FreeBMFont(var font: TBMFont);
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 
 { Returns xadvance }
-function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
-procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
-procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
+function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
+procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
+
+function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
+procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const tint: byte);
 
 { Returns accumulated xadvance }
 function MeasureBMFont(const font: TBMFont; const text: string): integer;
@@ -191,7 +193,7 @@ begin
   CloneBMP(src.bitmap, dest.bitmap);
 end;
 
-function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
+function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
   rowOffset: longint;
@@ -199,7 +201,7 @@ var
   { Avoid copying of the record type }
   g: PBMFontGlyph;
 begin
-  g := @(font.glyphs[ord(c)]);
+  g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
 
   { Bounds check }
@@ -218,7 +220,7 @@ begin
   end;
 end;
 
-procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
+procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 var
   a: integer;
   xOffset: integer;
@@ -229,36 +231,39 @@ begin
     inc(xOffset, PrintBMFontGlyph(font, text[a], x + xOffset, y));
 end;
 
-procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
+
+function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
 var
-  a: word;
   row, col: integer;
-  { relative from x }
-  xOffset: integer;
-  ch: char;
   g: PBMFontGlyph;
   srcY: integer;
   colour: byte;
 begin
+  g := @(font.glyphs[ord(ch)]);
+  PrintBMFontGlyphTint := g^.xadvance;
+
+  for row := 0 to g^.height - 1 do begin
+    srcY := g^.y + row;
+
+    for col := 0 to g^.width - 1 do begin
+      colour := font.bitmap.data^[srcY * font.bitmap.width + (g^.x + col)];
+
+      if colour <> transparencyKey then
+        AsmPSet(x + g^.xoffset + col, y + g^.yoffset + row, tint);
+    end;
+  end;
+end;
+
+procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const tint: byte);
+var
+  a: word;
+  { relative from x }
+  xOffset: integer;
+begin
   xOffset := 0;
 
-  for a:=1 to length(text) do begin
-    ch := text[a];
-    g := @(font.glyphs[ord(ch)]);
-
-    for row := 0 to g^.height - 1 do begin
-      srcY := g^.y + row;
-
-      for col := 0 to g^.width - 1 do begin
-        colour := font.bitmap.data^[srcY * font.bitmap.width + (g^.x + col)];
-
-        if colour <> transparencyKey then
-          AsmPSet(x + xOffset + g^.xoffset + col, y + g^.yoffset + row, tint);
-      end;
-    end;
-
-    inc(xOffset, g^.xadvance)
-  end;
+  for a:=1 to length(text) do
+    inc(xOffset, PrintBMFontGlyphTint(font, text[a], x + xOffset, y, tint));
 end;
 
 
