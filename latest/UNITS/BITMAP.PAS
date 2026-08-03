@@ -308,17 +308,19 @@ begin
         end;
       end;
     end;
+
     SprFlipVertical: begin
-      { TODO: Optimise row-level offset retrieval }
-      for row := 0 to image.height - 1 do
+      for row := 0 to image.height - 1 do begin
+        pxOffset := srcY * image.width;
+
         for col := 0 to image.width - 1 do begin
           srcY := (image.height - 1) - row;
-          pxOffset := srcY * image.width + col;
-          colour := image.data^[pxOffset];
+          colour := image.data^[pxOffset + col];
 
-          if image.data^[pxOffset] <> transparencyKey then
+          if colour <> transparencyKey then
             pset(x + col, y + row, colour);
         end;
+      end;
     end;
 
     SprFlipBoth: begin

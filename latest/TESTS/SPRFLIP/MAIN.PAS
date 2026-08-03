@@ -42,7 +42,11 @@ begin
   for a:=1 to 1000 do begin
     { Original: 2.3945s
       After row-level opt: 1.6550s }
-    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal);
+    { SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal); }
+
+    { Original: 2.3968s
+      After row-level opt: 1.6557s }
+    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipVertical);
   end;
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
