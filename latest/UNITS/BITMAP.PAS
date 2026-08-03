@@ -260,9 +260,8 @@ begin
     asm
       push ds
 
-      mov ax, $A000
-      mov es, ax
-      mov di, destOffset
+      les di, surface
+      add di, destOffset
 
       { Load DH with transparencyKey }
       mov dh, transparencyKey
