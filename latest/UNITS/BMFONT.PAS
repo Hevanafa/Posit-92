@@ -207,7 +207,8 @@ begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
 
-  { TODO: Handle space }
+  { Edge case: Handle space }
+  if (g^.width = 0) and (g^.height = 0) then exit;
 
   drawX := x + g^.xoffset;
   drawY := y + g^.yoffset;
