@@ -237,30 +237,33 @@ end;
 
 procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
 var
-  a, row, col, dx, dy: integer;
-  c: char;
+  a: word;
+  row, col: integer;
+  { relative from x }
+  xOffset: integer;
+  ch: char;
   g: PBMFontGlyph;
-  srcX, srcY: word;
+  srcY: integer;
   colour: byte;
 begin
-  dx := x;
+  xOffset := 0;
 
   for a:=1 to length(text) do begin
-    c := text[a];
-    g := @(font.glyphs[ord(c)]);
+    ch := text[a];
+    g := @(font.glyphs[ord(ch)]);
 
     for row := 0 to g^.height - 1 do begin
+      srcY := g^.y + row;
+
       for col := 0 to g^.width - 1 do begin
-        srcX := g^.x + col;
-        srcY := g^.y + row;
-        colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
+        colour := font.bitmap.data^[srcY * font.bitmap.width + (g^.x + col)];
 
         if colour <> transparencyKey then
-          AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, tint);
+          AsmPSet(x + xOffset + g^.xoffset + col, y + g^.yoffset + row, tint);
       end;
     end;
 
-    inc(dx, g^.xadvance)
+    inc(xOffset, g^.xadvance)
   end;
 end;
 
