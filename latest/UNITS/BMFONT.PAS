@@ -242,6 +242,10 @@ begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyphTint := g^.xadvance;
 
+  { Bounds check }
+  if word(x + g^.width) >= VGAWidth then exit;
+  if word(y + g^.height) >= VGAHeight then exit;
+
   for row := 0 to g^.height - 1 do begin
     srcY := g^.y + row;
 
