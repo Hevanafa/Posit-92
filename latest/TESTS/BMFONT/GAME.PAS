@@ -1,4 +1,3 @@
-
 uses
   CRT, DOS,
   P92Core, Logger, P92KBD, P92Mouse, Graphics, Timing, P92VGA, Bitmap, Conv, FPS, BMFont;
@@ -66,6 +65,9 @@ begin
   startTick := GetTimer;
 
   for a:=1 to 1000 do
+    { 1.4003s, 1.4025s
+      After row-level opt: 1.0842s
+    }
     PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
@@ -83,14 +85,18 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
-  appConfig.EnableKeyHandler := false;
   appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
-  { @appConfig.Update := @Update;
-  @appConfig.Draw := @Draw; }
+
+  { Use either Update + Draw, or DrawOnce }
+  {
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  }
   @appConfig.DrawOnce := @DrawOnce;
+
   @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)

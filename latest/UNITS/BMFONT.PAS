@@ -198,7 +198,8 @@ end;
 function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
 var
   row, col: integer;
-  srcX, srcY: integer;
+  rowOffset: longint;
+  srcX: integer;
   colour: byte;
   { Avoid copying of the record type }
   g: PBMFontGlyph;
@@ -207,10 +208,11 @@ begin
   PrintBMFontGlyph := g^.xadvance;
 
   for row := 0 to g^.height - 1 do begin
+    rowOffset := (g^.y + row) * font.bitmap.width;
+
     for col := 0 to g^.width - 1 do begin
       srcX := g^.x + col;
-      srcY := g^.y + row;
-      colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
+      colour := font.bitmap.data^[rowOffset + srcX];
 
       if colour <> transparencyKey then
         PSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
