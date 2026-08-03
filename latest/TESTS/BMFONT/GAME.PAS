@@ -66,7 +66,7 @@ begin
 
   for a:=1 to 1000 do
     { 1.4003s, 1.4025s
-      After row-level opt: 1.0842s
+      After row-level opt: 1.0842s, 1.0609s
     }
     PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
