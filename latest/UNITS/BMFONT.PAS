@@ -38,12 +38,22 @@ procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 { returns: xadvance }
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 
-{ Optimised variant of PrintBMFontGlyph
+{
+  Optimised variant of PrintBMFontGlyph
   Uses inline asm for the inner loop
   See PrintBMFontGlyph for reference
 
-  returns: xadvance }
+  This function is limited by ASM's 64k number limit when
+  accessing `font.bitmap.data`.  So the font's bitmap
+  can't be more than 65535 bytes
+
+  returns: xadvance
+}
 function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
+
+{
+  Forwards glyph calls to PrintBMFontGlyphFast
+}
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 
 function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
