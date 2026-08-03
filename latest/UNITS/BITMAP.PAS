@@ -1,3 +1,15 @@
+{
+  Bitmap / Software texture unit
+  Part of Posit-92 game engine
+
+  The key drawing procedures are:
+  - Spr
+  - SprRegion
+  - SprFlipped
+
+  The rest will be left unoptimised
+}
+
 unit Bitmap;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
@@ -29,12 +41,18 @@ procedure DrawBitmapInfo(const image: TBitmap);
 
 procedure SprOpaque(const image: TBitmap);
 
-{ Forwards call to PascalSpr }
+{ Forwards call to AsmSpr
+  Note that the max image size is 64KB
+
+  Any images bigger than that, use PascalSpr }
 procedure Spr(const image: TBitmap; const x, y: integer);
+
 procedure PascalSpr(const image: TBitmap; const x, y: integer);
 
 { Handle the edge cases
-  Hot spot with inline ASM }
+  Hot spot with inline ASM
+
+  The maximum image data size is 64KB }
 procedure AsmSpr(const image: TBitmap; const x, y: integer);
 
 { Blit directly to the VGA memory }
@@ -172,7 +190,7 @@ end;
 
 procedure Spr(const image: TBitmap; const x, y: integer);
 begin
-  PascalSpr(image, x, y)
+  AsmSpr(image, x, y)
 end;
 
 procedure PascalSpr(const image: TBitmap; const x, y: integer);
