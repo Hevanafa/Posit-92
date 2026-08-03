@@ -204,7 +204,7 @@ begin
   FlipModeXPage;
 {$else}
   if bootConfig.EnableDefaultPresent then
-    Flush;
+    PresentMode13h;
 {$endif}
 
   if bootConfig.LoadDefaultCursor then
@@ -303,7 +303,7 @@ begin
   if @config.DrawOnce <> nil then begin
     config.DrawOnce;
     Print('Press Enter to exit', 0, DefaultVGAHeight - 8, $0F);
-    Flush;
+    PresentMode13h;
     ResetKeyHandler;
     ReadLn;
   end else begin

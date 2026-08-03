@@ -51,12 +51,12 @@ procedure AsmPSetOffset(const bufOffset: Word; const colour: byte);
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
 { Forwards call to AsmFlush }
-procedure Flush;
-procedure PascalFlush;
-procedure AsmFlush;
+procedure PresentMode13h;
+procedure PascalPresentMode13h;
+procedure AsmPresentMode13h;
 
 { Only applicable to the 400 scanlines mode }
-procedure DoubleFlush;
+procedure PresentModeX;
 
 
 implementation
@@ -306,14 +306,14 @@ mov al, colour
 mov es:[di+bx], al
 end;
 
-procedure Flush;
+procedure PresentMode13h;
 begin
-  { PascalFlush }
-  AsmFlush
+  { PascalPresentMode13h }
+  AsmPresentMode13h
 end;
 
 
-procedure PascalFlush;
+procedure PascalPresentMode13h;
 var
   y, srcOffset, destOffset: word;
 begin
@@ -340,7 +340,7 @@ end;
   rep movsw: fast string move; copies 2 bytes per iteration
   push/pop: preserves segment registers to avoid corruption
 }
-procedure AsmFlush;
+procedure AsmPresentMode13h;
 var
   y, halfWidth: word;
   srcOffset, destOffset: word;
@@ -366,7 +366,7 @@ end;
   exit
   end;
 
-  { Flush per scanline }
+  { PresentMode13h per scanline }
   w := VGAWidth;
   defaultW := DefaultVGAWidth;
   h := VGAHeight;
@@ -421,7 +421,7 @@ end;
 end;
 
 
-procedure DoubleFlush;
+procedure PresentModeX;
 var
   y, offset, screenOffset: longint;
 begin
