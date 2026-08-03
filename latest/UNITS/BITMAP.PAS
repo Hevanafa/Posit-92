@@ -196,7 +196,23 @@ procedure AsmSpr(const image: TBitmap; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
+
+  startY, endY: integer;
+  clipLeft, clipRight: integer;
 begin
+  { Early exits }
+  if (x >= VGAWidth) or (y >= VGAHeight) then exit;
+  if (x + image.width <= 0) or (y + image.height <= 0) then exit;
+
+  { Vertical clipping }
+  startY := 0;
+  endY := image.height - 1;
+
+  if y < 0 then startY := -y;
+  if y + endY >= VGAHeight then endY := VGAHeight - 1 - y;
+
+  { TODO: Handle horizontal clipping }
+
   for srcY := 0 to image.height - 1 do begin
     rowOffset := srcY * image.width;
 
