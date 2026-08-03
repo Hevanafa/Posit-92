@@ -228,6 +228,7 @@ var
   drawCount: word;
 
   pixelData: pointer;
+  srcAdd: word;
 begin
   { Early exits }
   if (x >= VGAWidth) or (y >= VGAHeight) then exit;
@@ -252,12 +253,9 @@ begin
   { Begin loop }
 
   for srcY := startY to endY do begin
-    rowOffset := srcY * image.width;
-
-    srcSegment := seg(image.data^);
-    srcOffset := ofs(image.data^) + word(srcY) * image.width + startX;
     destOffset := word(y + srcY) * VGAWidth + word(x + startX);
     drawCount := endX - startX + 1;
+    srcAdd := word(srcY) * image.width + startX;
 
     asm
       push ds
@@ -269,8 +267,9 @@ begin
       { Load DH with transparencyKey }
       mov dh, transparencyKey
 
-      { TODO: Actually add the row offset }
+      { Load DS:SI with the source image's data }
       lds si, pixelData
+      add si, srcAdd
       mov cx, drawCount
       mov ah, dh
 

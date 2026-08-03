@@ -52,7 +52,7 @@ begin
   { Original: 1.4057s, 1.4158s
     With clipping: 0.8373s }
   for a:=0 to 1000 do
-    Spr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
+    AsmSpr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
 
   s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
