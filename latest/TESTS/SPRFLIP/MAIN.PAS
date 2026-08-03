@@ -1,7 +1,7 @@
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 uses
-  P92Core, Bitmap, P92VGA;
+  P92Core, Bitmap, Conv, Graphics, Timing, P92VGA;
 
 var
   imgTabby: TBitmap;
@@ -17,7 +17,13 @@ begin
 end;
 
 procedure DrawOnce; far;
+var
+  startTick: double;
+  a: integer;
+  s: string;
 begin
+{ Singular sprites }
+{
   cls($7D);
 
   spr(imgTabby,
@@ -27,6 +33,20 @@ begin
   SprFlipped(imgTabby, 144, 128, SprFlipHorizontal);
   SprFlipped(imgTabby, 176, 128, SprFlipVertical);
   SprFlipped(imgTabby, 208, 128, SprFlipBoth);
+}
+
+  { Benchmark }
+  cls($00);
+  startTick := GetTimer;
+
+  for a:=1 to 1000 do begin
+    { 2.3945s }
+    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal);
+  end;
+
+  s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
+  rectfill(0, VGAHeight - 16, Length(s) * 8 - 1, VGAHeight - 9, 0);
+  Print(s, 0, VGAHeight - 16, $0F)
 end;
 
 var
