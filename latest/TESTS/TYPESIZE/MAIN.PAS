@@ -7,7 +7,7 @@ begin
   writeln('Size of TBMFontGlyph:', SizeOf(TBMFontGlyph));
   writeln('Size of TBMFont:', SizeOf(TBMFont));
 
-  writeln('Size of TBitmap:', sizeof(TBitmap));
+  writeln('Size of TTexture:', sizeof(TTexture));
 
   readln
 end.

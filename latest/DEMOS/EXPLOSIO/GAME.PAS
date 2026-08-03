@@ -15,7 +15,7 @@ type
 
 var
   { Asset variables }
-  imgExplosion: TBitmap;
+  imgExplosion: TTexture;
 
   { Game state variables }
   nextGameTick: double;

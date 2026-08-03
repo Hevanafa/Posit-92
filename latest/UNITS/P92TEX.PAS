@@ -26,49 +26,49 @@ type
   PByteArray = ^TByteArray;
   TByteArray = array[0..0] of byte;
 
-  PBitmap = ^TBitmap;
-  TBitmap = record
+  PTexture = ^TTexture;
+  TTexture = record
     width, height: word; { palsize }
     data: PByteArray;
   end;
 
-procedure DefaultBMP(var image: TBitmap);
-procedure LoadBMP(var image: TBitmap; const filename: string);
-procedure CloneBMP(const src: TBitmap; var dest: TBitmap);
-procedure FreeBMP(var image: TBitmap);
+procedure DefaultBMP(var image: TTexture);
+procedure LoadBMP(var image: TTexture; const filename: string);
+procedure CloneBMP(const src: TTexture; var dest: TTexture);
+procedure FreeBMP(var image: TTexture);
 
-procedure DrawBitmapInfo(const image: TBitmap);
+procedure DrawBitmapInfo(const image: TTexture);
 
-procedure SprOpaque(const image: TBitmap);
+procedure SprOpaque(const image: TTexture);
 
 { Forwards call to AsmSpr
   Note that the max image size is 64KB
 
   Any images bigger than that, use PascalSpr }
-procedure Spr(const image: TBitmap; const x, y: integer);
+procedure Spr(const image: TTexture; const x, y: integer);
 
-procedure PascalSpr(const image: TBitmap; const x, y: integer);
+procedure PascalSpr(const image: TTexture; const x, y: integer);
 
 { Handle the edge cases
   Hot spot with inline ASM
 
   The maximum image data size is 64KB }
-procedure AsmSpr(const image: TBitmap; const x, y: integer);
+procedure AsmSpr(const image: TTexture; const x, y: integer);
 
 { Blit directly to the VGA memory }
-procedure VGASpr(const image: TBitmap; const x, y: integer);
+procedure VGASpr(const image: TTexture; const x, y: integer);
 
-procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: integer);
+procedure SprScaled(const image: TTexture; const x, y: integer; const scale: integer);
 
-procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
+procedure SprTint(const image: TTexture; const x, y: integer; const tint: byte);
 
 { Improved version of Spr with partial sprite drawing }
 procedure SprRegion(
-  const image: TBitmap;
+  const image: TTexture;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 
-procedure SprFlipped(const image: TBitmap; const x, y: integer; const flip: integer);
+procedure SprFlipped(const image: TTexture; const x, y: integer; const flip: integer);
 
 
 implementation
@@ -83,14 +83,14 @@ begin
   transparencyKey := value
 end;
 
-procedure DefaultBMP(var image: TBitmap);
+procedure DefaultBMP(var image: TTexture);
 begin
   image.width := 0;
   image.height := 0;
   image.data := nil;
 end;
 
-procedure LoadBMP(var image: TBitmap; const filename: string);
+procedure LoadBMP(var image: TTexture; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -154,28 +154,28 @@ begin
   close(f)
 end;
 
-procedure CloneBMP(const src: TBitmap; var dest: TBitmap);
+procedure CloneBMP(const src: TTexture; var dest: TTexture);
 begin
   dest := src;
   { dest.data := nil; }
   move(src.data, dest.data, src.width * src.height)
 end;
 
-procedure FreeBMP(var image: TBitmap);
+procedure FreeBMP(var image: TTexture);
 begin
   FreeMem(image.data, image.width * image.height);
   image.width := 0;
   image.height := 0
 end;
 
-procedure DrawBitmapInfo(const image: TBitmap);
+procedure DrawBitmapInfo(const image: TTexture);
 begin
   print('Width: ' + I32Str(image.width), 10, 168, 15);
   print('Height: ' + I32Str(image.height), 10, 176, 15);
   { print('Palette: ' + I32Str(image^.palsize) + ' colours', 10, 184, 15) }
 end;
 
-procedure SprOpaque(const image: TBitmap);
+procedure SprOpaque(const image: TTexture);
 var
   a, b: integer;
   rowOffset: word;
@@ -188,12 +188,12 @@ begin
   end;
 end;
 
-procedure Spr(const image: TBitmap; const x, y: integer);
+procedure Spr(const image: TTexture; const x, y: integer);
 begin
   AsmSpr(image, x, y)
 end;
 
-procedure PascalSpr(const image: TBitmap; const x, y: integer);
+procedure PascalSpr(const image: TTexture; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
@@ -233,7 +233,7 @@ begin
   end;
 end;
 
-procedure AsmSpr(const image: TBitmap; const x, y: integer);
+procedure AsmSpr(const image: TTexture; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
@@ -306,7 +306,7 @@ begin
 end;
 
 
-procedure VGASpr(const image: TBitmap; const x, y: integer);
+procedure VGASpr(const image: TTexture; const x, y: integer);
 var
   a, b, pos: integer;
   rowOffset: longint;
@@ -329,7 +329,7 @@ begin
   end;
 end;
 
-procedure SprScaled(const image: TBitmap; const x, y: integer; const scale: integer);
+procedure SprScaled(const image: TTexture; const x, y: integer; const scale: integer);
 var
   srcX, srcY, c, d: integer;
   destX, destY: integer; { top left corner of the scaled pixel }
@@ -377,7 +377,7 @@ begin
 end;
 
 
-procedure SprTint(const image: TBitmap; const x, y: integer; const tint: byte);
+procedure SprTint(const image: TTexture; const x, y: integer; const tint: byte);
 var
   a, b: integer;
   rowOffset, pxOffset: longint;
@@ -395,7 +395,7 @@ begin
 end;
 
 procedure SprRegion(
-  const image: TBitmap;
+  const image: TTexture;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
@@ -414,7 +414,7 @@ begin
   end;
 end;
 
-procedure SprFlipped(const image: TBitmap; const x, y: integer; const flip: integer);
+procedure SprFlipped(const image: TTexture; const x, y: integer; const flip: integer);
 var
   row, col: integer;
   srcX, srcY: integer;

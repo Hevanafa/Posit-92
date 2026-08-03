@@ -9,7 +9,7 @@ uses
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TBitmap;
+  DosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   lights: array[0..3] of boolean;

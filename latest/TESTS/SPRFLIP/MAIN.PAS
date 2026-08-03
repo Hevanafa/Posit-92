@@ -11,7 +11,7 @@ uses
   P92Core, P92TEX, Conv, Graphics, Timing, P92VGA;
 
 var
-  imgTabby: TBitmap;
+  imgTabby: TTexture;
 
 procedure OnPreload; far;
 begin

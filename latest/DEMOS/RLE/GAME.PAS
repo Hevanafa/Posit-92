@@ -4,9 +4,9 @@ uses
 
 var
   { Asset variables }
-  image: TBitmap;
+  image: TTexture;
   sampleRLE: TRLEBitmap;
-  DosuEXE: array[0..1] of TBitmap;
+  DosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;

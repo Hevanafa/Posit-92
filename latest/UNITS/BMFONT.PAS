@@ -23,7 +23,7 @@ type
   TBMFont = record
     glyphs: array[0..255] of TBMFontGlyph;
     lineHeight: word;
-    bitmap: TBitmap;
+    bitmap: TTexture;
   end;
 
 procedure DefaultBMFont(var font: TBMFont);

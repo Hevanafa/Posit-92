@@ -15,10 +15,10 @@ type
   end;
 
 {
-  Convert from TBitmap to TRLEBitmap
+  Convert from TTexture to TRLEBitmap
   Currently there's no way to convert a RLE bitmap back to a PBitmap
 }
-procedure ConvertToRLE(const src: TBitmap; var dest: TRLEBitmap);
+procedure ConvertToRLE(const src: TTexture; var dest: TRLEBitmap);
 
 procedure FreeRLEBitmap(var image: TRLEBitmap);
 
@@ -30,7 +30,7 @@ implementation
 
 uses Conv, Logger, P92VGA;
 
-procedure ConvertToRLE(const src: TBitmap; var dest: TRLEBitmap);
+procedure ConvertToRLE(const src: TTexture; var dest: TRLEBitmap);
 var
   a, b, offset: word;
   count, colour: byte;

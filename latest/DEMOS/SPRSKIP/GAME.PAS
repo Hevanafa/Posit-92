@@ -17,7 +17,7 @@ const
   maxSpritesPerFrame = 50;
 var
   { Asset variables }
-  imgExplosion: TBitmap;
+  imgExplosion: TTexture;
 
   { Game state variables }
   startTime, nextGameTick: double;

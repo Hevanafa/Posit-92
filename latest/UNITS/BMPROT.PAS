@@ -9,7 +9,7 @@ interface
 uses P92TEX;
 
 { angle: in degrees }
-procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: TTexture; const x, y: integer; angle: double);
 
 {
   Performs scaling and rotation on the fly (very heavy!)
@@ -18,7 +18,7 @@ procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);
   angle: in degrees
 }
 procedure SprScaleRot(
-  const image: TBitmap;
+  const image: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
@@ -29,7 +29,7 @@ procedure SprScaleRot(
   angle: in degrees [0..35]
 }
 procedure SprScaleRotLUT(
-  const image: TBitmap;
+  const image: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);
@@ -55,7 +55,7 @@ begin
   end;
 end;
 
-procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: TTexture; const x, y: integer; angle: double);
 const
   HalfSqrt2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -97,7 +97,7 @@ end;
 
 
 procedure SprScaleRot(
-  const image: TBitmap;
+  const image: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
@@ -153,7 +153,7 @@ end;
 
 
 procedure SprScaleRotLUT(
-  const image: TBitmap;
+  const image: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);

@@ -1,8 +1,6 @@
 unit P92Mouse;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
@@ -13,7 +11,7 @@ uses P92TEX;
 {$endif}
 
 var
-  cursor: TBitmap;
+  cursor: TTexture;
   mouseX, mouseY: word;
   mouseButton: byte;
 

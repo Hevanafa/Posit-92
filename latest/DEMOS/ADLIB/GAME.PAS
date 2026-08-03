@@ -24,8 +24,8 @@ end;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TBitmap;
-  imgCoin: TBitmap;
+  DosuEXE: array[0..1] of TTexture;
+  imgCoin: TTexture;
   PianoInstrument: TInstrument;
   sfxCoin: TMelody;
 

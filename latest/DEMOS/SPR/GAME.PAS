@@ -13,7 +13,7 @@ type
 
 var
   { Asset variables }
-  imgGrass: TBitmap;
+  imgGrass: TTexture;
   { Game state variables }
   positions: array[0..99] of TVec2;
 

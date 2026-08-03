@@ -26,8 +26,8 @@ const
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TBitmap;
-  imgPiano: TBitmap;
+  DosuEXE: array[0..1] of TTexture;
+  imgPiano: TTexture;
   hymn: TMelody;
 
   { Game state variables}
