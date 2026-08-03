@@ -6,11 +6,11 @@ unit BMFont;
 
 interface
 
-uses Bitmap;
+uses P92TEX;
 
 type
   PBMFontGlyph = ^TBMFontGlyph;
-  { Record types in Turbo Pascal aren't padded by default }
+  { Record types in Turbo Pascal are aligned to `word` by default, which is configurable via Compiler Options }
   TBMFontGlyph = record
     id: word;
     x, y, width, height: word;  { 2, 4, 6, 8 }

@@ -4,7 +4,7 @@ unit BMPRLE;
 
 interface
 
-uses Bitmap, Panic;
+uses P92TEX, Panic;
 
 type
   PRLEBitmap = ^TRLEBitmap;

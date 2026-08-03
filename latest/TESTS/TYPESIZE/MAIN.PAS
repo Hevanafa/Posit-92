@@ -1,5 +1,5 @@
 uses
-  BMFont, Bitmap;
+  BMFont, P92TEX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

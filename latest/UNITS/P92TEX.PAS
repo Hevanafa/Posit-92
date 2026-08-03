@@ -1,5 +1,5 @@
 {
-  Bitmap / Software texture unit
+  Software texture unit
   Part of Posit-92 game engine
 
   The key drawing procedures are:
@@ -10,7 +10,7 @@
   The rest will be left unoptimised
 }
 
-unit Bitmap;
+unit P92TEX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 {$DEFINE DEBUG}

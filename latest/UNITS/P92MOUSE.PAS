@@ -9,7 +9,7 @@ interface
 {$ifdef P92_MODEX}
 uses XBitmap;
 {$else}
-uses Bitmap;
+uses P92TEX;
 {$endif}
 
 var

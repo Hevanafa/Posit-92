@@ -1,4 +1,4 @@
-{ Bitmap rotation + scale render procedures }
+{ Texture rotation + scale render procedures }
 
 unit BMPROT;
 
@@ -6,7 +6,7 @@ unit BMPROT;
 
 interface
 
-uses Bitmap;
+uses P92TEX;
 
 { angle: in degrees }
 procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);

@@ -8,7 +8,7 @@
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 uses
-  P92Core, Bitmap, Conv, Graphics, Timing, P92VGA;
+  P92Core, P92TEX, Conv, Graphics, Timing, P92VGA;
 
 var
   imgTabby: TBitmap;
