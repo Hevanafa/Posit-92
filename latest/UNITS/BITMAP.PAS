@@ -79,6 +79,13 @@ var
   rowOffset: longint;
 
 begin
+  if Assigned(image.data) then begin
+    WriteLog('LoadBMP: Warning: image has been previously assigned');
+    { FreeBMP(image) }
+  end;
+
+  DefaultBMP(image);
+
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
@@ -135,6 +142,8 @@ end;
 procedure FreeBMP(var image: TBitmap);
 begin
   FreeMem(image.data, image.width * image.height);
+  image.width := 0;
+  image.height := 0
 end;
 
 procedure DrawBitmapInfo(const image: TBitmap);
