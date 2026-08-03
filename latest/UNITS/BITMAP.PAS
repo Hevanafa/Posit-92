@@ -226,10 +226,14 @@ var
   srcSegment, srcOffset: word;
   destOffset: word;
   drawCount: word;
+
+  pixelData: pointer;
 begin
   { Early exits }
   if (x >= VGAWidth) or (y >= VGAHeight) then exit;
   if (x + image.width <= 0) or (y + image.height <= 0) then exit;
+
+  pixelData := image.data;
 
   { Handle vertical clipping }
   startY := 0;
@@ -265,8 +269,8 @@ begin
       { Load DH with transparencyKey }
       mov dh, transparencyKey
 
-      { TODO: Load DS:SI with image.data }
-
+      { TODO: Actually add the row offset }
+      lds si, pixelData
       mov cx, drawCount
       mov ah, dh
 
