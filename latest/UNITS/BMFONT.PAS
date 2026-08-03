@@ -264,14 +264,38 @@ begin
   end;
   }
 
-  for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
-    screenY := drawY + row;
-    screenX := drawX + startCol;
-    colCount := endCol - startCol + 1;
+for row := startRow to endRow do begin
+  rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
+  screenY := drawY + row;
+  screenX := drawX + startCol;
+  colCount := endCol - startCol + 1;
 
-    { TODO: Set up the inline assembly }
+  asm
+    { Load ES:DI to surface + screen offset }
+    les di, surface
+    mov ax, screenY
+    mov bx, VGAWidth
+    mul bx
+    add ax, screenX
+    add di, ax
+
+    { Load DS:SI to bitmap data + rowBase }
+    { TODO: Load DS:SI with font.bitmap.data }
+    add si, rowBase
+
+    mov cx, colCount
+
+  @col_loop:
+    lodsb
+    cmp al, transparencyKey
+    je @skip
+    mov es:[di], al
+
+  @skip:
+    inc di
+    loop @col_loop
   end;
+end;
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
