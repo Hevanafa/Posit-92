@@ -200,9 +200,11 @@ var
   row, col: integer;
   srcX, srcY: integer;
   colour: byte;
+  { Avoid copying of the record type }
   g: PBMFontGlyph;
 begin
   g := @(font.glyphs[ord(c)]);
+  PrintBMFontGlyph := g^.xadvance;
 
   for row := 0 to g^.height - 1 do begin
     for col := 0 to g^.width - 1 do begin
@@ -214,7 +216,6 @@ begin
         PSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
     end;
   end;
-
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
@@ -222,7 +223,7 @@ var
   a: integer;
   xOffset: integer;
 begin
-  xOffset := x;
+  xOffset := 0;
 
   for a:=1 to length(text) do
     inc(xOffset, PrintBMFontGlyph(font, text[a], x + xOffset, y));
