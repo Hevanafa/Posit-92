@@ -223,7 +223,6 @@ var
   startY, endY: integer;
   startX, endX: integer;
 
-  srcSegment, srcOffset: word;
   destOffset: word;
   drawCount: word;
 

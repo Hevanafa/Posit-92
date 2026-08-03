@@ -50,7 +50,8 @@ begin
     SprTint(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C); }
 
   { Original: 1.4057s, 1.4158s
-    With clipping: 0.8373s }
+    With clipping: 0.8373s
+    With inline assembly hot spot loop: 0.1787s, 0.1593s }
   for a:=0 to 1000 do
     AsmSpr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
 
