@@ -5,6 +5,11 @@ unit Bitmap;
 
 interface
 
+const
+  SprFlipHorizontal = 1;
+  SprFlipVertical = 2;
+  SprFlipBoth = SprFlipHorizontal or SprFlipVertical;
+
 type
   PByteArray = ^TByteArray;
   TByteArray = array[0..0] of byte;
@@ -39,6 +44,8 @@ procedure SprRegion(
   const image: TBitmap;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
+
+procedure SprFlipped(const image: TBitmap; const x, y: integer; const flip: integer);
 
 
 implementation
@@ -277,6 +284,30 @@ begin
       if image.data^[pxOffset] <> transparencyKey then
         AsmPSet(destX + a, destY + b, image.data^[pxOffset]);
     end;
+  end;
+end;
+
+procedure SprFlipped(const image: TBitmap; const x, y: integer; const flip: integer);
+var
+  row, col: integer;
+  srcX, srcY: integer;
+  pxOffset: longint;
+  colour: byte;
+begin
+  case flip of
+    SprFlipHorizontal: begin
+      for row := 0 to image.height - 1 do
+        for col := 0 to image.width - 1 do begin
+          srcX := (image.width - 1) - col;
+          pxOffset := row * image.width + srcX;
+          colour := image.data^[pxOffset];
+
+          if image.data^[pxOffset] <> transparencyKey then
+            pset(x + col, y + row);
+        end;
+    end;
+    else
+      { Not implemented! }
   end;
 end;
 
