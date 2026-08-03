@@ -206,6 +206,12 @@ begin
   g := @(font.glyphs[ord(c)]);
   PrintBMFontGlyph := g^.xadvance;
 
+  { Bounds check
+    Note: This skips the glyph entirely, even
+    when the glyph is partially out of bounds (either negative X or Y) }
+  if word(x) >= VGAWidth then exit;
+  if word(y) >= VGAHeight then exit;
+
   for row := 0 to g^.height - 1 do begin
     rowOffset := (g^.y + row) * font.bitmap.width;
 
