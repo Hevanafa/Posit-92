@@ -270,25 +270,20 @@ end;
 
 function MeasureBMFont(const font: TBMFont; const text: string): integer;
 var
-  a: integer;
+  a: word;
   ch: char;
   glyph: PBMFontGlyph;
-  result: integer;
+  xOffset: integer;
 begin
-  result := 0;
+  xOffset := 0;
 
   for a:=1 to length(text) do begin
     ch := text[a];
-
-    if (low(font.glyphs) <= ord(ch)) and (ord(ch) <= high(font.glyphs)) then begin
-      glyph := @(font.glyphs[ord(ch)]);
-
-      if glyph <> nil then
-        inc(result, glyph^.xadvance);
-    end;
+    glyph := @(font.glyphs[ord(ch)]);
+    inc(xOffset, glyph^.xadvance);
   end;
 
-  MeasureBMFont := result
+  MeasureBMFont := xOffset
 end;
 
 procedure SetTransparencyKey(const value: byte);
