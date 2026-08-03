@@ -198,25 +198,30 @@ var
   rowOffset, pxOffset: longint;
 
   startY, endY: integer;
-  clipLeft, clipRight: integer;
+  startX, endX: integer;
 begin
   { Early exits }
   if (x >= VGAWidth) or (y >= VGAHeight) then exit;
   if (x + image.width <= 0) or (y + image.height <= 0) then exit;
 
-  { Vertical clipping }
+  { Handle vertical clipping }
   startY := 0;
   endY := image.height - 1;
 
   if y < 0 then startY := -y;
   if y + endY >= VGAHeight then endY := VGAHeight - 1 - y;
 
-  { TODO: Handle horizontal clipping }
+  { Handle horizontal clipping }
+  startX := 0;
+  endX := image.width - 1;
 
-  for srcY := 0 to image.height - 1 do begin
+  if x < 0 then startX := -x;
+  if x + endX >= VGAWidth then endX := VGAWidth - 1 - x;
+
+  for srcY := startY to endY do begin
     rowOffset := srcY * image.width;
 
-    for srcX := 0 to image.width - 1 do begin
+    for srcX := startX to endX do begin
       pxOffset := rowOffset + srcX;
 
       if image.data^[pxOffset] <> transparencyKey then
