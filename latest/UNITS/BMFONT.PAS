@@ -200,18 +200,40 @@ var
   colour: byte;
   { Avoid copying of the record type }
   g: PBMFontGlyph;
+
+  startRow, endRow, startCol, endCol: integer;
+  drawX, drawY: integer;
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
 
-  { Bounds check }
-  if word(x + g^.width) >= VGAWidth then exit;
-  if word(y + g^.height) >= VGAHeight then exit;
+  { TODO: Handle space }
 
-  for row := 0 to g^.height - 1 do begin
+  drawX := x + g^.xoffset;
+  drawY := y + g^.yoffset;
+
+  { Handle early exit }
+  if (drawX >= VGAWidth) or (drawY >= VGAHeight) then exit;
+  if (drawX + g^.width <= 0) or (drawY + g^.height <= 0) then exit;
+
+  { Clip to visible region }
+  startCol := 0;
+  endCol := g^.width - 1;
+  startRow := 0;
+  endRow := g^.height - 1;
+
+  if drawX < 0 then startCol := -drawX;
+  if drawX + endCol >= VGAWidth then
+    endCol := VGAWidth - 1 - drawX;
+
+  if drawY < 0 then startRow := -drawY;
+  if drawY + endRow >= VGAHeight then
+    endRow := VGAHeight - 1 - drawY;
+
+  for row := startRow to endRow do begin
     rowOffset := (g^.y + row) * font.bitmap.width;
 
-    for col := 0 to g^.width - 1 do begin
+    for col := startCol to endCol do begin
       colour := font.bitmap.data^[rowOffset + (g^.x + col)];
 
       if colour <> transparencyKey then

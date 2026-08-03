@@ -70,15 +70,15 @@ begin
     After Word bounds check: 0.9086s, 0.9418s
     With AsmPSet call: 0.7352s, 0.7405s
   }
-  {
   for a:=1 to 1000 do
     PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
-  }
 
   { Original: 0.9003s
     After row-level opt: 0.7982s }
+  {
   for a:=1 to 1000 do
     PrintBMFontTint(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
+  }
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
 
