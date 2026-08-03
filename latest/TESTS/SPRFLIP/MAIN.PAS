@@ -26,6 +26,7 @@ begin
 
   SprFlipped(imgTabby, 144, 128, SprFlipHorizontal);
   SprFlipped(imgTabby, 176, 128, SprFlipVertical);
+  SprFlipped(imgTabby, 208, 128, SprFlipBoth);
 end;
 
 var
