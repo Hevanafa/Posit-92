@@ -204,6 +204,9 @@ var
   startRow, endRow, startCol, endCol: integer;
   drawX, drawY: integer;
   { vgaRowOffset: word; }
+
+  screenX, screenY: integer;
+  colCount: word;
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
@@ -233,6 +236,7 @@ begin
     endRow := VGAHeight - 1 - drawY;
 
   { Begin loop }
+  {
   for row := startRow to endRow do begin
     rowBase := (g^.y + row) * font.bitmap.width + g^.x;
 
@@ -243,6 +247,7 @@ begin
         AsmPSet(drawX + col, drawY + row, colour);
     end;
   end;
+  }
 
   { Same as above, but with a precomputed offset }
   {
@@ -258,6 +263,15 @@ begin
     end;
   end;
   }
+
+  for row := startRow to endRow do begin
+    rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
+    screenY := drawY + row;
+    screenX := drawX + startCol;
+    colCount := endCol - startCol + 1;
+
+    { TODO: Set up the inline assembly }
+  end;
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
