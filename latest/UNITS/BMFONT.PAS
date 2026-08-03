@@ -196,7 +196,7 @@ end;
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
-  rowBase: longint;
+  rowBase: word;
   colour: byte;
   { Avoid copying of the record type }
   g: PBMFontGlyph;
@@ -207,9 +207,11 @@ var
 
   screenX, screenY: integer;
   colCount: word;
+  pixelData: pointer;
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyph := g^.xadvance;
+  pixelData := font.bitmap.data;
 
   { Edge case: Handle space }
   if (g^.width = 0) and (g^.height = 0) then exit;
@@ -271,7 +273,7 @@ for row := startRow to endRow do begin
   colCount := endCol - startCol + 1;
 
   asm
-    { Load ES:DI to surface + screen offset }
+    { Load ES:DI with surface + screen offset }
     les di, surface
     mov ax, screenY
     mov bx, VGAWidth
@@ -279,21 +281,28 @@ for row := startRow to endRow do begin
     add ax, screenX
     add di, ax
 
-    { Load DS:SI to bitmap data + rowBase }
-    { TODO: Load DS:SI with font.bitmap.data }
-    add si, rowBase
+    { Load the transparency key to DH (just because it's a spare register) }
+    mov dh, transparencyKey
+
+    { Load DS:SI with bitmap data + rowBase }
+    push ds
+    lds si, pixelData
+    mov bx, rowBase
+    add si, bx
 
     mov cx, colCount
 
   @col_loop:
     lodsb
-    cmp al, transparencyKey
+    cmp al, dh
     je @skip
     mov es:[di], al
 
   @skip:
     inc di
     loop @col_loop
+
+    pop ds
   end;
 end;
 end;
