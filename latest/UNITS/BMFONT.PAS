@@ -33,9 +33,12 @@ procedure LoadBMFont(var font: TBMFont; const filename: string);
 { This also frees the bitmap handle }
 procedure FreeBMFont(var font: TBMFont);
 
+{ Returns xadvance }
+function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
 procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
 procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
 
+{ Returns accumulated xadvance }
 function MeasureBMFont(const font: TBMFont; const text: string): integer;
 
 procedure SetTransparencyKey(const value: byte);
@@ -192,33 +195,37 @@ begin
 end;
 
 
+function PrintBMFontGlyph(const font: TBMFont; const c: char; const x, y: integer): integer;
+var
+  row, col: integer;
+  srcX, srcY: integer;
+  colour: byte;
+  g: PBMFontGlyph;
+begin
+  g := @(font.glyphs[ord(c)]);
+
+  for row := 0 to g^.height - 1 do begin
+    for col := 0 to g^.width - 1 do begin
+      srcX := g^.x + col;
+      srcY := g^.y + row;
+      colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
+
+      if colour <> transparencyKey then
+        PSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
+    end;
+  end;
+
+end;
+
 procedure PrintBMFont(const font: TBMFont; const text: string; x, y: integer);
 var
-  a, row, col, dx, dy: integer;
-  c: char;
-  g: PBMFontGlyph;
-  srcX, srcY: word;
-  colour: byte;
+  a: integer;
+  xOffset: integer;
 begin
-  dx := x;
+  xOffset := x;
 
-  for a:=1 to length(text) do begin
-    c := text[a];
-    g := @(font.glyphs[ord(c)]);
-
-    for row := 0 to g^.height - 1 do begin
-      for col := 0 to g^.width - 1 do begin
-        srcX := g^.x + col;
-        srcY := g^.y + row;
-        colour := font.bitmap.data^[srcY * font.bitmap.width + srcX];
-
-        if colour <> transparencyKey then
-          AsmPSet(dx + g^.xoffset + col, y + g^.yoffset + row, colour);
-      end;
-    end;
-
-    inc(dx, g^.xadvance)
-  end;
+  for a:=1 to length(text) do
+    inc(xOffset, PrintBMFontGlyph(font, text[a], x + xOffset, y));
 end;
 
 procedure PrintBMFontTint(const font: TBMFont; const text: string; x, y: integer; const tint: byte);
