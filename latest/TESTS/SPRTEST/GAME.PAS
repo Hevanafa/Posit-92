@@ -116,33 +116,8 @@ var
 begin
   Cls($7D);
 
-  Draw100;
-  { Draw1000; }
-
-  { for a:=1 to 1000 do begin
-    x := random(300);
-    y := random(180); }
-
-    { TODO: This only works once }
-    { AsmSpr4(dosuEXE[0], x, y, 13); }
-    { AsmSpr5(dosuEXE[0], x, y, 13); }
-    { Print(i32str(a), x, y, 15); }
-  { end; }
-
-  { AsmSpr5(dosuEXE[0], 100, 50, 13);
-  AsmSpr5(dosuEXE[0], 150, 50, 13); }
-
-  {AsmSpr6(dosuEXE[0], 150, 50, 13);}
-
-  { 0.6819s, 0.6826s }
-  {
-  for a:=1 to 1000 do begin
-    x := random(300);
-    y := random(180);
-
-    AsmSpr7(dosuEXE[0], x, y, 13);
-  end;
-  }
+  { Draw100; }
+  Draw1000;
 end;
 
 var
