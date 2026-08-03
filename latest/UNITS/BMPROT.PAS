@@ -9,7 +9,7 @@ interface
 uses Bitmap;
 
 { angle: in degrees }
-procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);
 
 {
   Performs scaling and rotation on the fly (very heavy!)
@@ -18,7 +18,7 @@ procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
   angle: in degrees
 }
 procedure SprScaleRot(
-  const image: PBitmap;
+  const image: TBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
@@ -29,7 +29,7 @@ procedure SprScaleRot(
   angle: in degrees [0..35]
 }
 procedure SprScaleRotLUT(
-  const image: PBitmap;
+  const image: TBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);
@@ -55,7 +55,7 @@ begin
   end;
 end;
 
-procedure SprRot(const image: PBitmap; const x, y: integer; angle: double);
+procedure SprRot(const image: TBitmap; const x, y: integer; angle: double);
 const
   HalfSqrt2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -65,12 +65,10 @@ var
   srcX, srcY: integer;
   colour: byte;
 begin
-  if image = nil then exit;
-
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
+  sw := image.width;
+  sh := image.height;
+  cx := sw div 2;
+  cy := sh div 2;
 
   angle:=angle/180*pi;
   sa:=sin(-angle); { inverse rotation }
@@ -88,7 +86,7 @@ begin
       srcY := round(dx*sa + dy*ca + cy);
 
       if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-        colour := image^.data[srcY*sw + srcX];
+        colour := image.data^[srcY*sw + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(x+ix, y+iy, colour);
@@ -99,7 +97,7 @@ end;
 
 
 procedure SprScaleRot(
-  const image: PBitmap;
+  const image: TBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
@@ -111,17 +109,15 @@ var
   hw, hh: integer;
   colour: byte;
 begin
-  if image = nil then exit;
-
   if (scaleX = 1) and (scaleY = 1) then begin
     SprRot(image, x, y, angle);
     exit
   end;
 
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
+  sw := image.width;
+  sh := image.height;
+  cx := sw div 2;
+  cy := sh div 2;
 
   angle := angle/180*pi;
   { inverse rotation }
@@ -147,7 +143,7 @@ begin
       srcY := round((icx*sinth + icy*costh) / scaleY + cy);
 
       if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-        colour := image^.data[srcY*sw + srcX];
+        colour := image.data^[srcY*sw + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(x+icx, y+icy, colour);
@@ -157,7 +153,7 @@ end;
 
 
 procedure SprScaleRotLUT(
-  const image: PBitmap;
+  const image: TBitmap;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);
@@ -170,12 +166,10 @@ var
   angleI32: integer;
   colour: byte;
 begin
-  if image = nil then exit;
-
-  sw:=image^.width;
-  sh:=image^.height;
-  cx:=sw div 2;
-  cy:=sh div 2;
+  sw := image.width;
+  sh := image.height;
+  cx := sw div 2;
+  cy := sh div 2;
 
   { inverse rotation }
   angleI32:=angle10 mod 36;
@@ -193,7 +187,7 @@ begin
     srcY:=round((ix*sa + iy*ca) / scaleY + cy);
 
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
+      colour := image.data^[srcY*sw + srcX];
       if colour <> transparencyKey then
         pset(x+ix, y+iy, colour);
     end;
