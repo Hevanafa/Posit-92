@@ -222,6 +222,10 @@ var
 
   startY, endY: integer;
   startX, endX: integer;
+
+  srcSegment, srcOffset: word;
+  destOffset: word;
+  drawCount: word;
 begin
   { Early exits }
   if (x >= VGAWidth) or (y >= VGAHeight) then exit;
@@ -241,17 +245,47 @@ begin
   if x < 0 then startX := -x;
   if x + endX >= VGAWidth then endX := VGAWidth - 1 - x;
 
+  { Begin loop }
+
   for srcY := startY to endY do begin
     rowOffset := srcY * image.width;
 
-    for srcX := startX to endX do begin
-      pxOffset := rowOffset + srcX;
+    srcSegment := seg(image.data^);
+    srcOffset := ofs(image.data^) + word(srcY) * image.width + startX;
+    destOffset := word(y + srcY) * VGAWidth + word(x + startX);
+    drawCount := endX - startX + 1;
 
-      if image.data^[pxOffset] <> transparencyKey then
-        AsmPSet(x+srcX, y+srcY, image.data^[pxOffset]);
+    asm
+      push ds
+
+      mov ax, $A000
+      mov es, ax
+      mov di, destOffset
+
+      { Load DH with transparencyKey }
+      mov dh, transparencyKey
+
+      { TODO: Load DS:SI with image.data }
+
+      mov cx, drawCount
+      mov ah, dh
+
+    @loop:
+      lodsb
+      cmp al, ah
+      je @skip
+      mov es:[di], al
+
+    @skip:
+      inc di
+      dec cx
+      jnz @loop
+
+      pop ds
     end;
   end;
 end;
+
 
 procedure VGASpr(const image: TBitmap; const x, y: integer);
 var
