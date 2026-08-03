@@ -219,7 +219,7 @@ begin
       colour := font.bitmap.data^[rowOffset + (g^.x + col)];
 
       if colour <> transparencyKey then
-        PSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
+        AsmPSet(x + g^.xoffset + col, y + g^.yoffset + row, colour);
     end;
   end;
 end;
