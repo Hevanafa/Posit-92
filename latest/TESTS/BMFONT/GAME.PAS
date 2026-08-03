@@ -107,16 +107,15 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
+  appConfig.WaitMode := P92WaitUncapped;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
 
   { Use either Update + Draw, or DrawOnce }
-  {
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  }
-  @appConfig.DrawOnce := @DrawOnce;
+  { @appConfig.DrawOnce := @DrawOnce; }
 
   @appConfig.OnCleanup := @OnCleanup;
 
