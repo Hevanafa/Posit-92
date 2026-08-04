@@ -32,18 +32,22 @@ type
     data: PByteArray;
   end;
 
-procedure DefaultBMP(var tex: TTexture);
+procedure DefaultTex(var tex: TTexture);
 
 {
   Loads an indexed bitmap file into a TTexture
   This requires the bitmap to be an indexed 256 colours
 }
-procedure LoadBMP(var tex: TTexture; const filename: string);
-procedure CreateTexture(var tex: TTexture; const width, height: word);
-procedure CloneBMP(const src: TTexture; var dest: TTexture);
-procedure FreeBMP(var tex: TTexture);
+procedure LoadTex(var tex: TTexture; const filename: string);
 
-procedure DrawBitmapInfo(const tex: TTexture);
+procedure CreateTex(var tex: TTexture; const width, height: word);
+procedure CloneTex(const src: TTexture; var dest: TTexture);
+procedure FreeTex(var tex: TTexture);
+
+{ For debugging }
+procedure DrawTexInfo(const tex: TTexture);
+
+{ Begin drawing procedures }
 
 procedure SprOpaque(const tex: TTexture);
 
@@ -89,14 +93,14 @@ begin
   transparencyKey := value
 end;
 
-procedure DefaultBMP(var tex: TTexture);
+procedure DefaultTex(var tex: TTexture);
 begin
   tex.width := 0;
   tex.height := 0;
   tex.data := nil;
 end;
 
-procedure LoadBMP(var tex: TTexture; const filename: string);
+procedure LoadTex(var tex: TTexture; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -110,10 +114,10 @@ begin
   if Assigned(tex.data) then begin
     WriteLog('LoadBMP: Warning: texture has been previously assigned');
     WriteLog('About to load "' + filename + '"');
-    { FreeBMP(tex) }
+    { FreeTex(tex) }
   end;
 
-  DefaultBMP(tex);
+  DefaultTex(tex);
 
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
@@ -161,7 +165,7 @@ begin
   close(f)
 end;
 
-procedure CreateTexture(var tex: TTexture; const width, height: word);
+procedure CreateTex(var tex: TTexture; const width, height: word);
 begin
   tex.width := width;
   tex.height := height;
@@ -169,14 +173,14 @@ begin
   FillChar(tex.data, width * height, $00);
 end;
 
-procedure CloneBMP(const src: TTexture; var dest: TTexture);
+procedure CloneTex(const src: TTexture; var dest: TTexture);
 begin
   dest := src;
   { dest.data := nil; }
   move(src.data, dest.data, src.width * src.height)
 end;
 
-procedure FreeBMP(var tex: TTexture);
+procedure FreeTex(var tex: TTexture);
 begin
   if Assigned(tex.data) then
     FreeMem(tex.data, tex.width * tex.height);
@@ -185,7 +189,7 @@ begin
   tex.height := 0
 end;
 
-procedure DrawBitmapInfo(const tex: TTexture);
+procedure DrawTexInfo(const tex: TTexture);
 begin
   print('Width: ' + I32Str(tex.width), 10, 168, 15);
   print('Height: ' + I32Str(tex.height), 10, 176, 15);

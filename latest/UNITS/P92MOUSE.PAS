@@ -36,12 +36,12 @@ var
 
 procedure LoadCursor;
 begin
-  LoadBMP(cursor, 'CURSOR.BMP')
+  LoadTex(cursor, 'CURSOR.BMP')
 end;
 
 procedure FreeCursor;
 begin
-  FreeBMP(cursor)
+  FreeTex(cursor)
 end;
 
 procedure InitMouse;

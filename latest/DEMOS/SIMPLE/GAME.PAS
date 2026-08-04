@@ -19,8 +19,8 @@ var
 procedure OnPreload; far;
 begin
   { Load assets here }
-  LoadBMP(SpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadBMP(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
+  LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
 procedure OnReady; far;
@@ -32,8 +32,8 @@ end;
 procedure OnCleanup; far;
 begin
   { Free all the resources here }
-  FreeBMP(SpecimenP92[0]);
-  FreeBMP(SpecimenP92[1]);
+  FreeTex(SpecimenP92[0]);
+  FreeTex(SpecimenP92[1]);
 end;
 
 procedure Update; far;
