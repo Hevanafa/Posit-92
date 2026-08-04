@@ -103,7 +103,7 @@ begin
   flush;
 
   { Cleanup }
-  FreeRLEBitmap(sampleRLE);
+  FreeRLETexture(sampleRLE);
   FreeBMP(image);
 
   readln;

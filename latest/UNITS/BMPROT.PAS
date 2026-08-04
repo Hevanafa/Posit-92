@@ -9,16 +9,16 @@ interface
 uses P92TEX;
 
 { angle: in degrees }
-procedure SprRot(const image: TTexture; const x, y: integer; angle: double);
+procedure SprRot(const tex: TTexture; const x, y: integer; angle: double);
 
 {
   Performs scaling and rotation on the fly (very heavy!)
-  I recommend you to scale the image first, cache it, and then use SprRot instead
+  I recommend you to scale the texture first, cache it, and then use SprRot instead
 
   angle: in degrees
 }
 procedure SprScaleRot(
-  const image: TTexture;
+  const tex: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
@@ -29,7 +29,7 @@ procedure SprScaleRot(
   angle: in degrees [0..35]
 }
 procedure SprScaleRotLUT(
-  const image: TTexture;
+  const tex: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);
@@ -55,7 +55,7 @@ begin
   end;
 end;
 
-procedure SprRot(const image: TTexture; const x, y: integer; angle: double);
+procedure SprRot(const tex: TTexture; const x, y: integer; angle: double);
 const
   HalfSqrt2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -65,8 +65,8 @@ var
   srcX, srcY: integer;
   colour: byte;
 begin
-  sw := image.width;
-  sh := image.height;
+  sw := tex.width;
+  sh := tex.height;
   cx := sw div 2;
   cy := sh div 2;
 
@@ -86,7 +86,7 @@ begin
       srcY := round(dx*sa + dy*ca + cy);
 
       if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-        colour := image.data^[srcY*sw + srcX];
+        colour := tex.data^[srcY*sw + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(x+ix, y+iy, colour);
@@ -97,25 +97,25 @@ end;
 
 
 procedure SprScaleRot(
-  const image: TTexture;
+  const tex: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double);
 var
   sw, sh, cx, cy: integer;
   sinth, costh: double;
-  icx, icy: integer; { offset from image centre }
+  icx, icy: integer; { offset from tex centre }
   srcX, srcY: integer;
   hw, hh: integer;
   colour: byte;
 begin
   if (scaleX = 1) and (scaleY = 1) then begin
-    SprRot(image, x, y, angle);
+    SprRot(tex, x, y, angle);
     exit
   end;
 
-  sw := image.width;
-  sh := image.height;
+  sw := tex.width;
+  sh := tex.height;
   cx := sw div 2;
   cy := sh div 2;
 
@@ -143,7 +143,7 @@ begin
       srcY := round((icx*sinth + icy*costh) / scaleY + cy);
 
       if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-        colour := image.data^[srcY*sw + srcX];
+        colour := tex.data^[srcY*sw + srcX];
 
         if colour <> transparencyKey then
           AsmPSet(x+icx, y+icy, colour);
@@ -153,21 +153,21 @@ end;
 
 
 procedure SprScaleRotLUT(
-  const image: TTexture;
+  const tex: TTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   const angle10: integer);
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
-  ix, iy: integer; { offset from image centre }
+  ix, iy: integer; { offset from tex centre }
   srcX, srcY: integer;
   hw, hh: integer;
   angleI32: integer;
   colour: byte;
 begin
-  sw := image.width;
-  sh := image.height;
+  sw := tex.width;
+  sh := tex.height;
   cx := sw div 2;
   cy := sh div 2;
 
@@ -187,7 +187,7 @@ begin
     srcY:=round((ix*sa + iy*ca) / scaleY + cy);
 
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image.data^[srcY*sw + srcX];
+      colour := tex.data^[srcY*sw + srcX];
       if colour <> transparencyKey then
         pset(x+ix, y+iy, colour);
     end;

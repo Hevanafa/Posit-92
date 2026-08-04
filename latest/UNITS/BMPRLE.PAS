@@ -20,11 +20,11 @@ type
 }
 procedure ConvertToRLE(const src: TTexture; var dest: TRLETexture);
 
-procedure FreeRLEBitmap(var image: TRLETexture);
+procedure FreeRLETexture(var tex: TRLETexture);
 
-procedure SprRLEOpaque(const image: TRLETexture; const x, y: integer);
-procedure SprRLE(const image: TRLETexture; const x, y: integer; const transparencyKey: byte);
-procedure UnsafeSprRLE(const image: TRLETexture; const x, y: integer);
+procedure SprRLEOpaque(const tex: TRLETexture; const x, y: integer);
+procedure SprRLE(const tex: TRLETexture; const x, y: integer; const transparencyKey: byte);
+procedure UnsafeSprRLE(const tex: TRLETexture; const x, y: integer);
 
 implementation
 
@@ -127,12 +127,12 @@ begin
   writeLog('Pass 2 writePos: ' + i32str(writePos));
 end;
 
-procedure FreeRLEBitmap(var image: TRLETexture);
+procedure FreeRLETexture(var tex: TRLETexture);
 begin
-  Freemem(image.data, image.dataSize);
+  Freemem(tex.data, tex.dataSize);
 end;
 
-procedure SprRLEOpaque(const image: TRLETexture; const x, y: integer);
+procedure SprRLEOpaque(const tex: TRLETexture; const x, y: integer);
 var
   a: integer;
   left: integer; { similar to top & left coords like in a terminal }
@@ -146,9 +146,9 @@ begin
   readPos := 0;
   left := 0;
 
-  while readPos < image.dataSize do begin
-    count := image.data^[readPos];
-    colour := image.data^[readPos+1];
+  while readPos < tex.dataSize do begin
+    count := tex.data^[readPos];
+    colour := tex.data^[readPos+1];
 
     if destY >= 0 then begin
       for a:=1 to count do begin
@@ -164,7 +164,7 @@ begin
     end else
       inc(left, count);
 
-    if left >= image.width then begin
+    if left >= tex.width then begin
       left := 0;
       inc(destY)
     end;
@@ -176,7 +176,7 @@ begin
 end;
 
 
-procedure SprRLE(const image: TRLETexture; const x, y: integer; const transparencyKey: byte);
+procedure SprRLE(const tex: TRLETexture; const x, y: integer; const transparencyKey: byte);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -189,9 +189,9 @@ begin
   destX := x; destY := y;
   readPos := 0; left := 0;
 
-  while readPos < image.dataSize do begin
-    count := image.data^[readPos];
-    colour := image.data^[readPos+1];
+  while readPos < tex.dataSize do begin
+    count := tex.data^[readPos];
+    colour := tex.data^[readPos+1];
 
     if colour <> transparencyKey then begin
       if destY >= 0 then begin
@@ -210,7 +210,7 @@ begin
     end else
       inc(left, count);
 
-    if left >= image.width then begin
+    if left >= tex.width then begin
       left := 0;
       inc(destY)
     end;
@@ -222,7 +222,7 @@ begin
 end;
 
 
-procedure UnsafeSprRLE(const image: TRLETexture; const x, y: integer);
+procedure UnsafeSprRLE(const tex: TRLETexture; const x, y: integer);
 var
   { Not yet using longint for prototyping }
   a: integer;
@@ -235,9 +235,9 @@ begin
   left := 0;
   readPos := 0;
 
-  while readPos < image.dataSize do begin
-    count := image.data^[readPos];
-    colour := image.data^[readPos+1];
+  while readPos < tex.dataSize do begin
+    count := tex.data^[readPos];
+    colour := tex.data^[readPos+1];
 
     { Dangerous: no bounds check }
     for a:=1 to count do
@@ -245,7 +245,7 @@ begin
     
     inc(left, count);
 
-    if left >= image.width then begin
+    if left >= tex.width then begin
       left := 0;
       inc(destY)
     end;

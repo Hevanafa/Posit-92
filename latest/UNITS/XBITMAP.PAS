@@ -1,31 +1,36 @@
+{
+  Software texture unit specific to Mode X
+  Part of Posit-92 game engine
+
+  Deprecated: Will be removed, use P92TEX instead
+}
+
 unit XBitmap;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
 type
-  PBitmap = ^TBitmap;
-  TBitmap = record
+  PTexture = ^TTexture;
+  TTexture = record
     width, height, palsize: word;
     data: array[0..0] of byte;
   end;
 
-procedure loadBMP(var output: PBitmap; const filename: string);
-procedure drawBMP(const image: PBitmap);
-procedure freeBMP(var image: PBitmap);
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
+procedure loadBMP(var output: PTexture; const filename: string);
+procedure drawBMP(const tex: PTexture);
+procedure freeBMP(var tex: PTexture);
+procedure spr(const tex: PTexture; const x, y: integer; const transparencyKey: byte);
+procedure sprTint(const tex: PTexture; const x, y: integer; const transparencyKey, tint: byte);
+procedure sprPro(const tex: PTexture; const x, y: integer; angle: double; const transparencyKey: byte); { in degrees }
 procedure sprPro2(
-  const image: PBitmap;
+  const tex: PTexture;
   const x, y: integer;
   const scaleX, scaleY: double;
   angle: double;
   const transparencyKey: byte);
-procedure bitmapInfo(const image: PBitmap);
+procedure bitmapInfo(const tex: PTexture);
 
 
 implementation
@@ -33,7 +38,7 @@ implementation
 uses Logger, Conv, Panic, ModeX;
 
 { var makes it pass-by-reference }
-procedure loadBMP(var output: PBitmap; const filename: string);
+procedure loadBMP(var output: PTexture; const filename: string);
 var
   f: file;
   buffer: array[1..256] of byte;
@@ -54,7 +59,7 @@ begin
   seek(f, 22); blockRead(f, h, 2);
   seek(f, 50); blockRead(f, palsize, 2);
 
-  size := sizeOf(TBitmap) + (w * h) - 1;
+  size := sizeOf(TTexture) + (w * h) - 1;
   getMem(output, size);
   output^.width := w;
   output^.height := h;
@@ -91,50 +96,50 @@ begin
   close(f)
 end;
 
-procedure drawBMP(const image: PBitmap);
+procedure drawBMP(const tex: PTexture);
 var
   a, b: integer;
 begin
-  if image = nil then exit;
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do
-    PSet(a, b, image^.data[a + b * image^.width]);
+  if tex = nil then exit;
+  for b := 0 to tex^.height-1 do
+  for a := 0 to tex^.width-1 do
+    PSet(a, b, tex^.data[a + b * tex^.width]);
 end;
 
-procedure freeBMP(var image: PBitmap);
+procedure freeBMP(var tex: PTexture);
 begin
-  if image = nil then exit;
-  freeMem(image, sizeOf(TBitmap) + (image^.width * image^.height) - 1);
-  image := nil  { avoids dangling pointer }
+  if tex = nil then exit;
+  freeMem(tex, sizeOf(TTexture) + (tex^.width * tex^.height) - 1);
+  tex := nil  { avoids dangling pointer }
 end;
 
-procedure spr(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure spr(const tex: PTexture; const x, y: integer; const transparencyKey: byte);
 var
   a, b, pos: integer;
 begin
-  if image = nil then exit;
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do begin
-    pos := a + b * image^.width;
-    if image^.data[pos] <> transparencyKey then
-      PSet(x+a, y+b, image^.data[pos]);
+  if tex = nil then exit;
+  for b := 0 to tex^.height-1 do
+  for a := 0 to tex^.width-1 do begin
+    pos := a + b * tex^.width;
+    if tex^.data[pos] <> transparencyKey then
+      PSet(x+a, y+b, tex^.data[pos]);
   end;
 end;
 
-procedure sprTint(const image: PBitmap; const x, y: integer; const transparencyKey, tint: byte);
+procedure sprTint(const tex: PTexture; const x, y: integer; const transparencyKey, tint: byte);
 var
   a, b, pos: integer;
 begin
-  if image = nil then exit;
-  for b := 0 to image^.height-1 do
-  for a := 0 to image^.width-1 do begin
-    pos := a + b * image^.width;
-    if image^.data[pos] <> transparencyKey then
+  if tex = nil then exit;
+  for b := 0 to tex^.height-1 do
+  for a := 0 to tex^.width-1 do begin
+    pos := a + b * tex^.width;
+    if tex^.data[pos] <> transparencyKey then
       PSet(x+a, y+b, tint);
   end;
 end;
 
-procedure sprPro(const image: PBitmap; const x, y: integer; angle: double; const transparencyKey: byte);
+procedure sprPro(const tex: PTexture; const x, y: integer; angle: double; const transparencyKey: byte);
 const
   halfsqr2 = 0.70710678; { Math.sqrt(2) / 2 }
 var
@@ -144,10 +149,10 @@ var
   srcX, srcY: integer;
   colour: byte;
 begin
-  if image = nil then exit;
+  if tex = nil then exit;
 
-  sw:=image^.width;
-  sh:=image^.height;
+  sw:=tex^.width;
+  sh:=tex^.height;
   cx:=sw div 2;
   cy:=sh div 2;
 
@@ -168,7 +173,7 @@ begin
     srcY:=round(dx*sa + dy*ca + cy);
 
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
+      colour := tex^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
         PSet(x+ix, y+iy, colour);
     end;
@@ -178,7 +183,7 @@ end;
 
 { Laggy }
 procedure sprPro2(
-  const image: PBitmap;
+  const tex: PTexture;
   const x, y: integer;
   const scaleX, scaleY:
   double; angle: double;
@@ -186,15 +191,15 @@ procedure sprPro2(
 var
   sw, sh, cx, cy: integer;
   sa, ca: double;
-  ix, iy: integer; { offset from image centre }
+  ix, iy: integer; { offset from tex centre }
   srcX, srcY: integer;
   hw, hh: integer;
   colour: byte;
 begin
-  if image = nil then exit;
+  if tex = nil then exit;
 
-  sw:=image^.width;
-  sh:=image^.height;
+  sw:=tex^.width;
+  sh:=tex^.height;
   cx:=sw div 2;
   cy:=sh div 2;
 
@@ -221,7 +226,7 @@ begin
     srcY:=round((ix*sa + iy*ca) / scaleY + cy);
 
     if (0<=srcX) and (srcX<sw) and (0<=srcY) and (srcY<sh) then begin
-      colour := image^.data[srcY*sw + srcX];
+      colour := tex^.data[srcY*sw + srcX];
       if colour <> transparencyKey then
         PSet(x+ix, y+iy, colour);
     end;
@@ -229,17 +234,17 @@ begin
 end;
 
 
-procedure bitmapInfo(const image: PBitmap);
+procedure bitmapInfo(const tex: PTexture);
 begin
-  if image = nil then begin
-    Print('image is nil!', 10, 168, 15);
+  if tex = nil then begin
+    Print('tex is nil!', 10, 168, 15);
     exit
   end;
 
   { Print('File name:' + name, 10, 160, 15); }
-  Print('Width: ' + i32str(image^.width), 10, 168, 15);
-  Print('Height: ' + i32str(image^.height), 10, 176, 15);
-  Print('Palette: ' + i32str(image^.palsize) + ' colours', 10, 184, 15)
+  Print('Width: ' + i32str(tex^.width), 10, 168, 15);
+  Print('Height: ' + i32str(tex^.height), 10, 176, 15);
+  Print('Palette: ' + i32str(tex^.palsize) + ' colours', 10, 184, 15)
 end;
 
 
