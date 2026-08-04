@@ -6,66 +6,66 @@ unit Maths;
 
 interface
 
-function min(const a, b: double): double;
-function max(const a, b: double): double;
-function deg2rad(const deg: double): double;
-function rad2deg(const rad: double): double;
-function i32power(const i, exp: longint): longint;
-function floor(const value: double): integer;
-function ceil(const value: double): integer;
+function Min(const a, b: double): double;
+function Max(const a, b: double): double;
+function Deg2Rad(const deg: double): double;
+function Rad2Deg(const rad: double): double;
+function I32Power(const i, exp: longint): longint;
+function Floor(const value: double): integer;
+function Ceil(const value: double): integer;
 
 
 implementation
 
 uses Panic;
 
-function min(const a, b: double): double;
+function Min(const a, b: double): double;
 begin
-  if a<=b then min:=a
-  else if a>b then min:=b
+  if a<=b then Min:=a
+  else if a>b then Min:=b
 end;
 
-function max(const a, b: double): double;
+function Max(const a, b: double): double;
 begin
-  if a<b then max:=b
-  else if a>=b then max:=a
+  if a<b then Max:=b
+  else if a>=b then Max:=a
 end;
 
-function deg2rad(const deg: double): double;
+function Deg2Rad(const deg: double): double;
 begin
-  deg2rad := deg / 180 * pi
+  Deg2Rad := deg / 180 * pi
 end;
 
-function rad2deg(const rad: double): double;
+function Rad2Deg(const rad: double): double;
 begin
-  rad2deg := rad * 180 / pi
+  Rad2Deg := rad * 180 / pi
 end;
 
-function i32power(const i, exp: longint): longint;
+function I32Power(const i, exp: longint): longint;
 var
   a, result: longint;
 begin
   if exp < 0 then panicHalt('i32power: Negative exp isn''t supported!');
-  if exp = 0 then begin i32power := 1; exit end;
-  if exp = 1 then begin i32power := i; exit end;
+  if exp = 0 then begin I32Power := 1; exit end;
+  if exp = 1 then begin I32Power := i; exit end;
 
   result := i;
   for a := 2 to exp do
     result := result * i;
-  i32power := result
+  I32Power := result
 end;
 
-function floor(const value: double): integer;
+function Floor(const value: double): integer;
 begin
-  floor := trunc(value)
+  Floor := trunc(value)
 end;
 
-function ceil(const value: double): integer;
+function Ceil(const value: double): integer;
 begin
   if trunc(value) = value then
-    ceil := trunc(value)
+    Ceil := trunc(value)
   else
-    ceil := trunc(value + 1);
+    Ceil := trunc(value + 1);
 end;
 
 end.
