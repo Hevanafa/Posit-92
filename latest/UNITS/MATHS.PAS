@@ -68,10 +68,13 @@ end;
 
 function Ceil(const value: double): integer;
 begin
-  if trunc(value) = value then
-    Ceil := trunc(value)
-  else
-    Ceil := trunc(value + 1);
+  if value > 0 then begin
+    if trunc(value) = value then
+      Ceil := trunc(value)
+    else
+      Ceil := trunc(value + 1);
+  end else
+    Ceil := trunc(value);
 end;
 
 end.
