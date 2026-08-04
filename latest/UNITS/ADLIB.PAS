@@ -93,7 +93,6 @@ procedure Shutdown;
 procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 procedure SetupMelodicInstruments;
-procedure SetupRhythmInstruments;
 
 { Playback }
 procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
@@ -355,83 +354,6 @@ begin
 end;
 
 
-procedure SetupRhythmInstruments;
-const
-  OpModulator: array[0..10] of byte = (
-    $F2, $53, $74, $00, $00, $08,
-    $10, $14, $12, $15, $11
-  );
-
-  { PERCUSSIVE MODE VOICES }
-  { TODO: Adapt this with the TInstrument format }
-  BassDrum: array[0..1] of TOldInstrument = (
-    (WaveChar: 0; ScalingOutput: 11;
-      AttackDecay: 168; SustainRelease: 76;
-      FeedBack: 1; SetWaveSelect: 1),
-    (WaveChar: 0; ScalingOutput: 0;
-      AttackDecay: 214; SustainRelease: 79;
-      FeedBack: 1; SetWaveSelect: 0));
-
-  InstrArray: array[7..10] of TOldInstrument =
-  (* SnareDrum Instrument *)
-  ((
-    WaveChar:12; ScalingOutput: 0;
-    AttackDecay: 248; SustainRelease: 181;
-    FeedBack: 0; SetWaveSelect: 0),
-
-  (* TomTom Voice instrument *)
-  (WaveChar: 4; ScalingOutput: 0;
-    AttackDecay: 247; SustainRelease: 181;
-    FeedBack: 0; SetWaveSelect: 0),
-  (* Cymbal Voice Instrument *)
-  (WaveChar: 1; ScalingOutput: 0;
-    AttackDecay: 245; SustainRelease: 181;
-    FeedBack: 0; SetWaveSelect: 0),
-  (* hihat Voice Instrument *)
-  (WaveChar: 1; ScalingOutput: 0;
-    AttackDecay: 247; SustainRelease: 181;
-    FeedBack: 0; SetWaveSelect: 0));
-
-var
-  a, opOffset: byte;
-
-begin
-  { Skipped Carrier up to Volume array accesses }
-
-  opOffset := OpModulator[BassDrumVoice];
-
-  { Modulator }
-  with BassDrum[0] do begin
-    AdLibWrite(opOffset + $20, WaveChar);
-    AdLibWrite(opOffset + $40, ScalingOutput);
-    AdLibWrite(opOffset + $60, AttackDecay);
-    AdLibWrite(opOffset + $80, SustainRelease);
-    AdLibWrite(BassDrumVoice + $C0, Feedback);
-    AdLibWrite(opOffset + $E0, SetWaveSelect);
-  end;
-
-  { Carrier }
-  with BassDrum[1] do begin
-    AdLibWrite(opOffset + $23, WaveChar);
-    AdLibWrite(opOffset + $43, ScalingOutput);
-    AdLibWrite(opOffset + $63, AttackDecay);
-    AdLibWrite(opOffset + $83, SustainRelease);
-    AdLibWrite(opOffset + $E3, SetWaveSelect);
-  end;
-  
-  { The other percussive voices only have one operator }
-  for a:=SnareDrumVoice to HiHatVoice do begin
-    opOffset := OpModulator[a];
-    AdLibWrite(opOffset + $20, InstrArray[a].WaveChar);
-    AdLibWrite(opOffset + $40, InstrArray[a].ScalingOutput);
-    AdLibWrite(opOffset + $60, InstrArray[a].AttackDecay);
-    AdLibWrite(opOffset + $80, InstrArray[a].SustainRelease);
-    AdLibWrite(a + $C0, InstrArray[a].Feedback);
-    AdLibWrite(opOffset + $E0, InstrArray[a].SetWaveSelect);
-  end;
-end;
-
-
 { Adapted from BoardInstalled from ccodere/pascal-adlib }
 function CheckAdLib: boolean;
 var
@@ -622,7 +544,7 @@ var
 begin
   if not isInitialised then exit;
   
-  now := getTimer;
+  now := GetTimer;
   
   for a:=0 to MAX_MELODIC_VOICES-1 do begin
     if not voices[a].active then continue;
