@@ -63,7 +63,7 @@ uses DOS, Panic;
 
 var
   useDefaultBufferSize: boolean;
-  bufferInitialised: boolean;
+  isBufferInitialised: boolean;
   bufferSize: word;
   font8x8: TFont8x8;
 
@@ -480,7 +480,13 @@ end;
 
 procedure InitBuffer(const width, height: word);
 begin
-  if bufferInitialised then exit;
+  if isBufferInitialised then exit;
+
+  if width > DefaultVGAWidth then
+    PanicHalt('InitBuffer: Buffer width can''t be more than the VGA screen width!');
+
+  if height > DefaultVGAHeight then
+    PanicHalt('InitBuffer: Buffer height can''t be more than the VGA screen height!');
 
   if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
     useDefaultBufferSize := false;
@@ -491,15 +497,15 @@ begin
 
   GetMem(surface, bufferSize);
 
-  bufferInitialised := true;
+  isBufferInitialised := true;
 end;
 
 procedure FreeBuffer;
 begin
-  if bufferInitialised then begin
+  if isBufferInitialised then begin
     freeMem(surface, bufferSize);
     surface := nil;
-    bufferInitialised := false;
+    isBufferInitialised := false;
   end;
 end;
 
