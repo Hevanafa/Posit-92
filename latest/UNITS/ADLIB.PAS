@@ -90,8 +90,6 @@ procedure Init;
 procedure Update;
 procedure Shutdown;
 
-procedure SetPercussive(const value: boolean);
-
 procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 procedure SetupMelodicInstruments;
@@ -157,7 +155,6 @@ var
   isPercussiveMode: boolean;
   BDRegister: byte;
   voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
-  { instruments: array[0..MAX_INSTRUMENTS-1] of PInstrument; }
 
 
 procedure AdLibWrite(const reg, value: byte);
@@ -271,27 +268,6 @@ begin
   GetIsInitialised := isInitialised
 end;
 
-
-{ Adapted from ccodere/pascal-adlib's GitHub repo }
-procedure SetPercussive(const value: boolean);
-begin
-  isPercussiveMode := value;
-
-{$IFDEF DEBUG}
-  writeLog('Changed percussive mode to ' + BoolStr(value));
-{$ENDIF}
-
-  if value then begin
-    { Skipped MaxVoices value }
-    BDRegister := $E0;
-    AdLibWrite($BD, BDRegister);
-    SetupRhythmInstruments;
-  end else begin
-    BDRegister := $C0;
-    AdLibWrite($BD, BDRegister);
-    SetupMelodicInstruments;
-  end;
-end;
 
 procedure ConvertOldInstrument(var output: TInstrument; var src: TOldInstrument);
 begin
@@ -552,9 +528,11 @@ begin
     AdLibWrite($E0 + GetCarrierOffset(a), $00);
   end;
   
-  isInitialised := true;
+  BDRegister := $C0;
+  AdLibWrite($BD, BDRegister);
+  SetupMelodicInstruments;
 
-  SetPercussive(false);
+  isInitialised := true;
 end;
 
 procedure PlayNote(
