@@ -26,7 +26,7 @@ var
   { Asset variables }
   DosuEXE: array[0..1] of TTexture;
   imgCoin: TTexture;
-  PianoInstrument: TInstrument;
+  BrightFMInstrument: TInstrument;
   sfxCoin: TMelody;
 
   { Game state variables }
@@ -41,36 +41,36 @@ var
 
 procedure InitInstruments;
 begin
-  with PianoInstrument do begin
+  with BrightFMInstrument do begin
     with modulator do begin
       tremolo := false;
-      vibrato := false;
-      sustain := false;
+      vibrato := true;
+      sustain := true;
       keyScale := false;
       multiplier := 1;
-      totalLevel := 25;
+      totalLevel := 26;
       attackRate := 15;
       decayRate := 4;
-      sustainRate := 6;
-      releaseRate := 7;
+      sustainRate := 3;
+      releaseRate := 6;
       waveform := 0;
     end;
     
     with carrier do begin
       tremolo := false;
       vibrato := false;
-      sustain := false;
+      sustain := true;
       keyScale := false;
       multiplier := 1;
       totalLevel := 0;
       attackRate := 15;
       decayRate := 4; 
-      sustainRate := 6;
+      sustainRate := 2;
       releaseRate := 7;
       waveform := 0;
     end;
     
-    feedback := 6;
+    feedback := 5;
     algorithm := 0
   end;
 end;
@@ -99,11 +99,11 @@ begin
   LoadTex(imgCoin, 'IMG\COIN.BMP');
 
   InitInstruments;
-  { AdlibDrv.AssignInstrument(0, @PianoInstrument); }
+  { AdlibDrv.AssignInstrument(0, @BrightFMInstrument); }
 
   with sfxCoin do begin
     noteCount := 3;
-    instrument := @PianoInstrument;
+    instrument := @BrightFMInstrument;
     InitNote(notes[0], NOTE_C, 5, 0.05, 127);
     InitNote(notes[1], NOTE_E, 5, 0.05, 127);
     InitNote(notes[2], NOTE_F, 5, 0.05, 127)
