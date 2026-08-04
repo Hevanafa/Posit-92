@@ -1,8 +1,11 @@
+{
+  Maths unit
+  Part of Posit-92 game engine
+}
+
 unit Maths;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
