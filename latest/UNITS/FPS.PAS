@@ -14,7 +14,7 @@ procedure DrawFPS;
 implementation
 
 uses
-{$IFDEF P92_MODEX}
+{$IFDEF P92_MODE_X}
   ModeX,
 {$ELSE}
   P92VGA,

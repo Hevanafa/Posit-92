@@ -62,7 +62,7 @@ uses
   P92KBD, P92Mouse,
   FPS, P92VGA,
   PCSPKR, AdLib
-{$ifdef P92_MODEX}
+{$ifdef P92_MODE_X}
   , ModeX;
 {$else}
   ;
@@ -130,7 +130,7 @@ procedure P92Init;
 begin
   InitLogger;
   InitMode13h;
-{$ifdef P92_MODEX}
+{$ifdef P92_MODE_X}
   initModeX;
 {$endif}
   LoadCGAFont;
@@ -200,7 +200,7 @@ begin
   if bootConfig.EnableDrawFPS then
     DrawFPS;
 
-{$ifdef P92_MODEX}
+{$ifdef P92_MODE_X}
   FlipModeXPage;
 {$else}
   if bootConfig.EnableDefaultPresent then

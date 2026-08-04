@@ -4,7 +4,7 @@ unit P92Mouse;
 
 interface
 
-{$ifdef P92_MODEX}
+{$ifdef P92_MODE_X}
 uses XBitmap;
 {$else}
 uses P92TEX;
