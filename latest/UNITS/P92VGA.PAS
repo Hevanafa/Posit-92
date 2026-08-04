@@ -158,9 +158,44 @@ var
   row, col: word;
   mask: byte;
   baseOfs, destOfs: longint;
+
+  rowStart, rowEnd: integer;
+  colStart, colEnd: integer;
+  clipMask: byte;
 begin
   DrawCGAGlyph := 8;
 
+  { Handle edge cases }
+
+  { Edge case: off-screen}
+  if (x <= -8) or (x >= VGAWidth)
+    or (y <= -8) or (y >= VGAHeight) then exit;
+
+  { Visible row range }
+  if y < 0 then
+    rowStart := -y
+  else
+    rowStart := 0;
+
+  if y + 7 >= VGAHeight then
+    rowEnd := VGAHeight - 1 - y
+  else
+    rowEnd := 7;
+
+  { Visible col range }
+  if x < 0 then
+    colStart := -x
+  else
+    colStart := 0;
+
+  if x + 7 >= VGAWidth then
+    colEnd := VGAWidth - 1 - x
+  else
+    colEnd := 7;
+
+  clipMask := ($FF shr colStart) and ($FF shl (7 - colEnd));
+
+  {
   for row := 0 to 7 do begin
     mask := font8x8[ord(ch), row];
 
@@ -170,11 +205,13 @@ begin
       if (mask and ($80 shr col)) <> 0 then
         AsmPSet(x + col, y + row, colour);
   end;
+  }
 
   { implementation with base offset }
-  {
+  { TODO: Update base offset }
   baseOfs := longint(y) * VGAWidth + x;
 
+  { TODO: Update the loop iterators }
   for row := 0 to 7 do begin
     mask := font8x8[ord(ch), row];
 
@@ -186,7 +223,6 @@ begin
       if (mask and ($80 shr col)) <> 0 then
         surface^[destOfs + col] := colour;
   end;
-  }
 end;
 
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
