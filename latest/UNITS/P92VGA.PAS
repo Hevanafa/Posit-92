@@ -149,25 +149,34 @@ end;
 
 procedure Print(const text: string; const x, y: integer; const colour: byte);
 begin
-  AsmPrint(text, x, y, colour)
+  PascalPrint(text, x, y, colour)
+end;
+
+{ Always returns 8, following the BMFont's xadvance pattern }
+function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): word;
+var
+  row, col: word;
+  mask: byte;
+begin
+  DrawCGAGlyph := 8;
+
+  for row := 0 to 7 do begin
+    mask := font8x8[ord(ch), row];
+
+    for col := 0 to 7 do
+      if (mask and (1 shl (7 - col))) <> 0 then
+        AsmPSet(x + col, y + row, colour);
+  end;
 end;
 
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
 var
-  row, col, idx: integer;
-  mask: byte;
+  idx: integer;
+  xOffset: integer;
 begin
-  for idx := 1 to length(text) do begin
-    if (idx < 0) or (idx > high(byte)) then continue;
-
-    for row := 0 to 7 do begin
-      mask := font8x8[ord(text[idx]), row];
-
-      for col := 0 to 7 do
-        if (mask and (1 shl (7 - col))) <> 0 then
-          AsmPSet((idx-1) * 8 + x + col, y + row, colour);
-    end;
-  end;
+  xOffset := 0;
+  for idx := 1 to length(text) do
+    inc(xOffset, DrawCGAGlyph(text[idx], x + xOffset, y, colour));
 end;
 
 
