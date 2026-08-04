@@ -39,6 +39,7 @@ procedure DefaultBMP(var tex: TTexture);
   This requires the bitmap to be an indexed 256 colours
 }
 procedure LoadBMP(var tex: TTexture; const filename: string);
+procedure CreateTexture(var tex: TTexture; const width, height: word);
 procedure CloneBMP(const src: TTexture; var dest: TTexture);
 procedure FreeBMP(var tex: TTexture);
 
@@ -160,6 +161,14 @@ begin
   close(f)
 end;
 
+procedure CreateTexture(var tex: TTexture; const width, height: word);
+begin
+  tex.width := width;
+  tex.height := height;
+  GetMem(tex.data, width * height);
+  FillChar(tex.data, width * height, $00);
+end;
+
 procedure CloneBMP(const src: TTexture; var dest: TTexture);
 begin
   dest := src;
@@ -169,7 +178,9 @@ end;
 
 procedure FreeBMP(var tex: TTexture);
 begin
-  FreeMem(tex.data, tex.width * tex.height);
+  if Assigned(tex.data) then
+    FreeMem(tex.data, tex.width * tex.height);
+
   tex.width := 0;
   tex.height := 0
 end;
