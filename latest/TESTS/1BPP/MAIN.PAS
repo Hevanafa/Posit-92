@@ -1,34 +1,33 @@
 
 uses
   CRT, DOS,
-  Logger, FPS, Keyboard, Mouse, Timing, VGA,
+  P92Core, Logger, FPS, P92KBD, P92Mouse, Timing, P92VGA,
   MonoBMP;
 
-const
-  K_ESC = $01;
 var
-  done: boolean;
-  t: double;
+  { Asset variables }
   cursor: PMonoBitmap;
   playdate: PMonoBitmap;
+  { Game state variables }
+  t: double;
 
 
-procedure INIT;
+procedure OnPreload; far;
 begin
-  randomize;
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
-  initFPSCounter;
-
   loadMonoBMP(cursor, 'CUR1BPP.BMP');
   loadMonoBMP(playdate, 'PLAYDATE.BMP');
 end;
 
+procedure OnCleanup; far;
+begin
+  freeMonoBMP(cursor);
+  freeMonoBMP(playdate);
+end;
+
+procedure OnReady; far;
+begin
+  t := 0.0
+end;
 
 procedure drawMouseMono;
 begin
@@ -36,48 +35,37 @@ begin
 end;
 
 
-procedure update;
-var
-  a: integer;
+procedure Update; far;
 begin
-  updateDeltaTime;
-  updateMouse;
-  incrementFPS;
+  if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if isKeyDown(K_ESC) then done := true;
-  t:=t+dt
+  t:=t+DeltaTime;
 end;
 
 
-procedure draw;
-var
-  a: integer;
+procedure Draw; far;
 begin
   cls($7D);
-  { sprMono(playdate, 9, 4, 15); }
+
+  sprMono(playdate, 9, 4, 15);
   print('Hello world!', 160-48, 136, $7D);
   debugMouse;
   drawMouseMono;
-  drawFPS;
-  flush
 end;
 
 
+var
+  appConfig: TP92AppConfig;
 begin
-  INIT;
-  done := false;
+  DefaultP92AppConfig(appConfig);
 
-  repeat
-    update;
-    draw;
-  until done;
+  appConfig.LoadDefaultCursor := false;
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
 
-  freeMonoBMP(cursor);
-  freeMonoBMP(playdate);
-
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  P92Start(appConfig)
 end.
+

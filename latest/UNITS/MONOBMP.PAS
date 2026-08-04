@@ -26,7 +26,7 @@ procedure freeMonoBMP(var image: PMonoBitmap);
 
 implementation
 
-uses Conv, Logger, Panic, VGA;
+uses Conv, Logger, Panic, P92VGA;
 
 const DEBUG = true;
 
