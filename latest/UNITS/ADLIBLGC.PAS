@@ -1,5 +1,5 @@
 {
-  AdLib FM synthesiser interface utility unit
+  AdLib FM synthesiser interface utility unit (legacy)
   Part of Posit-92 game engine
   Some parts are adapted from ccodere/pascal-adlib's GitHub repo
 
@@ -10,11 +10,9 @@
 { TODO: Adapt the old instrument to the new one }
 { TODO: Implement TVoice, which handles the melody & drum scheduling }
 
-unit AdLib;
+unit AdLibLgc;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 

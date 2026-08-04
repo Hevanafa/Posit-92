@@ -7,24 +7,16 @@
 
 uses
   CRT, DOS,
-  AdLib, Bitmap, Logger,
-  Keyboard, Mouse, Timing, VGA;
-
-const
-  SC_ESC = $01;
-  SC_SPACE = $39;
-  SC_Q = $10;
-  SC_W = $11;
-  SC_E = $12;
-  SC_R = $13;
-  SC_T = $14;
+  P92Core, AdLibLgc, P92TEX, Logger, P92KBD, P92Mouse, Timing, P92VGA;
 
 var
+  { Asset variables }
+  DosuEXE: array[0..1] of TTexture;
+
+  { Game state variables }
   done: boolean;
   t: double;
-  DosuEXE: array[0..1] of PBitmap;
 
-  { TODO: Implement this }
   lastKeys: array[SC_Q..SC_T] of boolean;
   drumStates: array[0..4] of boolean;
   endTicks: array[0..4] of double;
@@ -34,24 +26,24 @@ procedure INIT;
 var
   tempNote: TNote;
 begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-  initMouse;
+  InitLogger;
+  InitMode13h;
+  LoadCGAFont;
+  InitBuffer(320, 200);
+  InitDeltaTime;
+  InitKeyHandler;
+  InitMouse;
 
   randomize;
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
   
   AdLibDrv.init;
   AdLibDrv.setPercussive(true);
 end;
 
 
-procedure update;
+procedure Update;
 var
   a: word;
   now: double;
@@ -62,9 +54,9 @@ begin
 
   now := getTimer;
 
-  { Your update code here }
-  if lastKeys[SC_Q] <> isKeyDown(SC_Q) then begin
-    lastKeys[SC_Q] := isKeyDown(SC_Q);
+  { Your Update code here }
+  if lastKeys[SC_Q] <> IsKeyDown(SC_Q) then begin
+    lastKeys[SC_Q] := IsKeyDown(SC_Q);
 
     { Bass drum }
     if lastKeys[SC_Q] then begin
@@ -118,7 +110,7 @@ begin
     end;
   end;
 
-  if isKeyDown(SC_ESC) then done := true;
+  if isKeyDown(SC_ESCAPE) then done := true;
   
   { if lastSpace <> isKeyDown(SC_SPACE) then begin 
     lastSpace := isKeyDown(SC_SPACE); }
@@ -147,20 +139,20 @@ begin
     end;
   end;
   
-  t:=t+dt
+  t:=t+DeltaTime;
 end;
 
 
-procedure draw;
+procedure Draw;
 var
   a: integer;
 begin
   asmCls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76, 13)
+    spr(dosuEXE[0], 148, 76)
   else
-    spr(dosuEXE[1], 148, 76, 13);
+    spr(dosuEXE[1], 148, 76);
 
   print('Q - bass drum', 16, 16, 15);
   print('W - snare drum', 16, 24, 15);
@@ -170,33 +162,30 @@ begin
   
   print('Esc - done', 16, 184, 15);
 
-  AdLibDrv.drawDebug;
+  AdLibDrv.DrawDebug;
 
-  drawMouse;
-  asmFlush
+  DrawMouse;
+  PresentMode13h;
 end;
 
-
-var
-  a: integer;
 
 begin
   INIT;
   done := false;
 
   repeat
-    update;
-    draw
+    Update;
+    Draw
   until done;
 
-  { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  { Cleanup code }
+  FreeTex(dosuEXE[0]);
+  FreeTex(dosuEXE[1]);
 
   AdLibDrv.shutdown;
-  resetMouse;
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
+  ResetMouse;
+  ResetKeyHandler;
+  FreeBuffer;
+  CloseLogger;
+  InitModeText
 end.
