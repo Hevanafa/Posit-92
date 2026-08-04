@@ -92,10 +92,6 @@ type
 
     procedure SetPercussive(const value: boolean);
 
-    {
-    procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
-    procedure selectInstrument(const voice, instrSlot: byte);
-    }
     procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
     procedure SetupMelodicInstruments;
@@ -275,30 +271,6 @@ begin
     $C0 + voice,
     (instr^.feedback shl 1) or instr^.algorithm)
 end;
-
-{ Loads a PInstrument to a slot }
-{ TODO: reduce this into something like assignInstrument }
-{
-procedure TAdLibDriver.loadInstrument(const instrSlot: byte; const instr: PInstrument);
-begin
-  if instr = nil then panicHalt('TAdLibDriver.loadInstrument: Attempting to load a nil instrument');
-  if instrSlot >= MAX_INSTRUMENTS then exit;
-
-  instruments[instrSlot] := instr
-end;
-}
-
-{ TODO: reduce this into something like assignInstrument }
-{
-procedure TAdLibDriver.selectInstrument(const voice, instrSlot: byte);
-begin
-  if voice >= MAX_MELODIC_VOICES then exit;
-  if instrSlot >= MAX_INSTRUMENTS then exit;
-
-  voices[voice].instrument := instrSlot;
-  assignInstrument(voice, instruments[instrSlot])
-end;
-}
 
 
 procedure resetAllRegisters;
