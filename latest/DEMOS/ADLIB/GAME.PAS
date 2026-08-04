@@ -104,9 +104,9 @@ begin
   with sfxCoin do begin
     noteCount := 3;
     instrument := @PianoInstrument;
-    initNote(notes[0], NOTE_C, 5, 0.05, 127);
-    initNote(notes[1], NOTE_E, 5, 0.05, 127);
-    initNote(notes[2], NOTE_F, 5, 0.05, 127)
+    InitNote(notes[0], NOTE_C, 5, 0.05, 127);
+    InitNote(notes[1], NOTE_E, 5, 0.05, 127);
+    InitNote(notes[2], NOTE_F, 5, 0.05, 127)
   end;
 end;
 
@@ -143,7 +143,7 @@ begin
       inc(score, 1);
       InitCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      AdlibDrv.PlayMelody(@sfxCoin, 0);
+      AdLib.PlayMelody(@sfxCoin, 0);
     end;
 end;
 

@@ -12,9 +12,7 @@
 
 unit AdLib;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
@@ -80,37 +78,6 @@ type
     SetWaveSelect: Byte;  { Type of Wave to use          }
   end;
 
-  PAdLibDriver = ^TAdLibDriver;
-  TAdLibDriver = object
-    SemiToneCurrent: Array[0..10] of Integer;
-    Function CalcNote(const Voice, Note: byte): Word;
-
-    function GetIsInitialised: boolean;
-    procedure Init;
-    procedure Update;
-    procedure Shutdown;
-
-    procedure SetPercussive(const value: boolean);
-
-    procedure AssignInstrument(const voice: byte; const instr: PInstrument);
-
-    procedure SetupMelodicInstruments;
-    procedure SetupRhythmInstruments;
-
-    { Playback }
-    procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
-    procedure StopVoice(const voice: byte);
-
-    procedure DrumOn(const voice, note: byte);
-    procedure DrumOff(const voice: byte);
-
-    procedure PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
-    procedure PlayMelody(const melody: PMelody; const voice: byte);
-    procedure StopAllVoices;
-
-    procedure DrawDebug;
-  end;
-
 const 
   BassDrumVoice = 6;
   SnareDrumVoice = 7;
@@ -119,9 +86,35 @@ const
   HiHatVoice = 10;
 
 var
-  AdLibDrv: TAdLibDriver;
+  SemiToneCurrent: Array[0..10] of Integer;
 
-procedure initNote(
+function CalcNote(const Voice, Note: byte): Word;
+
+function GetIsInitialised: boolean;
+procedure Init;
+procedure Update;
+procedure Shutdown;
+
+procedure SetPercussive(const value: boolean);
+
+procedure AssignInstrument(const voice: byte; const instr: PInstrument);
+
+procedure SetupMelodicInstruments;
+procedure SetupRhythmInstruments;
+
+{ Playback }
+procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
+procedure StopVoice(const voice: byte);
+
+procedure DrumOn(const voice, note: byte);
+procedure DrumOff(const voice: byte);
+
+procedure PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
+procedure PlayMelody(const melody: PMelody; const voice: byte);
+procedure StopAllVoices;
+
+procedure DrawDebug;
+procedure InitNote(
   var note: TNote;
   const freq: word;
   const octave: byte;
@@ -192,7 +185,7 @@ end;
   duration is in seconds
   velocity: 0..127
 }
-procedure initNote(
+procedure InitNote(
   var note: TNote;
   const freq: word;
   const octave: byte;
