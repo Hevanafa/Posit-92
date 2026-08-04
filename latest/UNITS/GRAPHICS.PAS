@@ -1540,8 +1540,8 @@ begin
     temp := y0; y0 := y1; y1 := temp
   end;
 
-  x0:=trunc(max(x0, 0));   y0:=trunc(max(y0,0));
-  x1:=trunc(min(x1, 319)); y1:=trunc(min(y1,199));
+  x0:=trunc(Max(x0, 0));   y0:=trunc(Max(y0,0));
+  x1:=trunc(Min(x1, 319)); y1:=trunc(Min(y1,199));
 
   for b:=y0 to y1 do
     for a:=x0 to x1 do

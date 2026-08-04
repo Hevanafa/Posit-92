@@ -57,7 +57,13 @@ end;
 
 function Floor(const value: double): integer;
 begin
-  Floor := trunc(value)
+  if value < 0 then begin
+    if trunc(value) = value then
+      Floor := trunc(value)
+    else
+      Floor := trunc(value - 1);
+  end else
+    Floor := trunc(value);
 end;
 
 function Ceil(const value: double): integer;
