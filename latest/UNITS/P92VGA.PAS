@@ -161,16 +161,18 @@ var
 begin
   DrawCGAGlyph := 8;
 
-  { for row := 0 to 7 do begin
+  for row := 0 to 7 do begin
     mask := font8x8[ord(ch), row];
 
     if mask = 0 then continue;
 
     for col := 0 to 7 do
-      if (mask and (1 shl (7 - col))) <> 0 then
+      if (mask and ($80 shr col)) <> 0 then
         AsmPSet(x + col, y + row, colour);
-  end; }
+  end;
 
+  { implementation with base offset }
+  {
   baseOfs := longint(y) * VGAWidth + x;
 
   for row := 0 to 7 do begin
@@ -184,6 +186,7 @@ begin
       if (mask and ($80 shr col)) <> 0 then
         surface^[destOfs + col] := colour;
   end;
+  }
 end;
 
 procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
