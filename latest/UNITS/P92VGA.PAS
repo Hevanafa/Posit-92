@@ -36,10 +36,7 @@ procedure Cls(const colour: byte);
 procedure PascalCls(const colour: byte);
 procedure AsmCls(const colour: byte);
 
-{ Forwards call to AsmPrint }
 procedure Print(const text: string; const x, y: integer; const colour: byte);
-procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
-procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
 
 { Forwards call to AsmPset }
 procedure PSet(const x, y: integer; const colour: byte);
@@ -145,11 +142,6 @@ asm
   rep stosw
   pop es
 end;
-end;
-
-procedure Print(const text: string; const x, y: integer; const colour: byte);
-begin
-  PascalPrint(text, x, y, colour)
 end;
 
 { Always returns 8, following the BMFont's xadvance pattern
@@ -262,7 +254,7 @@ begin
   end;
 end;
 
-procedure PascalPrint(const text: string; const x, y: integer; const colour: byte);
+procedure Print(const text: string; const x, y: integer; const colour: byte);
 var
   idx: integer;
   xOffset: integer;
@@ -270,67 +262,6 @@ begin
   xOffset := 0;
   for idx := 1 to length(text) do
     inc(xOffset, DrawCGAGlyph(text[idx], x + xOffset, y, colour));
-end;
-
-
-procedure AsmPrint(const text: string; const x, y: integer; const colour: byte);
-var
-  row, col, idx: integer;
-  offset: integer;
-  
-  mask: byte;
-  ch: char;
-begin
-  for idx := 1 to length(text) do begin
-    ch := text[idx];
-
-    for row := 0 to 7 do begin
-      mask := font8x8[ord(ch), row];
-      
-      for col := 0 to 7 do
-        if (mask and (1 shl (7 - col))) <> 0 then
-asm
-{ AsmPSet }
-  cmp x, 0
-  jl @skip_pixel
-
-  mov ax, VGAWidth
-  cmp x, ax
-  jge @skip_pixel
-
-  cmp y, 0
-  jl @skip_pixel
-  mov ax, VGAHeight
-  cmp y, ax
-  jge @skip_pixel
-
-  { Calculate pixel offset }
-  { y + row }
-  mov ax, y
-  add ax, row
-  mov bx, VGAWidth
-  mul bx
-  mov cx, ax
-
-  { (idx-1) * 8 + x + col }
-  xor ax, ax  { does the same as `mov ax, 0` }
-  add ax, idx
-  dec ax
-  mov bx, 8
-  mul bx
-  add ax, x
-  add ax, col
-  add ax, cx
-
-  mov bx, ax
-  les di, surface
-  mov al, colour
-  mov es:[di+bx], al
-
-@skip_pixel:
-end;
-    end;
-  end;
 end;
 
 
