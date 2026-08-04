@@ -1,27 +1,31 @@
-{ 1-bit BMP support }
+{
+  1-bit BMP support unit
+  Part of Posit-92 game engine
+}
 
-unit MonoBMP;
+unit MonoTex;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
 type
-  PMonoBitmap = ^TMonoBitmap;
-  TMonoBitmap = record
+  PMonoTexture = ^TMonoTexture;
+  TMonoTexture = record
     width, height, bytesWidth: word;
     data: array[0..0] of byte;
   end;
 
-procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
-procedure sprMonoSlow(const image: PMonoBitmap; const x, y: integer);
-procedure sprMono(
-  const image: PMonoBitmap;
+{ Requires a 1-bpp bitmap file }
+procedure LoadMonoTex(var output: PMonoTexture; const filename: string);
+procedure FreeMonoTex(var tex: PMonoTexture);
+
+procedure SprMonoSlow(const tex: PMonoTexture; const x, y: integer);
+
+procedure SprMono(
+  const tex: PMonoTexture;
   const x, y: integer;
   const tint: byte);
-procedure freeMonoBMP(var image: PMonoBitmap);
 
 
 implementation
@@ -30,7 +34,7 @@ uses Conv, Logger, Panic, P92VGA;
 
 const DEBUG = true;
 
-procedure loadMonoBMP(var output: PMonoBitmap; const filename: string);
+procedure LoadMonoTex(var output: PMonoTexture; const filename: string);
 const
   start = $3E;
 var
@@ -59,7 +63,7 @@ begin
   if (w <= 4) and (bytesW = 0) then
     bytesW := 4;
 
-  size := sizeOf(TMonoBitmap) + (bytesW * h) - 1;
+  size := sizeOf(TMonoTexture) + (bytesW * h) - 1;
   getMem(output, size);
 
   output^.width := w;
@@ -150,18 +154,18 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure sprMonoSlow(const image: PMonoBitmap; const x, y: integer);
+procedure SprMonoSlow(const tex: PMonoTexture; const x, y: integer);
 var
   row, col, bitIndex: integer;
   byteIndex: integer;
   b: byte;
 begin
-  if image = nil then exit;
-  for row:=0 to image^.height - 1 do begin
-    byteIndex := row * image^.bytesWidth;
-    for col:=0 to image^.width - 1 do begin
+  if tex = nil then exit;
+  for row:=0 to tex^.height - 1 do begin
+    byteIndex := row * tex^.bytesWidth;
+    for col:=0 to tex^.width - 1 do begin
       bitIndex:=7-(col mod 8);
-      b := image^.data[byteIndex + (col div 8)];
+      b := tex^.data[byteIndex + (col div 8)];
       if ((b shr bitIndex) and 1) = 1 then
         asmPset(x + col, y + row, 15);
     end;
@@ -170,8 +174,8 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure sprMono(
-  const image: PMonoBitmap;
+procedure SprMono(
+  const tex: PMonoTexture;
   const x, y: integer;
   const tint: byte);
 var
@@ -179,13 +183,13 @@ var
   screenX: integer;
   b: byte;
 begin
-  if image = nil then exit;
+  if tex = nil then exit;
 
-  for row := 0 to image^.height - 1 do begin
+  for row := 0 to tex^.height - 1 do begin
     screenX := x;
 
-    for byteCol := 0 to image^.bytesWidth - 1 do begin
-      b := image^.data[row * image^.bytesWidth + byteCol];
+    for byteCol := 0 to tex^.bytesWidth - 1 do begin
+      b := tex^.data[row * tex^.bytesWidth + byteCol];
 
       if b <> 0 then begin
         if (b and $80) <> 0 then asmPset(screenX + 0, y + row, tint);
@@ -205,11 +209,11 @@ begin
 end;
 
 
-procedure freeMonoBMP(var image: PMonoBitmap);
+procedure FreeMonoTex(var tex: PMonoTexture);
 begin
-  if image = nil then exit;
-  freeMem(image, sizeOf(TMonoBitmap) + (image^.bytesWidth * image^.height) - 1);
-  image := nil  { avoids dangling pointer }
+  if tex = nil then exit;
+  freeMem(tex, sizeOf(TMonoTexture) + (tex^.bytesWidth * tex^.height) - 1);
+  tex := nil  { avoids dangling pointer }
 end;
 
 end.

@@ -2,26 +2,26 @@
 uses
   CRT, DOS,
   P92Core, Logger, FPS, P92KBD, P92Mouse, Timing, P92VGA,
-  MonoBMP;
+  MonoTex;
 
 var
   { Asset variables }
-  cursor: PMonoBitmap;
-  playdate: PMonoBitmap;
+  cursor: PMonoTexture;
+  playdate: PMonoTexture;
   { Game state variables }
   t: double;
 
 
 procedure OnPreload; far;
 begin
-  loadMonoBMP(cursor, 'CUR1BPP.BMP');
-  loadMonoBMP(playdate, 'PLAYDATE.BMP');
+  LoadMonoTex(cursor, 'CUR1BPP.BMP');
+  LoadMonoTex(playdate, 'PLAYDATE.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeMonoBMP(cursor);
-  freeMonoBMP(playdate);
+  FreeMonoTex(cursor);
+  FreeMonoTex(playdate);
 end;
 
 procedure OnReady; far;
@@ -31,7 +31,7 @@ end;
 
 procedure drawMouseMono;
 begin
-  sprMono(cursor, mouseX, mouseY, $0C)
+  SprMono(cursor, mouseX, mouseY, $0C)
 end;
 
 
@@ -47,7 +47,7 @@ procedure Draw; far;
 begin
   cls($7D);
 
-  sprMono(playdate, 9, 4, 15);
+  SprMono(playdate, 9, 4, 15);
   print('Hello world!', 160-48, 136, $7D);
   debugMouse;
   drawMouseMono;
