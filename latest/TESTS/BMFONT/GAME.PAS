@@ -8,7 +8,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, P92KBD, P92Mouse, Graphics, Timing, P92VGA, Bitmap, Conv, FPS, BMFont;
+  P92Core, Logger, P92KBD, P92Mouse, Graphics, Timing, P92VGA, P92TEX, Conv, FPS, BMFont;
 
 var
   bootTime, t: double;
