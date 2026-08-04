@@ -283,10 +283,6 @@ end;
 
 { Game engine entry point }
 procedure P92Start(const config: TP92AppConfig);
-var
-  now: double;
-  { ignored by P92WaitVSync and Uncapped }
-  nextTick: double;
 begin
   bootConfig := config;
   P92Init;
@@ -304,9 +300,6 @@ begin
     ResetKeyHandler;
     ReadLn;
   end else begin
-    now := GetTimer;
-    nextTick := now;
-
     if not assigned(bootConfig.Update) then
       PanicHalt('Boot config is missing the Update method');
 
@@ -314,16 +307,12 @@ begin
       PanicHalt('Boot config is missing the Draw method');
 
     case bootConfig.WaitMode of
-    P92WaitHLT:
-      P92RunHLT;
-    P92WaitBusy:
-      P92RunBusy;
-    P92WaitVSync:
-      P92RunVSync;
-    else
-      repeat
-        P92RunFrame;
-      until done;
+    P92WaitHLT:   P92RunHLT;
+    P92WaitBusy:  P92RunBusy;
+    P92WaitVSync: P92RunVSync;
+
+    { Uncapped }
+    else repeat P92RunFrame until done;
     end;
   end;
 
