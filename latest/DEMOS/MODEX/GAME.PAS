@@ -17,8 +17,12 @@ uses
   P92Core, P92Mouse, Conv, Logger, Timing, P92TEX, ModeX; { , XBitmap }
 
 var
+  { Asset variables }
   imgCursor: TTexture;
   imgSpecimenP92: array[0..1] of TTexture;
+
+  { Game state variables }
+  t: double;
 
 procedure OnPreload; far;
 begin
@@ -27,9 +31,23 @@ begin
   LoadTex(imgSpecimenP92[1], 'IMG\SPP92_2.BMP');
 end;
 
+procedure OnCleanup; far;
+begin
+  FreeTex(imgCursor);
+  FreeTex(imgSpecimenP92[0]);
+  FreeTex(imgSpecimenP92[1]);
+end;
+
+procedure OnReady; far;
+begin
+  t := 0.0;
+end;
+
 procedure Update; far;
 begin
   if keyPressed and (readKey = #27) then SignalDone;
+
+  t := t + DeltaTime;
 end;
 
 procedure Draw; far;
@@ -37,10 +55,12 @@ begin
   cls($7D);
 
   { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
-  spr(imgSpecimenP92[0], 100, 100);
+  if frac(t * 1.5) >= 0.5 then
+    Spr(imgSpecimenP92[0], 148, 76)
+  else
+    Spr(imgSpecimenP92[1], 148, 76);
 
-  Print('Top area', 0, 20, 15);
-  Print('Hello world!', 160-48, 120, 15);
+  Print('Hello from Mode X!', 160-72, 120, 15);
 
   spr(imgCursor, mouseX, mouseY);
 end;
@@ -55,6 +75,8 @@ begin
   appConfig.LoadDefaultCursor := false;
   appConfig.WaitMode := P92WaitVSync;
 
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
 

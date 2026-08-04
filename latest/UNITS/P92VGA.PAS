@@ -282,7 +282,11 @@ begin
   surface^[y * VGAWidth + x] := colour
 end;
 
-procedure AsmPSet(const x, y: integer; const colour: byte); assembler;
+procedure AsmPSet(const x, y: integer; const colour: byte);
+begin
+{$IFDEF P92_MODE_X}
+  PanicHalt('Not supported in mode X');
+{$ENDIF}
 asm
   { Bounds check }
   mov ax, VGAHeight
@@ -312,6 +316,7 @@ asm
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
 @skip:
+end;
 end;
 
 procedure AsmPSetOffset(const bufOffset: Word; const colour: byte); assembler;
