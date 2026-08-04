@@ -957,11 +957,11 @@ end;
 procedure TAdLibDriver.drawDebug;
 begin
   if not isInitialised then begin
-    asmPrint('AdLib is not initialised!', 0, 0, 7);
+    Print('AdLib is not initialised!', 0, 0, 7);
     exit
   end;
 
-  asmPrint('$BD: ' + I32Str(BDRegister), 0, 8, 7);
+  Print('$BD: ' + I32Str(BDRegister), 0, 8, 7);
 end;
 
 
