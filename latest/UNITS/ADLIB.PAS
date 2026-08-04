@@ -43,11 +43,12 @@ type
     sustain: boolean;
     keyScale: boolean;
     multiplier: byte;
-    totalLevel: byte; { octaves? }
+    totalLevel: byte;
     attackRate, decayRate: byte;
     sustainRate, releaseRate: byte;
     waveform: byte;
   end;
+
   PInstrument = ^TInstrument;
   TInstrument = record
     modulator: TInstrParams;
@@ -58,7 +59,7 @@ type
 
   PMelody = ^TMelody;
   TMelody = record
-    notes: array[0..15] of TNote;
+    notes: array[0..15] of TNote; { TODO: Convert this into `PNoteArray` }
     noteCount: byte;
     instrument: PInstrument;
   end;
