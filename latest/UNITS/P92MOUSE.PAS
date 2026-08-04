@@ -4,11 +4,7 @@ unit P92Mouse;
 
 interface
 
-{$ifdef P92_MODE_X}
-uses XBitmap;
-{$else}
 uses P92TEX;
-{$endif}
 
 var
   cursor: TTexture;

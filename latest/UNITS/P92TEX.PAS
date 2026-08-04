@@ -59,13 +59,15 @@ procedure Spr(const tex: TTexture; const x, y: integer);
 
 procedure PascalSpr(const tex: TTexture; const x, y: integer);
 
+{$IFNDEF P92_MODE_X}
 { Handle the edge cases
   Hot spot with inline ASM
 
   The maximum texture data size is 64KB }
 procedure AsmSpr(const tex: TTexture; const x, y: integer);
+{$ENDIF}
 
-{ Blit directly to the VGA memory }
+{ Blit directly to the VGA memory, not yet supported for Mode X }
 procedure VGASpr(const tex: TTexture; const x, y: integer);
 
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
@@ -83,7 +85,12 @@ procedure SprFlipped(const tex: TTexture; const x, y: integer; const flip: integ
 
 implementation
 
-uses Logger, Conv, Panic, P92VGA;
+uses
+  Logger, Conv, Panic, P92VGA
+{$IFDEF P92_MODE_X}
+  , ModeX
+{$ENDIF}
+  ;
 
 var
   transparencyKey: byte;
@@ -211,7 +218,11 @@ end;
 
 procedure Spr(const tex: TTexture; const x, y: integer);
 begin
+{$IFDEF P92_MODE_X}
+  PascalSpr(tex, x, y);
+{$ELSE}
   AsmSpr(tex, x, y)
+{$ENDIF}
 end;
 
 procedure PascalSpr(const tex: TTexture; const x, y: integer);
@@ -249,11 +260,16 @@ begin
       pxOffset := rowOffset + srcX;
 
       if tex.data^[pxOffset] <> transparencyKey then
+      {$IFDEF P92_MODE_X}
+        ModeX.PSet(x + srcX, y + srcY, tex.data^[pxOffset]);
+      {$ELSE}
         AsmPSet(x+srcX, y+srcY, tex.data^[pxOffset]);
+      {$ENDIF}
     end;
   end;
 end;
 
+{$IFNDEF P92_MODE_X}
 procedure AsmSpr(const tex: TTexture; const x, y: integer);
 var
   srcX, srcY: integer;
@@ -325,6 +341,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 
 procedure VGASpr(const tex: TTexture; const x, y: integer);
