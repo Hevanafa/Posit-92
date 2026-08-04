@@ -11,8 +11,14 @@ begin
   cls($00);
   startTick := GetTimer;
 
+  { Original: 1.2273s
+    After row-level optimisation: 1.0526s }
   for a:=1 to 1000 do
     print('Hello world!', random(VGAWidth + 40) - 20, random(VGAHeight + 40) - 20, $0F);
+
+  { 0.8966s }
+  { for a:=1 to 1000 do
+    AsmPrint('Hello world!', random(VGAWidth + 40) - 20, random(VGAHeight + 40) - 20, $0F); }
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
   RectFill(0, VGAHeight - 16, length(s) * 8, VGAHeight - 8, $00);

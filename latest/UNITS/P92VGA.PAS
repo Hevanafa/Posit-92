@@ -163,6 +163,8 @@ begin
   for row := 0 to 7 do begin
     mask := font8x8[ord(ch), row];
 
+    if mask = 0 then continue;
+
     for col := 0 to 7 do
       if (mask and (1 shl (7 - col))) <> 0 then
         AsmPSet(x + col, y + row, colour);
