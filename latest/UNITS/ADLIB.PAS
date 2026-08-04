@@ -2,13 +2,9 @@
   AdLib FM synthesiser interface utility unit
   Part of Posit-92 game engine
   Some parts are adapted from ccodere/pascal-adlib's GitHub repo
-
-  20-06-2025: The current version doesn't support playing percussion alongside melodic mode
 }
 
 {$DEFINE DEBUG}
-{ TODO: Adapt the old instrument to the new one }
-{ TODO: Implement TVoice, which handles the melody & drum scheduling }
 
 unit AdLib;
 
@@ -130,7 +126,6 @@ const
 
 var
   isInitialised: boolean;
-  isPercussiveMode: boolean;
   BDRegister: byte;
   voices: array[0..MaxMelodicVoices-1] of TVoiceState;
 
@@ -402,10 +397,6 @@ begin
 
   { Select SINUS Waves for Output }
   for a:=0 to 8 do begin
-    {
-    AdLibWrite($E0 + SlotMVoice[i][Modulator], $00);
-    AdLibWrite($E0 + SlotMVoice[i][Carrier], $00);
-    }
     AdLibWrite($E0 + GetModulatorOffset(a), $00);
     AdLibWrite($E0 + GetCarrierOffset(a), $00);
   end;
