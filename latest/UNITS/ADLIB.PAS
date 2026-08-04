@@ -117,7 +117,6 @@ type
     melody: PMelody;
     noteIndex: byte;
     noteEndTick: double; { in seconds }
-    { TODO: add isPercussion condition }
     instrument: PInstrument;
     volume: byte; { 0..127 }
   end;
@@ -125,29 +124,20 @@ type
 const
   AddressPort = $388;  { Address / status port }
   StatusPort = $388;
-  DataPort = $389;  { Data port }
+  DataPort = $389;
 
-  MAX_MELODIC_VOICES = 9; { indices 0..8 }
-  MAX_PERCUSSIVE_VOICES = 6; { for melodies: indices 0..5, percussions: 6, 7, 8 }
-  { MAX_INSTRUMENTS = 16; } { indices 0..15 }
-
-  BassDrumBit = $10;
-  SnareDrumBit = $08;
-  TomTomBit = $04;
-  CymbalBit = $02;
-  HiHatBit = $01;
-
-  PercussionBits: array[0..4] of byte =
-    { $10, $08, $04, $02, $01 }
-    (BassDrumBit, SnareDrumBit, TomTomBit, CymbalBit, HiHatBit);
-
+  MaxMelodicVoices = 9; { indices 0..8 }
 
 var
   isInitialised: boolean;
   isPercussiveMode: boolean;
   BDRegister: byte;
-  voices: array[0..MAX_MELODIC_VOICES-1] of TVoiceState;
+  voices: array[0..MaxMelodicVoices-1] of TVoiceState;
 
+function GetIsInitialised: boolean;
+begin
+  GetIsInitialised := isInitialised
+end;
 
 procedure AdLibWrite(const reg, value: byte);
 var
@@ -208,8 +198,8 @@ var
 begin
   if instr = nil then panicHalt('assignInstrument: instr is nil!');
   
-  modOffset := getModulatorOffset(voice);
-  carOffset := getCarrierOffset(voice);
+  modOffset := GetModulatorOffset(voice);
+  carOffset := GetCarrierOffset(voice);
 
   { Set up modulator }
   with instr^.modulator do begin
@@ -252,12 +242,6 @@ var
 begin
   for a := $20 to $F5 do
     AdLibWrite(a, 0);
-end;
-
-
-function GetIsInitialised: boolean;
-begin
-  GetIsInitialised := isInitialised
 end;
 
 
@@ -321,7 +305,7 @@ const
 var
   voice, op, portOffset: byte;
 begin
-  for voice:=0 to MAX_MELODIC_VOICES do begin
+  for voice:=0 to MaxMelodicVoices do begin
     { 0: Modulator, 1: Carrier }
     for op:=0 to 1 do begin
       if op = 0 then portOffset := 0 else portOffset := 3;
@@ -373,7 +357,7 @@ end;
 { low-level interface, doesn't change the `active` flag }
 procedure MelodicKeyOn(const voice, freqLow, freqHigh: byte);
 begin
-  if voice >= MAX_MELODIC_VOICES then exit;
+  if voice >= MaxMelodicVoices then exit;
 
   AdLibWrite($A0 + voice, freqLow);  { low byte of frequency }
   AdLibWrite($B0 + voice, freqHigh or $20)  { high byte + key-on flag }
@@ -383,7 +367,7 @@ end;
 { low-level interface, doesn't change the `active` flag }
 procedure MelodicKeyOff(const voice: byte);
 begin
-  if voice >= MAX_MELODIC_VOICES then exit;
+  if voice >= MaxMelodicVoices then exit;
 
   AdLibWrite($B0 + voice, 0);
 end;
@@ -407,7 +391,7 @@ begin
   { Set key-scaling to ON }
   AdLibWrite($08, $40);
   
-  for a := 0 to MAX_MELODIC_VOICES-1 do begin
+  for a := 0 to MaxMelodicVoices-1 do begin
     voices[a].active := false;
     voices[a].melody := nil;
     voices[a].noteIndex := 0;
@@ -441,7 +425,7 @@ var
   volume: byte;
   carrierOffset: byte;
 begin
-  if voice >= MAX_MELODIC_VOICES then exit;
+  if voice >= MaxMelodicVoices then exit;
 
   carrierOffset := GetCarrierOffset(voice);
 
@@ -457,7 +441,7 @@ end;
 
 procedure StopVoice(const voice: byte);
 begin
-  if voice >= MAX_MELODIC_VOICES then exit;
+  if voice >= MaxMelodicVoices then exit;
 
   MelodicKeyOff(voice);
   voices[voice].active := false
@@ -467,7 +451,7 @@ procedure StopAllVoices;
 var
   a: byte;
 begin
-  for a:=0 to MAX_MELODIC_VOICES - 1 do
+  for a:=0 to MaxMelodicVoices - 1 do
     StopVoice(a);
 end;
 
@@ -522,7 +506,7 @@ begin
   
   now := GetTimer;
   
-  for a:=0 to MAX_MELODIC_VOICES-1 do begin
+  for a:=0 to MaxMelodicVoices-1 do begin
     if not voices[a].active then continue;
     
     if now >= voices[a].noteEndTick then begin
