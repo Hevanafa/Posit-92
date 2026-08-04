@@ -78,13 +78,6 @@ type
     SetWaveSelect: Byte;  { Type of Wave to use          }
   end;
 
-const
-  BassDrumVoice = 6;
-  SnareDrumVoice = 7;
-  TomTomVoice = 8;
-  CymbalVoice = 9;
-  HiHatVoice = 10;
-
 function GetIsInitialised: boolean;
 procedure Init;
 procedure Update;
@@ -377,39 +370,22 @@ begin
 end;
 
 
-function IsVoiceMelodic(const voice: byte): boolean;
-begin
-  IsVoiceMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
-    (not isPercussiveMode)
-end;
-
 { low-level interface, doesn't change the `active` flag }
 procedure MelodicKeyOn(const voice, freqLow, freqHigh: byte);
-var
-  isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := IsVoiceMelodic(voice);
-
-  if isMelodic then begin
-    AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
-    AdLibWrite($B0 + voice, freqHigh or $20) { high byte + key-on flag }
-  end;
+  AdLibWrite($A0 + voice, freqLow);  { low byte of frequency }
+  AdLibWrite($B0 + voice, freqHigh or $20)  { high byte + key-on flag }
 end;
 
 
 { low-level interface, doesn't change the `active` flag }
 procedure MelodicKeyOff(const voice: byte);
-var
-  isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := IsVoiceMelodic(voice);
-
-  if isMelodic then
-    AdLibWrite($B0 + voice, 0);
+  AdLibWrite($B0 + voice, 0);
 end;
 
 
