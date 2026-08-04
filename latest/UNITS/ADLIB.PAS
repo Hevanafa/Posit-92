@@ -64,17 +64,6 @@ type
     instrument: PInstrument;
   end;
 
-  { Adapter: convertOldInstrument }
-  { Note: Don't use this, use TInstrument instead }
-  TOldInstrument = Record
-    WaveChar: Byte;       { Wave Characteristic          }
-    ScalingOutput: Byte;  { Scaling Level / Output level }
-    AttackDecay: Byte;    { Attack / Decay Rate          }
-    SustainRelease: Byte; { Sustain / Release Rate       }
-    Feedback: Byte;       { Feedback                     }
-    SetWaveSelect: Byte;  { Type of Wave to use          }
-  end;
-
 function GetIsInitialised: boolean;
 procedure Init;
 procedure Update;
@@ -82,14 +71,10 @@ procedure Shutdown;
 
 procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
-procedure SetupMelodicInstruments;
-
 { Playback }
+procedure PlayMelody(const melody: PMelody; const voice: byte);
 procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
 procedure StopVoice(const voice: byte);
-
-procedure PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
-procedure PlayMelody(const melody: PMelody; const voice: byte);
 procedure StopAllVoices;
 
 procedure DrawDebug;
@@ -241,92 +226,6 @@ begin
 end;
 
 
-procedure ConvertOldInstrument(var output: TInstrument; var src: TOldInstrument);
-begin
-  with output.modulator do begin
-    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
-    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
-    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
-    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
-    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
-
-    attackRate := hi(src.AttackDecay);
-    decayRate := lo(src.AttackDecay);
-    sustainRate := hi(src.SustainRelease);
-    releaseRate := lo(src.SustainRelease);
-    waveform := src.SetWaveSelect and $07; { waveform select }
-  end;
-
-  with output.carrier do begin
-    tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
-    vibrato := (src.WaveChar and $40) <> 0;  { bit 6 }
-    sustain := (src.WaveChar and $20) <> 0;  { bit 5 }
-    keyScale := (src.WaveChar and $10) <> 0;  { bit 4: key scale rate }
-    multiplier := src.WaveChar and $0F;  { bits 0-3: frequency multiplier }
-
-    attackRate := hi(src.AttackDecay);
-    decayRate := lo(src.AttackDecay);
-    sustainRate := hi(src.SustainRelease);
-    releaseRate := lo(src.SustainRelease);
-    waveform := src.SetWaveSelect and $07; { waveform select }
-  end;
-
-  output.modulator.totalLevel := 25;  { octaves? }
-  output.carrier.totalLevel := 0;
-
-  output.feedback := (src.Feedback and $0E) shr 1;  { bits 1-3 }
-  output.algorithm := src.Feedback and $01;
-end;
-
-
-
-{ Assigns all voices with the electric piano preset }
-procedure SetupMelodicInstruments;
-const
-  OpModulator: array[0..13] of byte = (
-    $00, $01, $02, $08, $09, $0a,
-    $10, $11, $12, $01, $11, $4f,
-    $00, $f1);
-  { Todo: adapt this with the TInstrument format }
-  OldElectricPiano: array[0..1] of TOldInstrument = (
-  (
-    WaveChar: 65; ScalingOutput: 127;
-    AttackDecay: 242; SustainRelease: 81;
-    FeedBack: 7; SetWaveSelect: 1),
-
-  (
-    WaveChar: 19; ScalingOutput: 0;
-    AttackDecay: 242; SustainRelease: 241;
-    FeedBack: 0; SetWaveSelect: 0));
-var
-  voice, op, portOffset: byte;
-begin
-  for voice:=0 to MaxMelodicVoices do begin
-    { 0: Modulator, 1: Carrier }
-    for op:=0 to 1 do begin
-      if op = 0 then portOffset := 0 else portOffset := 3;
-
-      AdLibWrite($20 + portOffset + OpModulator[voice],
-        OldElectricPiano[op].WaveChar);
-
-      AdLibWrite($40 + portOffset + OpModulator[voice],
-        OldElectricPiano[op].ScalingOutput);
-
-      AdLibWrite($60 + portOffset + OpModulator[voice],
-        OldElectricPiano[op].AttackDecay);
-
-      AdLibWrite($80 + portOffset + OpModulator[voice],
-        OldElectricPiano[op].SustainRelease);
-
-      AdLibWrite($E0 + portOffset + OpModulator[voice],
-        OldElectricPiano[op].SetWaveSelect);
-    end;
-
-    AdLibWrite($C0 + voice, OldElectricPiano[0].FeedBack)
-  end;
-end;
-
-
 { Adapted from BoardInstalled from ccodere/pascal-adlib }
 function CheckAdLib: boolean;
 var
@@ -369,44 +268,25 @@ begin
 end;
 
 
-procedure Init;
-var
-  a: byte;
+procedure PlayMelody(const melody: PMelody; const voice: byte);
 begin
-  if isInitialised then exit;
+  StopVoice(voice);
 
-  if not CheckAdLib then begin
-    writeLog('init: Can''t find the AdLib card!');
-    exit
-  end;
+  if melody = nil then panicHalt('playMelody: Attempting to play a nil melody!');
 
-  ResetAllRegisters;
+  voices[voice].active := true;
+  voices[voice].melody := melody;
+  voices[voice].noteIndex := 0;
+  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
+  voices[voice].instrument := melody^.instrument;
 
-  { Let us decide which waveforms we wish to have }
-  AdLibWrite($01, $20);
-  { Set key-scaling to ON }
-  AdLibWrite($08, $40);
-  
-  for a := 0 to MaxMelodicVoices-1 do begin
-    voices[a].active := false;
-    voices[a].melody := nil;
-    voices[a].noteIndex := 0;
-    voices[a].noteEndTick := 0;
-    voices[a].instrument := nil;
-    voices[a].volume := 127
-  end;
+  AssignInstrument(voice, voices[voice].instrument);
 
-  { Select SINUS Waves for Output }
-  for a:=0 to 8 do begin
-    AdLibWrite($E0 + GetModulatorOffset(a), $00);
-    AdLibWrite($E0 + GetCarrierOffset(a), $00);
-  end;
-  
-  BDRegister := $C0;
-  AdLibWrite($BD, BDRegister);
-  SetupMelodicInstruments;
-
-  isInitialised := true;
+  PlayNote(
+    voice,
+    melody^.notes[0].freq,
+    melody^.notes[0].octave,
+    melody^.notes[0].velocity)
 end;
 
 procedure PlayNote(
@@ -448,46 +328,44 @@ begin
 end;
 
 
-procedure PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
+procedure Init;
+var
+  a: byte;
 begin
-  StopVoice(voice);
+  if isInitialised then exit;
 
-  if melody = nil then panicHalt('playMelody: Attempting to play a nil melody!');
-  
-  voices[voice].active := true;
-  voices[voice].melody := melody;
-  voices[voice].noteIndex := 0;
-  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
-  { voices[voice].instrument := melody^.instrument; }
+  if not CheckAdLib then begin
+    writeLog('init: Can''t find the AdLib card!');
+    exit
+  end;
 
-  { AssignInstrument(voice, instruments[melody^.instrument]); }
-  PlayNote(
-    voice,
-    melody^.notes[0].freq,
-    melody^.notes[0].octave,
-    melody^.notes[0].velocity)
+  ResetAllRegisters;
+
+  { Let us decide which waveforms we wish to have }
+  AdLibWrite($01, $20);
+  { Set key-scaling to ON }
+  AdLibWrite($08, $40);
+
+  for a := 0 to MaxMelodicVoices-1 do begin
+    voices[a].active := false;
+    voices[a].melody := nil;
+    voices[a].noteIndex := 0;
+    voices[a].noteEndTick := 0;
+    voices[a].instrument := nil;
+    voices[a].volume := 127
+  end;
+
+  { Select SINUS Waves for Output }
+  for a:=0 to 8 do begin
+    AdLibWrite($E0 + GetModulatorOffset(a), $00);
+    AdLibWrite($E0 + GetCarrierOffset(a), $00);
+  end;
+
+  BDRegister := $C0;
+  AdLibWrite($BD, BDRegister);
+
+  isInitialised := true;
 end;
-
-procedure PlayMelody(const melody: PMelody; const voice: byte);
-begin
-  StopVoice(voice);
-
-  if melody = nil then panicHalt('playMelody: Attempting to play a nil melody!');
-  
-  voices[voice].active := true;
-  voices[voice].melody := melody;
-  voices[voice].noteIndex := 0;
-  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
-  voices[voice].instrument := melody^.instrument;
-
-  AssignInstrument(voice, voices[voice].instrument);
-  PlayNote(
-    voice,
-    melody^.notes[0].freq,
-    melody^.notes[0].octave,
-    melody^.notes[0].velocity)
-end;
-
 
 procedure Update;
 var
