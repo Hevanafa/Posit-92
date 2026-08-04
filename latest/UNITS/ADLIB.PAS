@@ -78,15 +78,12 @@ type
     SetWaveSelect: Byte;  { Type of Wave to use          }
   end;
 
-const 
+const
   BassDrumVoice = 6;
   SnareDrumVoice = 7;
   TomTomVoice = 8;
   CymbalVoice = 9;
   HiHatVoice = 10;
-
-var
-  SemiToneCurrent: Array[0..10] of Integer;
 
 function GetIsInitialised: boolean;
 procedure Init;
@@ -391,7 +388,7 @@ const
 
   { PERCUSSIVE MODE VOICES }
   { TODO: Adapt this with the TInstrument format }
-  BassDrum:array[0..1] of TOldInstrument = (
+  BassDrum: array[0..1] of TOldInstrument = (
     (WaveChar: 0; ScalingOutput: 11;
       AttackDecay: 168; SustainRelease: 76;
       FeedBack: 1; SetWaveSelect: 1),
@@ -399,7 +396,7 @@ const
       AttackDecay: 214; SustainRelease: 79;
       FeedBack: 1; SetWaveSelect: 0));
 
-  InstrArray:Array[7..10] of TOldInstrument =
+  InstrArray: array[7..10] of TOldInstrument =
   (* SnareDrum Instrument *)
   ((
     WaveChar:12; ScalingOutput: 0;
@@ -551,8 +548,8 @@ begin
     AdLibWrite($E0 + SlotMVoice[i][Modulator], $00);
     AdLibWrite($E0 + SlotMVoice[i][Carrier], $00);
     }
-    AdLibWrite($E0 + getModulatorOffset(a), $00);
-    AdLibWrite($E0 + getCarrierOffset(a), $00);
+    AdLibWrite($E0 + GetModulatorOffset(a), $00);
+    AdLibWrite($E0 + GetCarrierOffset(a), $00);
   end;
   
   isInitialised := true;
@@ -570,15 +567,10 @@ var
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  carrierOffset := getCarrierOffset(voice);
+  carrierOffset := GetCarrierOffset(voice);
 
   volume := (velocity * voices[voice].volume) div 127;
 
-  { Important: Don't delete this! }
-  {
-  with instruments[voices[voice].instrument]^.carrier do
-    AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
-  }
   AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
 
   MelodicKeyOn(
@@ -591,7 +583,6 @@ procedure StopVoice(const voice: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  { AdLibWrite($B0 + voice, 0); }
   MelodicKeyOff(voice);
   voices[voice].active := false
 end;
