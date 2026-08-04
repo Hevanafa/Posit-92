@@ -175,7 +175,7 @@ function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): 
 var
   row, col: word;
   mask: byte;
-  baseOffset, destOffset: longint;
+  baseOffset, destOffset: word;
 
   rowStart, rowEnd: integer;
   colStart, colEnd: integer;
@@ -218,7 +218,7 @@ begin
   clipMask := ($FF shr colStart) and ($FF shl (7 - colEnd));
 
   { implementation with base offset }
-  baseOffset := longint(y + rowStart) * VGAWidth + x;
+  baseOffset := (y + rowStart) * VGAWidth + x;
 
   for row := rowStart to rowEnd do begin
     mask := font8x8[ord(ch), row] and clipMask;
