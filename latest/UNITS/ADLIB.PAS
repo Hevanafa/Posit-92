@@ -265,7 +265,7 @@ begin
 end;
 
 
-procedure resetAllRegisters;
+procedure ResetAllRegisters;
 var
   a: byte;
 begin
@@ -301,7 +301,7 @@ begin
   end;
 end;
 
-procedure convertOldInstrument(var output: TInstrument; var src: TOldInstrument);
+procedure ConvertOldInstrument(var output: TInstrument; var src: TOldInstrument);
 begin
   with output.modulator do begin
     tremolo := (src.WaveChar and $80) <> 0;  { bit 7 }
@@ -465,7 +465,7 @@ end;
 
 
 { Adapted from BoardInstalled from ccodere/pascal-adlib }
-function checkAdLib: boolean;
+function CheckAdLib: boolean;
 var
   status1, status2: integer;
 begin
@@ -483,7 +483,7 @@ begin
 
   status1 := status1 and $E0;
   status2 := status2 and $E0;
-  checkAdLib := (status1 = $00) and (status2 = $C0)
+  CheckAdLib := (status1 = $00) and (status2 = $C0)
 end;
 
 
@@ -697,20 +697,20 @@ ASM
 end;
 end;
 
-function isVoiceMelodic(const voice: byte): boolean;
+function IsVoiceMelodic(const voice: byte): boolean;
 begin
-  isVoiceMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
+  IsVoiceMelodic := (isPercussiveMode and (voice < BassDrumVoice)) or
     (not isPercussiveMode)
 end;
 
 { low-level interface, doesn't change the `active` flag }
-procedure melodicKeyOn(const voice, freqLow, freqHigh: byte);
+procedure MelodicKeyOn(const voice, freqLow, freqHigh: byte);
 var
   isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := isVoiceMelodic(voice);
+  isMelodic := IsVoiceMelodic(voice);
 
   if isMelodic then begin
     AdLibWrite($A0 + voice, freqLow); { low byte of frequency }
@@ -720,13 +720,13 @@ end;
 
 
 { low-level interface, doesn't change the `active` flag }
-procedure melodicKeyOff(const voice: byte);
+procedure MelodicKeyOff(const voice: byte);
 var
   isMelodic: boolean;
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
-  isMelodic := isVoiceMelodic(voice);
+  isMelodic := IsVoiceMelodic(voice);
 
   if isMelodic then
     AdLibWrite($B0 + voice, 0);
@@ -767,12 +767,12 @@ var
 begin
   if isInitialised then exit;
 
-  if not checkAdLib then begin
+  if not CheckAdLib then begin
     writeLog('init: Can''t find the AdLib card!');
     exit
   end;
 
-  resetAllRegisters;
+  ResetAllRegisters;
 
   { Let us decide which waveforms we wish to have }
   AdLibWrite($01, $20);
@@ -824,7 +824,7 @@ begin
   }
   AdLibWrite($40 + carrierOffset, ($3F - (volume div 2)) and $3F);
 
-  melodicKeyOn(
+  MelodicKeyOn(
     voice,
     lo(freq),
     (hi(freq) and $03) or (octave shl 2))
@@ -835,7 +835,7 @@ begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
   { AdLibWrite($B0 + voice, 0); }
-  melodicKeyOff(voice);
+  MelodicKeyOff(voice);
   voices[voice].active := false
 end;
 
@@ -902,7 +902,7 @@ begin
     if not voices[a].active then continue;
     
     if now >= voices[a].noteEndTick then begin
-      melodicKeyOff(a);
+      MelodicKeyOff(a);
       inc(voices[a].noteIndex);
       
       if voices[a].noteIndex >= voices[a].melody^.noteCount then begin
@@ -935,7 +935,7 @@ begin
   if not isInitialised then exit;
   
   StopAllVoices;
-  resetAllRegisters;
+  ResetAllRegisters;
 
   isInitialised := false
 end;
