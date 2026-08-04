@@ -153,7 +153,7 @@ begin
     PCSpkr.Init;
 
   if bootConfig.EnableAdLib then
-    AdlibDrv.init;
+    AdlibDrv.Init;
 
   { Randomize; }
   RandSeed := trunc(GetTimer);
@@ -170,7 +170,7 @@ begin
     PCSpkr.Stop;
 
   if bootConfig.EnableAdLib then
-    AdLibDrv.shutdown;
+    AdLibDrv.Shutdown;
 
   FreeBuffer;
   CloseLogger;
@@ -187,7 +187,7 @@ begin
     PCSpkr.Update;
 
   if bootConfig.EnableAdLib then
-    AdlibDrv.update;
+    AdlibDrv.Update;
 end;
 
 procedure P92Draw;

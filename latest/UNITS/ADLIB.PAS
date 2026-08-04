@@ -85,33 +85,34 @@ type
     SemiToneCurrent: Array[0..10] of Integer;
     Function CalcNote(const Voice, Note: byte): Word;
 
-    function getIsInitialised: boolean;
-    procedure init;
-    procedure update;
-    procedure shutdown;
-    procedure setPercussive(const value: boolean);
+    function GetIsInitialised: boolean;
+    procedure Init;
+    procedure Update;
+    procedure Shutdown;
+
+    procedure SetPercussive(const value: boolean);
 
     {
     procedure loadInstrument(const instrSlot: byte; const instr: PInstrument);
     procedure selectInstrument(const voice, instrSlot: byte);
     }
-    procedure assignInstrument(const voice: byte; const instr: PInstrument);
+    procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
-    procedure setupMelodicInstruments;
-    procedure setupRhythmInstruments;
+    procedure SetupMelodicInstruments;
+    procedure SetupRhythmInstruments;
 
     { Playback }
-    procedure playNote(const voice: byte; const freq: word; const octave, velocity: byte);
-    procedure stopVoice(const voice: byte);
+    procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
+    procedure StopVoice(const voice: byte);
 
-    procedure drumOn(const voice, note: byte);
-    procedure drumOff(const voice: byte);
+    procedure DrumOn(const voice, note: byte);
+    procedure DrumOff(const voice: byte);
 
-    procedure playMelodyNoInstrument(const melody: PMelody; const voice: byte);
-    procedure playMelody(const melody: PMelody; const voice: byte);
-    procedure stopAllVoices;
+    procedure PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
+    procedure PlayMelody(const melody: PMelody; const voice: byte);
+    procedure StopAllVoices;
 
-    procedure drawDebug;
+    procedure DrawDebug;
   end;
 
 const 
@@ -231,7 +232,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.assignInstrument(const voice: byte; const instr: PInstrument);
+procedure TAdLibDriver.AssignInstrument(const voice: byte; const instr: PInstrument);
 var
   { modulator & carrier offsets }
   modOffset, carOffset: byte;
@@ -309,14 +310,14 @@ begin
 end;
 
 
-function TAdLibDriver.getIsInitialised: boolean;
+function TAdLibDriver.GetIsInitialised: boolean;
 begin
-  getIsInitialised := isInitialised
+  GetIsInitialised := isInitialised
 end;
 
 
 { Adapted from ccodere/pascal-adlib's GitHub repo }
-procedure TAdLibDriver.setPercussive(const value: boolean);
+procedure TAdLibDriver.SetPercussive(const value: boolean);
 begin
   isPercussiveMode := value;
 
@@ -328,11 +329,11 @@ begin
     { Skipped MaxVoices value }
     BDRegister := $E0;
     AdLibWrite($BD, BDRegister);
-    setupRhythmInstruments;
+    SetupRhythmInstruments;
   end else begin
     BDRegister := $C0;
     AdLibWrite($BD, BDRegister);
-    setupMelodicInstruments;
+    SetupMelodicInstruments;
   end;
 end;
 
@@ -376,7 +377,7 @@ end;
 
 
 { Assigns all voices with the electric piano preset }
-procedure TAdLibDriver.setupMelodicInstruments;
+procedure TAdLibDriver.SetupMelodicInstruments;
 const
   OpModulator: array[0..13] of byte = (
     $00, $01, $02, $08, $09, $0a,
@@ -422,7 +423,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.setupRhythmInstruments;
+procedure TAdLibDriver.SetupRhythmInstruments;
 const
   OpModulator: array[0..10] of byte = (
     $F2, $53, $74, $00, $00, $08,
@@ -768,7 +769,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.drumOn(const voice, note: byte);
+procedure TAdLibDriver.DrumOn(const voice, note: byte);
 const
   PercussiveOffset: array[0..10] of byte = (
     $11, $10, $08, $04, $02, $01,
@@ -787,7 +788,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.drumOff(const voice: byte);
+procedure TAdLibDriver.DrumOff(const voice: byte);
 begin
   if not isPercussiveMode then exit;
 
@@ -796,7 +797,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.init;
+procedure TAdLibDriver.Init;
 var
   a: byte;
 begin
@@ -835,10 +836,10 @@ begin
   
   isInitialised := true;
 
-  setPercussive(false);
+  SetPercussive(false);
 end;
 
-procedure TAdLibDriver.playNote(
+procedure TAdLibDriver.PlayNote(
   const voice: byte;
   const freq: word;
   const octave, velocity: byte);
@@ -865,7 +866,7 @@ begin
     (hi(freq) and $03) or (octave shl 2))
 end;
 
-procedure TAdLibDriver.stopVoice(const voice: byte);
+procedure TAdLibDriver.StopVoice(const voice: byte);
 begin
   if voice >= MAX_MELODIC_VOICES then exit;
 
@@ -874,18 +875,18 @@ begin
   voices[voice].active := false
 end;
 
-procedure TAdLibDriver.stopAllVoices;
+procedure TAdLibDriver.StopAllVoices;
 var
   a: byte;
 begin
   for a:=0 to MAX_MELODIC_VOICES - 1 do
-    stopVoice(a);
+    StopVoice(a);
 end;
 
 
-procedure TAdLibDriver.playMelodyNoInstrument(const melody: PMelody; const voice: byte);
+procedure TAdLibDriver.PlayMelodyNoInstrument(const melody: PMelody; const voice: byte);
 begin
-  stopVoice(voice);
+  StopVoice(voice);
 
   if melody = nil then panicHalt('TAdLibDriver.playMelody: Attempting to play a nil melody!');
   
@@ -895,17 +896,17 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   { voices[voice].instrument := melody^.instrument; }
 
-  { assignInstrument(voice, instruments[melody^.instrument]); }
-  playNote(
+  { AssignInstrument(voice, instruments[melody^.instrument]); }
+  PlayNote(
     voice,
     melody^.notes[0].freq,
     melody^.notes[0].octave,
     melody^.notes[0].velocity)
 end;
 
-procedure TAdLibDriver.playMelody(const melody: PMelody; const voice: byte);
+procedure TAdLibDriver.PlayMelody(const melody: PMelody; const voice: byte);
 begin
-  stopVoice(voice);
+  StopVoice(voice);
 
   if melody = nil then panicHalt('TAdLibDriver.playMelody: Attempting to play a nil melody!');
   
@@ -915,8 +916,8 @@ begin
   voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
   voices[voice].instrument := melody^.instrument;
 
-  assignInstrument(voice, voices[voice].instrument);
-  playNote(
+  AssignInstrument(voice, voices[voice].instrument);
+  PlayNote(
     voice,
     melody^.notes[0].freq,
     melody^.notes[0].octave,
@@ -924,7 +925,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.update;
+procedure TAdLibDriver.Update;
 var
   a: byte;
   now: double;
@@ -946,7 +947,7 @@ begin
       end;
       
       with voices[a].melody^.notes[voices[a].noteIndex] do begin
-        playNote(a, freq, octave, velocity);
+        PlayNote(a, freq, octave, velocity);
         voices[a].noteEndTick := now + duration
       end;
     end;
@@ -954,7 +955,7 @@ begin
 end;
 
 
-procedure TAdLibDriver.drawDebug;
+procedure TAdLibDriver.DrawDebug;
 begin
   if not isInitialised then begin
     Print('AdLib is not initialised!', 0, 0, 7);
@@ -965,11 +966,11 @@ begin
 end;
 
 
-procedure TAdLibDriver.shutdown;
+procedure TAdLibDriver.Shutdown;
 begin
   if not isInitialised then exit;
   
-  stopAllVoices;
+  StopAllVoices;
   resetAllRegisters;
 
   isInitialised := false

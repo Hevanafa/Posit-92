@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, Logger, P92KBD, P92Mouse, Timing, P92VGA,
+  P92Core, P92TEX, Conv, Logger, P92KBD, P92Mouse, Timing, P92VGA,
   AdLib;
 
 type
@@ -94,33 +94,34 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMP(DosuEXE[0], 'IMG\DOSU_1.BMP');
-  LoadBMP(DosuEXE[1], 'IMG\DOSU_2.BMP');
-  LoadBMP(imgCoin, 'IMG\COIN.BMP');
+  LoadTex(DosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadTex(DosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadTex(imgCoin, 'IMG\COIN.BMP');
 
   InitInstruments;
-  { AdlibDrv.assignInstrument(0, @PianoInstrument); }
+  { AdlibDrv.AssignInstrument(0, @PianoInstrument); }
 
   with sfxCoin do begin
     noteCount := 3;
     instrument := @PianoInstrument;
-    initNote(notes[0], NOTE_C, 5, 0.3, 127);
-    initNote(notes[1], NOTE_E, 5, 0.3, 127);
-    initNote(notes[2], NOTE_F, 5, 0.3, 127)
+    initNote(notes[0], NOTE_C, 5, 0.05, 127);
+    initNote(notes[1], NOTE_E, 5, 0.05, 127);
+    initNote(notes[2], NOTE_F, 5, 0.05, 127)
   end;
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(DosuEXE[0]);
-  FreeBMP(DosuEXE[1]);
-  FreeBMP(imgCoin);
+  FreeTex(DosuEXE[0]);
+  FreeTex(DosuEXE[1]);
+  FreeTex(imgCoin);
 end;
 
 procedure OnReady; far;
 begin
   playerX := 148;
   playerY := 76;
+
   with playerHitbox do begin
     x := trunc(playerX);
     y := trunc(playerY);
@@ -142,7 +143,7 @@ begin
       inc(score, 1);
       InitCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      AdlibDrv.playMelody(@sfxCoin, 0);
+      AdlibDrv.PlayMelody(@sfxCoin, 0);
     end;
 end;
 
