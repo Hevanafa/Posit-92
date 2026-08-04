@@ -58,10 +58,7 @@ implementation
 
 uses
   DOS,
-  Logger, Timing, P92MEM,
-  P92KBD, P92Mouse,
-  FPS, P92VGA,
-  PCSPKR, AdLib
+  Logger, Timing, P92MEM, P92KBD, P92Mouse, FPS, P92VGA, PCSPKR, AdLib, Panic
 {$ifdef P92_MODE_X}
   , ModeX;
 {$else}
@@ -309,6 +306,12 @@ begin
   end else begin
     now := GetTimer;
     nextTick := now;
+
+    if not assigned(bootConfig.Update) then
+      PanicHalt('Boot config is missing the Update method');
+
+    if not assigned(bootConfig.Draw) then
+      PanicHalt('Boot config is missing the Draw method');
 
     case bootConfig.WaitMode of
     P92WaitHLT:
