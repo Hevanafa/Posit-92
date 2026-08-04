@@ -26,7 +26,7 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="GAME.PAS"/>
+        <Filename Value="MAIN.PAS"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Game"/>
       </Unit>
@@ -36,7 +36,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="GAME"/>
+      <Filename Value="MAIN.EXE"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
