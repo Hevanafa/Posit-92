@@ -1,3 +1,7 @@
+{
+  CGA Print test project
+  Part of Posit-92 game engine
+}
 
 uses
   P92Core, Conv, Graphics, Timing, P92VGA;
@@ -14,7 +18,7 @@ begin
   { Original: 1.2273s
     After row-level optimisation: 1.0526s, 0.9419s
     Using base offset: 0.5576s, 0.4929s
-    Using col loop with inline assembly: 0.3064s, 0.3087s }
+    Using col loop with inline assembly: 0.3064s, 0.3087s, 0.2966s }
   for a:=1 to 1000 do
     print('Hello world!', random(VGAWidth + 40) - 20, random(VGAHeight + 40) - 20, $0F);
 
