@@ -152,6 +152,23 @@ begin
   PascalPrint(text, x, y, colour)
 end;
 
+{ Base reference for DrawCGAGlyph }
+function DrawCGAGlyphBaseRef(const ch: char; const x, y: integer; const colour: byte): word;
+var
+  row, col: word;
+  mask: byte;
+begin
+  for row := 0 to 7 do begin
+    mask := font8x8[ord(ch), row];
+
+    if mask = 0 then continue;
+
+    for col := 0 to 7 do
+      if (mask and ($80 shr col)) <> 0 then
+        AsmPSet(x + col, y + row, colour);
+  end;
+end;
+
 { Always returns 8, following the BMFont's xadvance pattern }
 function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): word;
 var
@@ -167,7 +184,7 @@ begin
 
   { Handle edge cases }
 
-  { Edge case: off-screen}
+  { Edge case: off-screen }
   if (x <= -8) or (x >= VGAWidth)
     or (y <= -8) or (y >= VGAHeight) then exit;
 
@@ -194,18 +211,6 @@ begin
     colEnd := 7;
 
   clipMask := ($FF shr colStart) and ($FF shl (7 - colEnd));
-
-  {
-  for row := 0 to 7 do begin
-    mask := font8x8[ord(ch), row];
-
-    if mask = 0 then continue;
-
-    for col := 0 to 7 do
-      if (mask and ($80 shr col)) <> 0 then
-        AsmPSet(x + col, y + row, colour);
-  end;
-  }
 
   { implementation with base offset }
   { TODO: Update base offset }
