@@ -12,7 +12,8 @@ begin
   startTick := GetTimer;
 
   { Original: 1.2273s
-    After row-level optimisation: 1.0526s }
+    After row-level optimisation: 1.0526s
+    Using base offset: 0.5576s }
   for a:=1 to 1000 do
     print('Hello world!', random(VGAWidth + 40) - 20, random(VGAHeight + 40) - 20, $0F);
 

@@ -157,10 +157,11 @@ function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): 
 var
   row, col: word;
   mask: byte;
+  baseOfs, destOfs: longint;
 begin
   DrawCGAGlyph := 8;
 
-  for row := 0 to 7 do begin
+  { for row := 0 to 7 do begin
     mask := font8x8[ord(ch), row];
 
     if mask = 0 then continue;
@@ -168,6 +169,20 @@ begin
     for col := 0 to 7 do
       if (mask and (1 shl (7 - col))) <> 0 then
         AsmPSet(x + col, y + row, colour);
+  end; }
+
+  baseOfs := longint(y) * VGAWidth + x;
+
+  for row := 0 to 7 do begin
+    mask := font8x8[ord(ch), row];
+
+    if mask = 0 then continue;
+
+    destOfs := baseOfs + row * VGAWidth;
+
+    for col := 0 to 7 do
+      if (mask and ($80 shr col)) <> 0 then
+        surface^[destOfs + col] := colour;
   end;
 end;
 
