@@ -1,10 +1,22 @@
 
 uses
-  P92Core, P92VGA;
+  P92Core, Conv, Graphics, Timing, P92VGA;
 
 procedure DrawOnce; far;
+var
+  a: word;
+  startTick: double;
+  s: string;
 begin
+  cls($00);
+  startTick := GetTimer;
 
+  for a:=1 to 1000 do
+    print('Hello world!', random(VGAWidth + 40) - 20, random(VGAHeight + 40) - 20, $0F);
+
+  s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
+  RectFill(0, VGAHeight - 16, length(s) * 8, VGAHeight - 8, $00);
+  print(s, 0, VGAHeight - 16, $0F);
 end;
 
 var
