@@ -23,7 +23,7 @@ type
   TBMFont = record
     glyphs: array[0..255] of TBMFontGlyph;
     lineHeight: word;
-    bitmap: TTexture;
+    texture: TTexture;
   end;
 
 procedure DefaultBMFont(var font: TBMFont);
@@ -44,7 +44,7 @@ function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integ
   See PrintBMFontGlyph for reference
 
   This function is limited by ASM's 64k number limit when
-  accessing `font.bitmap.data`.  So the font's bitmap
+  accessing `font.texture.data`.  So the font's bitmap
   can't be more than 65535 bytes
 
   returns: xadvance
@@ -122,7 +122,7 @@ begin
   len := high(font.glyphs) - Low(font.glyphs) + 1;
   FillChar(font.glyphs, SizeOf(TBMFontGlyph) * len, 0);
   font.lineHeight := 0;
-  DefaultBMP(font.bitmap);
+  DefaultTex(font.texture);
 end;
 
 procedure LoadBMFont(var font: TBMFont; const filename: string);
@@ -187,7 +187,7 @@ begin
   end;
   close(f);
 
-  LoadBMP(font.bitmap, bitmapPath);
+  LoadTex(font.texture, bitmapPath);
   writeLog('Loaded ' + i32str(count) + ' glyphs');
 end;
 
@@ -201,13 +201,13 @@ begin
   fillchar(font.glyphs, sizeof(TBMFontGlyph) * len, 0);
   font.lineHeight := 0;
 
-  FreeBMP(font.bitmap)
+  FreeTex(font.texture)
 end;
 
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 begin
   dest := src;
-  CloneBMP(src.bitmap, dest.bitmap);
+  CloneTex(src.texture, dest.texture);
 end;
 
 
@@ -251,10 +251,10 @@ begin
 
   { Begin loop }
   for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.bitmap.width + g^.x;
+    rowBase := (g^.y + row) * font.texture.width + g^.x;
 
     for col := startCol to endCol do begin
-      colour := font.bitmap.data^[rowBase + col];
+      colour := font.texture.data^[rowBase + col];
 
       if colour <> transparencyKey then
         AsmPSet(drawX + col, drawY + row, colour);
@@ -280,7 +280,7 @@ var
 begin
   g := @(font.glyphs[ord(ch)]);
   PrintBMFontGlyphFast := g^.xadvance;
-  pixelData := font.bitmap.data;
+  pixelData := font.texture.data;
 
   { Edge case: Handle space }
   if (g^.width = 0) and (g^.height = 0) then exit;
@@ -308,7 +308,7 @@ begin
 
   { Begin loop - See PrintBMFontGlyph for reference }
   for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.bitmap.width + g^.x + startCol;
+    rowBase := (g^.y + row) * font.texture.width + g^.x + startCol;
     screenY := drawY + row;
     screenX := drawX + startCol;
     colCount := endCol - startCol + 1;
@@ -378,7 +378,7 @@ begin
     srcY := g^.y + row;
 
     for col := 0 to g^.width - 1 do begin
-      colour := font.bitmap.data^[srcY * font.bitmap.width + (g^.x + col)];
+      colour := font.texture.data^[srcY * font.texture.width + (g^.x + col)];
 
       if colour <> transparencyKey then
         AsmPSet(x + g^.xoffset + col, y + g^.yoffset + row, tint);
