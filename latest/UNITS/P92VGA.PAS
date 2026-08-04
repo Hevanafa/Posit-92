@@ -227,9 +227,38 @@ begin
 
     destOffset := baseOffset + (row - rowStart) * VGAWidth;
 
-    for col := colStart to colEnd do
+    { Base col loop implementation }
+    { for col := colStart to colEnd do
       if (mask and ($80 shr col)) <> 0 then
-        surfacePtr^[destOffset + col] := colour;
+        surfacePtr^[destOffset + col] := colour; }
+
+    asm
+      les di, surfacePtr
+      add di, destOffset
+      add di, colStart
+
+      mov al, mask
+      mov cl, byte ptr colStart
+      shl al, cl  { align first visible bit to bit 7 }
+
+      mov bl, colour
+
+      { Load CX with the visible column count }
+      mov cx, colEnd
+      sub cx, colStart
+      inc cx
+
+    @col_loop:
+      shl al, 1
+      jnc @skip
+
+      mov es:[di], bl
+
+    @skip:
+      inc di
+      dec cx
+      jnz @col_loop
+    end;
   end;
 end;
 
