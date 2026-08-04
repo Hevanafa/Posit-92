@@ -36,6 +36,7 @@ procedure Cls(const colour: byte);
 procedure PascalCls(const colour: byte);
 procedure AsmCls(const colour: byte);
 
+function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): word;
 procedure Print(const text: string; const x, y: integer; const colour: byte);
 
 { Forwards call to AsmPset }
