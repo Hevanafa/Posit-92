@@ -152,7 +152,8 @@ begin
   PascalPrint(text, x, y, colour)
 end;
 
-{ Base reference for DrawCGAGlyph }
+{ Always returns 8, following the BMFont's xadvance pattern
+  Base reference for DrawCGAGlyph }
 function DrawCGAGlyphBaseRef(const ch: char; const x, y: integer; const colour: byte): word;
 var
   row, col: word;
@@ -169,18 +170,22 @@ begin
   end;
 end;
 
-{ Always returns 8, following the BMFont's xadvance pattern }
+{ See DrawCGAGlyphBaseRef above to see the base implementation }
 function DrawCGAGlyph(const ch: char; const x, y: integer; const colour: byte): word;
 var
   row, col: word;
   mask: byte;
-  baseOfs, destOfs: longint;
+  baseOffset, destOffset: longint;
 
   rowStart, rowEnd: integer;
   colStart, colEnd: integer;
   clipMask: byte;
+
+  surfacePtr: PByteArray;
 begin
   DrawCGAGlyph := 8;
+
+  surfacePtr := surface;
 
   { Handle edge cases }
 
@@ -213,20 +218,18 @@ begin
   clipMask := ($FF shr colStart) and ($FF shl (7 - colEnd));
 
   { implementation with base offset }
-  { TODO: Update base offset }
-  baseOfs := longint(y) * VGAWidth + x;
+  baseOffset := longint(y + rowStart) * VGAWidth + x;
 
-  { TODO: Update the loop iterators }
-  for row := 0 to 7 do begin
-    mask := font8x8[ord(ch), row];
+  for row := rowStart to rowEnd do begin
+    mask := font8x8[ord(ch), row] and clipMask;
 
     if mask = 0 then continue;
 
-    destOfs := baseOfs + row * VGAWidth;
+    destOffset := baseOffset + (row - rowStart) * VGAWidth;
 
-    for col := 0 to 7 do
+    for col := colStart to colEnd do
       if (mask and ($80 shr col)) <> 0 then
-        surface^[destOfs + col] := colour;
+        surfacePtr^[destOffset + col] := colour;
   end;
 end;
 
