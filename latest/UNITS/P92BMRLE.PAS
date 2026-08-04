@@ -1,4 +1,4 @@
-unit BMPRLE;
+unit P92BMRLE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

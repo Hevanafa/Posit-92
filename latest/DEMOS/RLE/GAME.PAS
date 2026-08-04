@@ -1,6 +1,6 @@
 uses
   CRT, DOS,
-  P92Core, P92TEX, Conv, Logger, P92KBD, P92Mouse, Panic, Timing, P92VGA, BMPRLE;
+  P92Core, P92TEX, Conv, Logger, P92KBD, P92Mouse, Panic, Timing, P92VGA, P92BMRLE;
 
 var
   { Asset variables }
@@ -100,7 +100,7 @@ begin
 
   print('1000 operations done in ' + f32str(diff) + 's', 0, 0, 15);
 
-  flush;
+  PresentMode13h;
 
   { Cleanup }
   FreeRLETexture(sampleRLE);
