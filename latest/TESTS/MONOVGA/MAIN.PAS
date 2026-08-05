@@ -92,6 +92,8 @@ begin
     b := surfacePtr^[src];
 
     asm
+      push es
+
       mov ax, $A000
       mov es, ax
       xor di, di
@@ -110,6 +112,8 @@ begin
       movsw
       movsw
       movsw
+
+      pop es
     end;
   end;
 end;
@@ -122,7 +126,8 @@ begin
   startTick := GetTimer;
 
   { Without LUT: 6.8057s
-    With LUT: 2.0417s }
+    With LUT: 2.0417s
+    AsmPresent: 1.1704s }
   for a:=1 to 100 do
     AsmPresent1BPP;
 
