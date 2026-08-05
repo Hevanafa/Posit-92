@@ -35,11 +35,13 @@ const DEBUG = true;
 procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 var
   f: file;
-  dataOffset: word;
   buffer: array[1..256] of byte;
   bytesWidth, bytesRead: word;
   a, b: integer;
-  w, h, size: integer;
+
+  dataOffset: longint;
+  w, h, size: longint;
+
   { Sanitisation }
   lastUsedByte, unusedBits: integer;
 
@@ -57,9 +59,9 @@ begin
   if IOResult <> 0 then
     panicHalt('loadMonoBMP: Couldn''t find "' + filename + '"!');
 
-  seek(f, $0A); blockRead(f, dataOffset, 2);
-  seek(f, $12); blockRead(f, w, 2);
-  seek(f, $16); blockRead(f, h, 2);
+  seek(f, $0A);  BlockRead(f, dataOffset, 4);
+  seek(f, $12);  BlockRead(f, w, 4);
+  seek(f, $16);  BlockRead(f, h, 4);
 
   bytesWidth := ((w + 31) div 32) * 4;
 
