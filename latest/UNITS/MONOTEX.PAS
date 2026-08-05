@@ -43,6 +43,7 @@ var
   w, h, size: longint;
 
   { Sanitisation }
+  rowStart: word;
   lastUsedByte, unusedBits: integer;
 begin
   if assigned(tex.data) then begin
@@ -81,8 +82,10 @@ begin
 
   for b:=0 to h-1 do begin
     seek(f, dataOffset + (b * tex.bytesWidth));
+    rowStart := (h-b-1) * tex.bytesWidth;
+
     { Fill from bottom to top }
-    BlockRead(f, tex.data^[(h-b-1) * tex.bytesWidth], tex.bytesWidth);
+    BlockRead(f, tex.data^[rowStart], tex.bytesWidth);
 
     lastUsedByte := tex.width div 8;
     unusedBits := 8 - (tex.width mod 8);
@@ -94,10 +97,10 @@ begin
 
     { Sanitise the partial byte }
     if tex.width mod 8 > 0 then
-      tex.data^[lastUsedByte] := tex.data^[lastUsedByte] and ($FF shl unusedBits);
+      tex.data^[rowStart + lastUsedByte] := tex.data^[rowStart + lastUsedByte] and ($FF shl unusedBits);
 
     { Zero out full padding bytes }
-    for a:=lastUsedByte+2 to tex.bytesWidth do
+    for a := rowStart + lastUsedByte + 1 to rowStart + tex.bytesWidth - 1 do
       tex.data^[a] := 0;
   end;
 
