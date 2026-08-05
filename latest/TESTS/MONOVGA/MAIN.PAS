@@ -59,12 +59,29 @@ begin
   bit := bit and 1;
 
   bufOffset := (y * (VGAWidth div 8)) + (x div 8);
-  mask := 1 shl (7 - x mod 8);
 
-  if bit <> 0 then
-    surface^[bufOffset] := surface^[bufOffset] or mask
-  else
-    surface^[bufOffset] := surface^[bufOffset] and not mask;
+  asm
+    { Load AL with `mask` }
+    mov cx, x
+    and cx, 7
+    mov al, 7
+    sub al, cl
+    mov cl, al
+    mov al, 1
+    shl al, cl
+
+    les di, surface
+    add di, bufOffset
+    mov ah, al
+    not ah
+    and ah, es:[di]
+
+    mov bl, bit
+    neg bl
+    and al, bl
+    or al, ah
+    mov es:[di], al
+  end;
 end;
 
 procedure PSet10000;
@@ -76,7 +93,13 @@ begin
 
   { 0.0673s }
   for a:=1 to 10000 do
+    PSet1BPP(random(VGAWidth + 10) - 5, random(VGAHeight + 10) - 5, 1);
+
+  { 0.0618s }
+  {
+  for a:=1 to 10000 do
     AsmPSet1BPP(random(VGAWidth + 10) - 5, random(VGAHeight + 10) - 5, 1);
+  }
 
   endTick := GetTimer;
 
