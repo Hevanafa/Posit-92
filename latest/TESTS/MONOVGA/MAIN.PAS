@@ -13,9 +13,15 @@ end;
 procedure PSet1BPP(const x, y: integer; const bit: byte);
 var
   offset: word;
+  mask: byte;
 begin
-  offset := x div 8 + y;
-  surface^[offset] := surface^[offset] and (bit shl (x mod 8));
+  offset := (y * (VGAWidth div 8)) + (x div 8);
+  mask := 1 shl (7 - x mod 8);
+
+  if bit <> 0 then
+    surface^[offset] := surface^[offset] or mask
+  else
+    surface^[offset] := surface^[offset] and not mask;
 end;
 
 procedure Present1BPP;
