@@ -1,6 +1,6 @@
 
 uses
-  Conv, Timing, P92VGA;
+  Conv, Timing, MonoTex, P92VGA;
 
 const
   Palette: array[0..1] of Byte = ($00, $46);
@@ -272,12 +272,11 @@ begin
 
   Cls1BPP($00);
 
-  { PSet1BPP(32, 10, 0); }
-  { Print1BPP('Hello from MONOVGA!', 8, 8, 1); }
-
-  PSet10000;
-
+  Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
   Present1BPP;
+
+  { Benchmarking procedures }
+  { PSet10000; }
   { Present100; }
 
   readln;
