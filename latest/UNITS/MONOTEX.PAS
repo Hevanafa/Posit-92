@@ -23,11 +23,7 @@ procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 procedure FreeMonoTex(var tex: TMonoTexture);
 
 procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
-
-procedure SprMono(
-  const tex: TMonoTexture;
-  const x, y: integer;
-  const tint: byte);
+procedure SprMono(const tex: TMonoTexture; const x, y: integer);
 
 
 implementation
@@ -174,10 +170,9 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure SprMono(
-  const tex: TMonoTexture;
-  const x, y: integer;
-  const tint: byte);
+procedure SprMono(const tex: TMonoTexture; const x, y: integer);
+const
+  bit = 1;
 var
   row, byteCol: integer;
   screenX: integer;
@@ -190,15 +185,15 @@ begin
       b := tex.data^[row * tex.bytesWidth + byteCol];
 
       if b <> 0 then begin
-        if (b and $80) <> 0 then PSet1BPP(screenX + 0, y + row, tint);
-        if (b and $40) <> 0 then PSet1BPP(screenX + 1, y + row, tint);
-        if (b and $20) <> 0 then PSet1BPP(screenX + 2, y + row, tint);
-        if (b and $10) <> 0 then PSet1BPP(screenX + 3, y + row, tint);
+        if (b and $80) <> 0 then PSet1BPP(screenX + 0, y + row, bit);
+        if (b and $40) <> 0 then PSet1BPP(screenX + 1, y + row, bit);
+        if (b and $20) <> 0 then PSet1BPP(screenX + 2, y + row, bit);
+        if (b and $10) <> 0 then PSet1BPP(screenX + 3, y + row, bit);
 
-        if (b and $08) <> 0 then PSet1BPP(screenX + 4, y + row, tint);
-        if (b and $04) <> 0 then PSet1BPP(screenX + 5, y + row, tint);
-        if (b and $02) <> 0 then PSet1BPP(screenX + 6, y + row, tint);
-        if (b and $01) <> 0 then PSet1BPP(screenX + 7, y + row, tint);
+        if (b and $08) <> 0 then PSet1BPP(screenX + 4, y + row, bit);
+        if (b and $04) <> 0 then PSet1BPP(screenX + 5, y + row, bit);
+        if (b and $02) <> 0 then PSet1BPP(screenX + 6, y + row, bit);
+        if (b and $01) <> 0 then PSet1BPP(screenX + 7, y + row, bit);
       end;
 
       inc(screenX, 8)
