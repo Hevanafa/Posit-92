@@ -4,6 +4,21 @@ uses
 
 const
   Palette: array[0..1] of Byte = ($00, $46);
+  { Lookup table }
+  LUT: array[0..255, 0..7] of byte;
+
+procedure InitLUT;
+var
+  i: word;
+  bit: byte;
+begin
+  for a:=0 to 255 do
+    for bit := 7 downto 0 do
+      if (a and (1 shl bit)) <> 0 then
+        LUT[a][7 - bit] := palette[1]
+      else
+        LUT[a][7 - bit] := palette[0];
+end;
 
 procedure Cls1BPP(const colour: byte);
 begin
@@ -96,6 +111,8 @@ begin
 
   InitBuffer(320, 200);
   InitMode13h;
+
+  InitLUT;
 
   Cls1BPP($FF);
 
