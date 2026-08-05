@@ -9,38 +9,40 @@ unit MonoTex;
 
 interface
 
+uses P92VGA;
+
 type
   PMonoTexture = ^TMonoTexture;
   TMonoTexture = record
     width, height, bytesWidth: word;
-    data: array[0..0] of byte;
+    data: PByteArray;
   end;
 
 { Requires a 1-bpp bitmap file }
-procedure LoadMonoTex(var output: TMonoTexture; const filename: string);
+procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 procedure FreeMonoTex(var tex: TMonoTexture);
 
 procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
 
 procedure SprMono(
-  const tex: PMonoTexture;
+  const tex: TMonoTexture;
   const x, y: integer;
   const tint: byte);
 
 
 implementation
 
-uses Conv, Logger, Panic, P92VGA;
+uses Conv, Logger, Maths, Panic;
 
 const DEBUG = true;
 
-procedure LoadMonoTex(var output: TMonoTexture; const filename: string);
+procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 const
-  start = $3E;
+  Start = $3E;
 var
   f: file;
   buffer: array[1..256] of byte;
-  bytesW, bytesRead: word;
+  bytesWidth, bytesRead: word;
   a, b: integer;
   w, h, size: integer;
   { Sanitisation }
@@ -49,7 +51,7 @@ var
   s: string;
 
 begin
-  if assigned(output.data) then begin
+  if assigned(tex.data) then begin
     WriteLog('Warning: LoadMonoTex: output.data is already assigned');
     WriteLog('when attempting to load ' + filename);
   end;
@@ -62,42 +64,39 @@ begin
   seek(f, $12); blockRead(f, w, 2);
   seek(f, $16); blockRead(f, h, 2);
 
-  { Should've been ceil instead of round }
-  bytesW := round((w div 8) / 4 + 0.5) * 4;
-  { Assuming the bitmap always has a size }
-  if (w <= 4) and (bytesW = 0) then
-    bytesW := 4;
+  bytesWidth := ceil((w div 8) / 4) * 4;
+  { Assuming that the bitmap always has a size }
+  if (w <= 4) and (bytesWidth = 0) then
+    bytesWidth := 4;
 
-  size := sizeOf(TMonoTexture) + (bytesW * h) - 1;
-  getMem(output, size);
+  size := bytesWidth * h;
+  GetMem(tex.data, size);
 
-  output^.width := w;
-  output^.height := h;
-  output^.bytesWidth := bytesW;
+  tex.width := w;
+  tex.height := h;
+  tex.bytesWidth := bytesWidth;
 
   if debug then begin
-    with output^ do begin
-      writeLog('Width:' + i32str(width));
-      writeLog('Height:' + i32str(height));
-      writeLog('Bytes width:' + i32str(bytesWidth));
-    end;
-    writeLog('Start:' + i32str(start));
+    writeLog('Width:' + i32str(tex.width));
+    writeLog('Height:' + i32str(tex.height));
+    writeLog('Bytes width:' + i32str(tex.bytesWidth));
+    writeLog('Start:' + i32str(Start));
   end;
 
   s := '';
 
   for b:=0 to h-1 do begin
-    seek(f, start + (b * output^.bytesWidth));
-    blockRead(f, buffer, output^.bytesWidth);
+    seek(f, Start + (b * tex.bytesWidth));
+    blockRead(f, buffer, tex.bytesWidth);
 
-    { if output^.width < 8 then begin }
+    { if tex^.width < 8 then begin }
       { Edge case: less than 8 pixels }
-      { unusedBits := 8 - output^.width;
+      { unusedBits := 8 - tex^.width;
       buffer[1] := buffer[1] and ($FF shl unusedBits)
     end else begin
     }
-      lastUsedByte := output^.width div 8;
-      unusedBits := 8 - (output^.width mod 8);
+      lastUsedByte := tex.width div 8;
+      unusedBits := 8 - (tex.width mod 8);
 
       if debug then begin
         writeLog('Last used byte: ' + i32str(lastUsedByte));
@@ -106,11 +105,11 @@ begin
 
       { Sanitise the partial byte }
       { Buffer is 1-indexed }
-      if output^.width mod 8 > 0 then
+      if tex.width mod 8 > 0 then
         buffer[lastUsedByte + 1] := buffer[lastUsedByte + 1] and ($FF shl unusedBits);
 
       { Zero out full padding bytes }
-      for a:=lastUsedByte+2 to output^.bytesWidth do
+      for a:=lastUsedByte+2 to tex.bytesWidth do
         buffer[a] := 0;
    { end; }
 
@@ -118,7 +117,7 @@ begin
     { debug last bytes of buffer }
     writeLog('Buffer on line ' + i32str(b));
     s:='';
-    for a:=(output^.width div 8)+1 to output^.bytesWidth do begin
+    for a:=(tex.width div 8)+1 to tex.bytesWidth do begin
       s:=s+i8hexStr(buffer[a])+' '
     end;
     writeLog(s);
@@ -132,7 +131,7 @@ begin
       writeLog('Buffer line ' + i32str(b));
       s := '';
 
-      for a:=low(buffer) to low(buffer) + output^.bytesWidth - 1 do
+      for a:=low(buffer) to low(buffer) + tex.bytesWidth - 1 do
         s:=s + i8hexStr(buffer[a]) + ' ';
       writeLog(s);
     end;
@@ -140,15 +139,15 @@ begin
     { bottom to top }
     Move(
       buffer[1],
-      output^.data[(h-b-1) * output^.bytesWidth],
-      output^.bytesWidth);
+      tex.data^[(h-b-1) * tex.bytesWidth],
+      tex.bytesWidth);
 
     {
     writeLog('After move row ' + i32str(b));
     s:='';
     if debug then begin
-      for a:=0 to output^.bytesWidth do
-        s := s + i8hexStr(output^.data[(h-b-1) * output^.bytesWidth + a]) + ' ';
+      for a:=0 to tex^.bytesWidth do
+        s := s + i8hexStr(tex^.data[(h-b-1) * tex^.bytesWidth + a]) + ' ';
       writeLog(s);
     end;
     }
@@ -161,16 +160,16 @@ end;
 { Assume bit value of 0 is transparent }
 procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
 var
-  row, col, bitIndex: integer;
-  byteIndex: integer;
+  row, col, bitIndex: word;
+  byteIndex: word;
   b: byte;
 begin
-  if tex = nil then exit;
-  for row:=0 to tex^.height - 1 do begin
-    byteIndex := row * tex^.bytesWidth;
-    for col:=0 to tex^.width - 1 do begin
+  for row:=0 to tex.height - 1 do begin
+    byteIndex := row * tex.bytesWidth;
+
+    for col:=0 to tex.width - 1 do begin
       bitIndex:=7-(col mod 8);
-      b := tex^.data[byteIndex + (col div 8)];
+      b := tex.data^[byteIndex + (col div 8)];
       if ((b shr bitIndex) and 1) = 1 then
         asmPset(x + col, y + row, 15);
     end;
@@ -188,11 +187,11 @@ var
   screenX: integer;
   b: byte;
 begin
-  for row := 0 to tex^.height - 1 do begin
+  for row := 0 to tex.height - 1 do begin
     screenX := x;
 
-    for byteCol := 0 to tex^.bytesWidth - 1 do begin
-      b := tex^.data[row * tex^.bytesWidth + byteCol];
+    for byteCol := 0 to tex.bytesWidth - 1 do begin
+      b := tex.data^[row * tex.bytesWidth + byteCol];
 
       if b <> 0 then begin
         if (b and $80) <> 0 then asmPset(screenX + 0, y + row, tint);
@@ -215,7 +214,7 @@ end;
 procedure FreeMonoTex(var tex: TMonoTexture);
 begin
   if assigned(tex.data) then begin
-    freemem(tex, sizeOf(TMonoTexture) + (tex^.bytesWidth * tex^.height) - 1);
+    freemem(tex.data, tex.bytesWidth * tex.height);
     tex.data := nil
   end;
 

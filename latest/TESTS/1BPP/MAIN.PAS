@@ -6,8 +6,8 @@ uses
 
 var
   { Asset variables }
-  cursor: PMonoTexture;
-  playdate: PMonoTexture;
+  cursor: TMonoTexture;
+  playdate: TMonoTexture;
 
   { Game state variables }
   t: double;
