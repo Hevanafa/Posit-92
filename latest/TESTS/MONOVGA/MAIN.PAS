@@ -118,6 +118,58 @@ begin
   end;
 end;
 
+procedure AsmPresent1BPP_2;
+var
+  surfacePtr: PByteArray;
+  surfaceSegment: word;
+begin
+  surfacePtr := surface;
+
+  asm
+    push ds
+    mov dx, ds
+
+    mov ax, word ptr [surfacePtr + 2]
+    mov [surfaceSegment], ax
+
+    { push es }
+
+    mov ax, $A000
+    mov es, ax
+    xor di, di
+
+    mov si, word ptr [surfacePtr]
+
+    mov cx, 8000  { vgawidth * vgaheight div 8 }
+
+  @loop:
+    mov ds, [surfaceSegment]
+    lodsb
+    mov ds, dx
+
+    xor ah, ah
+    mov bx, ax
+    shl bx, 1
+    shl bx, 1
+    shl bx, 1
+    add bx, offset LUT
+
+    mov ax, [bx]
+    stosw
+    mov ax, [bx + 2]
+    stosw
+    mov ax, [bx + 4]
+    stosw
+    mov ax, [bx + 6]
+    stosw
+
+    dec cx
+    jnz @loop
+
+    pop ds
+  end;
+end;
+
 procedure Present100;
 var
   startTick, endTick: double;
@@ -127,9 +179,11 @@ begin
 
   { Without LUT: 6.8057s
     With LUT: 2.0417s
-    AsmPresent: 1.1704s }
+    AsmPresent: 1.1704s
+    AsmPresent_2: 0.9346s }
   for a:=1 to 100 do
     AsmPresent1BPP;
+    { AsmPresent1BPP_2; }
 
   endTick := GetTimer;
 
