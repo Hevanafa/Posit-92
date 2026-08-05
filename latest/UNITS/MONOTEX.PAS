@@ -35,7 +35,6 @@ const DEBUG = true;
 procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 var
   f: file;
-  buffer: array[1..256] of byte;
   bytesWidth, bytesRead: word;
   a, b: integer;
 
@@ -45,10 +44,6 @@ var
 
   { Sanitisation }
   lastUsedByte, unusedBits: integer;
-
-  { Used in debugging }
-  s: string;
-
 begin
   if assigned(tex.data) then begin
     WriteLog('Warning: LoadMonoTex: output.data is already assigned');
@@ -84,11 +79,10 @@ begin
     writeLog('Start:' + i32str(dataOffset));
   end;
 
-  s := '';
-
   for b:=0 to h-1 do begin
     seek(f, dataOffset + (b * tex.bytesWidth));
-    blockRead(f, buffer, tex.bytesWidth);
+    { Fill from bottom to top }
+    BlockRead(f, tex.data^[(h-b-1) * tex.bytesWidth], tex.bytesWidth);
 
     lastUsedByte := tex.width div 8;
     unusedBits := 8 - (tex.width mod 8);
@@ -99,19 +93,12 @@ begin
     end;
 
     { Sanitise the partial byte }
-    { Buffer is 1-indexed }
     if tex.width mod 8 > 0 then
-      buffer[lastUsedByte + 1] := buffer[lastUsedByte + 1] and ($FF shl unusedBits);
+      tex.data^[lastUsedByte] := tex.data^[lastUsedByte] and ($FF shl unusedBits);
 
     { Zero out full padding bytes }
     for a:=lastUsedByte+2 to tex.bytesWidth do
-      buffer[a] := 0;
-
-    { bottom to top }
-    Move(
-      buffer[1],
-      tex.data^[(h-b-1) * tex.bytesWidth],
-      tex.bytesWidth);
+      tex.data^[a] := 0;
   end;
 
   close(f)
