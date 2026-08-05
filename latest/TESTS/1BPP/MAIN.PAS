@@ -49,7 +49,7 @@ procedure Draw; far;
 begin
   Cls1BPP($00);
 
-  SprMono(imgDosuEXE, 9, 4);
+  SprMonoBaseRef(imgDosuEXE, 9, 4);
   { debugMouse; }
 
   { PSet1BPP(10, 10, 1); }

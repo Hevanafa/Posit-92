@@ -22,7 +22,7 @@ type
 procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 procedure FreeMonoTex(var tex: TMonoTexture);
 
-procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
+procedure SprMonoBaseRef(const tex: TMonoTexture; const x, y: integer);
 procedure SprMono(const tex: TMonoTexture; const x, y: integer);
 
 
@@ -109,7 +109,7 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
+procedure SprMonoBaseRef(const tex: TMonoTexture; const x, y: integer);
 var
   row, col, bitIndex: word;
   byteIndex: word;
@@ -119,10 +119,11 @@ begin
     byteIndex := row * tex.bytesWidth;
 
     for col:=0 to tex.width - 1 do begin
-      bitIndex:=7-(col mod 8);
+      bitIndex := 7 - (col mod 8);
       b := tex.data^[byteIndex + (col div 8)];
+
       if ((b shr bitIndex) and 1) = 1 then
-        asmPset(x + col, y + row, 15);
+        PSet1BPP(x + col, y + row, 15);
     end;
   end;
 end;
