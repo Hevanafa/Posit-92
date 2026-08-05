@@ -58,13 +58,38 @@ begin
 
   bit := bit and 1;
 
-  offset := (y * (VGAWidth div 8)) + (x div 8);
-  mask := 1 shl (7 - x mod 8);
+  asm
+    mov ax, y
+    mov bx, ax
+    shl ax, 6
+    shl bx, 4
+    add ax, bx
+    mov bx, x
+    mov cx, bx
+    shr bx, 3
+    add bx, ax
+    mov offset, bx
 
-  if bit <> 0 then
-    surface^[offset] := surface^[offset] or mask
-  else
-    surface^[offset] := surface^[offset] and not mask;
+    { build mask }
+    and cx, 7  { x mod 8 }
+    mov ch, 7
+    sub ch, cl  { 7 - (x mod 8) }
+    mov cl, ch
+    mov al, 1
+    shl al, cl
+
+    les di, surface
+    add di, ofs
+    mov ah, al
+    not ah
+    and ah, es:[di]
+
+    mov bl, bit
+    neg bl
+    and al, bl
+    or al, ah
+    mov es:[di], al
+  end;
 end;
 
 procedure PSet10000;
