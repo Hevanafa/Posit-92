@@ -32,7 +32,7 @@ procedure SprMono(
 
 implementation
 
-uses Conv, Logger, Maths, Panic;
+uses Conv, Logger, Maths, Panic, MonoVGA;
 
 const DEBUG = true;
 
@@ -89,33 +89,27 @@ begin
     seek(f, Start + (b * tex.bytesWidth));
     blockRead(f, buffer, tex.bytesWidth);
 
-    { if tex^.width < 8 then begin }
-      { Edge case: less than 8 pixels }
-      { unusedBits := 8 - tex^.width;
-      buffer[1] := buffer[1] and ($FF shl unusedBits)
-    end else begin
-    }
-      lastUsedByte := tex.width div 8;
-      unusedBits := 8 - (tex.width mod 8);
+    lastUsedByte := tex.width div 8;
+    unusedBits := 8 - (tex.width mod 8);
 
-      if debug then begin
-        writeLog('Last used byte: ' + i32str(lastUsedByte));
-        writeLog('Unused bits: ' + i32str(unusedBits));
-      end;
+    if debug then begin
+      writeLog('Last used byte: ' + i32str(lastUsedByte));
+      writeLog('Unused bits: ' + i32str(unusedBits));
+    end;
 
-      { Sanitise the partial byte }
-      { Buffer is 1-indexed }
-      if tex.width mod 8 > 0 then
-        buffer[lastUsedByte + 1] := buffer[lastUsedByte + 1] and ($FF shl unusedBits);
+    { Sanitise the partial byte }
+    { Buffer is 1-indexed }
+    if tex.width mod 8 > 0 then
+      buffer[lastUsedByte + 1] := buffer[lastUsedByte + 1] and ($FF shl unusedBits);
 
-      { Zero out full padding bytes }
-      for a:=lastUsedByte+2 to tex.bytesWidth do
-        buffer[a] := 0;
-   { end; }
+    { Zero out full padding bytes }
+    for a:=lastUsedByte+2 to tex.bytesWidth do
+      buffer[a] := 0;
 
-
-    { debug last bytes of buffer }
+    { Debug last bytes of buffer }
+    {
     writeLog('Buffer on line ' + i32str(b));
+
     s:='';
     for a:=(tex.width div 8)+1 to tex.bytesWidth do begin
       s:=s+i8hexStr(buffer[a])+' '
@@ -124,9 +118,10 @@ begin
 
     if debug then
       writeLog('Finished reading line ' + i32str(b));
+    }
 
-    { debug buffer lines }
-
+    { Debug buffer lines }
+    {
     if debug then begin
       writeLog('Buffer line ' + i32str(b));
       s := '';
@@ -135,6 +130,7 @@ begin
         s:=s + i8hexStr(buffer[a]) + ' ';
       writeLog(s);
     end;
+    }
 
     { bottom to top }
     Move(
@@ -194,15 +190,15 @@ begin
       b := tex.data^[row * tex.bytesWidth + byteCol];
 
       if b <> 0 then begin
-        if (b and $80) <> 0 then asmPset(screenX + 0, y + row, tint);
-        if (b and $40) <> 0 then asmPset(screenX + 1, y + row, tint);
-        if (b and $20) <> 0 then asmPset(screenX + 2, y + row, tint);
-        if (b and $10) <> 0 then asmPset(screenX + 3, y + row, tint);
+        if (b and $80) <> 0 then PSet1BPP(screenX + 0, y + row, tint);
+        if (b and $40) <> 0 then PSet1BPP(screenX + 1, y + row, tint);
+        if (b and $20) <> 0 then PSet1BPP(screenX + 2, y + row, tint);
+        if (b and $10) <> 0 then PSet1BPP(screenX + 3, y + row, tint);
 
-        if (b and $08) <> 0 then asmPset(screenX + 4, y + row, tint);
-        if (b and $04) <> 0 then asmPset(screenX + 5, y + row, tint);
-        if (b and $02) <> 0 then asmPset(screenX + 6, y + row, tint);
-        if (b and $01) <> 0 then asmPset(screenX + 7, y + row, tint);
+        if (b and $08) <> 0 then PSet1BPP(screenX + 4, y + row, tint);
+        if (b and $04) <> 0 then PSet1BPP(screenX + 5, y + row, tint);
+        if (b and $02) <> 0 then PSet1BPP(screenX + 6, y + row, tint);
+        if (b and $01) <> 0 then PSet1BPP(screenX + 7, y + row, tint);
       end;
 
       inc(screenX, 8)

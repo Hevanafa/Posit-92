@@ -10,6 +10,7 @@ var
   playdate: TMonoTexture;
 
   { Game state variables }
+  done: boolean;
   t: double;
 
 
@@ -30,7 +31,7 @@ begin
   t := 0.0
 end;
 
-procedure drawMouseMono;
+procedure DrawMouseMono;
 begin
   SprMono(cursor, mouseX, mouseY, $0C)
 end;
@@ -38,7 +39,7 @@ end;
 
 procedure Update; far;
 begin
-  if isKeyDown(SC_ESCAPE) then SignalDone;
+  if IsKeyDown(SC_ESCAPE) then done := true; { SignalDone; }
 
   t:=t+DeltaTime;
 end;
@@ -46,49 +47,53 @@ end;
 
 procedure Draw; far;
 begin
-  cls($7D);
+  Cls1BPP($00);
 
-  SprMono(playdate, 9, 4, 15);
-  print('Hello world!', 160-48, 136, $7D);
-  debugMouse;
-  drawMouseMono;
+  { SprMono(playdate, 9, 4, 15); }
+  { debugMouse; }
+
+  { PSet1BPP(10, 10, 1); }
+  Print1BPP('Hello from 1BPP!', (VGAWidth - 152) div 2, 100, 1);
+  Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
+
+  DrawMouseMono;
 end;
 
-var
-  done: boolean;
+
 begin
   LoadCGAFont;
 
   InitBuffer(320, 200);
   InitMode13h;
 
+  InitKeyHandler;
+  InitMouse;
+
   InitDeltaTime;
   InitFPSCounter;
+
+  OnPreload;
+  OnReady;
 
   done := false;
 
   repeat
-    { Update }
     UpdateDeltaTime;
     IncrementFPS;
+    UpdateMouse;
 
-    if KeyPressed and (ReadKey = #27) then done := true;
+    { User code }
+    Update;
+    Draw;
 
-    { Draw }
-    Cls1BPP($00);
-
-    { PSet1BPP(10, 10, 1); }
-    Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
-
-    Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
-
+    { After draw }
     Present1BPP;
   until done;
 
-  { Benchmarking procedures }
-  { PSet10000; }
-  { Present100; }
+  OnCleanup;
 
+  ResetKeyHandler;
+  ResetMouse;
   FreeBuffer;
   InitModeText;
 end.
