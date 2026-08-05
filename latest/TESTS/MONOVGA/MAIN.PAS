@@ -71,14 +71,52 @@ end;
 procedure Present1BPP;
 var
   src, dest: word;
-  b: byte;
-  bit: integer;
 begin
   dest := 0;
 
   for src := 0 to (VGAWidth * VGAHeight div 8) - 1 do begin
     move(LUT[surface^[src]], mem[$A000:dest], 8);
     inc(dest, 8)
+  end;
+end;
+
+procedure AsmPresent1BPP;
+var
+  surfacePtr: PByteArray;
+begin
+  surfacePtr := surface;
+
+  asm
+    push ds
+
+    mov ax, word ptr[surfacePtr + 2]
+    mov fs, ax
+    mov bx, word ptr[surfacePtr]
+
+    { Load ES:DI with the VGA mem }
+    mov ax, $A000
+    mov es, ax
+    xor di, di
+
+    mov cx, 8000
+
+  @loop:
+    mov al, fs:[bx]
+    inc bx
+    xor ah, ah
+    shl ax, 3
+    mov si, offset LUT
+    add si, ax
+
+    movsw
+    movsw
+    movsw
+    movsw
+
+    dec cx
+    jnz @loop
+
+    pop ds
   end;
 end;
 
