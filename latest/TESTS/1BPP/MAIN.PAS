@@ -6,8 +6,8 @@ uses
 
 var
   { Asset variables }
-  cursor: TMonoTexture;
-  playdate: TMonoTexture;
+  imgCursor: TMonoTexture;
+  imgDosuEXE: TMonoTexture;
 
   { Game state variables }
   done: boolean;
@@ -16,14 +16,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadMonoTex(cursor, 'CUR1BPP.BMP');
-  LoadMonoTex(playdate, 'PLAYDATE.BMP');
+  LoadMonoTex(imgCursor, 'CUR1BPP.BMP');
+  LoadMonoTex(imgDosuEXE, 'DOSU.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeMonoTex(cursor);
-  FreeMonoTex(playdate);
+  FreeMonoTex(imgCursor);
+  FreeMonoTex(imgDosuEXE);
 end;
 
 procedure OnReady; far;
@@ -33,7 +33,7 @@ end;
 
 procedure DrawMouseMono;
 begin
-  SprMono(cursor, mouseX, mouseY)
+  SprMono(imgCursor, mouseX, mouseY)
 end;
 
 
@@ -49,7 +49,7 @@ procedure Draw; far;
 begin
   Cls1BPP($00);
 
-  { SprMono(playdate, 9, 4, 15); }
+  SprMono(imgDosuEXE, 9, 4);
   { debugMouse; }
 
   { PSet1BPP(10, 10, 1); }
