@@ -49,7 +49,7 @@ end;
 
 procedure AsmPSet1BPP(const x, y: integer; bit: byte);
 var
-  offset: word;
+  bufOffset: word;
   mask: byte;
 begin
   { Bounds check }
@@ -58,38 +58,13 @@ begin
 
   bit := bit and 1;
 
-  asm
-    mov ax, y
-    mov bx, ax
-    shl ax, 6
-    shl bx, 4
-    add ax, bx
-    mov bx, x
-    mov cx, bx
-    shr bx, 3
-    add bx, ax
-    mov offset, bx
+  bufOffset := (y * (VGAWidth div 8)) + (x div 8);
+  mask := 1 shl (7 - x mod 8);
 
-    { build mask }
-    and cx, 7  { x mod 8 }
-    mov ch, 7
-    sub ch, cl  { 7 - (x mod 8) }
-    mov cl, ch
-    mov al, 1
-    shl al, cl
-
-    les di, surface
-    add di, ofs
-    mov ah, al
-    not ah
-    and ah, es:[di]
-
-    mov bl, bit
-    neg bl
-    and al, bl
-    or al, ah
-    mov es:[di], al
-  end;
+  if bit <> 0 then
+    surface^[bufOffset] := surface^[bufOffset] or mask
+  else
+    surface^[bufOffset] := surface^[bufOffset] and not mask;
 end;
 
 procedure PSet10000;
