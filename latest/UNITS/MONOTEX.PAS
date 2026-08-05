@@ -61,11 +61,7 @@ begin
   seek(f, $12); blockRead(f, w, 2);
   seek(f, $16); blockRead(f, h, 2);
 
-  bytesWidth := ceil((w div 8) / 4) * 4;
-
-  { Assuming that the bitmap always has a size }
-  if (w <= 4) and (bytesWidth = 0) then
-    bytesWidth := 4;
+  bytesWidth := ((w + 31) div 32) * 4;
 
   size := bytesWidth * h;
   GetMem(tex.data, size);
