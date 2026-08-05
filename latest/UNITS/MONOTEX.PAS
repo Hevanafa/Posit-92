@@ -61,6 +61,7 @@ begin
   seek(f, $16); blockRead(f, h, 2);
 
   bytesWidth := ceil((w div 8) / 4) * 4;
+
   { Assuming that the bitmap always has a size }
   if (w <= 4) and (bytesWidth = 0) then
     bytesWidth := 4;
@@ -102,47 +103,11 @@ begin
     for a:=lastUsedByte+2 to tex.bytesWidth do
       buffer[a] := 0;
 
-    { Debug last bytes of buffer }
-    {
-    writeLog('Buffer on line ' + i32str(b));
-
-    s:='';
-    for a:=(tex.width div 8)+1 to tex.bytesWidth do begin
-      s:=s+i8hexStr(buffer[a])+' '
-    end;
-    writeLog(s);
-
-    if debug then
-      writeLog('Finished reading line ' + i32str(b));
-    }
-
-    { Debug buffer lines }
-    {
-    if debug then begin
-      writeLog('Buffer line ' + i32str(b));
-      s := '';
-
-      for a:=low(buffer) to low(buffer) + tex.bytesWidth - 1 do
-        s:=s + i8hexStr(buffer[a]) + ' ';
-      writeLog(s);
-    end;
-    }
-
     { bottom to top }
     Move(
       buffer[1],
       tex.data^[(h-b-1) * tex.bytesWidth],
       tex.bytesWidth);
-
-    {
-    writeLog('After move row ' + i32str(b));
-    s:='';
-    if debug then begin
-      for a:=0 to tex^.bytesWidth do
-        s := s + i8hexStr(tex^.data[(h-b-1) * tex^.bytesWidth + a]) + ' ';
-      writeLog(s);
-    end;
-    }
   end;
 
   close(f)
