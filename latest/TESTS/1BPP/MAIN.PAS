@@ -8,6 +8,7 @@ var
   { Asset variables }
   cursor: PMonoTexture;
   playdate: PMonoTexture;
+
   { Game state variables }
   t: double;
 

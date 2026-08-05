@@ -17,10 +17,10 @@ type
   end;
 
 { Requires a 1-bpp bitmap file }
-procedure LoadMonoTex(var output: PMonoTexture; const filename: string);
-procedure FreeMonoTex(var tex: PMonoTexture);
+procedure LoadMonoTex(var output: TMonoTexture; const filename: string);
+procedure FreeMonoTex(var tex: TMonoTexture);
 
-procedure SprMonoSlow(const tex: PMonoTexture; const x, y: integer);
+procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
 
 procedure SprMono(
   const tex: PMonoTexture;
@@ -34,7 +34,7 @@ uses Conv, Logger, Panic, P92VGA;
 
 const DEBUG = true;
 
-procedure LoadMonoTex(var output: PMonoTexture; const filename: string);
+procedure LoadMonoTex(var output: TMonoTexture; const filename: string);
 const
   start = $3E;
 var
@@ -49,6 +49,11 @@ var
   s: string;
 
 begin
+  if assigned(output.data) then begin
+    WriteLog('Warning: LoadMonoTex: output.data is already assigned');
+    WriteLog('when attempting to load ' + filename);
+  end;
+
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
@@ -154,7 +159,7 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure SprMonoSlow(const tex: PMonoTexture; const x, y: integer);
+procedure SprMonoSlow(const tex: TMonoTexture; const x, y: integer);
 var
   row, col, bitIndex: integer;
   byteIndex: integer;
@@ -175,7 +180,7 @@ end;
 
 { Assume bit value of 0 is transparent }
 procedure SprMono(
-  const tex: PMonoTexture;
+  const tex: TMonoTexture;
   const x, y: integer;
   const tint: byte);
 var
@@ -183,8 +188,6 @@ var
   screenX: integer;
   b: byte;
 begin
-  if tex = nil then exit;
-
   for row := 0 to tex^.height - 1 do begin
     screenX := x;
 
@@ -209,11 +212,16 @@ begin
 end;
 
 
-procedure FreeMonoTex(var tex: PMonoTexture);
+procedure FreeMonoTex(var tex: TMonoTexture);
 begin
-  if tex = nil then exit;
-  freeMem(tex, sizeOf(TMonoTexture) + (tex^.bytesWidth * tex^.height) - 1);
-  tex := nil  { avoids dangling pointer }
+  if assigned(tex.data) then begin
+    freemem(tex, sizeOf(TMonoTexture) + (tex^.bytesWidth * tex^.height) - 1);
+    tex.data := nil
+  end;
+
+  tex.bytesWidth := 0;
+  tex.width := 0;
+  tex.height := 0
 end;
 
 end.
