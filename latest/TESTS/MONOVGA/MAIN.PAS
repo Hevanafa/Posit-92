@@ -114,10 +114,10 @@ begin
       movsw
       movsw
 
+      mov [dest], di
+
       pop es
     end;
-
-    inc(dest, 8)
   end;
 end;
 
@@ -182,15 +182,17 @@ begin
 
   { Without LUT: 6.8057s
     With LUT: 2.0417s
-    AsmPresent: 1.3009s, 1.1956s
-    AsmPresent_2: 0.9346s }
+    AsmPresent: 1.3009s, 1.1956s }
   for a:=1 to 100 do
     AsmPresent1BPP;
-    { AsmPresent1BPP_2; }
+
+  { AsmPresent_2: 0.9346s }
+  { for a:=1 to 100 do
+    AsmPresent1BPP_2; }
 
   endTick := GetTimer;
 
-  Print1BPP('100 present ops done in ' + F32Str(endTick - startTick) + 's', 0, 0, $00);
+  Print1BPP('100 present ops done in ' + F32Str(endTick - startTick) + 's', 0, 0, 1);
 
   Present1BPP;
 end;
@@ -203,10 +205,10 @@ begin
 
   InitLUT;
 
-  Cls1BPP($FF);
+  Cls1BPP($00);
 
   { PSet1BPP(32, 10, 0); }
-  Print1BPP('Hello from MONOVGA!', 8, 8, 0);
+  Print1BPP('Hello from MONOVGA!', 8, 8, 1);
 
   { Present1BPP; }
   Present100;
