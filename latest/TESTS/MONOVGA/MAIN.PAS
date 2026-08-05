@@ -96,7 +96,11 @@ begin
 
       mov ax, $A000
       mov es, ax
-      xor di, di
+
+      mov di, [src]
+      shl di, 1
+      shl di, 1
+      shl di, 1
 
       xor bh, bh
       mov bl, [b]
@@ -179,7 +183,7 @@ begin
 
   { Without LUT: 6.8057s
     With LUT: 2.0417s
-    AsmPresent: 1.1704s
+    AsmPresent: 1.3009s
     AsmPresent_2: 0.9346s }
   for a:=1 to 100 do
     AsmPresent1BPP;
