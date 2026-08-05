@@ -9,6 +9,7 @@ interface
 procedure InitFPSCounter;
 procedure IncrementFPS;
 procedure DrawFPS;
+function GetLastFPS: integer;
 
 
 implementation
@@ -45,6 +46,11 @@ end;
 procedure DrawFPS;
 begin
   Print('FPS:' + I32Str(lastFPS), 240, 0, $0E)
+end;
+
+function GetLastFPS: integer;
+begin
+  GetLastFPS := lastFPS
 end;
 
 

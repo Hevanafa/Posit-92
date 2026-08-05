@@ -1,6 +1,7 @@
 
 uses
-  Conv, Timing, MonoTex, P92VGA;
+  CRT,
+  Conv, FPS, Timing, MonoTex, P92VGA;
 
 const
   Palette: array[0..1] of Byte = ($00, $46);
@@ -262,24 +263,39 @@ begin
   Present1BPP;
 end;
 
+var
+  done: boolean;
 begin
   LoadCGAFont;
 
   InitBuffer(320, 200);
   InitMode13h;
-
   InitLUT;
 
-  Cls1BPP($00);
+  InitDeltaTime;
+  InitFPSCounter;
 
-  Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
-  Present1BPP;
+  done := false;
+
+  repeat
+    { Update }
+    UpdateDeltaTime;
+    IncrementFPS;
+
+    if KeyPressed and (ReadKey = #27) then done := true;
+
+    { Draw }
+    Cls1BPP($00);
+    Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
+
+    Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
+
+    Present1BPP;
+  until done;
 
   { Benchmarking procedures }
   { PSet10000; }
   { Present100; }
-
-  readln;
 
   FreeBuffer;
   InitModeText;
