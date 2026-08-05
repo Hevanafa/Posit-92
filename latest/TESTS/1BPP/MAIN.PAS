@@ -35,7 +35,7 @@ end;
 
 procedure DrawMouseMono;
 begin
-  SprMono(imgCursor, mouseX, mouseY)
+  SprMono8(imgCursor, mouseX, mouseY)
 end;
 
 

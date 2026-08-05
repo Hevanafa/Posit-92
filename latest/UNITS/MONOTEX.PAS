@@ -23,7 +23,7 @@ procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 procedure FreeMonoTex(var tex: TMonoTexture);
 
 procedure SprMonoBaseRef(const tex: TMonoTexture; const x, y: integer);
-procedure SprMono(const tex: TMonoTexture; const x, y: integer);
+procedure SprMono8(const tex: TMonoTexture; const x, y: integer);
 
 
 implementation
@@ -130,7 +130,7 @@ end;
 
 
 { Assume bit value of 0 is transparent }
-procedure SprMono(const tex: TMonoTexture; const x, y: integer);
+procedure SprMono8(const tex: TMonoTexture; const x, y: integer);
 const
   bit = 1;
 var
