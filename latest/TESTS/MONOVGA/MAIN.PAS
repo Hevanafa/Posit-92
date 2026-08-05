@@ -4,12 +4,14 @@ uses
 
 const
   Palette: array[0..1] of Byte = ($00, $46);
+
+var
   { Lookup table }
   LUT: array[0..255, 0..7] of byte;
 
 procedure InitLUT;
 var
-  i: word;
+  a: word;
   bit: byte;
 begin
   for a:=0 to 255 do
@@ -75,16 +77,8 @@ begin
   dest := 0;
 
   for src := 0 to (VGAWidth * VGAHeight div 8) - 1 do begin
-    b := surface^[src];
-
-    for bit := 7 downto 0 do begin
-      if (b and (1 shl bit)) <> 0 then
-        Mem[$A000:dest] := Palette[1]
-      else
-        Mem[$A000:dest] := Palette[0];
-
-      inc(dest)
-    end;
+    move(LUT[surface^[src]], mem[$A000:dest], 8);
+    inc(dest, 8)
   end;
 end;
 
@@ -95,7 +89,8 @@ var
 begin
   startTick := GetTimer;
 
-  { 6.8057s }
+  { Without LUT: 6.8057s
+    With LUT: 2.0417s }
   for a:=1 to 100 do
     Present1BPP;
 
