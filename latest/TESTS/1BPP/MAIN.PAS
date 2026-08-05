@@ -1,8 +1,8 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, FPS, P92KBD, P92Mouse, Timing, P92VGA,
-  MonoTex;
+  P92Core, Conv, Logger, FPS, P92KBD, P92Mouse, Timing, P92VGA,
+  MonoTex, MonoVGA;
 
 var
   { Asset variables }
@@ -54,7 +54,46 @@ begin
   drawMouseMono;
 end;
 
+var
+  done: boolean;
+begin
+  LoadCGAFont;
 
+  InitBuffer(320, 200);
+  InitMode13h;
+
+  InitDeltaTime;
+  InitFPSCounter;
+
+  done := false;
+
+  repeat
+    { Update }
+    UpdateDeltaTime;
+    IncrementFPS;
+
+    if KeyPressed and (ReadKey = #27) then done := true;
+
+    { Draw }
+    Cls1BPP($00);
+
+    { PSet1BPP(10, 10, 1); }
+    Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
+
+    Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
+
+    Present1BPP;
+  until done;
+
+  { Benchmarking procedures }
+  { PSet10000; }
+  { Present100; }
+
+  FreeBuffer;
+  InitModeText;
+end.
+
+{
 var
   appConfig: TP92AppConfig;
 begin
@@ -69,4 +108,5 @@ begin
 
   P92Start(appConfig)
 end.
+}
 
