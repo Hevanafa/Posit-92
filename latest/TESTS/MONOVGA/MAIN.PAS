@@ -1,6 +1,6 @@
 
 uses
-  P92VGA;
+  Conv, Timing, P92VGA;
 
 const
   Palette: array[0..1] of Byte = ($00, $46);
@@ -73,6 +73,24 @@ begin
   end;
 end;
 
+procedure Present100;
+var
+  startTick, endTick: double;
+  a: word;
+begin
+  startTick := GetTimer;
+
+  { 6.8057s }
+  for a:=1 to 100 do
+    Present1BPP;
+
+  endTick := GetTimer;
+
+  Print1BPP('100 present ops done in ' + F32Str(endTick - startTick) + 's', 0, 0, $00);
+
+  Present1BPP;
+end;
+
 begin
   LoadCGAFont;
 
@@ -84,7 +102,8 @@ begin
   { PSet1BPP(32, 10, 0); }
   Print1BPP('Hello from MONOVGA!', 8, 8, 0);
 
-  Present1BPP;
+  { Present1BPP; }
+  Present100;
 
   readln;
 
