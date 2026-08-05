@@ -22,6 +22,8 @@ begin
         LUT[a][7 - bit] := palette[0];
 end;
 
+procedure Print1BPP(const text: string; const x, y: integer; const bit: byte); forward;
+
 procedure Cls1BPP(const colour: byte);
 begin
   FillChar(surface^, VGAWidth * VGAHeight div 8, colour)
@@ -32,6 +34,10 @@ var
   offset: word;
   mask: byte;
 begin
+  { Bounds check }
+  if (x < 0) or (x >= VGAWidth)
+    or (y < 0) or (y >= VGAHeight) then exit;
+
   offset := (y * (VGAWidth div 8)) + (x div 8);
   mask := 1 shl (7 - x mod 8);
 
@@ -39,6 +45,21 @@ begin
     surface^[offset] := surface^[offset] or mask
   else
     surface^[offset] := surface^[offset] and not mask;
+end;
+
+procedure PSet10000;
+var
+  a: word;
+  startTick, endTick: double;
+begin
+  startTick := GetTimer;
+
+  for a:=1 to 10000 do
+    PSet1BPP(random(VGAWidth + 10) - 5, random(VGAHeight + 10) - 5, 1);
+
+  endTick := GetTimer;
+
+  Print1BPP('10000 operations done in ' + F32Str(endTick - startTick) + 's', 0, 0, 1)
 end;
 
 procedure Print1BPP(const text: string; const x, y: integer; const bit: byte);
@@ -208,10 +229,12 @@ begin
   Cls1BPP($00);
 
   { PSet1BPP(32, 10, 0); }
-  Print1BPP('Hello from MONOVGA!', 8, 8, 1);
+  { Print1BPP('Hello from MONOVGA!', 8, 8, 1); }
 
-  { Present1BPP; }
-  Present100;
+  PSet10000;
+
+  Present1BPP;
+  { Present100; }
 
   readln;
 
