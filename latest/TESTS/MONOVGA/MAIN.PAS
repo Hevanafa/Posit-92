@@ -47,6 +47,26 @@ begin
     surface^[offset] := surface^[offset] and not mask;
 end;
 
+procedure AsmPSet1BPP(const x, y: integer; bit: byte);
+var
+  offset: word;
+  mask: byte;
+begin
+  { Bounds check }
+  if (x < 0) or (x >= VGAWidth)
+    or (y < 0) or (y >= VGAHeight) then exit;
+
+  bit := bit and 1;
+
+  offset := (y * (VGAWidth div 8)) + (x div 8);
+  mask := 1 shl (7 - x mod 8);
+
+  if bit <> 0 then
+    surface^[offset] := surface^[offset] or mask
+  else
+    surface^[offset] := surface^[offset] and not mask;
+end;
+
 procedure PSet10000;
 var
   a: word;
@@ -54,8 +74,9 @@ var
 begin
   startTick := GetTimer;
 
+  { 0.0673s }
   for a:=1 to 10000 do
-    PSet1BPP(random(VGAWidth + 10) - 5, random(VGAHeight + 10) - 5, 1);
+    AsmPSet1BPP(random(VGAWidth + 10) - 5, random(VGAHeight + 10) - 5, 1);
 
   endTick := GetTimer;
 
