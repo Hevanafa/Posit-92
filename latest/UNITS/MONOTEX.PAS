@@ -33,16 +33,16 @@ uses Conv, Logger, Maths, Panic, MonoVGA;
 const DEBUG = true;
 
 procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
-const
-  Start = $3E;
 var
   f: file;
+  dataOffset: word;
   buffer: array[1..256] of byte;
   bytesWidth, bytesRead: word;
   a, b: integer;
   w, h, size: integer;
   { Sanitisation }
   lastUsedByte, unusedBits: integer;
+
   { Used in debugging }
   s: string;
 
@@ -57,6 +57,7 @@ begin
   if IOResult <> 0 then
     panicHalt('loadMonoBMP: Couldn''t find "' + filename + '"!');
 
+  seek(f, $0A); blockRead(f, dataOffset, 2);
   seek(f, $12); blockRead(f, w, 2);
   seek(f, $16); blockRead(f, h, 2);
 
@@ -77,13 +78,13 @@ begin
     writeLog('Width:' + i32str(tex.width));
     writeLog('Height:' + i32str(tex.height));
     writeLog('Bytes width:' + i32str(tex.bytesWidth));
-    writeLog('Start:' + i32str(Start));
+    writeLog('Start:' + i32str(dataOffset));
   end;
 
   s := '';
 
   for b:=0 to h-1 do begin
-    seek(f, Start + (b * tex.bytesWidth));
+    seek(f, dataOffset + (b * tex.bytesWidth));
     blockRead(f, buffer, tex.bytesWidth);
 
     lastUsedByte := tex.width div 8;
