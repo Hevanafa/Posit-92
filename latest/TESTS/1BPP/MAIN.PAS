@@ -7,7 +7,7 @@ uses
 var
   { Asset variables }
   imgCursor: TMonoTexture;
-  imgDosuEXE: TMonoTexture;
+  imgDosuEXE: array[0..1] of TMonoTexture;
 
   { Game state variables }
   done: boolean;
@@ -17,13 +17,15 @@ var
 procedure OnPreload; far;
 begin
   LoadMonoTex(imgCursor, 'CUR1BPP.BMP');
-  LoadMonoTex(imgDosuEXE, 'DOSU.BMP');
+  LoadMonoTex(imgDosuEXE[0], 'DOSU_1.BMP');
+  LoadMonoTex(imgDosuEXE[1], 'DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
   FreeMonoTex(imgCursor);
-  FreeMonoTex(imgDosuEXE);
+  FreeMonoTex(imgDosuEXE[0]);
+  FreeMonoTex(imgDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -49,11 +51,13 @@ procedure Draw; far;
 begin
   Cls1BPP($00);
 
-  SprMonoBaseRef(imgDosuEXE, 9, 4);
-  { debugMouse; }
+  if frac(t * 1.5) >= 0.5 then
+    SprMonoBaseRef(imgDosuEXE[1], 148, 76)
+  else
+    SprMonoBaseRef(imgDosuEXE[0], 148, 76);
 
   { PSet1BPP(10, 10, 1); }
-  Print1BPP('Hello from 1BPP!', (VGAWidth - 152) div 2, 100, 1);
+  Print1BPP('Hello from 1BPP!', VGAWidth div 2 - 64, 120, 1);
   Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
 
   DrawMouseMono;
