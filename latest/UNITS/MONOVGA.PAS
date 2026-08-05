@@ -5,7 +5,9 @@ interface
 type
   TPalettePair = array[0..1] of byte;
 
-{ procedure SetPalette(pal: TPalettePair); }
+procedure Init1BPPLUT;
+procedure SetPalette(pal: TPalettePair);
+
 procedure Cls1BPP(const bit: byte);
 procedure PSet1BPP(const x, y: integer; bit: byte);
 procedure Print1BPP(const text: string; const x, y: integer; const bit: byte);
@@ -16,13 +18,14 @@ implementation
 
 uses P92VGA;
 
-const
-  palette: TPalettePair = ($00, $46);
+{ const
+  palette: TPalettePair = ($00, $46); }
 var
-  { Lookup table, assigned by InitLUT with palette colours }
+  palette: TPalettePair;
+  { Lookup table, assigned by Init1BPPLUT with palette colours }
   LUT: array[0..255, 0..7] of byte;
 
-procedure InitLUT;
+procedure Init1BPPLUT;
 var
   a: word;
   bit: byte;
@@ -38,12 +41,10 @@ end;
 procedure PascalPresent1BPP; forward;
 procedure AsmPresent1BPP; forward;
 
-{
 procedure SetPalette(pal: TPalettePair);
 begin
   palette := pal
 end;
-}
 
 
 procedure Cls1BPP(const bit: byte);
@@ -249,7 +250,5 @@ begin
   end;
 end;
 
-begin
-  InitLUT
 end.
 
