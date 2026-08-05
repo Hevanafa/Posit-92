@@ -83,10 +83,11 @@ end;
 procedure AsmPresent1BPP;
 var
   surfacePtr: PByteArray;
-  src: word;
+  src, dest: word;
   b: byte;
 begin
   surfacePtr := surface;
+  dest := 0;
 
   for src := 0 to (VGAWidth * VGAHeight div 8) - 1 do begin
     b := surfacePtr^[src];
@@ -96,11 +97,7 @@ begin
 
       mov ax, $A000
       mov es, ax
-
-      mov di, [src]
-      shl di, 1
-      shl di, 1
-      shl di, 1
+      mov di, [dest]
 
       xor bh, bh
       mov bl, [b]
@@ -119,6 +116,8 @@ begin
 
       pop es
     end;
+
+    inc(dest, 8)
   end;
 end;
 
@@ -183,7 +182,7 @@ begin
 
   { Without LUT: 6.8057s
     With LUT: 2.0417s
-    AsmPresent: 1.3009s
+    AsmPresent: 1.3009s, 1.1956s
     AsmPresent_2: 0.9346s }
   for a:=1 to 100 do
     AsmPresent1BPP;
