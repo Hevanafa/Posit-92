@@ -250,5 +250,10 @@ begin
   end;
 end;
 
+const
+  DefaultPalette: TPalettePair = ($00, $46);
+begin
+  SetPalette(DefaultPalette);
+  Init1BPPLUT
 end.
 

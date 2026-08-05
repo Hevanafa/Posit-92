@@ -50,8 +50,6 @@ begin
   Present1BPP;
 end;
 
-const
-  Palette: TPalettePair = ($00, $46);
 var
   done: boolean;
 begin
@@ -62,9 +60,6 @@ begin
 
   InitDeltaTime;
   InitFPSCounter;
-
-  SetPalette(palette);
-  Init1BPPLUT;
 
   done := false;
 
@@ -78,7 +73,7 @@ begin
     { Draw }
     Cls1BPP($00);
 
-    PSet1BPP(10, 10, 1);
+    { PSet1BPP(10, 10, 1); }
     Print1BPP('Hello from MONOVGA!', (VGAWidth - 152) div 2, 100, 1);
 
     Print1BPP('FPS:' + I32Str(GetLastFPS), 240, 0, 1);
