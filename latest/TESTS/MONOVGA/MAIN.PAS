@@ -24,6 +24,33 @@ begin
     surface^[offset] := surface^[offset] and not mask;
 end;
 
+procedure Print1BPP(const text: string; const x, y: integer; const bit: byte);
+var
+  idx: integer;
+  ch: char;
+  xOffset: integer;
+  row, col: word;
+  mask: byte;
+begin
+  xOffset := 0;
+
+  for idx := 1 to length(text) do begin
+    ch := text[idx];
+
+    for row := 0 to 7 do begin
+      mask := BorrowCGAFont^[ord(ch), row];
+
+      if mask = 0 then continue;
+
+      for col := 0 to 7 do
+        if (mask and ($80 shr col)) <> 0 then
+          PSet1BPP(x + xOffset + col, y + row, bit);
+    end;
+
+    inc(xOffset, 8);
+  end;
+end;
+
 procedure Present1BPP;
 var
   src, dest: word;
@@ -53,9 +80,10 @@ begin
   InitMode13h;
 
   Cls1BPP($FF);
-  { print('Hello from MonoVGA!', 8, 8, $07); }
 
-  PSet1BPP(32, 10, 0);
+  { PSet1BPP(32, 10, 0); }
+  Print1BPP('Hello from MONOVGA!', 8, 8, 0);
+
   Present1BPP;
 
   readln;
