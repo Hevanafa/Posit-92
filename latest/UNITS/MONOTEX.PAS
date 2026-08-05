@@ -39,6 +39,7 @@ var
   bytesWidth, bytesRead: word;
   a, b: integer;
 
+  bpp: word;
   dataOffset: longint;
   w, h, size: longint;
 
@@ -57,7 +58,11 @@ begin
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
-    panicHalt('loadMonoBMP: Couldn''t find "' + filename + '"!');
+    PanicHalt('LoadMonoBMP: Couldn''t find "' + filename + '"!');
+
+  seek(f, $1C); BlockRead(f, bpp, 2);
+  if bpp <> 1 then
+    PanicHalt('LoadMonoBMP: "' + filename + '" is not 1-bpp');
 
   seek(f, $0A);  BlockRead(f, dataOffset, 4);
   seek(f, $12);  BlockRead(f, w, 4);
