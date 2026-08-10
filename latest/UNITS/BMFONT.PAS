@@ -81,12 +81,15 @@ var
   kv: array[0..1] of string; { key-value pair }
   glyphID: integer;
 begin
+  writelog('Attempting to parse this line:');
+  writelog(line);
+
   while Contains(line, '  ') do
     line := ReplaceAll(line, '  ', ' ');
 
   { Parse the whole line first, then check bounds }
   glyphID := -1;
-  fillChar(newGlyph, sizeof(TBMFontGlyph), 0);
+  FillChar(newGlyph, sizeof(TBMFontGlyph), 0);
 
   { assign glyph info }
   pairCount := Split(line, ' ', pairs);
@@ -140,16 +143,21 @@ var
 begin
   WriteLog('LoadBMFont: Loading font from ' + filename);
 
+  { TODO: Add the CRLF detection, since LF breaks the parser }
+
   DefaultBMFont(font);
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
+
   if IOResult <> 0 then
-    panicHalt('loadBMFont: Couldn''t find "' + filename + '"!');
+    PanicHalt('LoadBMFont: Couldn''t find "' + filename + '"!');
 
   count := 0;
 
   { First pass }
+  writelog('Entering first pass');
+
   while not eof(f) do begin
     readln(f, line);
 
@@ -167,24 +175,40 @@ begin
 
     if StartsWith(line, 'page') then begin
       pairCount := Split(line, ' ', pairs);
+
       for b:=0 to pairCount-1 do begin
         Split(pairs[b], '=', kv);
-        if kv[0] = 'file' then
+
+        if kv[0] = 'file' then begin
           bitmapPath := ReplaceAll(kv[1], '"', '');
+          WriteLog('Found bitmapPath: "' + + '"');
+        end;
       end;
     end;
   end;
 
-  { Second pass: parse the glyphs }
   close(f);
-  reset(f);
+
+  { Second pass: parse the glyphs }
+  writelog('Restarting the file reader');
+
+  {$I-} reset(f); {$I+}
+
+  if IOResult <> 0 then
+    PanicHalt('LoadBMFont Couldn''t start the second pass!');
+
+  writelog('Entering second pass');
 
   while not eof(f) do begin
     readln(f, line);
 
+    { writelog('What is line?');
+    writelog(line); }
+
     if StartsWith(line, 'char') then
       ParseBMFontGlyph(font, line);
   end;
+
   close(f);
 
   LoadTex(font.texture, bitmapPath);

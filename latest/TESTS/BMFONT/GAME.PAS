@@ -81,7 +81,7 @@ begin
     With precomputed offset: 0.7583s, 0.7725s
     Inner loop `col` with inline assembly: 0.3496s, 0.3557s
   }
-  for a:=1 to 1000 do
+  for a:=1 to 10 do
     PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
   { Original: 0.9003s
@@ -91,7 +91,7 @@ begin
     PrintBMFontTint(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
   }
 
-  s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
+  s := '10 operations done in ' + F32Str(GetTimer - startTick) + 's';
 
   RectFill(
     0,
@@ -107,15 +107,18 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
-  appConfig.WaitMode := P92WaitUncapped;
+  { appConfig.WaitMode := P92WaitUncapped; }
+  appConfig.EnableKeyHandler := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
 
   { Use either Update + Draw, or DrawOnce }
+  {
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  { @appConfig.DrawOnce := @DrawOnce; }
+  }
+  @appConfig.DrawOnce := @DrawOnce;
 
   @appConfig.OnCleanup := @OnCleanup;
 

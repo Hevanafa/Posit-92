@@ -119,7 +119,7 @@ var
 
 begin
   if Assigned(tex.data) then begin
-    WriteLog('LoadBMP: Warning: texture has been previously assigned');
+    WriteLog('LoadTex: Warning: texture has been previously assigned');
     WriteLog('About to load "' + filename + '"');
     { FreeTex(tex) }
   end;
@@ -129,21 +129,21 @@ begin
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }
   if IOResult <> 0 then
-    panicHalt('loadBMP: Couldn''t find "' + filename + '"!');
+    PanicHalt('LoadTex: Couldn''t find "' + filename + '"!');
 
   seek(f, 18); blockRead(f, tex.width, 2);
   seek(f, 22); blockRead(f, tex.height, 2);
   seek(f, 50); blockRead(f, palsize, 2);
 
   size := tex.width * tex.height;
-  getMem(tex.data, size);
+  GetMem(tex.data, size);
   { tex^.palsize := palsize; }
 
-{$IFDEF DEBUG}
-  writeLog('Width:' + I32Str(tex.width));
-  writeLog('Height:' + I32Str(tex.height));
+  {$IFDEF DEBUG}
+  WriteLog('Width:' + I32Str(tex.width));
+  WriteLog('Height:' + I32Str(tex.height));
   { writeLog('Palette:' + I32Str(tex^.palsize)); }
-{$ENDIF}
+  {$ENDIF}
 
   start := 54 + palsize * 4;
   if tex.width mod 4 = 0 then
@@ -151,17 +151,17 @@ begin
   else
     padding := 4 - tex.width mod 4;
 
-{$IFDEF DEBUG}
-  writeLog('Start:' + I32Str(start));
-  writeLog('Padding:' + I32Str(padding));
-{$ENDIF}
+  {$IFDEF DEBUG}
+  WriteLog('Start:' + I32Str(start));
+  WriteLog('Padding:' + I32Str(padding));
+  {$ENDIF}
 
   for row := 0 to tex.height - 1 do begin
-    seek(f, start + (row * (tex.width + padding)));
-    blockRead(f, buffer, tex.width);
+    Seek(f, start + (row * (tex.width + padding)));
+    BlockRead(f, buffer, tex.width);
 
     {$IFDEF DEBUG}
-      writeLog('Finished reading line ' + I32Str(row));
+    WriteLog('LoadTex: Finished reading line ' + I32Str(row));
     {$ENDIF}
 
     { Read from bottom to top }
@@ -169,7 +169,7 @@ begin
     Move(buffer[1], tex.data^[rowOffset], tex.width);
   end;
 
-  close(f)
+  Close(f)
 end;
 
 procedure CreateTex(var tex: TTexture; const width, height: word);
