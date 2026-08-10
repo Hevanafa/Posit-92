@@ -3,19 +3,22 @@ uses
   CRT, DOS,
   P92Core, Conv, Logger, Timing, P92VGA;
 
-function GetHours: byte;
+{ t: time of the day in seconds, obtained from GetTimer }
+function GetHours(const t: double): byte;
 begin
-  GetHours := trunc(timer) div 3600
+  GetHours := trunc(t) div 3600
 end;
 
-function GetMinutes: byte;
+{ t: time of the day in seconds, obtained from GetTimer }
+function GetMinutes(const t: double): byte;
 begin
-  GetMinutes := trunc(timer) mod 3600 div 60
+  GetMinutes := trunc(t) mod 3600 div 60
 end;
 
-function GetSeconds: byte;
+{ t: time of the day in seconds, obtained from GetTimer }
+function GetSeconds(const t: double): byte;
 begin
-  GetSeconds := trunc(timer) mod 60
+  GetSeconds := trunc(t) mod 60
 end;
 
 function Format2Digits(const value: integer): string;
@@ -35,12 +38,25 @@ end;
 procedure Draw; far;
 var
   s: string;
+  year, month, day, dayOfWeek: word;
+  now: double;
 begin
+  now := GetTimer;
+
   cls($7D);
 
-  s := Format2Digits(GetHours) + ':' +
-    Format2Digits(GetMinutes) + ':' +
-    Format2Digits(GetSeconds);
+  GetDate(year, month, day, dayOfWeek);
+
+  s := Format2Digits(day) + '-' +
+    Format2Digits(month) + '-' +
+    Format2Digits(year);
+
+  print(s, (VGAWidth - length(s) * 8) div 2, 88, 15);
+
+  s := Format2Digits(GetHours(now)) + ':' +
+    Format2Digits(GetMinutes(now)) + ':' +
+    Format2Digits(GetSeconds(now));
+
   Print(s, (VGAWidth - length(s) * 8) div 2, 96, 15);
 
   Print('Esc - Exit', 0, 191, 15);
