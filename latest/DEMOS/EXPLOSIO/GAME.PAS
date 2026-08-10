@@ -45,12 +45,12 @@ end;
 
 procedure OnPreload; far;
 begin
-  loadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
+  LoadTex(imgExplosion, 'IMG\SPRITESH.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMP(imgExplosion);
+  FreeTex(imgExplosion);
 end;
 
 procedure OnReady; far;

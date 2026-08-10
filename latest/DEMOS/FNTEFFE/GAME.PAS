@@ -6,7 +6,7 @@
 
 uses
   CRT,
-  P92Core, VGA;
+  P92Core, P92VGA;
 
 procedure PrintOutline(const t: string; const x, y: integer; const colour, outline: byte);
 var
@@ -33,11 +33,10 @@ var
   mask, colour: byte;
 begin
   for idx := 1 to length(text) do begin
-    if (idx < 0) or (idx > 127) then continue;
-
     for row := 0 to 7 do begin
       mask := BorrowCGAFont^[ord(text[idx]), row];
       colour := row + 8;
+
       for col := 0 to 7 do
         if (mask and (1 shl (7 - col))) <> 0 then begin
           pset((idx-1) * 8 + x + col, y + row, colour);

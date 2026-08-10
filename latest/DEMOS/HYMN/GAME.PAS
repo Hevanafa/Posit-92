@@ -176,13 +176,13 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMP(imgPiano, 'IMG\PIANO.BMP');
+  LoadTex(imgPiano, 'IMG\PIANO.BMP');
   InitJerusalemHymn;
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(imgPiano);
+  FreeTex(imgPiano);
   FreeMelody(hymn);
 end;
 

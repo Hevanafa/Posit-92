@@ -1,6 +1,6 @@
 uses
   CRT, DOS,
-  P92Core, Bitmap, Conv, FPS, Graphics, Logger,
+  P92Core, Conv, Graphics,
   P92KBD, P92Mouse, Timing, P92VGA;
 
 type
