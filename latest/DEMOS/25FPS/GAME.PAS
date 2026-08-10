@@ -11,8 +11,8 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnReady; far;
@@ -22,8 +22,8 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeTex(dosuEXE[0]);
+  FreeTex(dosuEXE[1]);
 end;
 
 procedure Update; far;

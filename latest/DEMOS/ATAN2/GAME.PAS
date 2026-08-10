@@ -13,14 +13,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(DosuEXE[0]);
-  FreeBMP(DosuEXE[1]);
+  FreeTex(DosuEXE[0]);
+  FreeTex(DosuEXE[1]);
 end;
 
 procedure OnReady; far;
