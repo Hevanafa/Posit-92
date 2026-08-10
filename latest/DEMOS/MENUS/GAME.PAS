@@ -23,9 +23,9 @@ begin
   LoadBMFont(outlineFont, 'FONTS\ARIAL10.FNT');
 
   { Replace white pixels with black }
-  for a:=0 to outlineFont.bitmap.width * outlineFont.bitmap.height - 1 do
-    if outlineFont.bitmap.data^[a] = 15 then
-      outlineFont.bitmap.data^[a] := 0;
+  for a:=0 to outlineFont.texture.width * outlineFont.texture.height - 1 do
+    if outlineFont.texture.data^[a] = 15 then
+      outlineFont.texture.data^[a] := 0;
 end;
 
 procedure OnCleanup; far;
