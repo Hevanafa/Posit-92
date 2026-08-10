@@ -19,8 +19,8 @@ procedure OnPreload; far;
 var
   a: word;
 begin
-  LoadBMFont(font, 'FONTS\ARIAL10.FNT');
-  LoadBMFont(outlineFont, 'FONTS\ARIAL10.FNT');
+  LoadBMFont(font, 'FONTS\DROID11.TXT');
+  LoadBMFont(outlineFont, 'FONTS\DROID11.TXT');
 
   { Replace white pixels with black }
   for a:=0 to outlineFont.texture.width * outlineFont.texture.height - 1 do
