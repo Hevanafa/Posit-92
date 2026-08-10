@@ -60,9 +60,9 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMP(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
-  LoadBMP(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
-  LoadBMP(imgCoin, 'IMG\COIN.BMP');
+  LoadTex(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadTex(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadTex(imgCoin, 'IMG\COIN.BMP');
 
   { C4 E4 G4 }
   CreateMelody(coinMelodyList[0], 3);
@@ -95,9 +95,9 @@ begin
   for a:=0 to high(coinMelodyList) do
     FreeMelody(coinMelodyList[a]);
 
-  FreeBMP(imgDosuEXE[0]);
-  FreeBMP(imgDosuEXE[1]);
-  FreeBMP(imgCoin);
+  FreeTex(imgDosuEXE[0]);
+  FreeTex(imgDosuEXE[1]);
+  FreeTex(imgCoin);
 end;
 
 procedure OnReady; far;
