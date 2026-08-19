@@ -18,7 +18,8 @@ procedure OnPreload; far;
 begin
   { loadBMFont(font, 'COMMOD64.FNT'); }
   { loadBMFont(font, 'FR12.FNT'); }
-  LoadBMFont(font, 'NOKIA.TXT')
+  { LoadBMFont(font, 'NOKIA.TXT') }
+  LoadBMFont(font, 'FONTS\P92SANS.TXT');
 end;
 
 procedure OnReady; far;
