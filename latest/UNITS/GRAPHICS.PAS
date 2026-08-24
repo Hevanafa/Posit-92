@@ -24,7 +24,7 @@ procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 procedure HLine(const x0, x1, y: integer; const colour: byte);
 
 procedure VLine(const x, y0, y1: integer; const colour: byte);
-procedure PascalVLine(x, y0, y1: integer; const colour: byte);
+procedure VLineBase(x, y0, y1: integer; const colour: byte);
 procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
 procedure AsmVLine2(const x, y0, y1: integer; const colour: byte);
 
@@ -816,25 +816,23 @@ end;
 end;
 
 
-procedure VLine(const x, y0, y1: integer; const colour: byte);
-begin
-  AsmVLine2(x, y0, y1, colour)
-end;
-
-procedure PascalVLine(x, y0, y1: integer; const colour: byte);
+procedure VLineBase(x, y0, y1: integer; const colour: byte);
 var
   temp, a: integer;
 begin
-  if (x < 0) or (x >= 320) then exit;
+  if (x < 0) or (x >= VGAWidth) then exit;
   if y0 > y1 then begin
     temp := y0; y0 := y1; y1 := temp
   end;
-  if y0 >= 200 then exit;
+  if y0 >= VGAHeight then exit;
 
-  for a:=y0 to y1 do begin
-    if (a < 0) then continue;
-    AsmPset(x, a, colour)
-  end;
+  for a:=y0 to y1 do
+    AsmPset(x, a, colour);
+end;
+
+procedure VLine(const x, y0, y1: integer; const colour: byte);
+begin
+  AsmVLine2(x, y0, y1, colour)
 end;
 
 procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
