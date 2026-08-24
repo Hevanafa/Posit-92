@@ -1,6 +1,9 @@
 {
   Base for test projects
   Part of Posit-92 game engine
+
+  Tested on DOSBox-X with 20000 cycles/ms
+  RandSeed is assigned in the OnReady procedure
 }
 
 program BaseTest;
@@ -62,6 +65,11 @@ begin
       random(256));
   }
 
+  {
+    Base version with HLine: 0.6220s
+    Forward call to legacy AsmRectFill2: 0.6324s
+    With clipping: 0.6195s
+  }
   for a:=1 to OpCount do
     RectFill(
       random(VGAWidth + 20) - 10,

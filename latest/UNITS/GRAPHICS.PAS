@@ -1024,8 +1024,26 @@ begin
 end;
 
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
+var
+  startY, endY, y: integer;
 begin
-  AsmRectFill2(x0, y0, x1, y1, colour)
+  { Handle clipping }
+  startY := y0;
+  endY := y1;
+
+  if startY > endY then begin
+    startY := y1;
+    endY := y0;
+  end;
+
+  if startY < 0 then startY := 0;
+  if endY >= VGAHeight then
+    endY := VGAHeight - 1;
+
+  if startY > endY then exit;
+
+  for y:= startY to endY do
+    HLine(x0, x1, y, colour);
 end;
 
 procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);
