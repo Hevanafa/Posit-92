@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, Logger, BMFont, P92STR, P92TEX, Timing, P92VGA,
+  P92Core, Logger, Graphics, BMFont, P92STR, P92TEX, Timing, P92VGA,
   P92KBD, P92Mouse;
 
 var
@@ -52,6 +52,8 @@ begin
 end;
 
 procedure Draw; far;
+var
+  row, col: integer;
 begin
   Cls($4F);
 
@@ -59,6 +61,15 @@ begin
     Spr(SpecimenP92[0], 148, 76)
   else
     Spr(SpecimenP92[1], 148, 76);
+
+  for row:=0 to 15 do begin
+    for col:=0 to 15 do begin
+      rectfill(
+        col * 8, row * 8,
+        (col + 1) * 8 -1, (row + 1) * 8 -1,
+        row * 16 + col)
+    end;
+  end;
 
   PrintDefault('Hello world!', 160-48, 120);
 end;
