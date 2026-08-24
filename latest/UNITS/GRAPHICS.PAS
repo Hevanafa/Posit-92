@@ -20,8 +20,6 @@ procedure CircFill(const cx, cy, radius: integer; const colour: byte);
 procedure PascalCircFill(const cx, cy, radius: integer; const colour: byte);
 procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 
-procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
-
 { Optimised horizontal line procedure based on HLineBase }
 procedure HLine(const x0, x1, y: integer; const colour: byte);
 
@@ -39,6 +37,8 @@ procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 
 { Forward calls to HLine }
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
+
+procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
@@ -601,42 +601,6 @@ end;
 end;
 
 
-procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
-var
-  x, y, p: integer;
-  a: integer;
-begin
-  x := 0;
-  y := radius;
-  p := 3 - 2 * radius;
-
-  while x <= y do begin
-    for a:=cx-x to cx+x do begin
-      if ((a + cy + y) and 1) = 1 then
-        AsmPset(a, cy + y, colour);
-
-      if ((a + cy - y) and 1) = 1 then
-        AsmPset(a, cy - y, colour);
-    end;
-    for a:=cx-y to cx+y do begin
-      if ((a + cy + x) and 1) = 1 then
-        AsmPset(a, cy + x, colour);
-      if ((a + cy - x) and 1) = 1 then
-        AsmPset(a, cy - x, colour);
-    end;
-
-    if p < 0 then
-      p := p+4 * x+6
-    else begin
-      p := p+4 * (x-y)+10;
-      dec(y)
-    end;
-
-    inc(x)
-  end;
-end;
-
-
 procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
 begin
   if x0 = x1 then
@@ -1024,6 +988,41 @@ begin
     HLine(x0, x1, y, colour);
 end;
 
+
+procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
+var
+  x, y, p: integer;
+  a: integer;
+begin
+  x := 0;
+  y := radius;
+  p := 3 - 2 * radius;
+
+  while x <= y do begin
+    for a:=cx-x to cx+x do begin
+      if ((a + cy + y) and 1) = 1 then
+        AsmPset(a, cy + y, colour);
+
+      if ((a + cy - y) and 1) = 1 then
+        AsmPset(a, cy - y, colour);
+    end;
+    for a:=cx-y to cx+y do begin
+      if ((a + cy + x) and 1) = 1 then
+        AsmPset(a, cy + x, colour);
+      if ((a + cy - x) and 1) = 1 then
+        AsmPset(a, cy - x, colour);
+    end;
+
+    if p < 0 then
+      p := p+4 * x+6
+    else begin
+      p := p+4 * (x-y)+10;
+      dec(y)
+    end;
+
+    inc(x)
+  end;
+end;
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 begin
