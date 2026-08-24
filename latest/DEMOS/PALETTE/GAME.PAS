@@ -18,6 +18,8 @@ var
 
   { Game state variables }
   hoverRow, hoverCol: integer;
+  selectedRow, selectedCol: integer;
+  lastMouseLeft: boolean;
   t: double;
 
 
@@ -51,10 +53,10 @@ procedure UpdateSelection;
 var
   row, col: integer;
 begin
-  if integer(mouseX) < PaletteLeft then
+  if mouseX < PaletteLeft then
     hoverCol := -1
   else begin
-    col := (integer(mouseX) - PaletteLeft) div 8;
+    col := (mouseX - PaletteLeft) div 8;
 
     if col <= 15 then
       hoverCol := col
@@ -62,10 +64,10 @@ begin
       hoverCol := -1;
   end;
 
-  if integer(mouseY) < PaletteTop then
+  if mouseY < PaletteTop then
     hoverRow := -1
   else begin
-    row := (integer(mouseY) - PaletteTop) div 8;
+    row := (mouseY - PaletteTop) div 8;
 
     if row <= 15 then
       hoverRow := row
@@ -81,6 +83,17 @@ begin
   { Handle game state updates here }
 
   UpdateSelection;
+
+  if lastMouseLeft <> ((mouseButton and MouseButtonLeft) <> 0) then begin
+    lastMouseLeft := ((mouseButton and MouseButtonLeft) <> 0);
+
+    if lastMouseLeft then begin
+      if (hoverRow <> -1) and (hoverCol <> -1) then begin
+        selectedRow := hoverRow;
+        selectedCol := hoverCol;
+      end;
+    end;
+  end;
 
   t := t + DeltaTime
 end;
