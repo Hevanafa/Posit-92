@@ -9,6 +9,7 @@ unit Maths;
 
 interface
 
+function Clamp(const value, min, max: double): double;
 function Min(const a, b: double): double;
 function Max(const a, b: double): double;
 function Deg2Rad(const deg: double): double;
@@ -16,11 +17,22 @@ function Rad2Deg(const rad: double): double;
 function I32Power(const i, exp: longint): longint;
 function Floor(const value: double): integer;
 function Ceil(const value: double): integer;
+function ArcTan2(const y, x: double): double;
 
 
 implementation
 
 uses Panic;
+
+function Clamp(const value, min, max: double): double;
+begin
+  if value < min then
+    Clamp := min
+  else if value > max then
+    Clamp := max
+  else
+    Clamp := value;
+end;
 
 function Min(const a, b: double): double;
 begin
@@ -78,6 +90,22 @@ begin
       Ceil := trunc(value + 1);
   end else
     Ceil := trunc(value);
+end;
+
+function ArcTan2(const y, x: double): double;
+begin
+  if x > 0 then
+    ArcTan2 := arctan(y / x)
+  else if (x < 0) and (y >= 0) then
+    ArcTan2 := arctan(y / x) + pi
+  else if (x < 0) and (y < 0) then
+    ArcTan2 := arctan(y / x) - pi
+  else if (x = 0) and (y > 0) then
+    ArcTan2 := pi / 2
+  else if (x = 0) and (y < 0) then
+    ArcTan2 := -pi / 2
+  else { if (x = 0) and (y = 0) then }
+    ArcTan2 := 0;  { undefined }
 end;
 
 end.
