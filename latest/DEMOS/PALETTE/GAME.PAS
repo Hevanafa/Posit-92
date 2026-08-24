@@ -8,7 +8,7 @@ uses
   P92KBD, P92Mouse;
 
 const
-  PaletteTop = 20;
+  PaletteTop = 32;
   PaletteLeft = 12;
 
 var
@@ -51,18 +51,27 @@ procedure UpdateSelection;
 var
   row, col: integer;
 begin
-  col := (integer(mouseX) - PaletteLeft) div 8;
-  row := (integer(mouseY) - PaletteTop) div 8;
+  if integer(mouseX) < PaletteLeft then
+    hoverCol := -1
+  else begin
+    col := (integer(mouseX) - PaletteLeft) div 8;
 
-  if col in [0..15] then
-    hoverCol := col
-  else
-    hoverCol := -1;
+    if col <= 15 then
+      hoverCol := col
+    else
+      hoverCol := -1;
+  end;
 
-  if row in [0..15] then
-    hoverRow := row
-  else
-    hoverRow := -1;
+  if integer(mouseY) < PaletteTop then
+    hoverRow := -1
+  else begin
+    row := (integer(mouseY) - PaletteTop) div 8;
+
+    if row <= 15 then
+      hoverRow := row
+    else
+      hoverRow := -1;
+  end;
 end;
 
 procedure Update; far;
