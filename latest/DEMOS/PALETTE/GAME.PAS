@@ -196,6 +196,8 @@ begin
     PrintDefault(
       'Hex: #' + I8HexStr(selectedR) + I8HexStr(selectedG) + I8HexStr(selectedB),
       160, 120 + P92Sans.lineHeight * 3);
+
+    RectFill(260, 120, 300, 160, idx);
   end
   else begin
     PrintDefault('Click any colour', 160, 48);
