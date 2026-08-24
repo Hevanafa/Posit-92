@@ -51,11 +51,18 @@ procedure UpdateSelection;
 var
   row, col: integer;
 begin
-  col := (mouseX - PaletteLeft) div 8;
-  row := (mouseY - PaletteTop) div 8;
+  col := (integer(mouseX) - PaletteLeft) div 8;
+  row := (integer(mouseY) - PaletteTop) div 8;
 
-  hoverCol := col;
-  hoverRow := row;
+  if col in [0..15] then
+    hoverCol := col
+  else
+    hoverCol := -1;
+
+  if row in [0..15] then
+    hoverRow := row
+  else
+    hoverRow := -1;
 end;
 
 procedure Update; far;
@@ -71,8 +78,12 @@ end;
 
 procedure Draw; far;
 var
+  now: double;
   row, col: integer;
+  top, right, bottom, left: integer;
 begin
+  now := GetTimer;
+
   Cls($4F);
 
   PrintDefault('Mode 13h Palette', 12, 8);
@@ -84,12 +95,22 @@ begin
 
   for row:=0 to 15 do begin
     for col:=0 to 15 do begin
+      top := PaletteTop + row * 8;
+      bottom := PaletteTop + (row + 1) * 8 - 1;
+      left := PaletteLeft + col * 8;
+      right := PaletteLeft + (col + 1) * 8 - 1;
+
       rectfill(
-        PaletteLeft + col * 8,
-        PaletteTop + row * 8,
-        PaletteLeft + (col + 1) * 8 -1,
-        PaletteTop + (row + 1) * 8 -1,
-        row * 16 + col)
+        left, top,
+        right, bottom,
+        row * 16 + col);
+
+      if (hoverRow = row) and (hoverCol = col) then begin
+        if (trunc(frac(now) * 4) and 1 > 0) then
+          Rect(left, top, right, bottom, $0F)
+        else
+          Rect(left, top, right, bottom, $00);
+      end;
     end;
   end;
 
