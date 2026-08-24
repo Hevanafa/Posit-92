@@ -22,10 +22,8 @@ procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 
 procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
+{ Optimised horizontal line procedure based on HLineBase }
 procedure HLine(const x0, x1, y: integer; const colour: byte);
-procedure HLineBase(x0, x1, y: integer; const colour: byte);
-procedure AsmHLine(const x0, x1, y: integer; const colour: byte);
-procedure AsmHLine2(const x0, x1, y: integer; const colour: byte);
 
 procedure VLine(const x, y0, y1: integer; const colour: byte);
 procedure PascalVLine(x, y0, y1: integer; const colour: byte);
@@ -854,117 +852,6 @@ asm
   adc cx, cx  { load CX with CF if there's a remainder }
   rep stosb
 end;
-end;
-
-procedure AsmHLine(const x0, x1, y: integer; const colour: byte); assembler;
-var
-  x: integer;
-asm
-  cmp y, 0
-  jl @done
-  cmp y, 200
-  jge @done
-
-  { Swap if x1 < x0 }
-  mov ax, x0
-  cmp x1, ax
-  jge @skip_swap
-
-  mov bx, x1
-  mov x0, bx
-  mov x1, ax
-
-@skip_swap:
-
-  { for (x = x0; x <= x1; x++) }
-@x_init:
-  mov ax, x0
-  mov x, ax
-
-@x_condition:
-  mov ax, x1
-  cmp x, ax
-  jg @done
-
-@x_loop:
-  { Bounds check }
-  cmp x, 0
-  jl @x_next
-  cmp x, 320
-  jge @done
-
-  { Pset }
-  { Offset: y * 320 + x }
-  mov ax, y
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, x
-  mov bx, ax
-
-  les di, surface
-  mov al, colour
-  mov es:[di+bx], al
-
-@x_next:
-  inc x
-  jmp @x_condition
-
-@done:
-end;
-
-
-procedure AsmHLine2(const x0, x1, y: integer; const colour: byte);
-var
-  x: integer;
-  startX, endX: integer;
-  reps: word;
-  rem: byte;
-begin
-  if y < 0 then exit;
-  if y >= 200 then exit;
-
-  startX := x0; endX := x1;
-
-  if startX > endX then begin
-    startX := x1; endX := x0
-  end;
-
-  { Edge cases }
-  if startX < 0 then startX := 0;
-  if endX >= 320 then endX := 319;
-  reps := (1 + endX - startX) div 2;
-  rem := (1 + endX - startX) and 1;
-
-asm
-  { for (x = x0; x <= x1; x++) }
-  mov ax, startX
-  mov x, ax
-
-@x_loop:
-  { Pset }
-  { Start offset: y * 320 + x }
-  mov ax, y
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, x
-  mov bx, ax
-
-  les di, surface
-  add di, bx
-
-  mov ah, colour
-  mov al, colour
-  cld
-  mov cx, reps
-  rep stosw
-
-  test rem, 1
-  jz @done
-  mov es:[di], al
-
-@done:
-end;
-
 end;
 
 
