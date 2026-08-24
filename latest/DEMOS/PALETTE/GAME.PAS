@@ -94,15 +94,15 @@ begin
     Spr(SpecimenP92[1], 148, 76);
 
   for row:=0 to 15 do begin
+    top := PaletteTop + row * 8;
+    bottom := PaletteTop + (row + 1) * 8 - 1;
+
     for col:=0 to 15 do begin
-      top := PaletteTop + row * 8;
-      bottom := PaletteTop + (row + 1) * 8 - 1;
       left := PaletteLeft + col * 8;
       right := PaletteLeft + (col + 1) * 8 - 1;
 
       rectfill(
-        left, top,
-        right, bottom,
+        left, top, right, bottom,
         row * 16 + col);
 
       if (hoverRow = row) and (hoverCol = col) then begin
