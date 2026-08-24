@@ -23,7 +23,7 @@ procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
 procedure HLine(const x0, x1, y: integer; const colour: byte);
-procedure PascalHLine(x0, x1, y: integer; const colour: byte);
+procedure HLineBase(x0, x1, y: integer; const colour: byte);
 procedure AsmHLine(const x0, x1, y: integer; const colour: byte);
 procedure AsmHLine2(const x0, x1, y: integer; const colour: byte);
 
@@ -793,12 +793,7 @@ end;
 end;
 
 
-procedure HLine(const x0, x1, y: integer; const colour: byte);
-begin
-  AsmHLine2(x0, x1, y, colour)
-end;
-
-procedure PascalHLine(x0, x1, y: integer; const colour: byte);
+procedure HLineBase(x0, x1, y: integer; const colour: byte);
 var
   x: integer;
 begin
@@ -808,6 +803,29 @@ begin
 
   for x := x0 to x1 do
     AsmPset(x, y, colour);
+end;
+
+procedure HLine(const x0, x1, y: integer; const colour: byte);
+var
+  startX, endX: integer;
+begin
+  { Handle early exits }
+  if word(y) >= VGAHeight then exit;
+  if (x0 < 0) and (x1 < 0) then exit;
+  if (x0 >= VGAWidth) and (x1 >= VGAWidth) then exit;
+
+  if x0 <= x1 then begin
+    startX := x0;
+    endX := x1
+  end else begin
+    startX := x1;
+    endX := x0
+  end;
+
+  if startX < 0 then startX := 0;
+  if endX > VGAWidth then endX := VGAWidth - 1;
+
+  { TODO: Inline AsmPSet }
 end;
 
 procedure AsmHLine(const x0, x1, y: integer; const colour: byte); assembler;
