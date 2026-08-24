@@ -19,6 +19,8 @@ var
   { Game state variables }
   hoverRow, hoverCol: integer;
   selectedRow, selectedCol: integer;
+  selectedR, selectedG, selectedB: byte;
+
   lastMouseLeft: boolean;
   t: double;
 
@@ -27,6 +29,15 @@ procedure PrintDefault(const text: string; const x, y: integer);
 begin
   PrintBMFont(P92Sans, text, x, y)
 end;
+
+procedure GetVGAColour(const index: byte; var r, g, b: byte);
+begin
+  port[$3C7] := index;
+  r := port[$3C9];
+  g := port[$3C9];
+  b := port[$3C9];
+end;
+
 
 procedure OnPreload; far;
 begin
@@ -95,6 +106,11 @@ begin
     if lastMouseLeft then begin
       selectedRow := hoverRow;
       selectedCol := hoverCol;
+
+      if (selectedRow <> -1) and (selectedCol <> -1) then
+        GetVGAColour(
+          selectedRow * 16 + selectedCol,
+          selectedR, selectedG, selectedB);
     end;
   end;
 
@@ -157,10 +173,15 @@ begin
 
   if (selectedRow <> -1) and (selectedCol <> -1) then begin
     idx := selectedRow * 16 + selectedCol;
+
     PrintDefault('Selection', 160, 120);
+
     PrintDefault(
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
       160, 120 + P92Sans.lineHeight);
+
+    { TODO: output G and B }
+    PrintDefault('R=' + I32Str(selectedR), 160, 120 + P92Sans.lineHeight * 2);
   end
   else begin
     PrintDefault('Click any colour', 160, 64);
