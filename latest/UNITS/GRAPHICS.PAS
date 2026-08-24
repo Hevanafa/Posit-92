@@ -37,10 +37,8 @@ procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 { Forward calls to HLine and VLine }
 procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 
+{ Forward calls to HLine }
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
-procedure RectFillBase(x0, y0, x1, y1: integer; const colour: byte);
-procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);
-procedure AsmRectFill2(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
@@ -979,26 +977,6 @@ end;
 
 end;
 
-
-procedure RectBase(x0, y0, x1, y1: integer; const colour: byte);
-var
-  a, b, temp: integer;
-begin
-  if x0 > x1 then begin
-    temp := x0; x0 := x1; x1 := temp
-  end;
-  if y0 > y1 then begin
-    temp := y0; y0 := y1; y1 := temp
-  end;
-  for b:=y0 to y1 do begin
-    AsmPset(x0, b, colour);
-    AsmPset(x1, b, colour)
-  end;
-  for a:=x0 to x1 do begin
-    AsmPset(a, y0, colour);
-    AsmPset(a, y1, colour)
-  end;
-end;
 
 procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 begin
