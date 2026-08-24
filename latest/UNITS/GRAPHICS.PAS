@@ -38,7 +38,7 @@ procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
-procedure PascalRectFill(x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillBase(x0, y0, x1, y1: integer; const colour: byte);
 procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);
 procedure AsmRectFill2(const x0, y0, x1, y1: integer; const colour: byte);
 
@@ -1009,12 +1009,7 @@ begin
 end;
 
 
-procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
-begin
-  AsmRectFill2(x0, y0, x1, y1, colour)
-end;
-
-procedure PascalRectFill(x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillBase(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
@@ -1026,6 +1021,11 @@ begin
   end;
   for b:=y0 to y1 do
     HLine(x0, x1, b, colour);
+end;
+
+procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
+begin
+  AsmRectFill2(x0, y0, x1, y1, colour)
 end;
 
 procedure AsmRectFill(const x0, y0, x1, y1: integer; const colour: byte);

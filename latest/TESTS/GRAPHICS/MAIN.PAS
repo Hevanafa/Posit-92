@@ -52,8 +52,18 @@ begin
       random(VGAHeight + 1), random(256));
   }
 
+  {
   for a:=1 to OpCount do
     Rect(
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      random(256));
+  }
+
+  for a:=1 to OpCount do
+    RectFill(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(VGAWidth + 20) - 10,
