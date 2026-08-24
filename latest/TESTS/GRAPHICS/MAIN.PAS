@@ -24,20 +24,29 @@ end;
 
 procedure OnReady; far;
 begin
-
+  RandSeed := 255;
 end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1;
+  OpCount = 1000;
 var
+  a: word;
   startTick, endTick: double;
   s: string;
 begin
   cls($70);
   startTick := GetTimer;
 
-  { TODO: Your stress test here }
+  {
+    Base: 0.2163s
+    FillChar: 0.0395s
+  }
+  for a:=1 to OpCount do
+    HLineBase(
+      random(VGAWidth + 20) - 10,
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 1), random(256));
 
   endTick := GetTimer;
 
