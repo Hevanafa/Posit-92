@@ -58,6 +58,7 @@ begin
   {
     Base: 0.1143s
     AsmVLine2: 0.0568s
+    After clipping: 0.1133s
   }
   for a:=1 to OpCount do
     VLine(
