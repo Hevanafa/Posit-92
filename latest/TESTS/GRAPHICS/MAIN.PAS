@@ -57,9 +57,10 @@ begin
 
   {
     Base: 0.1143s
+    AsmVLine2: 0.0568s
   }
   for a:=1 to OpCount do
-    VLineBase(
+    VLine(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(VGAHeight + 20) - 10, random(256));

@@ -23,10 +23,8 @@ procedure AsmCircFill(const cxi, cyi, radius: integer; const colour: byte);
 { Optimised horizontal line procedure based on HLineBase }
 procedure HLine(const x0, x1, y: integer; const colour: byte);
 
+{ Optimised vertical line procedure based on VLineBase }
 procedure VLine(const x, y0, y1: integer; const colour: byte);
-procedure VLineBase(x, y0, y1: integer; const colour: byte);
-procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
-procedure AsmVLine2(const x, y0, y1: integer; const colour: byte);
 
 procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
 procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
@@ -831,8 +829,28 @@ begin
 end;
 
 procedure VLine(const x, y0, y1: integer; const colour: byte);
+var
+  startY, endY: integer;
 begin
-  AsmVLine2(x, y0, y1, colour)
+  { Handle clipping }
+  if (x < 0) or (x >= VGAWidth) then exit;
+
+  if y0 <= y1 then begin
+    startY := y0;
+    endY := y1;
+  end else begin
+    startY := y1;
+    endY := y0
+  end;
+
+  if (endY < 0) or (startY >= VGAHeight) then exit;
+
+  if startY < 0 then startY := 0;
+
+  if endY >= VGAHeight then
+    endY := VGAHeight - 1;
+
+  { TODO: Inline AsmPSet }
 end;
 
 procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
