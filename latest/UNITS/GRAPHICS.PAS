@@ -827,9 +827,9 @@ begin
   if endX > VGAWidth then endX := VGAWidth - 1;
 
   { Inline AsmPSet }
-  baseOffset := y * 320 + startX;
+  baseOffset := y * VGAWidth + startX;
 
-  fillchar(mem[$A000:baseOffset], endX - startX + 1, colour);
+  FillChar(surface^[baseOffset], endX - startX + 1, colour);
 
   { Optional: Add the inline asm }
 end;
