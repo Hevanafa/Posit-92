@@ -4,8 +4,12 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, Logger, Graphics, BMFont, P92STR, P92TEX, Timing, P92VGA,
+  P92Core, Logger, Conv, Graphics, BMFont, P92STR, P92TEX, Timing, P92VGA,
   P92KBD, P92Mouse;
+
+const
+  PaletteTop = 20;
+  PaletteLeft = 12;
 
 var
   { Asset variables }
@@ -13,6 +17,7 @@ var
   SpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
+  hoverRow, hoverCol: integer;
   t: double;
 
 
@@ -41,12 +46,25 @@ begin
   t := 0.0;
 end;
 
+
+procedure UpdateSelection;
+var
+  row, col: integer;
+begin
+  col := (mouseX - PaletteLeft) div 8;
+  row := (mouseY - PaletteTop) div 8;
+
+  hoverCol := col;
+  hoverRow := row;
+end;
+
 procedure Update; far;
 begin
-  { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   { Handle game state updates here }
+
+  UpdateSelection;
 
   t := t + DeltaTime
 end;
@@ -57,6 +75,8 @@ var
 begin
   Cls($4F);
 
+  PrintDefault('Mode 13h Palette', 12, 8);
+
   if frac(t * 1.5) >= 0.5 then
     Spr(SpecimenP92[0], 148, 76)
   else
@@ -65,13 +85,16 @@ begin
   for row:=0 to 15 do begin
     for col:=0 to 15 do begin
       rectfill(
-        col * 8, row * 8,
-        (col + 1) * 8 -1, (row + 1) * 8 -1,
+        PaletteLeft + col * 8,
+        PaletteTop + row * 8,
+        PaletteLeft + (col + 1) * 8 -1,
+        PaletteTop + (row + 1) * 8 -1,
         row * 16 + col)
     end;
   end;
 
-  PrintDefault('Hello world!', 160-48, 120);
+  PrintDefault('Row: ' + I32Str(hoverRow), 160, 120);
+  PrintDefault('Col: ' + I32Str(hoverCol), 160, 136);
 end;
 
 
