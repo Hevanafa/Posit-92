@@ -42,6 +42,7 @@ begin
     Base: 0.2163s
     FillChar: 0.0395s
     Inline asm: 0.0384s
+    stosw: 0.0317s
   }
   for a:=1 to OpCount do
     HLine(

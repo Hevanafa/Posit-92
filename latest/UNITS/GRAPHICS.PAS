@@ -837,10 +837,21 @@ asm
 
   mov cx, endX
   sub cx, startX
-  inc cx
+  inc cx  { cx = pixel count }
 
   mov al, colour
-  cld  { Make sure the direction is forward }
+
+  { First implementation with stosb }
+
+  { cld }  { Make sure the direction is forward }
+  { rep stosb }
+
+  { Second impl with stosw }
+  mov ah, al  { load ax with the colour }
+  cld
+  shr cx, 1   { CX = word count; CF = odd remainder}
+  rep stosw
+  adc cx, cx  { load CX with CF if there's a remainder }
   rep stosb
 end;
 end;
