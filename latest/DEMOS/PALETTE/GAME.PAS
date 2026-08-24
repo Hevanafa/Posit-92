@@ -30,12 +30,13 @@ begin
   PrintBMFont(P92Sans, text, x, y)
 end;
 
+{ r, g, b: 0..255, not the original mapping of 0..63 }
 procedure GetVGAColour(const index: byte; var r, g, b: byte);
 begin
   port[$3C7] := index;
-  r := port[$3C9];
-  g := port[$3C9];
-  b := port[$3C9];
+  r := port[$3C9]; r := (r shl 2) or (r shr 4);
+  g := port[$3C9]; g := (g shl 2) or (g shr 4);
+  b := port[$3C9]; b := (b shl 2) or (b shr 4);
 end;
 
 
