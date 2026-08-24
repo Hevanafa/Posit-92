@@ -54,7 +54,7 @@ begin
 end;
 
 
-procedure UpdateSelection;
+procedure UpdateHovered;
 var
   row, col: integer;
 begin
@@ -87,7 +87,7 @@ begin
 
   { Handle game state updates here }
 
-  UpdateSelection;
+  UpdateHovered;
 
   if lastMouseLeft <> ((mouseButton and MouseButtonLeft) <> 0) then begin
     lastMouseLeft := ((mouseButton and MouseButtonLeft) <> 0);
