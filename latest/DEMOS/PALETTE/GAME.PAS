@@ -169,7 +169,12 @@ begin
 
   if (hoverRow <> -1) and (hoverCol <> -1) then begin
     idx := hoverRow * 16 + hoverCol;
-    PrintDefault('Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')', 160, 100);
+
+    PrintDefault('Hovered', 160, 80);
+
+    PrintDefault(
+      'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
+      160, 80 + P92Sans.lineHeight);
   end;
 
   if (selectedRow <> -1) and (selectedCol <> -1) then begin
@@ -181,12 +186,16 @@ begin
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
       160, 120 + P92Sans.lineHeight);
 
-    { TODO: output G and B }
-    PrintDefault('R=' + I32Str(selectedR), 160, 120 + P92Sans.lineHeight * 2);
+    PrintDefault(
+      'RGB: '
+      + I32Str(selectedR) + ', '
+      + I32Str(selectedG) + ', '
+      + I32Str(selectedB),
+      160, 120 + P92Sans.lineHeight * 2);
   end
   else begin
-    PrintDefault('Click any colour', 160, 64);
-    PrintDefault('on the palette to inspect', 160, 64 + P92Sans.lineHeight);
+    PrintDefault('Click any colour', 160, 48);
+    PrintDefault('on the palette to inspect', 160, 48 + P92Sans.lineHeight);
   end;
 end;
 
