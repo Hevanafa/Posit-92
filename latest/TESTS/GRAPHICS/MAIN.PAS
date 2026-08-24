@@ -41,9 +41,10 @@ begin
   {
     Base: 0.2163s
     FillChar: 0.0395s
+    Inline asm: 0.0384s
   }
   for a:=1 to OpCount do
-    HLineBase(
+    HLine(
       random(VGAWidth + 20) - 10,
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 1), random(256));

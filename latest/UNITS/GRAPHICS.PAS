@@ -829,9 +829,20 @@ begin
   { Inline AsmPSet }
   baseOffset := y * VGAWidth + startX;
 
-  FillChar(surface^[baseOffset], endX - startX + 1, colour);
+  { FillChar(surface^[baseOffset], endX - startX + 1, colour); }
 
-  { Optional: Add the inline asm }
+asm
+  les di, surface
+  add di, baseOffset
+
+  mov cx, endX
+  sub cx, startX
+  inc cx
+
+  mov al, colour
+  cld  { Make sure the direction is forward }
+  rep stosb
+end;
 end;
 
 procedure AsmHLine(const x0, x1, y: integer; const colour: byte); assembler;
