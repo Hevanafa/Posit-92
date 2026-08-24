@@ -34,8 +34,7 @@ procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
 procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
 procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 
-procedure Rect(x0, y0, x1, y1: integer; const colour: byte);
-procedure RectBase(x0, y0, x1, y1: integer; const colour: byte);
+procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 procedure AsmRect(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
@@ -1001,9 +1000,12 @@ begin
   end;
 end;
 
-procedure Rect(x0, y0, x1, y1: integer; const colour: byte);
+procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
 begin
-  AsmRect(x0, y0, x1, y1, colour)
+  HLine(x0, x1, y0, colour);
+  HLine(x0, x1, y1, colour);
+  VLine(x0, y0, y1, colour);
+  VLine(x1, y0, y1, colour);
 end;
 
 procedure AsmRect(const x0, y0, x1, y1: integer; const colour: byte);
