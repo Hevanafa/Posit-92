@@ -37,6 +37,11 @@ procedure DefaultTex(var tex: TTexture);
 {
   Loads an indexed bitmap file into a TTexture
   This requires the bitmap to be an indexed 256 colours
+
+  If this error occurred: "200: division by zero"
+
+  Try increasing the buffer capacity within this procedure, especially
+  when processing a sprite with a width larger than buffer
 }
 procedure LoadTex(var tex: TTexture; const filename: string);
 
@@ -110,13 +115,12 @@ end;
 procedure LoadTex(var tex: TTexture; const filename: string);
 var
   f: file;
-  buffer: array[1..256] of byte;
+  buffer: array[1..512] of byte;
   row: integer;
   palsize: word;
   size: longint;
   start, padding: longint;
   rowOffset: longint;
-
 begin
   if Assigned(tex.data) then begin
     WriteLog('LoadTex: Warning: texture has been previously assigned');
@@ -140,8 +144,9 @@ begin
   { tex^.palsize := palsize; }
 
   {$IFDEF DEBUG}
-  WriteLog('Width:' + I32Str(tex.width));
-  WriteLog('Height:' + I32Str(tex.height));
+  WriteLog('Width : ' + I32Str(tex.width));
+  WriteLog('Height: ' + I32Str(tex.height));
+  WriteLog('Size  : ' + I32Str(size));
   { writeLog('Palette:' + I32Str(tex^.palsize)); }
   {$ENDIF}
 
@@ -161,7 +166,7 @@ begin
     BlockRead(f, buffer, tex.width);
 
     {$IFDEF DEBUG}
-    WriteLog('LoadTex: Finished reading line ' + I32Str(row));
+    WriteLog('LoadTex: BlockRead line ' + I32Str(row));
     {$ENDIF}
 
     { Read from bottom to top }
