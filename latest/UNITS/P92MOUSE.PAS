@@ -6,9 +6,15 @@ interface
 
 uses P92TEX;
 
+const
+  MouseButtonNone = 0;
+  MouseButtonLeft = 1;
+  MouseButtonRight = 2;
+  MouseButtonBoth = 3;
+
 var
   cursor: TTexture;
-  mouseX, mouseY: word;
+  mouseX, mouseY: integer;
   mouseButton: byte;
 
 procedure LoadCursor;
