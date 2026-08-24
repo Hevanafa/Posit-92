@@ -170,11 +170,11 @@ begin
   if (hoverRow <> -1) and (hoverCol <> -1) then begin
     idx := hoverRow * 16 + hoverCol;
 
-    PrintDefault('Hovered', 160, 80);
+    PrintDefault('Hovered', 190, 80);
 
     PrintDefault(
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
-      160, 80 + P92Sans.lineHeight);
+      190, 80 + P92Sans.lineHeight);
   end;
 
   if (selectedRow <> -1) and (selectedCol <> -1) then begin
@@ -192,6 +192,10 @@ begin
       + I32Str(selectedG) + ', '
       + I32Str(selectedB),
       160, 120 + P92Sans.lineHeight * 2);
+
+    PrintDefault(
+      'Hex: #' + I8HexStr(selectedR) + I8HexStr(selectedG) + I8HexStr(selectedB),
+      160, 120 + P92Sans.lineHeight * 3);
   end
   else begin
     PrintDefault('Click any colour', 160, 48);
