@@ -46,6 +46,11 @@ procedure OnReady; far;
 begin
   { Init game state variables here }
   t := 0.0;
+
+  hoverRow := -1;
+  hoverCol := -1;
+  selectedRow := -1;
+  selectedCol := -1;
 end;
 
 
@@ -88,10 +93,8 @@ begin
     lastMouseLeft := ((mouseButton and MouseButtonLeft) <> 0);
 
     if lastMouseLeft then begin
-      if (hoverRow <> -1) and (hoverCol <> -1) then begin
-        selectedRow := hoverRow;
-        selectedCol := hoverCol;
-      end;
+      selectedRow := hoverRow;
+      selectedCol := hoverCol;
     end;
   end;
 
@@ -134,15 +137,34 @@ begin
         else
           Rect(left, top, right, bottom, $00);
       end;
+
+      if (selectedRow = row) and (selectedCol = col) then begin
+        if (trunc(frac(now) * 4) and 1 > 0) then
+          Rect(left, top, right, bottom, $00)
+        else
+          Rect(left, top, right, bottom, $0F);
+      end;
     end;
   end;
 
-  PrintDefault('Row: ' + I32Str(hoverRow), 160, 120);
-  PrintDefault('Col: ' + I32Str(hoverCol), 160, 136);
+  { PrintDefault('Row: ' + I32Str(hoverRow), 160, 120);
+  PrintDefault('Col: ' + I32Str(hoverCol), 160, 136); }
 
   if (hoverRow <> -1) and (hoverCol <> -1) then begin
     idx := hoverRow * 16 + hoverCol;
     PrintDefault('Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')', 160, 100);
+  end;
+
+  if (selectedRow <> -1) and (selectedCol <> -1) then begin
+    idx := selectedRow * 16 + selectedCol;
+    PrintDefault('Selection', 160, 120);
+    PrintDefault(
+      'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
+      160, 120 + P92Sans.lineHeight);
+  end
+  else begin
+    PrintDefault('Click any colour', 160, 64);
+    PrintDefault('on the palette to inspect', 160, 64 + P92Sans.lineHeight);
   end;
 end;
 
