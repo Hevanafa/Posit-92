@@ -808,6 +808,7 @@ end;
 procedure HLine(const x0, x1, y: integer; const colour: byte);
 var
   startX, endX: integer;
+  baseOffset: word;
 begin
   { Handle early exits }
   if word(y) >= VGAHeight then exit;
@@ -825,7 +826,12 @@ begin
   if startX < 0 then startX := 0;
   if endX > VGAWidth then endX := VGAWidth - 1;
 
-  { TODO: Inline AsmPSet }
+  { Inline AsmPSet }
+  baseOffset := y * 320 + startX;
+
+  fillchar(mem[$A000:baseOffset], endX - startX + 1, colour);
+
+  { Optional: Add the inline asm }
 end;
 
 procedure AsmHLine(const x0, x1, y: integer; const colour: byte); assembler;
