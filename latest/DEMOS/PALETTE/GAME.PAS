@@ -81,6 +81,7 @@ var
   now: double;
   row, col: integer;
   top, right, bottom, left: integer;
+  idx: integer;
 begin
   now := GetTimer;
 
@@ -116,6 +117,11 @@ begin
 
   PrintDefault('Row: ' + I32Str(hoverRow), 160, 120);
   PrintDefault('Col: ' + I32Str(hoverCol), 160, 136);
+
+  if (hoverRow <> -1) and (hoverCol <> -1) then begin
+    idx := hoverRow * 16 + hoverCol;
+    PrintDefault('Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')', 160, 100);
+  end;
 end;
 
 
