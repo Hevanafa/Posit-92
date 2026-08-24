@@ -56,6 +56,15 @@ begin
   }
 
   {
+    Base: 0.1143s
+  }
+  for a:=1 to OpCount do
+    VLineBase(
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      random(VGAHeight + 20) - 10, random(256));
+
+  {
   for a:=1 to OpCount do
     Rect(
       random(VGAWidth + 20) - 10,
@@ -70,6 +79,7 @@ begin
     Forward call to legacy AsmRectFill2: 0.6324s
     With clipping: 0.6195s
   }
+  {
   for a:=1 to OpCount do
     RectFill(
       random(VGAWidth + 20) - 10,
@@ -77,6 +87,7 @@ begin
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(256));
+  }
 
   endTick := GetTimer;
 
