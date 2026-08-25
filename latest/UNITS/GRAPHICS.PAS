@@ -831,6 +831,7 @@ end;
 procedure VLine(const x, y0, y1: integer; const colour: byte);
 var
   startY, endY, y: integer;
+  baseOffset: word;
 begin
   { Handle clipping }
   if (x < 0) or (x >= VGAWidth) then exit;
@@ -850,8 +851,16 @@ begin
   if endY >= VGAHeight then
     endY := VGAHeight - 1;
 
-  for y:=startY to endY do
-    AsmPSet(x, y, colour);
+  baseOffset := startY * VGAWidth + x;
+
+asm
+  les di, surface
+  add di, baseOffset
+
+  mov al, colour
+
+  { TODO: Handle the loop }
+end;
 end;
 
 procedure AsmVLine(const x, y0, y1: integer; const colour: byte);
