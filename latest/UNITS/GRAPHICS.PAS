@@ -854,12 +854,26 @@ begin
   baseOffset := startY * VGAWidth + x;
 
 asm
+  push es
+
   les di, surface
   add di, baseOffset
 
   mov al, colour
 
-  { TODO: Handle the loop }
+  mov cx, endY
+  sub cx, startY
+  inc cx
+
+  mov bx, VGAWidth
+
+@loop:
+  mov es:[di], al
+  add di, bx
+  dec cx
+  jnz @loop
+
+  pop es
 end;
 end;
 
