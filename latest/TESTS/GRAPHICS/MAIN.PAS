@@ -32,7 +32,8 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1000;
+  OpCount = 1000;  { standard }
+  { OpCount = 5000; }
 var
   a: word;
   startTick, endTick: double;
@@ -59,6 +60,11 @@ begin
     Base: 0.1143s
     AsmVLine2: 0.0568s
     After clipping: 0.1133s
+    Inline asm: -0.0016s ??
+
+    5000 ops:
+    Base: 0.6585s
+    Inline asm: 0.0993s
   }
   for a:=1 to OpCount do
     VLine(
