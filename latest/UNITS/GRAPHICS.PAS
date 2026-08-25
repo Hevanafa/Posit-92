@@ -887,20 +887,6 @@ begin
 end;
 
 
-procedure RectFillBase(x0, y0, x1, y1: integer; const colour: byte);
-var
-  a, b, temp: integer;
-begin
-  if x0 > x1 then begin
-    temp := x0; x0 := x1; x1 := temp
-  end;
-  if y0 > y1 then begin
-    temp := y0; y0 := y1; y1 := temp
-  end;
-  for b:=y0 to y1 do
-    HLine(x0, x1, b, colour);
-end;
-
 procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
 var
   startY, endY, y: integer;
