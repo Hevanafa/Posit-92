@@ -6,7 +6,7 @@ interface
 
 type
   TLerpTimer = record
-    active: boolean;
+    { active: boolean; }
     startTick, endTick: double;
   end;
 
@@ -25,21 +25,21 @@ function LerpEaseOutQuad(const a, z, perc: double): double;
 
 implementation
 
-uses Maths, Timing;
+uses Maths;
 
 procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
 begin
-  lt.active := true;
+  { lt.active := true; }
   lt.startTick := startTick;
   lt.endTick := startTick + duration;
 end;
 
 function GetLerpPerc(const lt: TLerpTimer; const t: double): double;
 begin
-  if not lt.active then begin
+  { if not lt.active then begin
     GetLerpPerc := 0.0;
     exit
-  end;
+  end; }
 
   GetLerpPerc := clamp((t - lt.startTick) / (lt.endTick - lt.startTick), 0.0, 1.0)
 end;
