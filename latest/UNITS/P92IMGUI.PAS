@@ -19,10 +19,10 @@ procedure ResetWidgetIndices;
 { Required: Must be placed at the end of the draw routine }
 procedure ResetActiveWidget;
 
-procedure GuiSetFont(font: TBMFont);
+procedure GuiSetFont(font: PBMFont);
 function GuiMeasureText(const text: string): word;
 
-procedure InitImmediateGUI(font: TBMFont);
+procedure InitImmediateGUI(font: PBMFont);
 
 { Widgets }
 
@@ -35,7 +35,7 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  P92Geom, P92Mouse;
+  P92Geom, P92Mouse, Panic;
 
 var
   { Immediate GUI }
@@ -52,7 +52,7 @@ var
   { Used by SliderDrag }
   lastActiveWidget: integer;
 
-  activeFont: TBMFont;
+  activeFont: PBMFont;
 
 
 procedure UpdateGUILastMouseButton;
@@ -83,19 +83,25 @@ begin
   if mouseJustReleased and (activeWidget >= 0) then activeWidget := -1;
 end;
 
-procedure GuiSetFont(font: TBMFont);
+procedure AssertFontSet;
+begin
+  if not assigned(activeFont) then
+    PanicHalt('P92IMGUI: AssertFontSet: activeFont is unset!');
+end;
+
+procedure GuiSetFont(font: PBMFont);
 begin
   activeFont := font
 end;
 
 function GuiMeasureText(const text: string): word;
 begin
-  { AssertFontSet; }
-  GuiMeasureText := MeasureBMFont(activeFont, text)
+  AssertFontSet;
+  GuiMeasureText := MeasureBMFont(activeFont^, text)
 end;
 
 
-procedure InitImmediateGUI(font: TBMFont);
+procedure InitImmediateGUI(font: PBMFont);
 begin
   hotWidget := -1;
   activeWidget := -1;
@@ -112,10 +118,14 @@ end;
 
 procedure TextLabel(const text: string; const x, y: integer);
 begin
-  { AssertFontSet; }
-  PrintBMFont(activeFont, text, x, y)
+  AssertFontSet;
+  PrintBMFont(activeFont^, text, x, y)
 end;
 
 {$ENDIF}
 
+begin
+{$IFDEF P92_IMGUI}
+  activeFont := nil
+{$ENDIF}
 end.

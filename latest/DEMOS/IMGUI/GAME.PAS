@@ -56,7 +56,7 @@ begin
   else
     Spr(SpecimenP92[1], 148, 76);
 
-  PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 120);
+  PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 100);
   TextLabel('Hello world!', 160-48, 120);
 end;
 

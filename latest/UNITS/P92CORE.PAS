@@ -312,7 +312,7 @@ begin
   if config.DefaultBMFont = nil then
     PanicHalt('P92Start: DefaultBMFont field is required by Immediate GUI');
 
-  InitImmediateGUI(config.DefaultBMFont^);
+  InitImmediateGUI(config.DefaultBMFont);
 {$ENDIF}
 
   if @config.OnPreload <> nil then
