@@ -1,8 +1,6 @@
 unit BMFont;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
@@ -128,6 +126,34 @@ begin
   DefaultTex(font.texture);
 end;
 
+function IsLFOnly(const filename: string): boolean;
+var
+  f: file;
+  buffer: array[0..511] of byte;
+  bytesRead, a: word;
+  prev: byte;
+begin
+  IsLFOnly := false;
+
+  assign(f, filename);
+  reset(f, 1);  { 1 makes it a binary file type }
+  prev := 0;
+
+  while not eof(f) do begin
+    blockread(f, buffer, sizeof(buf), bytesRead);
+
+    for a:=0 to bytesRead - 1 do
+      if buffer[a] = $0A then begin
+        IsLFOnly := (prev <> $0D);
+        close(f);
+        exit
+      end else
+        prev := buffer[a];
+  end;
+
+  close(f)
+end;
+
 procedure LoadBMFont(var font: TBMFont; const filename: string);
 var
   b: integer;
@@ -143,7 +169,7 @@ var
 begin
   WriteLog('LoadBMFont: Loading font from ' + filename);
 
-  { TODO: Add the CRLF detection, since LF breaks the parser }
+  { TODO: Add the CRLF detection, since LF-only breaks the parser }
 
   DefaultBMFont(font);
 
