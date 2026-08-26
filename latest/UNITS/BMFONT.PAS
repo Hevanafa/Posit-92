@@ -140,7 +140,7 @@ begin
   prev := 0;
 
   while not eof(f) do begin
-    blockread(f, buffer, sizeof(buf), bytesRead);
+    blockread(f, buffer, sizeof(buffer), bytesRead);
 
     for a:=0 to bytesRead - 1 do
       if buffer[a] = $0A then begin
@@ -169,7 +169,8 @@ var
 begin
   WriteLog('LoadBMFont: Loading font from ' + filename);
 
-  { TODO: Add the CRLF detection, since LF-only breaks the parser }
+  if IsLFOnly(filename) then
+    PanicHalt('LoadBMFont: The font definition line ends only with LF');
 
   DefaultBMFont(font);
 
