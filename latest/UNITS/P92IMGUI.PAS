@@ -1,3 +1,15 @@
+{
+  Immediate GUI unit
+  Part of Posit-92 game engine
+
+  Contains a subset of the WASM version
+
+  Key widgets:
+  - TextLabel
+  - Button
+  - ImageButton
+}
+
 unit P92IMGUI;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
