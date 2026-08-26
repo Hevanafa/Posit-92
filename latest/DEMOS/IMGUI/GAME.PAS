@@ -12,6 +12,7 @@ var
   P92SansFont: TBMFont;
   SpecimenP92: array[0..1] of TTexture;
   texCursor, texHand: TTexture;
+  texButtonNormal, texButtonHovered, texButtonPressed: TTexture;
 
   { Game state variables }
   t: double;
@@ -49,6 +50,10 @@ begin
 
   LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+
+  LoadTex(texButtonNormal, 'IMG\BUTTON_N.BMP');
+  LoadTex(texButtonHovered, 'IMG\BUTTON_H.BMP');
+  LoadTex(texButtonPressed, 'IMG\BUTTON_P.BMP');
 
   ReplaceColour(P92SansFont.texture, $0F, $00);
 end;
