@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, P92KBD, Timing, P92VGA,
+  P92Core, P92LOG, P92KBD, Timing, P92VGA,
   P92TEX, Conv, PCSPKR;
 
 type

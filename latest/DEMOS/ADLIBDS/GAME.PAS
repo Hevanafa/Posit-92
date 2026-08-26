@@ -7,7 +7,7 @@
 
 uses
   CRT, DOS,
-  P92Core, AdLibLgc, P92TEX, Logger, P92KBD, P92Mouse, Timing, P92VGA;
+  P92Core, AdLibLgc, P92TEX, P92LOG, P92KBD, P92Mouse, Timing, P92VGA;
 
 var
   { Asset variables }

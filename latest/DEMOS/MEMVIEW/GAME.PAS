@@ -6,7 +6,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, P92VGA, P92MEM;
+  P92Core, P92LOG, P92VGA, P92MEM;
 
 procedure Update; far;
 begin

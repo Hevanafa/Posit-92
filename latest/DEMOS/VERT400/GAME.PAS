@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  Logger, Conv, Bitmap,
+  P92LOG, Conv, Bitmap,
   P92KBD, P92Mouse,
   Timing, P92VGA;
 

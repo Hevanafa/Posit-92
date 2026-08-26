@@ -7,7 +7,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger,
+  P92Core, P92LOG,
   P92KBD, P92Mouse,
   Timing, P92VGA, Bitmap, FPS;
 

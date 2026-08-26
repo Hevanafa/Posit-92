@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Logger, P92KBD, P92VGA,
+  P92Core, P92LOG, P92KBD, P92VGA,
   P92STR;
 
 

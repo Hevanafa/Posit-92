@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, Logger, FPS, Timing, P92VGA;
+  P92Core, Bitmap, P92LOG, FPS, Timing, P92VGA;
 
 type
   TVec2 = record
