@@ -5,6 +5,8 @@ unit P92IMGUI;
 interface
 
 {$IFDEF P92_IMGUI}
+uses BMFont;
+
 { Required: Called before UpdateMouse }
 procedure UpdateGUILastMouseButton;
 
@@ -16,6 +18,8 @@ procedure ResetWidgetIndices;
 
 { Required: Must be placed at the end of the draw routine }
 procedure ResetActiveWidget;
+
+procedure InitImmediateGUI(const font: TBMFont);
 {$ENDIF}
 
 
@@ -23,22 +27,22 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  BMFont, P92Geom;
+  P92Geom, P92Mouse;
 
 var
   { Immediate GUI }
   { Additional mouse variables }
   mousePoint: TPoint;
-  lastMouseButton: smallint;
+  lastMouseButton: integer;
   mouseJustPressed, mouseJustReleased: boolean;
 
   {
   activeWidget is the "memory" of what the user clicked on
   activeWidget must survive across frames
   }
-  hotWidget, activeWidget, nextWidgetID: smallint;
+  hotWidget, activeWidget, nextWidgetID: integer;
   { Used by SliderDrag }
-  lastActiveWidget: smallint;
+  lastActiveWidget: integer;
 
   isFontSet: boolean;
   activeFont: TBMFont;
@@ -73,7 +77,7 @@ begin
 end;
 
 
-procedure InitImmediateGUI(useDefaultFont: boolean);
+procedure InitImmediateGUI(const font: TBMFont);
 begin
   hotWidget := -1;
   activeWidget := -1;
@@ -83,8 +87,7 @@ begin
   mousePoint.x := 0;
   mousePoint.y := 0;
 
-  if useDefaultFont then
-    GuiSetFont(GetDefaultFontHandle);
+  GuiSetFont(font);
 end;
 {$ENDIF}
 
