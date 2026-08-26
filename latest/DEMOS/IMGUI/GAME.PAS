@@ -11,6 +11,7 @@ var
   { Asset variables }
   P92SansFont: TBMFont;
   SpecimenP92: array[0..1] of TTexture;
+  texCursor, texHand: TTexture;
 
   { Game state variables }
   t: double;
@@ -31,10 +32,18 @@ begin
     end;
 end;
 
+procedure DrawMouse;
+begin
+  { spr(texCursor, mouseX, mouseY) }
+  spr(texHand, mouseX - 5, mouseY - 1)
+end;
 
 procedure OnPreload; far;
 begin
   LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
+
+  LoadTex(texCursor, 'CURSOR.BMP');
+  LoadTex(texHand, 'HAND.BMP');
 
   LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
@@ -79,9 +88,10 @@ begin
   PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 100);
   TextLabel('Hello world!', 160-48, 120);
 
-
   if Button('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
     inc(clicks);
+
+  DrawMouse
 end;
 
 
@@ -91,6 +101,8 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.DefaultBMFont := @P92SansFont;
+
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

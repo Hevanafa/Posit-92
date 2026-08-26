@@ -40,6 +40,7 @@ type
     DefaultBMFont: PBMFont;
 
     { Callbacks }
+
     OnPreload: TP92Callback;
     OnReady: TP92Callback;
     Update: TP92Callback;
