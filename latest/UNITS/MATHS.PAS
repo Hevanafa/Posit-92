@@ -15,6 +15,7 @@ function Max(const a, b: double): double;
 function Deg2Rad(const deg: double): double;
 function Rad2Deg(const rad: double): double;
 function I32Power(const i, exp: longint): longint;
+function F32Power(const i: double; exp: longint): double;
 function Floor(const value: double): integer;
 function Ceil(const value: double): integer;
 function ArcTan2(const y, x: double): double;
@@ -36,12 +37,14 @@ end;
 
 function Min(const a, b: double): double;
 begin
+  Min := 0.0;
   if a<=b then Min:=a
   else if a>b then Min:=b
 end;
 
 function Max(const a, b: double): double;
 begin
+  Max := 0.0;
   if a<b then Max:=b
   else if a>=b then Max:=a
 end;
@@ -67,7 +70,24 @@ begin
   result := i;
   for a := 2 to exp do
     result := result * i;
+
   I32Power := result
+end;
+
+function F32Power(const i: double; exp: longint): double;
+var
+  a: longint;
+  result: double;
+begin
+  if exp < 0 then PanicHalt('f32power: Negative exp isn''t supported!');
+  if exp = 0 then begin F32Power := 1; exit end;
+  if exp = 1 then begin F32Power := i; exit end;
+
+  result := i;
+  for a := 2 to exp do
+    result := result * i;
+
+  F32Power := result
 end;
 
 function Floor(const value: double): integer;
