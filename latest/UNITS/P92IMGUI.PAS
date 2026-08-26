@@ -19,6 +19,9 @@ procedure ResetWidgetIndices;
 { Required: Must be placed at the end of the draw routine }
 procedure ResetActiveWidget;
 
+procedure GuiSetFont(const font: TBMFont);
+function GuiMeasureText(const text: string): word;
+
 procedure InitImmediateGUI(const font: TBMFont);
 {$ENDIF}
 
@@ -44,7 +47,6 @@ var
   { Used by SliderDrag }
   lastActiveWidget: integer;
 
-  isFontSet: boolean;
   activeFont: TBMFont;
 
 
@@ -74,6 +76,17 @@ procedure ResetActiveWidget;
 begin
   lastActiveWidget := activeWidget;
   if mouseJustReleased and (activeWidget >= 0) then activeWidget := -1;
+end;
+
+procedure GuiSetFont(const font: TBMFont);
+begin
+  activeFont := font
+end;
+
+function GuiMeasureText(const text: string): word;
+begin
+  { AssertFontSet; }
+  GuiMeasureText := MeasureBMFont(activeFont, text)
 end;
 
 
