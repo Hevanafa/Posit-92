@@ -26,9 +26,10 @@ procedure SprRLEOpaque(const tex: TRLETexture; const x, y: integer);
 procedure SprRLE(const tex: TRLETexture; const x, y: integer; const transparencyKey: byte);
 procedure UnsafeSprRLE(const tex: TRLETexture; const x, y: integer);
 
+
 implementation
 
-uses Conv, Logger, P92VGA;
+uses Conv, P92LOG, P92VGA;
 
 procedure ConvertToRLE(const src: TTexture; var dest: TRLETexture);
 var

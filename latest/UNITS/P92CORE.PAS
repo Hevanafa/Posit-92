@@ -58,7 +58,7 @@ implementation
 
 uses
   DOS,
-  Logger, Timing, P92MEM, P92KBD, P92Mouse, FPS, P92VGA, PCSPKR, AdLib, Panic
+  P92LOG, Timing, P92MEM, P92KBD, P92Mouse, FPS, P92VGA, PCSPKR, AdLib, Panic
 {$ifdef P92_MODE_X}
   , ModeX;
 {$else}

@@ -37,7 +37,7 @@ procedure SprScaleRotLUT(
 
 implementation
 
-uses Logger, Conv, P92VGA;
+uses P92LOG, Conv, P92VGA;
 
 var
   transparencyKey: byte;

@@ -91,7 +91,7 @@ procedure SprFlipped(const tex: TTexture; const x, y: integer; const flip: integ
 implementation
 
 uses
-  Logger, Conv, Panic, P92VGA
+  P92LOG, Conv, Panic, P92VGA
 {$IFDEF P92_MODE_X}
   , ModeX
 {$ENDIF}
