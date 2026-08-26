@@ -1,9 +1,21 @@
 unit P92IMGUI;
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 interface
 
 {$IFDEF P92_IMGUI}
+{ Required: Called before UpdateMouse }
+procedure UpdateGUILastMouseButton;
+
+{ Required: Called after UpdateMouse }
+procedure UpdateGUIMousePoint;
+
+{ Required: Called at the end of update routine }
 procedure ResetWidgetIndices;
+
+{ Required: Must be placed at the end of the draw routine }
+procedure ResetActiveWidget;
 {$ENDIF}
 
 
@@ -11,7 +23,7 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  BMFont;
+  BMFont, P92Geom;
 
 var
   { Immediate GUI }
@@ -37,6 +49,15 @@ begin
   lastMouseButton := mouseButton
 end;
 
+procedure UpdateGUIMousePoint;
+begin
+  mousePoint.x := mouseX;
+  mousePoint.y := mouseY;
+
+  mouseJustPressed := (mouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
+  mouseJustReleased := (mouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
+end;
+
 procedure ResetWidgetIndices;
 begin
   hotWidget := -1;
@@ -44,6 +65,13 @@ begin
   { activeWidget := -1; }
   nextWidgetID := 0;
 end;
+
+procedure ResetActiveWidget;
+begin
+  lastActiveWidget := activeWidget;
+  if mouseJustReleased and (activeWidget >= 0) then activeWidget := -1;
+end;
+
 
 procedure InitImmediateGUI(useDefaultFont: boolean);
 begin

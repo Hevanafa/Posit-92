@@ -1,8 +1,6 @@
 unit P92Core;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
