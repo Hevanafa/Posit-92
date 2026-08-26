@@ -7,6 +7,16 @@ interface
 {$IFDEF P92_IMGUI}
 uses BMFont;
 
+function GetHotWidget: integer;
+procedure SetHotWidget(const widgetID: integer);
+function GetActiveWidget: integer;
+procedure SetActiveWidget(const widgetID: integer);
+function GetNextWidgetID: integer;
+procedure IncNextWidgetID;
+
+{ Can be used with drawMouse }
+function HasHoveredWidget: boolean;
+
 { Required: Called before UpdateMouse }
 procedure UpdateGUILastMouseButton;
 
@@ -60,6 +70,40 @@ var
 
   activeFont: PBMFont;
 
+function GetHotWidget: integer;
+begin
+  GetHotWidget := hotWidget
+end;
+
+procedure SetHotWidget(const widgetID: integer);
+begin
+  hotWidget := widgetID
+end;
+
+function GetActiveWidget: integer;
+begin
+  GetActiveWidget := activeWidget
+end;
+
+procedure SetActiveWidget(const widgetID: integer);
+begin
+  activeWidget := widgetID
+end;
+
+function GetNextWidgetID: integer;
+begin
+  GetNextWidgetID := nextWidgetID
+end;
+
+procedure IncNextWidgetID;
+begin
+  inc(nextWidgetID)
+end;
+
+function HasHoveredWidget: boolean;
+begin
+  HasHoveredWidget := hotWidget > -1
+end;
 
 procedure UpdateGUILastMouseButton;
 begin

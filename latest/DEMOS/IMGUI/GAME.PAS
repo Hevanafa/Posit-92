@@ -34,8 +34,10 @@ end;
 
 procedure DrawMouse;
 begin
-  { spr(texCursor, mouseX, mouseY) }
-  spr(texHand, mouseX - 5, mouseY - 1)
+  if HasHoveredWidget then
+    spr(texHand, mouseX - 5, mouseY - 1)
+  else
+    spr(texCursor, mouseX, mouseY);
 end;
 
 procedure OnPreload; far;
