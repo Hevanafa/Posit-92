@@ -4,6 +4,8 @@ unit P92Core;
 
 interface
 
+uses BMFont;
+
 const
   Posit92Version = '0.1';
 
@@ -33,6 +35,8 @@ type
 
     EnableDrawFPS: boolean;
     EnableDefaultPresent: boolean;
+
+    DefaultBMFont: PBMFont;
 
     { Callbacks }
     OnPreload: TP92Callback;
@@ -114,6 +118,8 @@ begin
 
   config.EnableDrawFPS := true;
   config.EnableDefaultPresent := true;
+
+  config.DefaultBMFont := nil;
 
   @config.OnPreload := nil;
   @config.OnReady := nil;
@@ -301,8 +307,12 @@ begin
   bootConfig := config;
 
   P92Init;
+
 {$IFDEF P92_IMGUI}
-  InitImmediateGUI;
+  if config.DefaultBMFont = nil then
+    PanicHalt('P92Start: DefaultBMFont field is required by Immediate GUI');
+
+  InitImmediateGUI(config.DefaultBMFont^);
 {$ENDIF}
 
   if @config.OnPreload <> nil then
