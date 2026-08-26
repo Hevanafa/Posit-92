@@ -5,7 +5,7 @@ unit P92IMGUI;
 interface
 
 {$IFDEF P92_IMGUI}
-uses BMFont;
+uses BMFont, P92TEX;
 
 function GetHotWidget: integer;
 procedure SetHotWidget(const widgetID: integer);
@@ -37,7 +37,13 @@ procedure InitImmediateGUI(font: PBMFont);
 { Widgets }
 
 procedure TextLabel(const text: string; const x, y: integer);
+
 function Button(const caption: string; const x, y, width, height: integer): boolean;
+
+function ImageButton(
+  const x, y: integer;
+  texNormal, texHovered, texPressed: PTexture
+): boolean;
 
 {$ENDIF}
 
@@ -212,6 +218,51 @@ begin
     Button := true
   else
     Button := false;
+end;
+
+function ImageButton(
+  const x, y: integer;
+  texNormal, texHovered, texPressed: PTexture
+): boolean;
+var
+  zone: TZone;
+  thisWidgetID: integer;
+  buttonImgHandle: longword;
+begin
+  AssertFontSet;
+
+  zone.x := x;
+  zone.y := y;
+  zone.width := GetTextureWidth(imgNormal);
+  zone.height := GetTextureHeight(imgNormal);
+
+  { Update logic }
+  thisWidgetID := nextWidgetID;
+  inc(nextWidgetID);
+
+  if pointInZone(mousePoint, zone) then begin
+    hotWidget := thisWidgetID;
+
+    if mouseJustPressed then activeWidget := thisWidgetID;
+  end;
+
+  { Render logic }
+  if activeWidget = thisWidgetID then
+    buttonImgHandle := imgPressed
+  else if hotWidget = thisWidgetID then
+    buttonImgHandle := imgHovered
+  else
+    buttonImgHandle := imgNormal;
+
+  spr(buttonImgHandle, x, y);
+  { Use this in case you want your buttons have semitransparent pixels }
+  { sprBlend(buttonImgHandle, x, y); }
+
+  if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
+    { activeWidget = -1 }  { Index reset is handled at the end of draw }
+    ImageButton := true
+  else
+    ImageButton := false;
 end;
 
 {$ENDIF}
