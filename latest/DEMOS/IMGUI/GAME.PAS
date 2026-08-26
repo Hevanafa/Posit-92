@@ -17,12 +17,29 @@ var
   clicks: integer;
 
 
+procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
+var
+  a, b: word;
+  offset: word;
+begin
+  for b:=0 to tex.height - 1 do
+    for a:=0 to tex.width - 1 do begin
+      offset := b * tex.width + a;
+
+      if tex.data^[offset] = oldColour then
+        tex.data^[offset] := newColour;
+    end;
+end;
+
+
 procedure OnPreload; far;
 begin
   LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
 
   LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+
+  ReplaceColour(P92SansFont.texture, $0F, $00);
 end;
 
 procedure OnReady; far;
