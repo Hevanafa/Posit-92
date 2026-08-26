@@ -36,6 +36,7 @@ type
     EnableDrawFPS: boolean;
     EnableDefaultPresent: boolean;
 
+    { Optional, used mainly in immediate GUI }
     DefaultBMFont: PBMFont;
 
     { Callbacks }
