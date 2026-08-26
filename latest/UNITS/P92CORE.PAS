@@ -118,7 +118,7 @@ begin
   config.EnableAdLib := false;
   config.EnableKeyHandler := true;
 
-  config.EnableDrawFPS := true;
+  config.EnableDrawFPS := false;
   config.EnableDefaultPresent := true;
 
   config.DefaultBMFont := nil;
