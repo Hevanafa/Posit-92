@@ -49,6 +49,7 @@ procedure InitImmediateGUI(font: PBMFont);
 { Widgets }
 
 procedure TextLabel(const text: string; const x, y: integer);
+procedure CentredLabel(const text: string; const cx, y: integer);
 
 function Button(const caption: string; const x, y, width, height: integer): boolean;
 
@@ -188,6 +189,16 @@ procedure TextLabel(const text: string; const x, y: integer);
 begin
   AssertFontSet;
   PrintBMFont(activeFont^, text, x, y)
+end;
+
+procedure CentredLabel(const text: string; const cx, y: integer);
+var
+  w: integer;
+begin
+  AssertFontSet;
+
+  w := MeasureBMFont(activeFont^, text);
+  PrintBMFont(activeFont^, text, cx - w shr 1, y)
 end;
 
 function Button(const caption: string; const x, y, width, height: integer): boolean;

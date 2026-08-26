@@ -93,7 +93,8 @@ begin
     Spr(SpecimenP92[1], 148, 76);
 
   PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 100);
-  TextLabel('Hello world!', 160-48, 120);
+
+  CentredLabel('Hello world!', VGAWidth div 2, 120);
 
   if Button('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
     inc(clicks);
