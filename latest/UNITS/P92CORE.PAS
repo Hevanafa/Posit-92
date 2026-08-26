@@ -59,11 +59,13 @@ implementation
 uses
   DOS,
   P92LOG, Timing, P92MEM, P92KBD, P92Mouse, FPS, P92VGA, PCSPKR, AdLib, Panic
+{$IFDEF P92_IMGUI}
+  , P92IMGUI
+{$ENDIF}
 {$ifdef P92_MODE_X}
-  , ModeX;
-{$else}
-  ;
+  , ModeX
 {$endif}
+  ;
 
 var
   done: boolean;
