@@ -101,6 +101,9 @@ begin
   if ImageButton(10, 50, @texButtonNormal, @texButtonHovered, @texButtonPressed) then
     inc(clicks);
 
+  if ImageButton(50, 50, @texButtonNormal, @texButtonHovered, @texButtonPressed) then
+    inc(clicks);
+
   DrawMouse
 end;
 

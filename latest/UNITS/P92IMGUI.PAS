@@ -227,14 +227,12 @@ function ImageButton(
 var
   zone: TZone;
   thisWidgetID: integer;
-  buttonImgHandle: longword;
+  texture: PTexture;
 begin
-  AssertFontSet;
-
   zone.x := x;
   zone.y := y;
-  zone.width := GetTextureWidth(imgNormal);
-  zone.height := GetTextureHeight(imgNormal);
+  zone.width := texNormal^.width;
+  zone.height := texNormal^.height;
 
   { Update logic }
   thisWidgetID := nextWidgetID;
@@ -248,15 +246,13 @@ begin
 
   { Render logic }
   if activeWidget = thisWidgetID then
-    buttonImgHandle := imgPressed
+    texture := texPressed
   else if hotWidget = thisWidgetID then
-    buttonImgHandle := imgHovered
+    texture := texHovered
   else
-    buttonImgHandle := imgNormal;
+    texture := texNormal;
 
-  spr(buttonImgHandle, x, y);
-  { Use this in case you want your buttons have semitransparent pixels }
-  { sprBlend(buttonImgHandle, x, y); }
+  spr(texture^, x, y);
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
