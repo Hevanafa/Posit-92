@@ -1,8 +1,6 @@
-unit Logger;
+unit P92LOG;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
@@ -17,7 +15,7 @@ uses CRT, DOS;
 
 var
   logFile: Text;
-  logOpened: boolean;
+  isLogOpened: boolean;
 
 procedure InitLogger;
 begin
@@ -25,8 +23,9 @@ begin
   {$I-}
   rewrite(logFile);
   {$I+}
-  logOpened := (IOResult = 0);
-  if not logOpened then begin
+
+  isLogOpened := (IOResult = 0);
+  if not isLogOpened then begin
     writeLn('Failed to create "log.txt" file!');
     readLn;
     halt
@@ -35,14 +34,14 @@ end;
 
 procedure WriteLog(const msg: string);
 begin
-  if not logOpened then exit;
+  if not isLogOpened then exit;
   writeLn(logFile, msg);
   flush(logFile)
 end;
 
 procedure CloseLogger;
 begin
-  if logOpened then
+  if isLogOpened then
     close(logFile);
 end;
 
