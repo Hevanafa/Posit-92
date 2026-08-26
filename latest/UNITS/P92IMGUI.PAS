@@ -27,6 +27,7 @@ procedure InitImmediateGUI(font: PBMFont);
 { Widgets }
 
 procedure TextLabel(const text: string; const x, y: integer);
+function Button(const caption: string; const x, y, width, height: integer): boolean;
 
 {$ENDIF}
 
@@ -35,7 +36,12 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  P92Geom, P92Mouse, Panic;
+  P92Geom, P92Mouse, Panic, Graphics;
+
+const
+  ButtonPressColour = $40;
+  ButtonHoverColour = $42;
+  ButtonIdleColour = $0F;
 
 var
   { Immediate GUI }
@@ -120,6 +126,48 @@ procedure TextLabel(const text: string; const x, y: integer);
 begin
   AssertFontSet;
   PrintBMFont(activeFont^, text, x, y)
+end;
+
+function Button(const caption: string; const x, y, width, height: integer): boolean;
+var
+  zone: TZone;
+  thisWidgetID: integer;
+  buttonColour: word;
+begin
+  AssertFontSet;
+
+  zone.x := x;
+  zone.y := y;
+  zone.width := width;
+  zone.height := height;
+
+  { Update logic }
+  thisWidgetID := nextWidgetID;
+  inc(nextWidgetID);
+
+  if pointInZone(mousePoint, zone) then begin
+    hotWidget := thisWidgetID;
+
+    if mouseJustPressed then activeWidget := thisWidgetID;
+  end;
+
+  { Render logic }
+  if activeWidget = thisWidgetID then
+    buttonColour := ButtonPressColour
+  else if hotWidget = thisWidgetID then
+    buttonColour := ButtonHoverColour
+  else
+    buttonColour := ButtonIdleColour;
+
+  RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
+  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), ButtonIdleColour);
+  TextLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4));
+
+  if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
+    { activeWidget = -1 }  { Index reset is handled at the end of draw }
+    Button := true
+  else
+    Button := false;
 end;
 
 {$ENDIF}

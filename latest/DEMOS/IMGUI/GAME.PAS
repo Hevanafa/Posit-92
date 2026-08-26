@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, P92LOG, BMFont, P92IMGUI, P92STR, P92TEX, Timing, P92VGA,
+  P92Core, P92LOG, Conv, BMFont, P92IMGUI, P92STR, P92TEX, Timing, P92VGA,
   P92KBD, P92Mouse;
 
 var
@@ -14,6 +14,7 @@ var
 
   { Game state variables }
   t: double;
+  clicks: integer;
 
 
 procedure OnPreload; far;
@@ -27,6 +28,8 @@ end;
 procedure OnReady; far;
 begin
   { Init game state variables here }
+  clicks := 0;
+
   t := 0.0;
 end;
 
@@ -58,6 +61,10 @@ begin
 
   PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 100);
   TextLabel('Hello world!', 160-48, 120);
+
+
+  if Button('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
+    inc(clicks);
 end;
 
 
