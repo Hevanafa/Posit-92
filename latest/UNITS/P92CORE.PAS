@@ -177,7 +177,17 @@ end;
 procedure P92Update;
 begin
   UpdateDeltaTime;
+
+{$IFDEF P92_IMGUI}
+  ResetWidgetIndices;
+
+  UpdateGUILastMouseButton;
   UpdateMouse;
+  UpdateGUIMousePoint;
+{$ELSE}
+  UpdateMouse;
+{$ENDIF}
+
   IncrementFPS;
 
   if bootConfig.EnablePCSpeaker then
@@ -194,6 +204,10 @@ end;
 
 procedure P92AfterDraw;
 begin
+{$IFDEF P92_IMGUI}
+  ResetActiveWidget;
+{$ENDIF}
+
   if bootConfig.EnableDrawFPS then
     DrawFPS;
 
@@ -285,7 +299,11 @@ end;
 procedure P92Start(const config: TP92AppConfig);
 begin
   bootConfig := config;
+
   P92Init;
+{$IFDEF P92_IMGUI}
+  InitImmediateGUI;
+{$ENDIF}
 
   if @config.OnPreload <> nil then
     config.OnPreload;
