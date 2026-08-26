@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, Logger, FPS, P92KBD, P92Mouse, Timing, P92VGA,
+  P92Core, Conv, P92LOG, FPS, P92KBD, P92Mouse, Timing, P92VGA,
   MonoTex, MonoVGA;
 
 var
