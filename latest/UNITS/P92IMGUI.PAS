@@ -19,10 +19,15 @@ procedure ResetWidgetIndices;
 { Required: Must be placed at the end of the draw routine }
 procedure ResetActiveWidget;
 
-procedure GuiSetFont(const font: TBMFont);
+procedure GuiSetFont(font: TBMFont);
 function GuiMeasureText(const text: string): word;
 
-procedure InitImmediateGUI(const font: TBMFont);
+procedure InitImmediateGUI(font: TBMFont);
+
+{ Widgets }
+
+procedure TextLabel(const text: string; const x, y: integer);
+
 {$ENDIF}
 
 
@@ -78,7 +83,7 @@ begin
   if mouseJustReleased and (activeWidget >= 0) then activeWidget := -1;
 end;
 
-procedure GuiSetFont(const font: TBMFont);
+procedure GuiSetFont(font: TBMFont);
 begin
   activeFont := font
 end;
@@ -90,7 +95,7 @@ begin
 end;
 
 
-procedure InitImmediateGUI(const font: TBMFont);
+procedure InitImmediateGUI(font: TBMFont);
 begin
   hotWidget := -1;
   activeWidget := -1;
@@ -102,6 +107,15 @@ begin
 
   GuiSetFont(font);
 end;
+
+{ Begin widgets }
+
+procedure TextLabel(const text: string; const x, y: integer);
+begin
+  { AssertFontSet; }
+  PrintBMFont(activeFont, text, x, y)
+end;
+
 {$ENDIF}
 
 end.

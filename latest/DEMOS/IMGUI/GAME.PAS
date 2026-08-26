@@ -56,7 +56,8 @@ begin
   else
     Spr(SpecimenP92[1], 148, 76);
 
-  Print('Hello world!', 160-48, 120, 15);
+  PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 120);
+  TextLabel('Hello world!', 160-48, 120);
 end;
 
 
@@ -64,6 +65,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.DefaultBMFont := @P92SansFont;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
