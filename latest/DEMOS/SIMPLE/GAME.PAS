@@ -4,13 +4,12 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, P92LOG, P92STR, P92TEX, P92TIME, P92VGA,
-  P92KBD, P92Mouse;
+  P92CORE, P92LOG, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
   { DosuEXE: array[0..1] of TTexture; }
-  SpecimenP92: array[0..1] of TTexture;
+  texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;
@@ -19,8 +18,8 @@ var
 procedure OnPreload; far;
 begin
   { Load assets here }
-  LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
 procedure OnReady; far;
@@ -32,8 +31,8 @@ end;
 procedure OnCleanup; far;
 begin
   { Free all the resources here }
-  FreeTex(SpecimenP92[0]);
-  FreeTex(SpecimenP92[1]);
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
 end;
 
 procedure Update; far;
@@ -51,9 +50,9 @@ begin
   Cls($4F);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], 148, 76)
   else
-    Spr(SpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], 148, 76);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
