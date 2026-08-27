@@ -1,3 +1,10 @@
+{
+  Immediate GUI demo
+  Part of Posit-92 game engine
+
+  The P92_IMGUI custom directive has to be included
+}
+
 program Game;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
