@@ -31,7 +31,7 @@ implementation
 
 uses
   DOS,
-  Conv, P92LOG, P92VGA;
+  P92CONV, P92LOG, P92VGA;
 
 var
   mouseInitialised: boolean;

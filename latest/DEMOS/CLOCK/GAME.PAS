@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, P92LOG, Timing, P92VGA;
+  P92CORE, P92CONV, P92LOG, Timing, P92VGA;
 
 { t: time of the day in seconds, obtained from GetTimer }
 function GetHours(const t: double): byte;

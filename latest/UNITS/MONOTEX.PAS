@@ -28,7 +28,7 @@ procedure SprMono8(const tex: TMonoTexture; const x, y: integer);
 
 implementation
 
-uses Conv, P92LOG, Maths, Panic, MonoVGA;
+uses P92CONV, P92LOG, Maths, Panic, MonoVGA;
 
 const DEBUG = true;
 

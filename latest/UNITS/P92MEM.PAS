@@ -29,7 +29,7 @@ procedure DrawDOSMemInfo;
 
 implementation
 
-uses DOS, Conv, P92VGA;
+uses DOS, P92CONV, P92VGA;
 
 { Assuming that the computer has the conventional 640 KB RAM by default }
 const

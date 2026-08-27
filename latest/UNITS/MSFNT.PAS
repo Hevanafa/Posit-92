@@ -77,7 +77,7 @@ function MeasureMSFont(const font: TMSFont; const text: string): word;
 
 implementation
 
-uses Conv, Maths, Panic, P92VGA;
+uses P92CONV, Maths, Panic, P92VGA;
 
 procedure DefaultMSFont(var font: TMSFont);
 var

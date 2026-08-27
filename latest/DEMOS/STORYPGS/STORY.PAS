@@ -23,7 +23,7 @@ var
 
 implementation
 
-uses Conv, Timing, P92VGA;
+uses P92CONV, Timing, P92VGA;
 
 const
   charInterval = 0.016;

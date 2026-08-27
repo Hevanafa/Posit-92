@@ -1,7 +1,7 @@
 
 uses
   CRT,
-  P92Core, Bitmap, Conv, Logger, Keyboard, Mouse, VGA;
+  P92Core, Bitmap, P92CONV, Logger, Keyboard, Mouse, VGA;
 
 var
   { Asset variables }

@@ -4,7 +4,7 @@
 
 uses
   CRT,
-  P92Core, Conv, P92Mouse, P92VGA;
+  P92Core, P92CONV, P92Mouse, P92VGA;
 
 
 procedure Update; far;

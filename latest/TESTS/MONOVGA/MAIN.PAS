@@ -1,7 +1,7 @@
 
 uses
   CRT,
-  Conv, FPS, Timing, MonoTex, MonoVGA, P92VGA;
+  P92CONV, FPS, Timing, MonoTex, MonoVGA, P92VGA;
 
 procedure PSet10000;
 var

@@ -6,7 +6,7 @@
 }
 uses
   CRT, DOS,
-  P92Core, Bitmap, BMPROT, Conv, Graphics, P92LOG, P92Mouse, Timing, P92VGA;
+  P92Core, Bitmap, BMPROT, P92CONV, Graphics, P92LOG, P92Mouse, Timing, P92VGA;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

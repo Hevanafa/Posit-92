@@ -4,7 +4,7 @@
 {$MODE TP}
 {$ENDIF}
 
-unit Conv;
+unit P92CONV;
 
 interface
 

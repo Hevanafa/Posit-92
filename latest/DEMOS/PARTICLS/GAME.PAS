@@ -5,7 +5,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Conv, FPS, Graphics, P92LOG, P92KBD, P92Mouse, Timing, P92VGA;
+  P92Core, P92CONV, FPS, Graphics, P92LOG, P92KBD, P92Mouse, Timing, P92VGA;
 
 type
   TParticle = record

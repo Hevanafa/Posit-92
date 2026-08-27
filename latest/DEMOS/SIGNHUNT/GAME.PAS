@@ -5,7 +5,7 @@
 
 uses
   CRT, DOS,
-  Bitmap, Conv, FPS, Graphics, Logger, Maths,
+  Bitmap, P92CONV, FPS, Graphics, Logger, Maths,
   Keyboard, Strings, Timing,
   BMFont, Camera, NokiaVGA;
 

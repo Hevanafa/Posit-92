@@ -133,7 +133,7 @@ implementation
 
 uses
   CRT,
-  Conv, P92LOG, Panic, Timing, P92VGA;
+  P92CONV, P92LOG, Panic, Timing, P92VGA;
 
 type
   TVoiceState = record

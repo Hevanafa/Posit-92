@@ -1,4 +1,4 @@
-unit P92Core;
+unit P92CORE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

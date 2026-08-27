@@ -29,7 +29,7 @@ procedure UnsafeSprRLE(const tex: TRLETexture; const x, y: integer);
 
 implementation
 
-uses Conv, P92LOG, P92VGA;
+uses P92CONV, P92LOG, P92VGA;
 
 procedure ConvertToRLE(const src: TTexture; var dest: TRLETexture);
 var
