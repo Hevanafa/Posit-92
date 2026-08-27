@@ -8,7 +8,7 @@ procedure DrawBobbingGrid(t: double);
 
 implementation
 
-uses Graphics, Timing, P92VGA;
+uses P92GRAPH, P92TIME, P92VGA;
 
 var
   sinTable: array[0..255] of integer;
