@@ -1,3 +1,7 @@
+{
+  Run-length bitmap utility unit
+  Part of Posit-92 game engine
+}
 unit P92BMRLE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

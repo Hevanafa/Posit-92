@@ -1,3 +1,10 @@
+{
+  Posit-92 core unit
+  Part of Posit-92 game engine
+
+  Contains the entry point to initialise the game engine
+}
+
 unit P92CORE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

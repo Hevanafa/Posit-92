@@ -1,3 +1,8 @@
+{
+  Mouse utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92MOUSE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

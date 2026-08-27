@@ -1,3 +1,8 @@
+{
+  VGA Mode 13h utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92VGA;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

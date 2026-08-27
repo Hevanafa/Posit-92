@@ -1,3 +1,8 @@
+{
+  Logger utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92LOG;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

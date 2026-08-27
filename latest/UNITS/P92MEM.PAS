@@ -1,3 +1,10 @@
+{
+  Memory utility unit
+  Part of Posit-92 game engine
+
+  Doesn't contain memory manager / allocator logic
+}
+
 unit P92MEM;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

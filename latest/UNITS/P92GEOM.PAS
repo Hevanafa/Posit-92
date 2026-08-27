@@ -1,7 +1,6 @@
 {
   Geometry unit
   Part of Posit-92 game engine
-  Hevanafa
 
   Contains primitive types: point, zone, physics body & circle
 }

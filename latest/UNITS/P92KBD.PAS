@@ -1,4 +1,7 @@
 {
+  Keyboard utility unit
+  Part of Posit-92 game engine
+
   This keyboard implementation should work with
   DOSBox's default settings
 }

@@ -1,4 +1,7 @@
-{ Common conversion utility unit }
+{
+  Common conversion utility unit
+  Part of Posit-92 game engine
+}
 
 {$IFDEF FPC}
 {$MODE TP}

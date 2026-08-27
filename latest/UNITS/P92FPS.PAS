@@ -1,3 +1,8 @@
+{
+  FPS utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92FPS;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

@@ -1,7 +1,6 @@
 {
   PC speaker unit
   Part of Posit-92 game engine
-  By Hevanafa
 }
 
 unit PCSPKR;

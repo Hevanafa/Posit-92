@@ -1,3 +1,10 @@
+{
+  Panic utility unit
+  Part of Posit-92 game engine
+
+  Used similarly to Rust's panic!() macro
+}
+
 unit P92PANIC;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

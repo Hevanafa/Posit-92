@@ -1,3 +1,8 @@
+{
+  BMFont utility unit
+  Part of Posit-92 game engine
+}
+
 unit P92BMFON;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
