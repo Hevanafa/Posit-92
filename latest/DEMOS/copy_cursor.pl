@@ -7,20 +7,23 @@ use File::Spec::Functions;
 
 my $src_file = catfile("SIMPLE", "CURSOR.BMP");
 
-opendir my $dh, ".";
+opendir my $dh, $dest_dir_path;
 
-for (grep { -d && ($_ ne ".") && ($_ ne "..") } readdir $dh) {
-  my $test_cursor = catfile($_, "CURSOR.BMP");
+my @dirs = grep { $_ ne "." && $_ ne ".." } readdir $dh;
+
+closedir $dh;
+
+for (@dirs) {
+  my $test_cursor = catfile(
+    # ".",  # DEMOS
+    "..", "TESTS",  # ..\TESTS
+    $_, "CURSOR.BMP");
 
   next if $test_cursor eq $src_file;
 
   if (-f $test_cursor) {
-    say "Replacing ".$test_cursor
+    say "Replacing ".$test_cursor;
 
-    # TODO: Actually copy the cursor
+    copy $src_file, $test_cursor
   }
 }
-
-closedir $dh
-
-# copy "SIMPLE/CURSOR.BMP"
