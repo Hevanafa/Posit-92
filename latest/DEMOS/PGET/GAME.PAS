@@ -16,7 +16,7 @@ function PGet(const x, y: integer): byte;
 var
   offset: integer;
 begin
-  if (x < 0) or (x >= 320) or (y < 0) or (y >= 200) then begin
+  if (word(x) >= VGAWidth) or (word(y) >= VGAHeight) then begin
     PGet := 0;
     exit
   end;
