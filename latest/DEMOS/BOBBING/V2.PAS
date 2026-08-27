@@ -7,8 +7,7 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92FPS, P92GRAPH, P92LOG,
-  P92KBD, P92MOUSE, P92TIME, P92VGA;
+  P92CORE, P92FPS, P92GRAPH, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA;
 
 var
   startTime: double;
@@ -135,55 +134,18 @@ begin
   startTime := getTimer
 end;
 
-procedure OnCleanup; far;
-begin
-
-end;
-
 
 procedure Update; far;
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
 end;
 
-
 procedure Draw; far;
-var
-  a: integer;
 begin
   cls($00);
-  { cls($0f); }
 
   DrawBobbingGrid2((getTimer - startTime) * 3);
-
-  { Flush }
 end;
-
-{
-var
-  now, nextTick: double;
-begin
-  OnReady;
-
-  now := GetTimer;
-  nextTick := GetTimer;
-
-  repeat
-    now := GetTimer;
-    nextTick := now + 1 / 35.5;
-    Update;
-    Draw;
-
-    while GetTimer < nextTick do
-    asm
-      sti
-      hlt
-    end;
-  until done;
-
-  OnCleanup;
-end.
-}
 
 var
   appConfig: TP92AppConfig;
