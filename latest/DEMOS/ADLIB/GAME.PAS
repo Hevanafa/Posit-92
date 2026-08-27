@@ -1,3 +1,9 @@
+{
+  AdLib demo project
+  Part of Posit-92 game engine
+
+  Requires P92_ADLIB custom directive enabled
+}
 
 uses
   CRT, DOS,
@@ -244,8 +250,6 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
-
-  appConfig.EnableAdLib := true;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
