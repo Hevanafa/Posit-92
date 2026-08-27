@@ -13,7 +13,8 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MATHS, P92KBD, P92STR, P92TIME, P92TEX, P92BMFON,
+  P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MATHS, P92KBD, P92STR, P92TIME,
+  P92TEX, P92BMFON, P92VGA,
   Camera;
 
 const
@@ -35,7 +36,7 @@ var
   lastSoftKey: boolean;
   isSoftKey: boolean;
 
-  nokiaFont, p8Font: PBMFont;
+  nokiaFont, p8Font: TBMFont;
   imgRadio, imgSignal: TTexture;
   imgPlayer, imgPlayerWalk: TTexture;
 
@@ -65,49 +66,32 @@ asm
 end;
 
 
-procedure randomiseRadio;
+procedure RandomiseRadio;
 begin
   radioX := 10 + random(64);
   radioY := 10 + random(28);
 end;
 
 
-procedure INIT;
-begin
-  initLogger;
-  initVGAMode;
-  loadFont;
-  initBuffer;
-  initDeltaTime;
-  initKeyHandler;
-
-  initFPSCounter;
-  InitCamera;
-
-  loadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
-  loadBMFont(p8Font, 'FONTS\P8.TXT');
-
-  loadBMP(imgRadio, 'IMG\RADIO.BMP');
-  loadBMP(imgSignal, 'IMG\SIGNAL.BMP');
-  loadBMP(imgPlayer, 'IMG\PSTAND.BMP');
-  loadBMP(imgPlayerWalk, 'IMG\PWALK.BMP');
-
-  randomize;
-  palette[0] := 98;
-  palette[1] := 8;
-
-end;
-
-
 procedure OnPreload; far;
 begin
+  LoadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
+  LoadBMFont(p8Font, 'FONTS\P8.TXT');
 
+  LoadTex(imgRadio, 'IMG\RADIO.BMP');
+  LoadTex(imgSignal, 'IMG\SIGNAL.BMP');
+  LoadTex(imgPlayer, 'IMG\PSTAND.BMP');
+  LoadTex(imgPlayerWalk, 'IMG\PWALK.BMP');
+
+  { randomize; }
+  palette[0] := 98;
+  palette[1] := 8;
 end;
 
 procedure OnReady; far;
 begin
   radioCount := 0;
-  randomiseRadio;
+  RandomiseRadio;
 
   playerX := 42;
   playerY := 24;
@@ -120,7 +104,7 @@ end;
 
 procedure Update; far;
 begin
-  if isKeyDown(SC_ESC) or isKeyDown(SC_X) then done := true;
+  if isKeyDown(SC_ESC) or isKeyDown(SC_X) then SignalDone;
 
   if isKeyDown(SC_UP) then dec(playerY);
   if isKeyDown(SC_DOWN) then inc(playerY);
@@ -138,71 +122,73 @@ begin
   { TODO: Z or Enter - Soft key }
   { TODO: playerX or Escape - C button }
 
-  cameraX := playerX - 40;  { 42 - 4 / 2 }
-  cameraY := playerY - 21;  { 24 - 6 / 2 }
+  SetCameraX(playerX - 40);  { 42 - 4 / 2 }
+  SetCameraY(playerY - 21);  { 24 - 6 / 2 }
 
   if i32power(radioX - playerX, 2) + i32power(radioY - playerY, 2) <= 25 then begin
     inc(radioCount);
-    randomiseRadio
+    RandomiseRadio
   end;
   
   t := getTimer - startTick
 end;
 
-procedure drawFPS;
+procedure DrawFPS;
 begin
-  printBMFont(p8Font, 'fps:' + i32str(lastFPS), 55, 0, 13)
+  PrintBMFont(p8Font, 'FPS:' + i32str(GetLastFPS), 55, 0)
 end;
 
-procedure printP8(const txt: string; const x, y: integer);
+procedure PrintP8(const txt: string; const x, y: integer);
 begin
-  printBMFont(p8Font, txt, x, y, 13)
+  PrintBMFont(p8Font, txt, x, y)
 end;
 
-procedure printNokia(const txt: string; const x, y: integer);
+procedure PrintNokia(const txt: string; const x, y: integer);
 begin
-  printBMFont(nokiaFont, txt, x, y, 13)
+  PrintBMFont(nokiaFont, txt, x, y)
 end;
 
 
-procedure draw;
+procedure Draw; far;
 var
   w: word;
   a: byte;
 begin
-  cls(palette[0]);
+  Cls(palette[0]);
 
   if isMenu then begin
-    printBMFont(nokiaFont, 'Game Menu', 0, 0, 13);
+    PrintBMFont(nokiaFont, 'Game Menu', 0, 0);
 
-    nokiaFlushX2;
+    { nokiaFlushX2; }
+    PresentMode13h;
     exit
   end;
 
   { Radio }
   { pascalSpr(imgRadio, radioX, radioY, 13); }
   if trunc(t * 16) shr 1 and 1 = 1 then
-    psetWithCamera(radioX, radioY, palette[1]);
+    PSetWithCamera(radioX, radioY, palette[1]);
 
   { Player }
   { pascalRect(playerX, playerY, playerX + 1, playerY + 1, palette[1]); }
 
-  sprWithCamera(imgPlayer, playerX, playerY, 13);
+  SprWithCamera(imgPlayer, playerX, playerY);
 
   { HUD }
-  pascalSpr(imgSignal, 0, 0, 13);
+  Spr(imgSignal, 0, 0);
 
-  w := measureBMFont(nokiaFont, 'Menu');
-  printNokia('Menu', (84 - w) shr 1, 38);
-  printNokia(padStart(i32str(radioCount), 4, '0'), 0, 6);
+  w := MeasureBMFont(nokiaFont, 'Menu');
+  PrintNokia('Menu', (84 - w) shr 1, 38);
+  PrintNokia(padStart(i32str(radioCount), 4, '0'), 0, 6);
 
   if isSoftKey then
-    printP8('Softkey is pressed!', 4, 4);
+    PrintP8('Softkey is pressed!', 4, 4);
 
-  drawFPS;
+  DrawFPS;
 
   { flush }
-  nokiaFlushX2
+  { nokiaFlushX2 }
+  PresentMode13h
 end;
 
 
@@ -266,7 +252,8 @@ begin
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  @appConfig.OnCleanup := @OnCleanup;
+  { TODO: }
+  { @appConfig.OnCleanup := @OnCleanup; }
 
   P92Start(appConfig)
 end.
