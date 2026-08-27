@@ -8,7 +8,7 @@ procedure PanicHalt(const msg: string);
 
 implementation
 
-uses P92CORE, P92LOG, P92KBD, P92MOUSE P92VGA;
+uses P92CORE, P92LOG, P92KBD, P92MOUSE, P92VGA;
 
 procedure PanicHalt(const msg: string);
 begin
