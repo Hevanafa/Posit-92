@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92TEX, FPS, P92LOG, P92TIME, P92VGA;
+  P92Core, P92CONV, P92TEX, P92FPS, P92LOG, P92TIME, P92VGA;
 
 type
   TExplosion = record

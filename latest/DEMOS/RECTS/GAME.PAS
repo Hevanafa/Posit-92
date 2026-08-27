@@ -4,7 +4,7 @@
 }
 
 uses
-  P92Core, P92GRAPH, FPS, P92KBD, P92LOG, P92TIME, P92VGA;
+  P92Core, P92GRAPH, P92FPS, P92KBD, P92LOG, P92TIME, P92VGA;
 
 var
   done: boolean;

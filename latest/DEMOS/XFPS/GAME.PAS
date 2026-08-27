@@ -1,7 +1,7 @@
 {$DEFINE DEBUG}
 
 uses
-  P92Core, P92CONV, P92LOG, FPS, P92TIME,
+  P92Core, P92CONV, P92LOG, P92FPS, P92TIME,
   Keyboard, Mouse,
   ModeX, XBitmap;
 

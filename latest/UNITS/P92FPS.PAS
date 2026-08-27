@@ -1,8 +1,6 @@
-unit FPS;
+unit P92FPS;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
