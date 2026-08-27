@@ -4,8 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92LOG, P92KBD, Timing, P92VGA,
-  P92TEX, P92CONV, PCSPKR;
+  P92Core, P92LOG, P92KBD, P92TIME, P92VGA, P92TEX, P92CONV, PCSPKR;
 
 type
   TRect = object

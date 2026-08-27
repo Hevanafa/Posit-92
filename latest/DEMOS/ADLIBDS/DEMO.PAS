@@ -2,7 +2,7 @@
 
 uses
   CRT,
-  AdLib, AdLibPK, Timing;
+  AdLibLGC, AdLibPK, P92TIME;
 
 var
   done: boolean;

@@ -1,7 +1,7 @@
 uses
   CRT, DOS,
   P92Core, P92CONV, P92GRAPH,
-  P92KBD, P92Mouse, Timing, P92VGA;
+  P92KBD, P92Mouse, P92TIME, P92VGA;
 
 type
   TPoint = record

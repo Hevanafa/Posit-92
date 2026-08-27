@@ -7,9 +7,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92LOG,
-  P92KBD, P92Mouse,
-  Timing, P92VGA, Bitmap, FPS;
+  P92CORE, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, Bitmap, FPS;
 
 var
   { Game state variables }

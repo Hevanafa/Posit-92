@@ -20,7 +20,7 @@ uses
 {$ELSE}
   P92VGA,
 {$ENDIF}
-  Timing, P92CONV;
+  P92TIME, P92CONV;
 
 var
   nowFPS, lastFPS: integer;

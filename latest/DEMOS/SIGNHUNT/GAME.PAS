@@ -5,8 +5,8 @@
 
 uses
   CRT, DOS,
-  Bitmap, P92CONV, FPS, P92GRAPH, Logger, P92MATHS,
-  Keyboard, Strings, Timing,
+  Bitmap, P92CONV, FPS, P92GRAPH, P92LOG, P92MATHS,
+  P92KBD, P92STR, P92TIME,
   P92BMFON, Camera, NokiaVGA;
 
 const

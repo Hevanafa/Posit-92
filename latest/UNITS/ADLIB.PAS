@@ -91,7 +91,7 @@ implementation
 
 uses
   CRT,
-  P92CONV, P92LOG, Panic, Timing, P92VGA;
+  P92CONV, P92LOG, Panic, P92TIME, P92VGA;
 
 type
   TVoiceState = record

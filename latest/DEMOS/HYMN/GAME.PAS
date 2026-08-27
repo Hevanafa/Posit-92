@@ -2,7 +2,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92TEX, P92LOG, PCSPKR, Timing, P92VGA;
+  P92Core, P92TEX, P92LOG, PCSPKR, P92TIME, P92VGA;
 
 const
   C4 = 262;

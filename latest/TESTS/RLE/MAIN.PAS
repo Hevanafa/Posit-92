@@ -1,6 +1,6 @@
 uses
   CRT, DOS,
-  P92Core, P92TEX, P92CONV, P92LOG, P92KBD, P92Mouse, Panic, Timing, P92VGA, P92BMRLE;
+  P92Core, P92TEX, P92CONV, P92LOG, P92KBD, P92Mouse, Panic, P92TIME, P92VGA, P92BMRLE;
 
 var
   { Asset variables }

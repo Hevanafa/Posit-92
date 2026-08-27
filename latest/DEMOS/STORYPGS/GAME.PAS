@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92BMFON, Logger, P92KBD, P92Mouse, Timing, P92VGA, Bitmap,
+  P92CORE, P92BMFON, Logger, P92KBD, P92MOUSE, P92TIME, P92VGA, Bitmap,
   Story;
 
 var

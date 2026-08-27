@@ -1,4 +1,9 @@
-unit Timing;
+{
+  Time-related unit
+  Part of Posit-92 game engine
+}
+
+unit P92TIME;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

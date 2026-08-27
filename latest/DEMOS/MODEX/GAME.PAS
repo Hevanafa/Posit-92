@@ -14,7 +14,7 @@
 
 uses
   CRT,
-  P92Core, P92Mouse, P92CONV, P92LOG, Timing, P92TEX, ModeX; { , XBitmap }
+  P92Core, P92Mouse, P92CONV, P92LOG, P92TIME, P92TEX, ModeX; { , XBitmap }
 
 var
   { Asset variables }

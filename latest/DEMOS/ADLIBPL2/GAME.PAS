@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  AdLib, Bitmap, Logger, Keyboard, Mouse, Timing, VGA;
+  AdLibLGC, Bitmap, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA;
 
 const
   SC_ESC = $01;

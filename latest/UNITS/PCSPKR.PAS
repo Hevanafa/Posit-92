@@ -54,7 +54,9 @@ procedure PlayMelody(const mel: PMelody);
 
 implementation
 
-uses CRT, DOS, Timing;
+uses
+  CRT, DOS,
+  P92TIME;
 
 var
   isPlaying: boolean;
