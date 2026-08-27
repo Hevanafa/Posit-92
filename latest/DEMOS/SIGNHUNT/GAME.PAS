@@ -88,6 +88,17 @@ begin
   palette[1] := 8;
 end;
 
+procedure OnCleanup; far;
+begin
+  FreeBMFont(nokiaFont);
+  FreeBMFont(p8Font);
+
+  FreeTex(imgRadio);
+  FreeTex(imgSignal);
+  FreeTex(imgPlayer);
+  FreeTex(imgPlayerWalk);
+end;
+
 procedure OnReady; far;
 begin
   radioCount := 0;
@@ -101,6 +112,7 @@ begin
 
   clearVGAMem;
 end;
+
 
 procedure Update; far;
 begin
@@ -200,8 +212,7 @@ begin
   @appConfig.OnReady := @OnReady;
   @appConfig.Update := @Update;
   @appConfig.Draw := @Draw;
-  { TODO: }
-  { @appConfig.OnCleanup := @OnCleanup; }
+  @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
 end.
