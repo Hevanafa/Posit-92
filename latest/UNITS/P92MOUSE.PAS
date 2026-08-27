@@ -1,4 +1,4 @@
-unit P92Mouse;
+unit P92MOUSE;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

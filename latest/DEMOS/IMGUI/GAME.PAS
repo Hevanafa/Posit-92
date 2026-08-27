@@ -5,7 +5,7 @@ program Game;
 uses
   CRT, DOS,
   P92CORE, P92LOG, P92CONV, BMFont, P92IMGUI, P92STR, P92TEX, Timing, P92VGA,
-  P92KBD, P92Mouse;
+  P92KBD, P92MOUSE;
 
 var
   { Asset variables }
