@@ -28,7 +28,10 @@
       <Unit>
         <Filename Value="V1.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="V1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="V2.PAS"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>
