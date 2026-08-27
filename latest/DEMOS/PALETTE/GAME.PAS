@@ -5,7 +5,7 @@ program Game;
 uses
   CRT, DOS,
   P92Core, P92LOG, P92CONV, P92GRAPH, P92BMFON, P92STR, P92TEX, P92TIME, P92VGA,
-  P92KBD, P92Mouse;
+  P92KBD, P92MOUSE;
 
 const
   PaletteTop = 32;
@@ -13,7 +13,7 @@ const
 
 var
   { Asset variables }
-  P92Sans: TBMFont;
+  fontP92Sans: TBMFont;
   SpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
@@ -27,7 +27,7 @@ var
 
 procedure PrintDefault(const text: string; const x, y: integer);
 begin
-  PrintBMFont(P92Sans, text, x, y)
+  PrintBMFont(fontP92Sans, text, x, y)
 end;
 
 { r, g, b: 0..255, not the original mapping of 0..63 }
@@ -42,14 +42,14 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(P92Sans, 'FONTS\P92SANS.TXT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
   LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(P92Sans);
+  FreeBMFont(fontP92Sans);
   FreeTex(SpecimenP92[0]);
   FreeTex(SpecimenP92[1]);
 end;
@@ -70,10 +70,10 @@ procedure UpdateHovered;
 var
   row, col: integer;
 begin
-  if mouseX < PaletteLeft then
+  if GetMouseX < PaletteLeft then
     hoverCol := -1
   else begin
-    col := (mouseX - PaletteLeft) div 8;
+    col := (GetMouseX - PaletteLeft) div 8;
 
     if col <= 15 then
       hoverCol := col
@@ -81,10 +81,10 @@ begin
       hoverCol := -1;
   end;
 
-  if mouseY < PaletteTop then
+  if GetMouseY < PaletteTop then
     hoverRow := -1
   else begin
-    row := (mouseY - PaletteTop) div 8;
+    row := (GetMouseY - PaletteTop) div 8;
 
     if row <= 15 then
       hoverRow := row
@@ -101,8 +101,8 @@ begin
 
   UpdateHovered;
 
-  if lastMouseLeft <> ((mouseButton and MouseButtonLeft) <> 0) then begin
-    lastMouseLeft := ((mouseButton and MouseButtonLeft) <> 0);
+  if lastMouseLeft <> ((GetMouseButton and MouseButtonLeft) <> 0) then begin
+    lastMouseLeft := ((GetMouseButton and MouseButtonLeft) <> 0);
 
     if lastMouseLeft then begin
       selectedRow := hoverRow;
@@ -174,7 +174,7 @@ begin
 
     PrintDefault(
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
-      190, 80 + P92Sans.lineHeight);
+      190, 80 + fontP92Sans.lineHeight);
   end;
 
   if (selectedRow <> -1) and (selectedCol <> -1) then begin
@@ -184,24 +184,24 @@ begin
 
     PrintDefault(
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
-      160, 120 + P92Sans.lineHeight);
+      160, 120 + fontP92Sans.lineHeight);
 
     PrintDefault(
       'RGB: '
       + I32Str(selectedR) + ', '
       + I32Str(selectedG) + ', '
       + I32Str(selectedB),
-      160, 120 + P92Sans.lineHeight * 2);
+      160, 120 + fontP92Sans.lineHeight * 2);
 
     PrintDefault(
       'Hex: #' + I8HexStr(selectedR) + I8HexStr(selectedG) + I8HexStr(selectedB),
-      160, 120 + P92Sans.lineHeight * 3);
+      160, 120 + fontP92Sans.lineHeight * 3);
 
     RectFill(260, 120, 300, 160, idx);
   end
   else begin
     PrintDefault('Click any colour', 160, 48);
-    PrintDefault('on the palette to inspect', 160, 48 + P92Sans.lineHeight);
+    PrintDefault('on the palette to inspect', 160, 48 + fontP92Sans.lineHeight);
   end;
 end;
 

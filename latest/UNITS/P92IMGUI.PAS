@@ -126,16 +126,16 @@ end;
 
 procedure UpdateGUILastMouseButton;
 begin
-  lastMouseButton := mouseButton
+  lastMouseButton := GetMouseButton
 end;
 
 procedure UpdateGUIMousePoint;
 begin
-  mousePoint.x := mouseX;
-  mousePoint.y := mouseY;
+  mousePoint.x := GetMouseX;
+  mousePoint.y := GetMouseY;
 
-  mouseJustPressed := (mouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
-  mouseJustReleased := (mouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
+  mouseJustPressed := (GetMouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
+  mouseJustReleased := (GetMouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
 end;
 
 procedure ResetWidgetIndices;

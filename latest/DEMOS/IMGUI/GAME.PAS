@@ -16,7 +16,7 @@ uses
 
 var
   { Asset variables }
-  P92SansFont: TBMFont;
+  fontP92Sans: TBMFont;
   SpecimenP92: array[0..1] of TTexture;
   texCursor, texHand: TTexture;
   texButtonNormal, texButtonHovered, texButtonPressed: TTexture;
@@ -43,14 +43,14 @@ end;
 procedure DrawMouse;
 begin
   if HasHoveredWidget then
-    spr(texHand, mouseX - 5, mouseY - 1)
+    spr(texHand, GetMouseX - 5, GetMouseY - 1)
   else
-    spr(texCursor, mouseX, mouseY);
+    spr(texCursor, GetMouseX, GetMouseY);
 end;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
 
   LoadTex(texCursor, 'CURSOR.BMP');
   LoadTex(texHand, 'HAND.BMP');
@@ -62,7 +62,7 @@ begin
   LoadTex(texButtonHovered, 'IMG\BUTTON_H.BMP');
   LoadTex(texButtonPressed, 'IMG\BUTTON_P.BMP');
 
-  ReplaceColour(P92SansFont.texture, $0F, $00);
+  ReplaceColour(fontP92Sans.texture, $0F, $00);
 end;
 
 procedure OnReady; far;
@@ -99,8 +99,6 @@ begin
   else
     Spr(SpecimenP92[1], 148, 76);
 
-  PrintBMFont(P92SansFont, 'Test PrintBMFont', 100, 100);
-
   CentredLabel('Hello world!', VGAWidth div 2, 120);
 
   if Button('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
@@ -121,7 +119,7 @@ var
 begin
   DefaultP92AppConfig(appConfig);
 
-  appConfig.DefaultBMFont := @P92SansFont;
+  appConfig.DefaultBMFont := @fontP92Sans;
 
   appConfig.LoadDefaultCursor := false;
 

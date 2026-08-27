@@ -36,7 +36,7 @@ var
   lastSoftKey: boolean;
   isSoftKey: boolean;
 
-  nokiaFont, p8Font: TBMFont;
+  fontNokia, fontP8: TBMFont;
   imgRadio, imgSignal: TTexture;
   imgPlayer, imgPlayerWalk: TTexture;
 
@@ -75,8 +75,8 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
-  LoadBMFont(p8Font, 'FONTS\P8.TXT');
+  LoadBMFont(fontNokia, 'FONTS\NOKIA.TXT');
+  LoadBMFont(fontP8, 'FONTS\P8.TXT');
 
   LoadTex(imgRadio, 'IMG\RADIO.BMP');
   LoadTex(imgSignal, 'IMG\SIGNAL.BMP');
@@ -90,8 +90,8 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(nokiaFont);
-  FreeBMFont(p8Font);
+  FreeBMFont(fontNokia);
+  FreeBMFont(fontP8);
 
   FreeTex(imgRadio);
   FreeTex(imgSignal);
@@ -147,17 +147,17 @@ end;
 
 procedure DrawFPS;
 begin
-  PrintBMFont(p8Font, 'FPS:' + i32str(GetLastFPS), 55, 0)
+  PrintBMFont(fontP8, 'FPS:' + i32str(GetLastFPS), 55, 0)
 end;
 
 procedure PrintP8(const txt: string; const x, y: integer);
 begin
-  PrintBMFont(p8Font, txt, x, y)
+  PrintBMFont(fontP8, txt, x, y)
 end;
 
 procedure PrintNokia(const txt: string; const x, y: integer);
 begin
-  PrintBMFont(nokiaFont, txt, x, y)
+  PrintBMFont(fontNokia, txt, x, y)
 end;
 
 
@@ -169,7 +169,7 @@ begin
   Cls(palette[0]);
 
   if isMenu then begin
-    PrintBMFont(nokiaFont, 'Game Menu', 0, 0);
+    PrintBMFont(fontNokia, 'Game Menu', 0, 0);
 
     { nokiaFlushX2; }
     PresentMode13h;
@@ -186,7 +186,7 @@ begin
   { HUD }
   Spr(imgSignal, 0, 0);
 
-  w := MeasureBMFont(nokiaFont, 'Menu');
+  w := MeasureBMFont(fontNokia, 'Menu');
   PrintNokia('Menu', (84 - w) shr 1, 38);
   PrintNokia(padStart(i32str(radioCount), 4, '0'), 0, 6);
 
@@ -207,6 +207,8 @@ begin
 
   appConfig.BufferWidth := 84;
   appConfig.BufferHeight := 48;
+
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;

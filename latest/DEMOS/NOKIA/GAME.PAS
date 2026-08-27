@@ -7,7 +7,8 @@ uses
 
 var
   { Asset variables }
-  nokiaFont, p8Font: TBMFont;
+  fontNokia, fontP8: TBMFont;
+
   { Game state variables }
   startTick, t: double;
   palette: array[0..1] of byte;
@@ -93,14 +94,14 @@ end;
 
 procedure OnPreload; far;
 begin
-  loadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
-  loadBMFont(p8Font, 'FONTS\P8.TXT');
+  loadBMFont(fontNokia, 'FONTS\NOKIA.TXT');
+  loadBMFont(fontP8, 'FONTS\P8.TXT');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMFont(nokiaFont);
-  freeBMFont(p8Font);
+  freeBMFont(fontNokia);
+  freeBMFont(fontP8);
 end;
 
 procedure OnReady; far;
@@ -129,8 +130,8 @@ var
 begin
   cls(palette[0]);
 
-  PrintBMFont(nokiaFont, 'Hello Nokia!', 4, 4);
-  PrintBMFont(p8Font, 'hello pico-8!', 4, 16);
+  PrintBMFont(fontNokia, 'Hello Nokia!', 4, 4);
+  PrintBMFont(fontP8, 'hello pico-8!', 4, 16);
 
   { Sine wave demo }
   for a:=0 to 47 do begin

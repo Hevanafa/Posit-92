@@ -7,7 +7,7 @@ const
   MenuCount = 50;
 var
   { Asset variables }
-  font, outlineFont: TBMFont;
+  fontDroidSans, fontOutline: TBMFont;
 
   { Game state variables }
   t: double;
@@ -19,18 +19,18 @@ procedure OnPreload; far;
 var
   a: word;
 begin
-  LoadBMFont(font, 'FONTS\DROID11.TXT');
-  LoadBMFont(outlineFont, 'FONTS\DROID11.TXT');
+  LoadBMFont(fontDroidSans, 'FONTS\DROID11.TXT');
+  LoadBMFont(fontOutline, 'FONTS\DROID11.TXT');
 
   { Replace white pixels with black }
-  for a:=0 to outlineFont.texture.width * outlineFont.texture.height - 1 do
-    if outlineFont.texture.data^[a] = 15 then
-      outlineFont.texture.data^[a] := 0;
+  for a:=0 to fontOutline.texture.width * fontOutline.texture.height - 1 do
+    if fontOutline.texture.data^[a] = 15 then
+      fontOutline.texture.data^[a] := 0;
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(font);
+  FreeBMFont(fontDroidSans);
 end;
 
 procedure OnReady; far;
@@ -92,11 +92,11 @@ end;
 
 procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  PrintBMFont(outlineFont, txt, x-1, y);
-  PrintBMFont(outlineFont, txt, x+1, y);
-  PrintBMFont(outlineFont, txt, x, y-1);
-  PrintBMFont(outlineFont, txt, x, y+1);
-  PrintBMFont(font, txt, x, y);
+  PrintBMFont(fontOutline, txt, x-1, y);
+  PrintBMFont(fontOutline, txt, x+1, y);
+  PrintBMFont(fontOutline, txt, x, y-1);
+  PrintBMFont(fontOutline, txt, x, y+1);
+  PrintBMFont(fontDroidSans, txt, x, y);
 end;
 
 
@@ -124,24 +124,24 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        PrintBMFont(font, s, 13, 33 + a * 12)
+        PrintBMFont(fontDroidSans, s, 13, 33 + a * 12)
       end else
-        PrintBMFont(font, s, 13, 33 + a * 12);
+        PrintBMFont(fontDroidSans, s, 13, 33 + a * 12);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
-  w := measureBMFont(font, s);
-  PrintBMFont(font, s, 138 - w, 172);
+  w := measureBMFont(fontDroidSans, s);
+  PrintBMFont(fontDroidSans, s, 138 - w, 172);
 
   { Desc box }
   rectfillDither(152, 134, 311, 197, 196);
   rect(152, 134, 311, 197, 15);
 
-  PrintBMFont(font, 'Author: Hevanafa', 155, 137);
-  PrintBMFont(font, 'Lorem Ipsum will uncover many', 155, 157);
-  PrintBMFont(font, 'web sites still in their infancy.', 155, 169);
-  PrintBMFont(font, 'Various versions have evolved', 155, 181);
+  PrintBMFont(fontDroidSans, 'Author: Hevanafa', 155, 137);
+  PrintBMFont(fontDroidSans, 'Lorem Ipsum will uncover many', 155, 157);
+  PrintBMFont(fontDroidSans, 'web sites still in their infancy.', 155, 169);
+  PrintBMFont(fontDroidSans, 'Various versions have evolved', 155, 181);
 end;
 
 
