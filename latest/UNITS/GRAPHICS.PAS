@@ -48,7 +48,7 @@ procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 implementation
 
-uses Maths, P92VGA;
+uses P92MATHS, P92VGA;
 
 
 procedure Circ(const cx, cy, radius: integer; const colour: byte);

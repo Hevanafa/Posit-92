@@ -25,7 +25,7 @@ function LerpEaseOutQuad(const a, z, perc: double): double;
 
 implementation
 
-uses Maths;
+uses P92MATHS;
 
 procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
 begin

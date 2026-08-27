@@ -3,7 +3,7 @@
   Part of Posit-92 game engine
 }
 
-unit Maths;
+unit P92MATHS;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
