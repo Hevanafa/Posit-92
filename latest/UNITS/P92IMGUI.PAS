@@ -17,7 +17,7 @@ unit P92IMGUI;
 interface
 
 {$IFDEF P92_IMGUI}
-uses BMFont, P92TEX;
+uses P92BMFON, P92TEX;
 
 function GetHotWidget: integer;
 procedure SetHotWidget(const widgetID: integer);

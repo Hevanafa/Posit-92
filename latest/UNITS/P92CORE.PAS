@@ -4,7 +4,7 @@ unit P92CORE;
 
 interface
 
-uses BMFont;
+uses P92BMFON;
 
 const
   Posit92Version = '0.1';

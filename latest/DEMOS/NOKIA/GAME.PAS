@@ -3,7 +3,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92LOG, P92KBD, Timing, BMFont, P92VGA; { , NokiaVGA; }
+  P92Core, P92CONV, P92LOG, P92KBD, Timing, P92BMFON, P92VGA; { , NokiaVGA; }
 
 var
   { Asset variables }

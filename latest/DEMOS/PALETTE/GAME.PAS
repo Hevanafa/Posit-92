@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, P92LOG, P92CONV, Graphics, BMFont, P92STR, P92TEX, Timing, P92VGA,
+  P92Core, P92LOG, P92CONV, Graphics, P92BMFON, P92STR, P92TEX, Timing, P92VGA,
   P92KBD, P92Mouse;
 
 const

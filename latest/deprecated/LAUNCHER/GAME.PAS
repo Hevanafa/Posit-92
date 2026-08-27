@@ -2,7 +2,7 @@
 uses
   CRT, DOS,
   P92Core, P92CONV, FPS, Graphics, Logger, P92Mouse,
-  Timing, P92VGA, Bitmap, BMFont, Maths,
+  Timing, P92VGA, Bitmap, P92BMFON, Maths,
   Bobbing;
 
 var

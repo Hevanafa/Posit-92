@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, FPS, Maths, Timing, P92VGA, P92Mouse, P92TEX, BMFont, P92STR, Graphics;
+  P92Core, P92CONV, FPS, Maths, Timing, P92VGA, P92Mouse, P92TEX, P92BMFON, P92STR, Graphics;
 
 const
   MenuCount = 50;

@@ -28,7 +28,6 @@
       <Unit>
         <Filename Value="MAIN.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="BMFont"/>
       </Unit>
     </Units>
   </ProjectOptions>

@@ -7,7 +7,7 @@ uses
   CRT, DOS,
   Bitmap, P92CONV, FPS, Graphics, Logger, Maths,
   Keyboard, Strings, Timing,
-  BMFont, Camera, NokiaVGA;
+  P92BMFON, Camera, NokiaVGA;
 
 const
   TARGET_FPS = 30;

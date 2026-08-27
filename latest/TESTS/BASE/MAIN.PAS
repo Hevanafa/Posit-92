@@ -7,7 +7,7 @@ program BaseTest;
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, BMFont, Graphics, Timing, P92VGA;
+  P92Core, P92CONV, P92BMFON, Graphics, Timing, P92VGA;
 
 var
   font: TBMFont;

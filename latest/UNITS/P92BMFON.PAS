@@ -1,4 +1,4 @@
-unit BMFont;
+unit P92BMFON;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

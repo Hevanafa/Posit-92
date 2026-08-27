@@ -2,7 +2,7 @@ unit Story;
 
 interface
 
-uses BMFont;
+uses P92BMFON;
 
 type
   TStoryManager = object
