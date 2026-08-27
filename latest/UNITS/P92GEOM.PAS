@@ -73,7 +73,7 @@ function PointInZone(const p: TPoint; const zone: TZone): boolean;
 
 implementation
 
-uses P92MATHS, Graphics;
+uses P92MATHS, P92GRAPH;
 
 procedure DrawZone(const zone: TZone; const colour: byte);
 begin

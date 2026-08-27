@@ -3,11 +3,9 @@
   Part of Posit-92 game engine
 }
 
-unit Graphics;
+unit P92GRAPH;
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 

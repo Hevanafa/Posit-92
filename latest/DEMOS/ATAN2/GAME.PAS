@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92TEX, P92CONV, FPS, Graphics, P92LOG, P92KBD, P92Mouse, P92MATHS, Timing, P92VGA;
+  P92Core, P92TEX, P92CONV, FPS, P92GRAPH, P92LOG, P92KBD, P92Mouse, P92MATHS, Timing, P92VGA;
 
 var
   { Asset variables }

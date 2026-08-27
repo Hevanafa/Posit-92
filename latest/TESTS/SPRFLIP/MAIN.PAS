@@ -8,7 +8,7 @@
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 uses
-  P92CORE, P92TEX, P92CONV, Graphics, Timing, P92VGA;
+  P92CORE, P92TEX, P92CONV, P92GRAPH, Timing, P92VGA;
 
 var
   imgTabby: TTexture;

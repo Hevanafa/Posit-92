@@ -4,7 +4,7 @@
 }
 
 uses
-  P92Core, P92CONV, Graphics, Timing, P92VGA;
+  P92CORE, P92CONV, P92GRAPH, Timing, P92VGA;
 
 procedure DrawOnce; far;
 var
