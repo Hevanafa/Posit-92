@@ -28,7 +28,6 @@
       <Unit>
         <Filename Value="GAME.PAS"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Game"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -40,7 +39,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\UNITS;E:\fpc-msdos-i8086\fpcsrc\rtl\units\msdos\;E:\fpc-msdos-i8086\fpc\units\i8086-msdos\rtl-console\"/>
+      <OtherUnitFiles Value="..\..\UNITS;UNITS;E:\fpc-msdos-i8086\fpcsrc\rtl\units\msdos\;E:\fpc-msdos-i8086\fpc\units\i8086-msdos\rtl-console\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
