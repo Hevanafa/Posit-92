@@ -1,11 +1,11 @@
 
 uses
   CRT,
-  P92Core, Bitmap, P92CONV, Logger, Keyboard, Mouse, VGA;
+  P92Core, P92TEX, P92CONV, P92LOG, P92KBD, P92MOUSE, P92VGA;
 
 var
   { Asset variables }
-  kenneyTinytown: PBitmap;
+  imgKenneyTinytown: TTexture;
 
   { Game state variables }
   lastX, lastY: integer;
@@ -21,12 +21,14 @@ begin
     exit
   end;
   offset := y * 320 + x;
-  PGet := Mem[$A000:offset]
+
+  { PGet := Mem[$A000:offset] }
+  PGet := surface^[offset]
 end;
 
 procedure OnPreload; far;
 begin
-  loadBMP(kenneyTinytown, 'IMG/TINYTOWN.BMP');
+  LoadTex(imgKenneyTinytown, 'IMG/TINYTOWN.BMP');
 end;
 
 procedure OnReady; far;
@@ -55,7 +57,8 @@ procedure Draw; far;
 begin
   cls($7D);  
   
-  drawBMP(kenneyTinytown);
+  spr(imgKenneyTinytown, 0, 0);
+
   print('Colour: ' + i32str(colour), 4, 4, 15);
 end;
 
