@@ -5,13 +5,10 @@
 
 uses
   CRT, DOS,
-  Bitmap, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MATHS,
-  P92KBD, P92STR, P92TIME,
-  P92BMFON, Camera, NokiaVGA;
+  P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MATHS, P92KBD, P92STR, P92TIME, P92TEX, P92BMFON,
+  Camera, NokiaVGA;
 
 const
-  TARGET_FPS = 30;
-
   SC_UP = $48;
   SC_DOWN = $50;
   SC_LEFT = $4B;
@@ -26,7 +23,6 @@ const
   SC_X = $2D;
 
 var
-  done: boolean;
   startTick, t: double;
   lastSoftKey: boolean;
   isSoftKey: boolean;
@@ -41,11 +37,9 @@ var
   palette: array[0..1] of byte;
   x, y: integer;
   radioX, radioY: integer;
-  { DosuEXE: array[0..1] of PBitmap; }
-  { TODO: More of your game state here }
 
 
-procedure clearVGAMem; assembler;
+procedure ClearVGAMem; assembler;
 asm
   push es
 
@@ -103,20 +97,20 @@ begin
   randomiseRadio;
 
 
-  { TODO: There can be the art around the border}
-  clearVGAMem;
-
-  startTick := getTimer;
+  { startTick := getTimer; }
 end;
 
-
-procedure update;
+procedure OnReady; far;
 begin
-  updateDeltaTime;
-  incrementFPS;
+  x := 42;
+  y := 24;
 
-  { TODO: Your update code here }
+  { TODO: There can be the art around the border}
+  clearVGAMem;
+end;
 
+procedure Update; far;
+begin
   if isKeyDown(SC_ESC) or isKeyDown(SC_X) then done := true;
 
   if isKeyDown(SC_UP) then dec(y);
@@ -203,6 +197,7 @@ begin
 end;
 
 
+{
 var
   now, nextGameTick: double;
 begin
@@ -214,7 +209,7 @@ begin
 
   isMenu := false;
   done := false;
-
+}
 {$IFDEF UNCAPPED}
   repeat
     update;
@@ -222,6 +217,7 @@ begin
   until done;
 
 {$ELSE}
+{
   repeat
     now := getTimer;
     if now >= nextGameTick then begin
@@ -230,13 +226,9 @@ begin
       draw
     end
   until done;
+}
 {$ENDIF}
-
-  { TODO: Your cleanup code here }
-  {
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
-  }
+{
   freeBMP(imgRadio);
   freeBMP(imgSignal);
   freeBMP(imgPlayer);
@@ -250,3 +242,23 @@ begin
   closeLogger;
   initTextMode
 end.
+}
+
+
+var
+  appConfig: TP92AppConfig;
+begin
+  DefaultP92AppConfig(appConfig);
+
+  appConfig.BufferWidth := 84;
+  appConfig.BufferHeight := 48;
+
+  @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
+  @appConfig.Update := @Update;
+  @appConfig.Draw := @Draw;
+  @appConfig.OnCleanup := @OnCleanup;
+
+  P92Start(appConfig)
+end.
+

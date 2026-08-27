@@ -2,19 +2,20 @@ unit Camera;
 
 interface
 
-uses Bitmap;
+uses P92TEX;
 
 var
   cameraX, cameraY: integer;
 
 procedure initCamera;
-procedure sprWithCamera(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure sprWithCamera(const tex: TTexture; const x, y: integer);
 procedure psetWithCamera(const x, y: integer; const colour: byte);
 
 
 implementation
 
-uses NokiaVGA;
+{ uses NokiaVGA; }
+uses P92VGA;
 
 procedure initCamera;
 begin
@@ -22,14 +23,14 @@ begin
   cameraY := 0;
 end;
 
-procedure sprWithCamera(const image: PBitmap; const x, y: integer; const transparencyKey: byte);
+procedure sprWithCamera(const tex: TTexture; const x, y: integer);
 begin
-  pascalSpr(image, x - cameraX, y - cameraY, transparencyKey)
+  Spr(tex, x - cameraX, y - cameraY)
 end;
 
 procedure psetWithCamera(const x, y: integer; const colour: byte);
 begin
-  pset(x - cameraX, y - cameraY, colour)
+  AsmPSet(x - cameraX, y - cameraY, colour)
 end;
 
 end.
