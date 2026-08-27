@@ -14,8 +14,10 @@ const
 
 var
   cursor: TTexture;
-  mouseX, mouseY: integer;
-  mouseButton: byte;
+
+function GetMouseX: integer;
+function GetMouseY: integer;
+function GetMouseButton: integer;
 
 procedure LoadCursor;
 procedure FreeCursor;
@@ -35,6 +37,23 @@ uses
 
 var
   isMouseInitialised: boolean;
+  mouseX, mouseY: integer;
+  mouseButton: byte;
+
+function GetMouseX: integer;
+begin
+  GetMouseX := mouseX
+end;
+
+function GetMouseY: integer;
+begin
+  GetMouseY := mouseY
+end;
+
+function GetMouseButton: integer;
+begin
+  GetMouseButton := mouseButton
+end;
 
 procedure LoadCursor;
 begin
