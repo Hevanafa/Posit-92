@@ -34,7 +34,7 @@ uses
   P92CONV, P92LOG, P92VGA;
 
 var
-  mouseInitialised: boolean;
+  isMouseInitialised: boolean;
 
 procedure LoadCursor;
 begin
@@ -50,10 +50,11 @@ procedure InitMouse;
 var
   Regs: Registers;
 begin
-  if mouseInitialised then exit;
+  if isMouseInitialised then exit;
 
   regs.ax := 0;
   Intr($33, regs);
+
   if regs.ax = 0 then begin
     WriteLog('No mouse driver is found!');
     readLn;
@@ -61,7 +62,7 @@ begin
   end else
     WriteLog('Mouse initialised.');
 
-  mouseInitialised := true
+  isMouseInitialised := true
 end;
 
 
@@ -69,7 +70,8 @@ procedure UpdateMouse;
 var
   Regs: Registers;
 begin
-  if not mouseInitialised then exit;
+  if not isMouseInitialised then exit;
+
   regs.ax := 3;
   intr($33, regs);
   mouseX := regs.cx div 2;
@@ -79,7 +81,7 @@ end;
 
 procedure DebugMouse;
 begin
-  if not mouseInitialised then begin
+  if not isMouseInitialised then begin
     Print('Mouse has not been initialised!', 0, 0, 15);
     exit
   end;
@@ -91,7 +93,8 @@ end;
 
 procedure DrawMouse;
 begin
-  if not mouseInitialised then exit;
+  if not isMouseInitialised then exit;
+
   VGASpr(cursor, mouseX, mouseY);
 end;
 
@@ -101,19 +104,20 @@ end;
 }
 procedure ResetMouse;
 var
-  Regs: Registers;
+  regs: Registers;
 begin
-  if not mouseInitialised then exit;
+  if not isMouseInitialised then exit;
 
   { Hide mouse cursor }
   regs.ax := 2;
   intr($33, regs);
+
   { Reset mouse driver to default state }
   regs.ax := 0;
   intr($33, regs);
 
   FreeCursor;
-  mouseInitialised := false
+  isMouseInitialised := false
 end;
 
 
