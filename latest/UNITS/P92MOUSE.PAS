@@ -12,20 +12,13 @@ const
   MouseButtonRight = 2;
   MouseButtonBoth = 3;
 
-var
-  cursor: TTexture;
-
 function GetMouseX: integer;
 function GetMouseY: integer;
 function GetMouseButton: integer;
 
-procedure LoadCursor;
-procedure FreeCursor;
-
 procedure InitMouse;
 procedure UpdateMouse;
 procedure DebugMouse;
-procedure DrawMouse;
 procedure ResetMouse;
 
 
@@ -53,16 +46,6 @@ end;
 function GetMouseButton: integer;
 begin
   GetMouseButton := mouseButton
-end;
-
-procedure LoadCursor;
-begin
-  LoadTex(cursor, 'CURSOR.BMP')
-end;
-
-procedure FreeCursor;
-begin
-  FreeTex(cursor)
 end;
 
 procedure InitMouse;
@@ -108,16 +91,9 @@ begin
 end;
 
 
-procedure DrawMouse;
-begin
-  if not isMouseInitialised then exit;
-
-  VGASpr(cursor, mouseX, mouseY);
-end;
-
 {
-  Must be called before initTextMode
-  to prevent 20302 runtime error
+  Must be called before InitTextMode
+  to prevent "20302 runtime error"
 }
 procedure ResetMouse;
 var
@@ -133,10 +109,9 @@ begin
   regs.ax := 0;
   intr($33, regs);
 
-  FreeCursor;
   isMouseInitialised := false
 end;
 
 begin
-  isMouseInitialised := false;
+  isMouseInitialised := false
 end.

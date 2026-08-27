@@ -62,7 +62,7 @@ implementation
 
 uses
   DOS,
-  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92VGA, PCSPKR, P92PANIC
+  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92TEX, P92VGA, PCSPKR, P92PANIC
 {$IFDEF P92_ADLIB}
   , P92ADLIB
 {$ENDIF}
@@ -78,15 +78,19 @@ var
   done: boolean;
   bootConfig: TP92AppConfig;
 
+  texCursor: TTexture;
+
 {
   Sleep in HLT while waiting for the next frame
   HLT introduces a wake up delay
   Waiting for a full 1/35 second produces about 25 FPS
   Poll at twice the target frequency to obtain approximately 35 FPS
 
+  Assigned on P92Init
+
   Note: This only applies to P92WaitHLT
 }
-  WaitFrequency: word;
+  waitFrequency: word;
 
 
 procedure SignalDone;
@@ -106,6 +110,23 @@ begin
   {$I+}
 end;
 
+procedure LoadCursor;
+begin
+  LoadTex(texCursor, 'CURSOR.BMP')
+end;
+
+procedure FreeCursor;
+begin
+  FreeTex(texCursor)
+end;
+
+{ Assuming that the mouse has been initialised }
+procedure DrawMouse;
+begin
+  VGASpr(texCursor, GetMouseX, GetMouseY)
+end;
+
+
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 begin
   config.BufferWidth := DefaultVGAWidth;
@@ -113,7 +134,7 @@ begin
 
   config.TargetFPS := 35;
   config.WaitMode := P92WaitHLT;
-  WaitFrequency := config.TargetFPS * 2;
+  waitFrequency := config.TargetFPS * 2;
 
   config.LoadDefaultCursor := true;
 
@@ -169,6 +190,9 @@ end;
 
 procedure P92Cleanup;
 begin
+  if bootConfig.LoadDefaultCursor then
+    FreeCursor;
+
   ResetMouse;
 
   if bootConfig.EnableKeyHandler then
@@ -257,7 +281,7 @@ begin
     now := GetTimer;
 
     if bootConfig.WaitMode = P92WaitHLT then
-      nextTick := now + 1 / WaitFrequency;
+      nextTick := now + 1 / waitFrequency;
 
     P92RunFrame;
 
