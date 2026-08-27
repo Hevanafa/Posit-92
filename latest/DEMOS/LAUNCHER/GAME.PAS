@@ -15,7 +15,7 @@ uses
 var
   { Asset variables }
   texLogo, texArrows, texEnter, texPreview: TTexture;
-  fontArial: TBMFont;
+  fontP92Sans: TBMFont;
 
   { Game state variables }
   startTime, nextGameTick, t: double;
@@ -52,17 +52,17 @@ end;
 
 procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  PrintBMFontTint(fontArial, txt, x-1, y, outline);
-  PrintBMFontTint(fontArial, txt, x+1, y, outline);
-  PrintBMFontTint(fontArial, txt, x, y-1, outline);
-  PrintBMFontTint(fontArial, txt, x, y+1, outline);
-  PrintBMFont(fontArial, txt, x, y)
+  PrintBMFontTint(fontP92Sans, txt, x-1, y, outline);
+  PrintBMFontTint(fontP92Sans, txt, x+1, y, outline);
+  PrintBMFontTint(fontP92Sans, txt, x, y-1, outline);
+  PrintBMFontTint(fontP92Sans, txt, x, y+1, outline);
+  PrintBMFont(fontP92Sans, txt, x, y)
 end;
 
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontArial, 'FONTS\ARIAL10.FNT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
 
   LoadTex(texLogo, 'IMG\LOGO.BMP');
   LoadTex(texArrows, 'IMG\ARROWS.BMP');
@@ -77,7 +77,7 @@ begin
   FreeTex(texEnter);
   FreeTex(texPreview);
 
-  FreeBMFont(fontArial);
+  FreeBMFont(fontP92Sans);
 end;
 
 procedure OnReady; far;
@@ -114,15 +114,15 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        PrintBMFont(fontArial, s, 13, 33 + a * 12)
+        PrintBMFont(fontP92Sans, s, 13, 33 + a * 12)
       end else
-        PrintBMFont(fontArial, s, 13, 33 + a * 12);
+        PrintBMFont(fontP92Sans, s, 13, 33 + a * 12);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
-  w := MeasureBMFont(fontArial, s);
-  PrintBMFont(fontArial, s, 138 - w, 172);
+  w := MeasureBMFont(fontP92Sans, s);
+  PrintBMFont(fontP92Sans, s, 138 - w, 172);
 end;
 
 procedure DrawDescriptionBox;
@@ -133,10 +133,10 @@ begin
 
   { TODO: Update with the actual content }
 
-  PrintBMFont(fontArial, 'Author: Hevanafa', 155, 137);
-  PrintBMFont(fontArial, 'Lorem Ipsum will uncover many', 155, 157);
-  PrintBMFont(fontArial, 'web sites still in their infancy.', 155, 169);
-  PrintBMFont(fontArial, 'Various versions have evolved', 155, 181);
+  PrintBMFont(fontP92Sans, 'Author: Hevanafa', 155, 137);
+  PrintBMFont(fontP92Sans, 'Lorem Ipsum will uncover many', 155, 157);
+  PrintBMFont(fontP92Sans, 'web sites still in their infancy.', 155, 169);
+  PrintBMFont(fontP92Sans, 'Various versions have evolved', 155, 181);
 end;
 
 
@@ -192,10 +192,10 @@ begin
   { BG }
   { DrawBobbingGrid((getTimer - startTime) * 3); }
 
-  drawMenuBox;
-  drawDescriptionBox;
+  DrawMenuBox;
+  DrawDescriptionBox;
 
-  printOutline(menuItems[selectedIdx], 152, 119, 15, 0);
+  PrintOutline(menuItems[selectedIdx], 152, 119, 15, 0);
 
   { Header }
   spr(texLogo, 8, 4);
@@ -203,14 +203,14 @@ begin
 
   s := getClockStr;
 
-  w := MeasureBMFont(fontArial, s);
-  PrintBMFont(fontArial, s, 320-8-w, 10);
+  w := MeasureBMFont(fontP92Sans, s);
+  PrintBMFont(fontP92Sans, s, 320-8-w, 10);
 
   { Footer }
   spr(texArrows, 8, 187);
-  PrintBMFont(fontArial, 'NAVIGATE', 24, 185);
+  PrintBMFont(fontP92Sans, 'NAVIGATE', 24, 185);
   spr(texEnter, 90, 187);
-  PrintBMFont(fontArial, 'OPEN', 107, 185);
+  PrintBMFont(fontP92Sans, 'OPEN', 107, 185);
 end;
 
 
