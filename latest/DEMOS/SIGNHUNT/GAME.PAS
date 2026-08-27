@@ -96,7 +96,7 @@ begin
   playerX := 42;
   playerY := 24;
 
-  { TODO: There can be the art around the border}
+  { TODO: There can be an artwork around the border}
   startTick := getTimer;
 
   clearVGAMem;
@@ -165,13 +165,10 @@ begin
   end;
 
   { Radio }
-  { pascalSpr(imgRadio, radioX, radioY, 13); }
   if trunc(t * 16) shr 1 and 1 = 1 then
     PSetWithCamera(radioX, radioY, palette[1]);
 
   { Player }
-  { pascalRect(playerX, playerY, playerX + 1, playerY + 1, palette[1]); }
-
   SprWithCamera(imgPlayer, playerX, playerY);
 
   { HUD }
@@ -186,58 +183,9 @@ begin
 
   DrawFPS;
 
-  { flush }
   { nokiaFlushX2 }
   PresentMode13h
 end;
-
-
-{
-var
-  now, nextGameTick: double;
-begin
-  INIT;
-
-  nextGameTick := getTimer;
-
-  x := 42; y := 24;
-
-  isMenu := false;
-  done := false;
-}
-{$IFDEF UNCAPPED}
-  repeat
-    update;
-    draw
-  until done;
-
-{$ELSE}
-{
-  repeat
-    now := getTimer;
-    if now >= nextGameTick then begin
-      nextGameTick := now + 1.0 / TARGET_FPS;
-      update;
-      draw
-    end
-  until done;
-}
-{$ENDIF}
-{
-  freeBMP(imgRadio);
-  freeBMP(imgSignal);
-  freeBMP(imgPlayer);
-  freeBMP(imgPlayerWalk);
-
-  freeBMFont(nokiaFont);
-  freeBMFont(p8Font);
-
-  resetKeyHandler;
-  freeBuffer;
-  closeLogger;
-  initTextMode
-end.
-}
 
 
 var
