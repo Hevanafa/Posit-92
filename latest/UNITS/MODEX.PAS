@@ -1,3 +1,10 @@
+{
+  Mode X utility unit
+  Part of Posit-92 game engine
+
+  Requires InitMode13h call
+}
+
 unit ModeX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

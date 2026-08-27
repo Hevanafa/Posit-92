@@ -3,6 +3,8 @@
   Part of Posit-92 game engine
 
   Contains primitive types: point, zone, physics body & circle
+  
+  Copied from the WASM version of the engine
 }
 
 unit P92Geom;

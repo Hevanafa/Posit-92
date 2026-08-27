@@ -1,4 +1,12 @@
+{
+  Monochrome VGA render mode utility unit
+  Part of Posit-92 game engine
+}
+
+
 unit MonoVGA;
+
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 

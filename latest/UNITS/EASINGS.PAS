@@ -1,3 +1,8 @@
+{
+  Easings utility unit
+  Part of Posit-92 game engine
+}
+
 unit Easings;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}

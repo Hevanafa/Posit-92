@@ -1,4 +1,7 @@
-{ Texture rotation + scale render procedures }
+{
+  Texture rotation + scale render procedures
+  Part of Posit-92 game engine
+}
 
 unit BMPROT;
 

@@ -6,11 +6,9 @@
   DOSBox's default settings
 }
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 unit P92KBD;
+
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 

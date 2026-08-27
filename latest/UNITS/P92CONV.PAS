@@ -3,11 +3,9 @@
   Part of Posit-92 game engine
 }
 
-{$IFDEF FPC}
-{$MODE TP}
-{$ENDIF}
-
 unit P92CONV;
+
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
 
