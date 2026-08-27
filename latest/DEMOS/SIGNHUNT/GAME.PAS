@@ -1,12 +1,20 @@
-{ Test games made with this using 386DX (4595 cycles/ms) CPU speed }
+{
+  Signal Hunt demo
+  Part of Posit-92 game engine
 
-{$DEFINE DEBUG}
+  This demo is created to demonstrate the pattern with camera, similar to
+  PICO-8's hidden camera variables
+
+  Test games made with this using 386DX (4595 cycles/ms) CPU speed
+}
+
+{DEFINE DEBUG}
 {DEFINE UNCAPPED}
 
 uses
   CRT, DOS,
   P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MATHS, P92KBD, P92STR, P92TIME, P92TEX, P92BMFON,
-  Camera, NokiaVGA;
+  Camera;
 
 const
   SC_UP = $48;
@@ -28,14 +36,14 @@ var
   isSoftKey: boolean;
 
   nokiaFont, p8Font: PBMFont;
-  imgRadio, imgSignal: PBitmap;
-  imgPlayer, imgPlayerWalk: PBitmap;
+  imgRadio, imgSignal: TTexture;
+  imgPlayer, imgPlayerWalk: TTexture;
 
   isMenu: boolean;
   radioCount: word;
 
   palette: array[0..1] of byte;
-  x, y: integer;
+  playerX, playerY: integer;
   radioX, radioY: integer;
 
 
@@ -69,12 +77,12 @@ begin
   initLogger;
   initVGAMode;
   loadFont;
-  initBuffer;  { This uses NokiaVGA's buffer }
+  initBuffer;
   initDeltaTime;
   initKeyHandler;
 
   initFPSCounter;
-  initCamera;
+  InitCamera;
 
   loadBMFont(nokiaFont, 'FONTS\NOKIA.TXT');
   loadBMFont(p8Font, 'FONTS\P8.TXT');
@@ -88,24 +96,25 @@ begin
   palette[0] := 98;
   palette[1] := 8;
 
-  {
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  }
-
-  radioCount := 0;
-  randomiseRadio;
+end;
 
 
-  { startTick := getTimer; }
+procedure OnPreload; far;
+begin
+
 end;
 
 procedure OnReady; far;
 begin
-  x := 42;
-  y := 24;
+  radioCount := 0;
+  randomiseRadio;
+
+  playerX := 42;
+  playerY := 24;
 
   { TODO: There can be the art around the border}
+  startTick := getTimer;
+
   clearVGAMem;
 end;
 
@@ -113,10 +122,10 @@ procedure Update; far;
 begin
   if isKeyDown(SC_ESC) or isKeyDown(SC_X) then done := true;
 
-  if isKeyDown(SC_UP) then dec(y);
-  if isKeyDown(SC_DOWN) then inc(y);
-  if isKeyDown(SC_LEFT) then dec(x);
-  if isKeyDown(SC_RIGHT) then inc(x);
+  if isKeyDown(SC_UP) then dec(playerY);
+  if isKeyDown(SC_DOWN) then inc(playerY);
+  if isKeyDown(SC_LEFT) then dec(playerX);
+  if isKeyDown(SC_RIGHT) then inc(playerX);
   isSoftKey := isKeyDown(SC_RETURN) or isKeyDown(SC_Z);
 
   if lastSoftKey <> isSoftKey then begin
@@ -127,12 +136,12 @@ begin
   end;
 
   { TODO: Z or Enter - Soft key }
-  { TODO: X or Escape - C button }
+  { TODO: playerX or Escape - C button }
 
-  cameraX := x - 40;  { 42 - 4 / 2 }
-  cameraY := y - 21;  { 24 - 6 / 2 }
+  cameraX := playerX - 40;  { 42 - 4 / 2 }
+  cameraY := playerY - 21;  { 24 - 6 / 2 }
 
-  if i32power(radioX - x, 2) + i32power(radioY - y, 2) <= 25 then begin
+  if i32power(radioX - playerX, 2) + i32power(radioY - playerY, 2) <= 25 then begin
     inc(radioCount);
     randomiseRadio
   end;
@@ -176,9 +185,9 @@ begin
     psetWithCamera(radioX, radioY, palette[1]);
 
   { Player }
-  { pascalRect(x, y, x + 1, y + 1, palette[1]); }
+  { pascalRect(playerX, playerY, playerX + 1, playerY + 1, palette[1]); }
 
-  sprWithCamera(imgPlayer, x, y, 13);
+  sprWithCamera(imgPlayer, playerX, playerY, 13);
 
   { HUD }
   pascalSpr(imgSignal, 0, 0, 13);
