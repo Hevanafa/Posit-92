@@ -4,6 +4,11 @@ interface
 
 uses P92TEX;
 
+function GetCameraX: integer;
+procedure SetCameraX(const value: integer);
+function GetCameraY: integer;
+procedure SetCameraY(const value: integer);
+
 procedure SprWithCamera(const tex: TTexture; const x, y: integer);
 procedure PSetWithCamera(const x, y: integer; const colour: byte);
 
@@ -15,6 +20,26 @@ uses P92VGA;
 
 var
   cameraX, cameraY: integer;
+
+function GetCameraX:integer;
+begin
+  GetCameraX := cameraX
+end;
+
+procedure SetCameraX(const value:integer);
+begin
+  cameraX := value
+end;
+
+function GetCameraY:integer;
+begin
+  GetCameraY := cameraY
+end;
+
+procedure SetCameraY(const value:integer);
+begin
+  cameraY := value
+end;
 
 procedure SprWithCamera(const tex: TTexture; const x, y: integer);
 begin
