@@ -22,6 +22,8 @@ var
 procedure InitMode13h;
 procedure InitModeText;
 
+function IsInTextMode: boolean;
+
 procedure Vert400;
 
 { This loads the 8x8 font }
@@ -77,6 +79,18 @@ procedure InitModeText; assembler;
 asm
   mov ax, 0003h
   int 10h
+end;
+
+function IsInTextMode: boolean;
+var
+  mode: byte;
+begin
+asm
+  mov ah, 0Fh  { Get current video mode, loaded into AL }
+  int 10h
+  mov mode, al
+end;
+  IsInTextMode := (mode = 3)
 end;
 
 { Taken from https://github.com/skoelle/turbopascal-xlib-unit/blob/main/xlibunit.pas }
