@@ -1,14 +1,21 @@
+{
+  Game Launcher demo
+  Part of Posit-92 game engine
+
+  Doesn't really serve games
+}
+
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, FPS, Graphics, Logger, P92Mouse,
-  Timing, P92VGA, Bitmap, P92BMFON, P92MATHS,
+  P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MOUSE,
+  P92TIME, P92VGA, P92TEX, P92BMFON, P92MATHS,
   Bobbing;
 
 var
   { Asset variables }
-  imgLogo, imgArrows, imgEnter, imgPreview: PBitmap;
-  font: TBMFont;
+  texLogo, texArrows, texEnter, texPreview: TTexture;
+  fontArial: TBMFont;
 
   { Game state variables }
   startTime, nextGameTick, t: double;
@@ -18,28 +25,7 @@ var
   firstIdx, selectedIdx: integer;
 
 
-procedure rectfillDither(x0, y0, x1, y1: integer; const colour: byte);
-var
-  a, b, temp: integer;
-begin
-  if x0 > x1 then begin
-    temp := x0; x0 := x1; x1 := temp
-  end;
-  if y0 > y1 then begin
-    temp := y0; y0 := y1; y1 := temp
-  end;
-
-  x0:=trunc(max(x0, 0));   y0:=trunc(max(y0,0));
-  x1:=trunc(min(x1, 319)); y1:=trunc(min(y1,199));
-
-  for b:=y0 to y1 do
-    for a:=x0 to x1 do
-      if (a+b) and 1 = 1 then
-        surface^[b*320+a] := colour;
-end;
-
-
-function format2Digits(const value: integer): string;
+function Format2Digits(const value: integer): string;
 begin
   if value < 10 then
     format2Digits := '0' + i32str(value)
@@ -47,7 +33,7 @@ begin
     format2Digits := i32str(value);
 end;
 
-function getClockStr: string;
+function GetClockStr: string;
 var
   t: longint;
   h, m, s: word;
@@ -64,36 +50,34 @@ begin
 end;
 
 
-procedure printOutline(const txt: string; const x, y: integer; const colour, outline: byte);
+procedure PrintOutline(const txt: string; const x, y: integer; const colour, outline: byte);
 begin
-  PrintBMFontTint(@font, txt, x-1, y, outline);
-  PrintBMFontTint(@font, txt, x+1, y, outline);
-  PrintBMFontTint(@font, txt, x, y-1, outline);
-  PrintBMFontTint(@font, txt, x, y+1, outline);
-  PrintBMFont(@font, txt, x, y)
+  PrintBMFontTint(fontArial, txt, x-1, y, outline);
+  PrintBMFontTint(fontArial, txt, x+1, y, outline);
+  PrintBMFontTint(fontArial, txt, x, y-1, outline);
+  PrintBMFontTint(fontArial, txt, x, y+1, outline);
+  PrintBMFont(fontArial, txt, x, y)
 end;
 
 
 procedure OnPreload; far;
-var
-  a: integer;
 begin
-  loadBMP(imgLogo, 'IMG\LOGO.BMP');
-  loadBMP(imgArrows, 'IMG\ARROWS.BMP');
-  loadBMP(imgEnter, 'IMG\ENTER.BMP');
-  loadBMP(imgPreview, 'IMG\EXAMPLE.BMP');
+  LoadBMFont(fontArial, 'FONTS\ARIAL10.FNT');
 
-  DefaultBMFont(font);
-  LoadBMFont(font, 'FONTS\ARIAL10.FNT');
+  LoadTex(texLogo, 'IMG\LOGO.BMP');
+  LoadTex(texArrows, 'IMG\ARROWS.BMP');
+  LoadTex(texEnter, 'IMG\ENTER.BMP');
+  LoadTex(texPreview, 'IMG\EXAMPLE.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  freeBMFont(font);
-  freeBMP(imgLogo);
-  freeBMP(imgArrows);
-  freeBMP(imgEnter);
-  freeBMP(imgPreview);
+  FreeTex(texLogo);
+  FreeTex(texArrows);
+  FreeTex(texEnter);
+  FreeTex(texPreview);
+
+  FreeBMFont(fontArial);
 end;
 
 procedure OnReady; far;
@@ -111,7 +95,7 @@ begin
 end;
 
 
-procedure drawMenuBox;
+procedure DrawMenuBox;
 var
   s: string;
   a, w, maxDisplayed: integer;
@@ -130,18 +114,18 @@ begin
 
       if selectedIdx = firstIdx + a then begin
         rectfill(9, 33 + a * 12, 142, 33 + (a+1) * 12, 127);
-        PrintBMFont(@font, s, 13, 33 + a * 12)
+        PrintBMFont(fontArial, s, 13, 33 + a * 12)
       end else
-        PrintBMFont(@font, s, 13, 33 + a * 12);
+        PrintBMFont(fontArial, s, 13, 33 + a * 12);
     end;
   end;
 
   s := i32str(1 + selectedIdx) + ' / ' + i32str(menuCount);
-  w := MeasureBMFont(@font, s);
-  PrintBMFont(@font, s, 138 - w, 172);
+  w := MeasureBMFont(fontArial, s);
+  PrintBMFont(fontArial, s, 138 - w, 172);
 end;
 
-procedure drawDescriptionBox;
+procedure DrawDescriptionBox;
 begin
   { Desc box }
   rectfillDither(152, 134, 311, 197, 196);
@@ -149,10 +133,10 @@ begin
 
   { TODO: Update with the actual content }
 
-  PrintBMFont(@font, 'Author: Hevanafa', 155, 137);
-  PrintBMFont(@font, 'Lorem Ipsum will uncover many', 155, 157);
-  PrintBMFont(@font, 'web sites still in their infancy.', 155, 169);
-  PrintBMFont(@font, 'Various versions have evolved', 155, 181);
+  PrintBMFont(fontArial, 'Author: Hevanafa', 155, 137);
+  PrintBMFont(fontArial, 'Lorem Ipsum will uncover many', 155, 157);
+  PrintBMFont(fontArial, 'web sites still in their infancy.', 155, 169);
+  PrintBMFont(fontArial, 'Various versions have evolved', 155, 181);
 end;
 
 
@@ -214,19 +198,19 @@ begin
   printOutline(menuItems[selectedIdx], 152, 119, 15, 0);
 
   { Header }
-  spr(imgLogo, 8, 4);
-  spr(imgPreview, 152, 32);
+  spr(texLogo, 8, 4);
+  spr(texPreview, 152, 32);
 
   s := getClockStr;
 
-  w := MeasureBMFont(@font, s);
-  PrintBMFont(@font, s, 320-8-w, 10);
+  w := MeasureBMFont(fontArial, s);
+  PrintBMFont(fontArial, s, 320-8-w, 10);
 
   { Footer }
-  spr(imgArrows, 8, 187);
-  PrintBMFont(@font, 'NAVIGATE', 24, 185);
-  spr(imgEnter, 90, 187);
-  PrintBMFont(@font, 'OPEN', 107, 185);
+  spr(texArrows, 8, 187);
+  PrintBMFont(fontArial, 'NAVIGATE', 24, 185);
+  spr(texEnter, 90, 187);
+  PrintBMFont(fontArial, 'OPEN', 107, 185);
 end;
 
 
