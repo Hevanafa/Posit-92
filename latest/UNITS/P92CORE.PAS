@@ -28,7 +28,7 @@ type
 
     LoadDefaultCursor: boolean;
     EnablePCSpeaker: boolean;
-    EnableAdLib: boolean;
+
     { Turning this off enables the KeyPressed and ReadKey pattern
       using the CRT unit }
     EnableKeyHandler: boolean;
@@ -62,13 +62,16 @@ implementation
 
 uses
   DOS,
-  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92VGA, PCSPKR, AdLib, P92PANIC
+  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92VGA, PCSPKR, P92PANIC
+{$IFDEF P92_ADLIB}
+  , AdLib
+{$ENDIF}
 {$IFDEF P92_IMGUI}
   , P92IMGUI
 {$ENDIF}
-{$ifdef P92_MODE_X}
+{$IFDEF P92_MODE_X}
   , ModeX
-{$endif}
+{$ENDIF}
   ;
 
 var
@@ -115,7 +118,6 @@ begin
   config.LoadDefaultCursor := true;
 
   config.EnablePCSpeaker := true;
-  config.EnableAdLib := false;
   config.EnableKeyHandler := true;
 
   config.EnableDrawFPS := false;
@@ -155,10 +157,11 @@ begin
   InitFPSCounter;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpkr.Init;
+    PCSPKR.Init;
 
-  if bootConfig.EnableAdLib then
-    Adlib.Init;
+{$IFDEF P92_ADLIB}
+  AdLib.Init;
+{$ENDIF}
 
   { Randomize; }
   RandSeed := trunc(GetTimer);
@@ -174,8 +177,9 @@ begin
   if bootConfig.EnablePCSpeaker then
     PCSpkr.Stop;
 
-  if bootConfig.EnableAdLib then
-    AdLib.Shutdown;
+{$IFDEF P92_ADLIB}
+  AdLib.Shutdown;
+{$ENDIF}
 
   FreeBuffer;
   CloseLogger;
@@ -201,8 +205,9 @@ begin
   if bootConfig.EnablePCSpeaker then
     PCSpkr.Update;
 
-  if bootConfig.EnableAdLib then
-    AdLib.Update;
+{$IFDEF P92_ADLIB}
+  AdLib.Update;
+{$ENDIF}
 end;
 
 procedure P92Draw;
