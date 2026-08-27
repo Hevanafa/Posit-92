@@ -1,4 +1,4 @@
-unit Panic;
+unit P92PANIC;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
@@ -8,7 +8,7 @@ procedure PanicHalt(const msg: string);
 
 implementation
 
-uses P92Core, P92LOG, P92KBD, P92Mouse, P92VGA;
+uses P92CORE, P92LOG, P92KBD, P92MOUSE P92VGA;
 
 procedure PanicHalt(const msg: string);
 begin

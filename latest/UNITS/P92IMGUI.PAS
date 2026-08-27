@@ -65,7 +65,7 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  P92GEOM, P92MOUSE, Panic, P92GRAPH;
+  P92GEOM, P92MOUSE, P92PANIC, P92GRAPH;
 
 const
   ButtonPressColour = $40;

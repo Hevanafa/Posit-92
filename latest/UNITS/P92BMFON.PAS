@@ -65,7 +65,7 @@ procedure SetTransparencyKey(const value: byte);
 
 implementation
 
-uses P92CONV, P92LOG, Panic, P92STR, P92VGA;
+uses P92CONV, P92LOG, P92PANIC, P92STR, P92VGA;
 
 var
   transparencyKey: byte;

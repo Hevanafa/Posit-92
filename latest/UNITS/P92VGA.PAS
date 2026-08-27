@@ -59,7 +59,7 @@ procedure PresentModeX;
 
 implementation
 
-uses DOS, Panic;
+uses DOS, P92PANIC;
 
 var
   useDefaultBufferSize: boolean;

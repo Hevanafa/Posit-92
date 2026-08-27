@@ -28,7 +28,7 @@ procedure SortEnemiesByX(var ary: array of PEnemy);
 
 implementation
 
-uses Panic;
+uses P92PANIC;
 
 function PartitionI16(var ary: array of integer; low, high: integer): integer;
 var

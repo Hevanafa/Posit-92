@@ -4,7 +4,7 @@ unit P92BMRLE;
 
 interface
 
-uses P92TEX, Panic;
+uses P92TEX, P92PANIC;
 
 type
   PRLETexture = ^TRLETexture;

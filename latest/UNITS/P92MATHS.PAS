@@ -23,7 +23,7 @@ function ArcTan2(const y, x: double): double;
 
 implementation
 
-uses Panic;
+uses P92PANIC;
 
 function Clamp(const value, min, max: double): double;
 begin
