@@ -9,8 +9,7 @@
 uses
   CRT, DOS,
   P92CORE, P92CONV, P92FPS, P92GRAPH, P92LOG, P92MOUSE,
-  P92TIME, P92VGA, P92TEX, P92BMFON, P92MATHS,
-  Bobbing;
+  P92TIME, P92VGA, P92TEX, P92BMFON, P92MATHS;
 
 var
   { Asset variables }
@@ -189,8 +188,7 @@ var
 begin
   cls($00);
 
-  { BG }
-  { DrawBobbingGrid((getTimer - startTime) * 3); }
+  { TODO: Background }
 
   DrawMenuBox;
   DrawDescriptionBox;
