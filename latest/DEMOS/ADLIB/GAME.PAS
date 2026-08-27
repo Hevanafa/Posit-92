@@ -8,7 +8,7 @@
 uses
   CRT, DOS,
   P92Core, P92TEX, P92CONV, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA,
-  AdLib;
+  P92ADLIB;
 
 type
   TRect = object
@@ -149,7 +149,7 @@ begin
       inc(score, 1);
       InitCoin(coins[a]);
       { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      AdLib.PlayMelody(@sfxCoin, 0);
+      P92ADLIB.PlayMelody(@sfxCoin, 0);
     end;
 end;
 

@@ -64,7 +64,7 @@ uses
   DOS,
   P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92VGA, PCSPKR, P92PANIC
 {$IFDEF P92_ADLIB}
-  , AdLib
+  , P92ADLIB
 {$ENDIF}
 {$IFDEF P92_IMGUI}
   , P92IMGUI
@@ -160,7 +160,7 @@ begin
     PCSPKR.Init;
 
 {$IFDEF P92_ADLIB}
-  AdLib.Init;
+  P92ADLIB.Init;
 {$ENDIF}
 
   { Randomize; }
@@ -178,7 +178,7 @@ begin
     PCSpkr.Stop;
 
 {$IFDEF P92_ADLIB}
-  AdLib.Shutdown;
+  P92ADLIB.Shutdown;
 {$ENDIF}
 
   FreeBuffer;
@@ -206,7 +206,7 @@ begin
     PCSpkr.Update;
 
 {$IFDEF P92_ADLIB}
-  AdLib.Update;
+  P92ADLIB.Update;
 {$ENDIF}
 end;
 

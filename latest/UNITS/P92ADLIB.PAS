@@ -6,11 +6,13 @@
 
 {$DEFINE DEBUG}
 
-unit AdLib;
+unit P92ADLIB;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 interface
+
+{$IFDEF P92_ADLIB}
 
 const
   { Internal chip values for notes }
@@ -86,8 +88,11 @@ procedure InitNote(
   const duration: double;
   const velocity: byte);
 
+{$ENDIF}
 
 implementation
+
+{$IFDEF P92_ADLIB}
 
 uses
   CRT,
@@ -417,5 +422,7 @@ begin
 
   isInitialised := false
 end;
+
+{$ENDIF}
 
 end.
