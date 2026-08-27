@@ -31,7 +31,7 @@ implementation
 
 uses
   DOS,
-  P92CONV, P92LOG, P92VGA;
+  P92CONV, P92LOG, P92PANIC, P92VGA;
 
 var
   isMouseInitialised: boolean;
@@ -55,12 +55,10 @@ begin
   regs.ax := 0;
   Intr($33, regs);
 
-  if regs.ax = 0 then begin
-    WriteLog('No mouse driver is found!');
-    readLn;
-    halt
-  end else
-    WriteLog('Mouse initialised.');
+  if regs.ax = 0 then
+    PanicHalt('No mouse driver is found!')
+  else
+    WriteLog('Mouse has been initialised');
 
   isMouseInitialised := true
 end;
@@ -120,5 +118,6 @@ begin
   isMouseInitialised := false
 end;
 
-
+begin
+  isMouseInitialised := false;
 end.
