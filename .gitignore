@@ -10,7 +10,7 @@ LOG.TXT
 boilerplate/UNITS/
 
 # Turbo Pascal
-latest/TP/
+TP/
 
 # Free Pascal Compiler
 *.a
