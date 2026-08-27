@@ -1,13 +1,13 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92BMFON, Logger, P92KBD, P92MOUSE, P92TIME, P92VGA, Bitmap,
+  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX,
   Story;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TBitmap;
-  font: TBMFont;
+  texDosuEXE: array[0..1] of TTexture;
+  fontP92Sans: TBMFont;
 
   { Game state variables }
   t: double;
@@ -16,20 +16,21 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
-  LoadBMFont(font, 'FONTS\FGB12.FNT');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
+
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
 begin
-  StoryMan.init(font);
+  StoryMan.init(fontP92Sans);
   StoryMan.startPage(1);
   lastSpace := false;
 end;
