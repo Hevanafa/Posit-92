@@ -67,7 +67,23 @@ You should see a screen like this:
 
 ### Configuring custom directives
 
-(TODO)
+In case you want to make use of the AdLib or immediate GUI, which aren't included during compile process by default, you can use any combination of these directives:
+
+- `P92_ADLIB`
+- `P92_IMGUI`
+- `P92_MODE_X`
+
+These custom directives can be enabled in **Options menu > Compiler**
+
+And then fill in the Conditio(**n**)al defines with any of the built-in directives listed above
+
+For example, if you want to enable both AdLib and immediate GUI for your game:
+
+```
+P92_ADLIB;P92_IMGUI
+```
+
+After adding a new directive, **always** rebuild all the TPU files from the **Compile menu > Build**
 
 ## Recommended emulator settings
 
