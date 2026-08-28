@@ -20,7 +20,10 @@ var
 function DSPReset: boolean;
 const
   { Obtained from Creative Labs' DSP documentation }
-  DSP_RESET = $06;
+  DSPResetPort = $06;
+
+  { The rest are also ports relative to DSPBase }
+
   DSPReadData = $0A;
   DSPWriteData = $0C;
 
@@ -28,21 +31,23 @@ const
   DSPWriteStatus = $0C;
   DSPReadStatus = $0E;
 
+  { Magic bits }
+
   DSPReady = $AA;
   DSPBitBusy = $80;  { Specifically bit 7 }
 var
   a: word;
 begin
-  port[DSPBase + DSP_RESET] := $01;  { trigger reset }
+  port[DSPBase + DSPResetPort] := $01;  { trigger reset }
   for a:=1 to 100 do;
-  port[DSPBase + DSP_RESET] := $00;
+  port[DSPBase + DSPResetPort] := $00;
 
   { Wait for DSP to report ready ($AA) }
   DSPReset := false;
 
   for a:=1 to high(word) do
     if (port[DSPBase + DSPReadStatus] and DSPBitBusy) <> 0 then
-      if port[DSPBase + DSPReadData] = DSPReady then begin
+      if port[DSPBase + DSPReadDataPort] = DSPReady then begin
         DSPReset := true;
         exit
       end;
