@@ -89,6 +89,9 @@ begin
 end;
 
 procedure DrawOnce; far;
+const
+  { Direct DAC output command }
+  DSPCmdDirectOut = $10;
 var
   s: string;
   a: word;
@@ -108,9 +111,9 @@ begin
   PresentMode13h;
 
   { Play the sine wave, blocking the main thread }
-  { TODO: expand the magic numbers into consts }
+  { ~8000 samples, the duration depends on the CPU speed }
   for a:=0 to 7999 do begin
-    DSPWrite($10);
+    DSPWrite(DSPCmdDirectOut);
     DSPWrite(SinTable[a and 255]);
   end;
 end;
