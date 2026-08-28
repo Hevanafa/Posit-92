@@ -9,10 +9,14 @@
 unit MSFNT;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
+{$DEFINE DEBUG}
 
 interface
 
 type
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..0] of byte;
+
   TMSFontHeader = record
     version: word;
     size: longInt;  { size of file }
@@ -57,13 +61,13 @@ type
   PMSFontGlyph = ^TMSFontGlyph;
   TMSFontGlyph = record
     width, height: byte;
-    bitmapData: array[0..0] of byte;
+    bitmapData: PByteArray;
   end;
 
   PMSFont = ^TMSFont;
   TMSFont = record
     header: TMSFontHeader;
-    glyphs: array[0..255] of PMSFontGlyph;
+    glyphs: array[0..255] of TMSFontGlyph;
   end;
 
 procedure LoadMSFont(var font: TMSFont; const filename: string);
@@ -75,7 +79,7 @@ function MeasureMSFont(const font: TMSFont; const text: string): word;
 
 implementation
 
-uses P92CONV, P92MATHS, P92PANIC, P92VGA;
+uses P92LOG, P92CONV, P92MATHS, P92PANIC, P92VGA;
 
 procedure DefaultMSFont(var font: TMSFont);
 var
@@ -94,48 +98,53 @@ var
   bitsWidth, charoffset: word;
   charHeight: word;
   size: integer;
-
 begin
   Assign(fntFile, filename);
   {$I-} Reset(fntFile, 1); {$I+}
 
   if IOResult <> 0 then
-    panicHalt('loadMSFont: Cannot open file ' + filename);
+    panicHalt('LoadMSFont: Cannot open file ' + filename);
+
+  writelog('LoadMSFont: ' + filename);
 
   DefaultMSFont(font);
 
-  blockRead(fntFile, font.header, sizeof(TMSFontHeader));
+  BlockRead(fntFile, font.header, sizeof(TMSFontHeader));
   charHeight := font.header.pixHeight;
 
 {$IFDEF DEBUG}
   writeLog('--- Begin loadMSFont "' + filename + '"');
-  writeLog('Copyright string: "', output^.header.copyright, '"');
-  writeLog('Pixel height: ', output^.header.pixHeight);
+  writeLog('Copyright string: "' + font.header.copyright + '"');
+  writeLog('Pixel height: ' + i32str(font.header.pixHeight));
 {$ENDIF}
 
   for charIndex := font.header.firstChar to font.header.lastChar do begin
   { for charIndex := font.header.firstChar to font^.header.firstChar + 9 do begin }
-    seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - font.header.firstChar) * 4);
-    blockRead(fntFile, bitsWidth, 2);
-    blockRead(fntFile, charOffset, 2);
+    Seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - font.header.firstChar) * 4);
+    BlockRead(fntFile, bitsWidth, 2);
+    BlockRead(fntFile, charOffset, 2);
 
-    { writeLn(charIndex, ' - width: ', bitsWidth, ' offset: ', charOffset); }
+    writeLog(
+      'Char ' + i32str(charIndex)
+      + ': w=' + i32str(bitsWidth)
+      + ', offset=' + i32str(charOffset));
 
     size := sizeof(TMSFontGlyph) + ceil(bitsWidth / 8) * charHeight - 1;
 
-    GetMem(font.glyphs[charIndex], size);
+    { GetMem(font.glyphs[charIndex], size); }
+    {
     if font.glyphs[charIndex] = nil then begin
       writeLn('Unable to getMem with the size ', size, '!');
       exit
     end;
+    }
 
-    with font do begin
-      glyphs[charIndex]^.width := bitsWidth;
-      glyphs[charIndex]^.height := charHeight;
-    end;
+    font.glyphs[charIndex].width := bitsWidth;
+    font.glyphs[charIndex].height := charHeight;
+    getmem(font.glyphs[charIndex].bitmapData, ceil(bitsWidth / 8) * charHeight);
 
-    seek(fntFile, charOffset);
-    blockRead(fntFile, font.glyphs[charIndex]^.bitmapData, ceil(bitsWidth / 8) * charHeight);
+    Seek(fntFile, charOffset);
+    BlockRead(fntFile, font.glyphs[charIndex].bitmapData^, ceil(bitsWidth / 8) * charHeight);
   end;
 
   close(fntFile)

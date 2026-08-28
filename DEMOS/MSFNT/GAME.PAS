@@ -8,18 +8,17 @@ uses
   P92Core, MSFNT, P92KBD, P92VGA;
 
 var
-  font: TMSFont;
-
+  fontSystem: TMSFont;
 
 procedure OnPreload; far;
 begin
-  { LoadMSFont(font, 'FONTS\8514OEM.FNT'); }
-  LoadMSFont(font, 'FONTS\VGASYS.FNT');
+  { LoadMSFont(fontSystem, 'FONTS\8514OEM.FNT'); }
+  LoadMSFont(fontSystem, 'FONTS\VGASYS.FON');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeMSFont(font);
+  FreeMSFont(fontSystem);
 end;
 
 procedure Update; far;
@@ -36,8 +35,8 @@ begin
   Cls($7D);
 
   s := 'Hello world with System font!';
-  w := MeasureMSFont(font, s);
-  PrintMSFont(font, s, 160 - (w div 2), 120, 15);
+  w := MeasureMSFont(fontSystem, s);
+  PrintMSFont(fontSystem, s, 160 - (w div 2), 120, 15);
 end;
 
 var
