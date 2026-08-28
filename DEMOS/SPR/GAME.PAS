@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, Bitmap, P92LOG, P92FPS, P92TIME, P92VGA;
+  P92CORE, P92LOG, P92FPS, P92TIME, P92TEX, P92VGA;
 
 type
   TVec2 = record
@@ -13,14 +13,14 @@ type
 
 var
   { Asset variables }
-  imgGrass: TTexture;
+  texGrass: TTexture;
   { Game state variables }
   positions: array[0..99] of TVec2;
 
 
 procedure OnPreload; far;
 begin
-  LoadBMP(imgGrass, 'IMG\GRASS.BMP');
+  LoadTex(texGrass, 'IMG\GRASS.BMP');
 end;
 
 procedure OnReady; far;
@@ -37,7 +37,7 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(imgGrass)
+  FreeTex(texGrass)
 end;
 
 procedure Update; far;
@@ -53,7 +53,7 @@ begin
   cls($7D);
   
   for a:=0 to high(positions) do
-    spr(imgGrass, trunc(positions[a].x), trunc(positions[a].y));
+    spr(texGrass, trunc(positions[a].x), trunc(positions[a].y));
 end;
 
 var

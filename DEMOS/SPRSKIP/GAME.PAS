@@ -4,7 +4,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, Bitmap, P92KBD, P92Mouse, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
 
 type
   TExplosion = record
@@ -17,7 +17,7 @@ const
   maxSpritesPerFrame = 50;
 var
   { Asset variables }
-  imgExplosion: TTexture;
+  texExplosion: TTexture;
 
   { Game state variables }
   startTime, nextGameTick: double;
@@ -32,6 +32,7 @@ var
   result: word;
 begin
   result := trunc((0.5 - e.ttl) / 0.125);
+
   if result = 4 then
     GetFrame := 3
   else
@@ -41,7 +42,7 @@ end;
 procedure DrawSprite(const e: TExplosion);
 begin
   SprRegion(
-    imgExplosion,
+    texExplosion,
     GetFrame(e) * 16, 0, 16, 16,
     e.x, e.y);
 end;
@@ -57,12 +58,12 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMP(imgExplosion, 'IMG\SPRITESH.BMP');
+  LoadTex(texExplosion, 'IMG\SPRITESH.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(imgExplosion);
+  FreeTex(texExplosion);
 end;
 
 procedure OnReady; far;

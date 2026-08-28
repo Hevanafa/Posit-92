@@ -30,8 +30,8 @@ end;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
-  imgCoin: TTexture;
+  texDosuEXE: array[0..1] of TTexture;
+  texCoin: TTexture;
   BrightFMInstrument: TInstrument;
   sfxCoin: TMelody;
 
@@ -100,9 +100,9 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(DosuEXE[0], 'IMG\DOSU_1.BMP');
-  LoadTex(DosuEXE[1], 'IMG\DOSU_2.BMP');
-  LoadTex(imgCoin, 'IMG\COIN.BMP');
+  LoadTex(texDosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadTex(texCoin, 'IMG\COIN.BMP');
 
   InitInstruments;
   { AdlibDrv.AssignInstrument(0, @BrightFMInstrument); }
@@ -118,9 +118,9 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(DosuEXE[0]);
-  FreeTex(DosuEXE[1]);
-  FreeTex(imgCoin);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
+  FreeTex(texCoin);
 end;
 
 procedure OnReady; far;
@@ -159,9 +159,9 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y)
+      spr(texCoin, coins[a].hitbox.x, coins[a].hitbox.y)
     else
-      sprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
+      sprTint(texCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
 end;
 
 procedure Update; far;
@@ -221,21 +221,21 @@ begin
   { print('B - beep', 160-32, 130, 15); }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], trunc(playerX), trunc(playerY))
+    spr(texDosuEXE[0], trunc(playerX), trunc(playerY))
   else
-    spr(dosuEXE[1], trunc(playerX), trunc(playerY));
+    spr(texDosuEXE[1], trunc(playerX), trunc(playerY));
 
   DrawCoins;
 
   { Optional rotated sprite }
-  { sprPro(dosuEXE[0], 48, 48, rotation, 13); }
+  { sprPro(texDosuEXE[0], 48, 48, rotation, 13); }
 
   { Rotated sprites test }
   { for a:=0 to 3 do
-    sprPro2(dosuEXE[0], 144 + a * 40, 48, 1.5, 1, rotation + 90, 13); }
+    sprPro2(texDosuEXE[0], 144 + a * 40, 48, 1.5, 1, rotation + 90, 13); }
 
   { for a:=0 to 3 do
-    sprProLUT(dosuEXE[0], 144 + a * 40, 48, 1.5, 1, trunc(rotation) mod 360 div 10, 13); }
+    sprProLUT(texDosuEXE[0], 144 + a * 40, 48, 1.5, 1, trunc(rotation) mod 360 div 10, 13); }
 
   { Debug rotation }
   { print('Rotation:' + f32str(rotation), 0, 0, 15); }
