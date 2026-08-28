@@ -9,8 +9,35 @@ uses
   CRT, DOS,
   P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
 
+const
+  DSPBase = $220;  { SoundBlaster base port }
+
 var
   fontP92Sans: TBMFont;
+
+function DSPReset: boolean;
+var
+  a: word;
+begin
+  { TODO: Expand the magic numbers into consts }
+
+  port[DSPBase + $6] := $01;  { trigger reset }
+  for a:=1 to 100 do;
+  port[DSPBase + $6] := $00;
+
+  { Wait for DSP to report ready ($AA) }
+  DSPReset := false;
+
+  for a:=1 to high(word) do
+    if (port[DSPBase + $E] and $80) <> 0 then
+      if port[DSPBase + $A] = $AA then begin
+        DSPReset := true;
+        exit
+      end;
+end;
+
+
+
 
 procedure OnPreload; far;
 begin
