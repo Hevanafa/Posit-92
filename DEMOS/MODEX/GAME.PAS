@@ -18,24 +18,24 @@ uses
 
 var
   { Asset variables }
-  imgCursor: TTexture;
-  imgSpecimenP92: array[0..1] of TTexture;
+  texCursor: TTexture;
+  texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;
 
 procedure OnPreload; far;
 begin
-  LoadTex(imgCursor, 'CURSOR.BMP');
-  LoadTex(imgSpecimenP92[0], 'IMG\SPP92_1.BMP');
-  LoadTex(imgSpecimenP92[1], 'IMG\SPP92_2.BMP');
+  LoadTex(texCursor, 'CURSOR.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(imgCursor);
-  FreeTex(imgSpecimenP92[0]);
-  FreeTex(imgSpecimenP92[1]);
+  FreeTex(texCursor);
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
 end;
 
 procedure OnReady; far;
@@ -56,13 +56,13 @@ begin
 
   { print('getTimer:' + f32str(getTimer), 0, 20, 15); }
   if frac(t * 1.5) >= 0.5 then
-    Spr(imgSpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], 148, 76)
   else
-    Spr(imgSpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], 148, 76);
 
   Print('Hello from Mode X!', 160-72, 120, 15);
 
-  spr(imgCursor, GetMouseX, GetMouseY);
+  spr(texCursor, GetMouseX, GetMouseY);
 end;
 
 

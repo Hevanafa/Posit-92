@@ -14,7 +14,7 @@ const
 var
   { Asset variables }
   fontP92Sans: TBMFont;
-  SpecimenP92: array[0..1] of TTexture;
+  texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
   hoverRow, hoverCol: integer;
@@ -43,15 +43,15 @@ end;
 procedure OnPreload; far;
 begin
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
-  LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
   FreeBMFont(fontP92Sans);
-  FreeTex(SpecimenP92[0]);
-  FreeTex(SpecimenP92[1]);
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
 end;
 
 procedure OnReady; far;
@@ -132,9 +132,9 @@ begin
   PrintDefault('Mode 13h Palette', 12, 8);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], 148, 76)
   else
-    Spr(SpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], 148, 76);
 
   for row:=0 to 15 do begin
     top := PaletteTop + row * 8;

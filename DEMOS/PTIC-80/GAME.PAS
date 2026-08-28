@@ -5,21 +5,22 @@ uses
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
+
   { Game state variables }
   t: double;
 
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeBMP(texDosuEXE[0]);
+  FreeBMP(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -40,9 +41,9 @@ begin
   cls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    SprScaled(dosuEXE[0], 96, 24, 2)
+    SprScaled(texDosuEXE[0], 96, 24, 2)
   else
-    SprScaled(dosuEXE[1], 96, 24, 2);
+    SprScaled(texDosuEXE[1], 96, 24, 2);
 
   print('Hello world!', (240-96) div 2, 84, 15);
 end;

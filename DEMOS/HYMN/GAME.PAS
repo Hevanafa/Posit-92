@@ -26,8 +26,7 @@ const
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
-  imgPiano: TTexture;
+  texPiano: TTexture;
   hymn: TMelody;
 
   { Game state variables}
@@ -176,13 +175,13 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(imgPiano, 'IMG\PIANO.BMP');
+  LoadTex(texPiano, 'IMG\PIANO.BMP');
   InitJerusalemHymn;
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(imgPiano);
+  FreeTex(texPiano);
   FreeMelody(hymn);
 end;
 
@@ -203,7 +202,7 @@ procedure Draw; far;
 begin
   Cls($7D);
 
-  Spr(imgPiano, 148, 76);
+  Spr(texPiano, 148, 76);
 
   Print('Playing "Jerusalem" hymn', 160-96, 120, 15);
   Print('by Sir Charles Hubert', 160-84, 130, 15);

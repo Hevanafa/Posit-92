@@ -9,7 +9,7 @@ uses
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   lights: array[0..3] of boolean;
@@ -20,14 +20,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadBMP(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadBMP(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeBMP(texDosuEXE[0]);
+  FreeBMP(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -101,9 +101,9 @@ begin
     print('Good job!', 50, 50, 15);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    Spr(dosuEXE[0], 148, 76)
+    Spr(texDosuEXE[0], 148, 76)
   else
-    Spr(dosuEXE[1], 148, 76);
+    Spr(texDosuEXE[1], 148, 76);
 
   print('Press 1, 2, 3, or 4', 160-86, 120, $0F);
   print('to trigger change lights', 160-96, 128, $0F);

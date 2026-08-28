@@ -15,7 +15,7 @@ type
 
 var
   { Asset variables }
-  imgExplosion: TTexture;
+  texExplosion: TTexture;
 
   { Game state variables }
   nextGameTick: double;
@@ -45,12 +45,12 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(imgExplosion, 'IMG\SPRITESH.BMP');
+  LoadTex(texExplosion, 'IMG\SPRITESH.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(imgExplosion);
+  FreeTex(texExplosion);
 end;
 
 procedure OnReady; far;
@@ -88,7 +88,7 @@ begin
 
   for a:=0 to high(explosions) do
     SprRegion(
-      imgExplosion,
+      texExplosion,
       GetFrame(explosions[a]) * 16, 0, 16, 16,
       explosions[a].x, explosions[a].y);
 end;

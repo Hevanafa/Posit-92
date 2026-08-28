@@ -1,5 +1,5 @@
 {
-  Minimal AdLib drum set demo
+  Minimal AdLib drum set demo (Legacy)
   Part of Posit-92 game framework
 }
 
@@ -7,11 +7,12 @@
 
 uses
   CRT, DOS,
-  P92Core, AdLibLgc, P92TEX, P92LOG, P92KBD, P92Mouse, P92TIME, P92VGA;
+  P92Core, P92TEX, P92LOG, P92KBD, P92Mouse, P92TIME, P92VGA,
+  AdLibLGC;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   done: boolean;
@@ -35,8 +36,8 @@ begin
   InitMouse;
 
   randomize;
-  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
   
   AdLibDrv.init;
   AdLibDrv.setPercussive(true);
@@ -150,9 +151,9 @@ begin
   asmCls($7D);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76)
+    spr(texDosuEXE[0], 148, 76)
   else
-    spr(dosuEXE[1], 148, 76);
+    spr(texDosuEXE[1], 148, 76);
 
   print('Q - bass drum', 16, 16, 15);
   print('W - snare drum', 16, 24, 15);
@@ -179,8 +180,8 @@ begin
   until done;
 
   { Cleanup code }
-  FreeTex(dosuEXE[0]);
-  FreeTex(dosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 
   AdLibDrv.shutdown;
   ResetMouse;

@@ -5,7 +5,7 @@ uses
 
 var
   { Asset variables }
-  imgKenneyTinytown: TTexture;
+  texKenneyTinytown: TTexture;
 
   { Game state variables }
   lastX, lastY: integer;
@@ -28,7 +28,7 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(imgKenneyTinytown, 'IMG/TINYTOWN.BMP');
+  LoadTex(texKenneyTinytown, 'IMG/TINYTOWN.BMP');
 end;
 
 procedure OnReady; far;
@@ -57,7 +57,7 @@ procedure Draw; far;
 begin
   cls($7D);  
   
-  spr(imgKenneyTinytown, 0, 0);
+  spr(texKenneyTinytown, 0, 0);
 
   print('Colour: ' + i32str(colour), 4, 4, 15);
 end;

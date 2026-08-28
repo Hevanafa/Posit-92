@@ -30,9 +30,9 @@ end;
 
 var
   { Asset variables }
-  imgDosuEXE: array[0..1] of TTexture;
-  imgCoin: TTexture;
-  coinMelodyList: array[0..2] of TMelody;
+  texDosuEXE: array[0..1] of TTexture;
+  texCoin: TTexture;
+  listCoinMelody: array[0..2] of TMelody;
 
   { Game state variables }
   t: double;
@@ -62,28 +62,28 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(imgDosuEXE[0], 'IMG\DOSU_1.BMP');
-  LoadTex(imgDosuEXE[1], 'IMG\DOSU_2.BMP');
-  LoadTex(imgCoin, 'IMG\COIN.BMP');
+  LoadTex(texDosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG\DOSU_2.BMP');
+  LoadTex(texCoin, 'IMG\COIN.BMP');
 
   { C4 E4 G4 }
-  CreateMelody(coinMelodyList[0], 3);
-  with coinMelodyList[0] do begin
+  CreateMelody(listCoinMelody[0], 3);
+  with listCoinMelody[0] do begin
     InitNote(notes^[0], 261, 0.1);
     InitNote(notes^[1], 329, 0.1);
     InitNote(notes^[2], 392, 0.1);
   end;
 
   { D4 F#4 A4 }
-  CreateMelody(coinMelodyList[1], 3);
-  with coinMelodyList[1] do begin
+  CreateMelody(listCoinMelody[1], 3);
+  with listCoinMelody[1] do begin
     InitNote(notes^[0], 293, 0.1);
     InitNote(notes^[1], 370, 0.1);
     InitNote(notes^[2], 440, 0.1);
   end;
 
-  CreateMelody(coinMelodyList[2], 3);
-  with coinMelodyList[2] do begin
+  CreateMelody(listCoinMelody[2], 3);
+  with listCoinMelody[2] do begin
     InitNote(notes^[0], 329, 0.1);
     InitNote(notes^[1], 415, 0.1);
     InitNote(notes^[2], 494, 0.1);
@@ -94,12 +94,12 @@ procedure OnCleanup; far;
 var
   a: word;
 begin
-  for a:=0 to high(coinMelodyList) do
-    FreeMelody(coinMelodyList[a]);
+  for a:=0 to high(listCoinMelody) do
+    FreeMelody(listCoinMelody[a]);
 
-  FreeTex(imgDosuEXE[0]);
-  FreeTex(imgDosuEXE[1]);
-  FreeTex(imgCoin);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
+  FreeTex(texCoin);
 end;
 
 procedure OnReady; far;
@@ -127,7 +127,7 @@ begin
     if coins[a].hitbox.Intersects(playerHitbox) then begin
       inc(score, 1);
       InitCoin(coins[a]);
-      PlayMelody(@coinMelodyList[random(3)]);
+      PlayMelody(@listCoinMelody[random(3)]);
     end;
 end;
 
@@ -137,9 +137,9 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      Spr(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y)
+      Spr(texCoin, coins[a].hitbox.x, coins[a].hitbox.y)
     else
-      SprTint(imgCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
+      SprTint(texCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
 end;
 
 procedure Update; far;
@@ -194,9 +194,9 @@ begin
   print('WASD - Move', 160-48, 120, 15);
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(imgDosuEXE[0], trunc(playerX), trunc(playerY))
+    spr(texDosuEXE[0], trunc(playerX), trunc(playerY))
   else
-    spr(imgDosuEXE[1], trunc(playerX), trunc(playerY));
+    spr(texDosuEXE[1], trunc(playerX), trunc(playerY));
 
   DrawCoins;
 

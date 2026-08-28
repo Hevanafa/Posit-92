@@ -17,7 +17,7 @@ uses
 var
   { Asset variables }
   fontP92Sans: TBMFont;
-  SpecimenP92: array[0..1] of TTexture;
+  texSpecimenP92: array[0..1] of TTexture;
   texCursor, texHand: TTexture;
   texButtonNormal, texButtonHovered, texButtonPressed: TTexture;
 
@@ -55,8 +55,8 @@ begin
   LoadTex(texCursor, 'CURSOR.BMP');
   LoadTex(texHand, 'HAND.BMP');
 
-  LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 
   LoadTex(texButtonNormal, 'IMG\BUTTON_N.BMP');
   LoadTex(texButtonHovered, 'IMG\BUTTON_H.BMP');
@@ -76,8 +76,8 @@ end;
 procedure OnCleanup; far;
 begin
   { Free all the resources here }
-  FreeTex(SpecimenP92[0]);
-  FreeTex(SpecimenP92[1]);
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
 end;
 
 procedure Update; far;
@@ -95,9 +95,9 @@ begin
   Cls($4F);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], 148, 76)
   else
-    Spr(SpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], 148, 76);
 
   CentredLabel('Hello world!', VGAWidth div 2, 120);
 

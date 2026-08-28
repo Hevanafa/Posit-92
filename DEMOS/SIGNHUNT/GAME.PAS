@@ -37,8 +37,8 @@ var
   isSoftKey: boolean;
 
   fontNokia, fontP8: TBMFont;
-  imgRadio, imgSignal: TTexture;
-  imgPlayer, imgPlayerWalk: TTexture;
+  texRadio, texSignal: TTexture;
+  texPlayer, texPlayerWalk: TTexture;
 
   isMenu: boolean;
   radioCount: word;
@@ -78,10 +78,10 @@ begin
   LoadBMFont(fontNokia, 'FONTS\NOKIA.TXT');
   LoadBMFont(fontP8, 'FONTS\P8.TXT');
 
-  LoadTex(imgRadio, 'IMG\RADIO.BMP');
-  LoadTex(imgSignal, 'IMG\SIGNAL.BMP');
-  LoadTex(imgPlayer, 'IMG\PSTAND.BMP');
-  LoadTex(imgPlayerWalk, 'IMG\PWALK.BMP');
+  LoadTex(texRadio, 'IMG\RADIO.BMP');
+  LoadTex(texSignal, 'IMG\SIGNAL.BMP');
+  LoadTex(texPlayer, 'IMG\PSTAND.BMP');
+  LoadTex(texPlayerWalk, 'IMG\PWALK.BMP');
 
   { randomize; }
   palette[0] := 98;
@@ -93,10 +93,10 @@ begin
   FreeBMFont(fontNokia);
   FreeBMFont(fontP8);
 
-  FreeTex(imgRadio);
-  FreeTex(imgSignal);
-  FreeTex(imgPlayer);
-  FreeTex(imgPlayerWalk);
+  FreeTex(texRadio);
+  FreeTex(texSignal);
+  FreeTex(texPlayer);
+  FreeTex(texPlayerWalk);
 end;
 
 procedure OnReady; far;
@@ -181,10 +181,10 @@ begin
     PSetWithCamera(radioX, radioY, palette[1]);
 
   { Player }
-  SprWithCamera(imgPlayer, playerX, playerY);
+  SprWithCamera(texPlayer, playerX, playerY);
 
   { HUD }
-  Spr(imgSignal, 0, 0);
+  Spr(texSignal, 0, 0);
 
   w := MeasureBMFont(fontNokia, 'Menu');
   PrintNokia('Menu', (84 - w) shr 1, 38);
