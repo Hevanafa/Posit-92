@@ -13,6 +13,7 @@ uses
 
 const
   DSPBase = $220;  { SoundBlaster base port }
+  SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
 var
   fontP92Sans: TBMFont;
@@ -81,6 +82,24 @@ begin
   DSPWrite(timeConst)
 end;
 
+procedure PlayTone(const freq, durationMs: word);
+var
+  sampleCount,
+  phase,
+  phaseIncrement: longint;
+  a: longint;
+begin
+  sampleCount := longint(SampleRate) * durationMs div 1000;
+  phaseIncrement := longint(256) * freq div SampleRate;
+  phase := 0;
+
+  for a:=0 to sampleCount - 1 do begin
+    DSPWrite(DSPCmdDirectOut);
+    DSPWrite(SinTable[phase and 255]);
+    inc(phase, phaseIncrement)
+  end;
+end;
+
 procedure OnPreload; far;
 begin
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
@@ -101,7 +120,7 @@ begin
   if not DSPReset then
     PanicHalt('Couldn''t find the SoundBlaster driver');
 
-  DSPSetSampleRate(11025);  { 11025 Hz: common DOS game rate }
+  DSPSetSampleRate(SampleRate);
 end;
 
 procedure DrawOnce; far;
@@ -132,6 +151,8 @@ begin
     DSPWrite(DSPCmdDirectOut);
     DSPWrite(SinTable[a and 255]);
   end;
+
+  { TODO: Call PlayTone }
 end;
 
 var
