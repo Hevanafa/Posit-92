@@ -12,14 +12,14 @@ uses
 
 var
   bootTime, t: double;
-  font: TBMFont;
+  fontP92Sans: TBMFont;
 
 procedure OnPreload; far;
 begin
-  { loadBMFont(font, 'COMMOD64.FNT'); }
-  { loadBMFont(font, 'FR12.FNT'); }
-  { LoadBMFont(font, 'NOKIA.TXT') }
-  LoadBMFont(font, 'FONTS\P92SANS.TXT');
+  { loadBMFont(fontP92Sans, 'COMMOD64.FNT'); }
+  { loadBMFont(fontP92Sans, 'FR12.FNT'); }
+  { LoadBMFont(fontP92Sans, 'NOKIA.TXT') }
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
 end;
 
 procedure OnReady; far;
@@ -29,7 +29,7 @@ end;
 
 procedure OnCleanup; far;
 begin
-  freeBMFont(font)
+  freeBMFont(fontP92Sans)
 end;
 
 procedure Update; far;
@@ -50,18 +50,18 @@ begin
   cls($7D);
 
   s := 'BMFont test';
-  w := MeasureBMFont(font, s);
-  PrintBMFont(font, s, 160 - w div 2, 120);
+  w := MeasureBMFont(fontP92Sans, s);
+  PrintBMFont(fontP92Sans, s, 160 - w div 2, 120);
 
   scoreStr := f32str(t);
-  w := MeasureBMFont(font, scoreStr);
-  PrintBMFont(font, scoreStr, 160 - w div 2, 8);
+  w := MeasureBMFont(fontP92Sans, scoreStr);
+  PrintBMFont(fontP92Sans, scoreStr, 160 - w div 2, 8);
 
   { Edge case tests }
-  PrintBMFont(font, 'Left edge', -20, 10);
-  PrintBMFont(font, 'Top edge', 10, -8);
-  PrintBMFont(font, 'Right edge', 310, 10);
-  PrintBMFont(font, 'Bottom edge', 10, 192);
+  PrintBMFont(fontP92Sans, 'Left edge', -20, 10);
+  PrintBMFont(fontP92Sans, 'Top edge', 10, -8);
+  PrintBMFont(fontP92Sans, 'Right edge', 310, 10);
+  PrintBMFont(fontP92Sans, 'Bottom edge', 10, 192);
 end;
 
 procedure DrawOnce; far;
@@ -83,23 +83,23 @@ begin
     Inner loop `col` with inline assembly: 0.3496s, 0.3557s
   }
   for a:=1 to 10 do
-    PrintBMFont(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
+    PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
   { Original: 0.9003s
     After row-level opt: 0.7982s }
   {
   for a:=1 to 1000 do
-    PrintBMFontTint(font, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
+    PrintBMFontTint(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
   }
 
   s := '10 operations done in ' + F32Str(GetTimer - startTick) + 's';
 
   RectFill(
     0,
-    VGAHeight - font.lineHeight * 2,
-    MeasureBMFont(font, s),
-    VGAHeight - font.lineHeight, $00);
-  PrintBMFont(font, s, 0, VGAHeight - font.lineHeight * 2);
+    VGAHeight - fontP92Sans.lineHeight * 2,
+    MeasureBMFont(fontP92Sans, s),
+    VGAHeight - fontP92Sans.lineHeight, $00);
+  PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
 end;
 
 var

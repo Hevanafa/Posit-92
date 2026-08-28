@@ -10,16 +10,16 @@ uses
   P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
 
 var
-  font: TBMFont;
+  fontP92Sans: TBMFont;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(font, 'FONTS\P92SANS.TXT')
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(font)
+  FreeBMFont(fontP92Sans)
 end;
 
 procedure OnReady; far;
@@ -45,10 +45,10 @@ begin
 
   RectFill(
     0,
-    VGAHeight - font.lineHeight * 2,
-    MeasureBMFont(font, s),
-    VGAHeight - font.lineHeight, $00);
-  PrintBMFont(font, s, 0, VGAHeight - font.lineHeight * 2);
+    VGAHeight - fontP92Sans.lineHeight * 2,
+    MeasureBMFont(fontP92Sans, s),
+    VGAHeight - fontP92Sans.lineHeight, $00);
+  PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
 end;
 
 var
