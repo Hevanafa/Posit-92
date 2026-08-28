@@ -97,15 +97,12 @@ var
   c, charIndex: word;
   bitsWidth, charoffset: word;
   charHeight: word;
-  size: integer;
 begin
   Assign(fntFile, filename);
   {$I-} Reset(fntFile, 1); {$I+}
 
   if IOResult <> 0 then
     panicHalt('LoadMSFont: Cannot open file ' + filename);
-
-  writelog('LoadMSFont: ' + filename);
 
   DefaultMSFont(font);
 
@@ -132,19 +129,12 @@ begin
       + ': w=' + i32str(bitsWidth)
       + ', offset=' + i32str(charOffset));
 
-    size := sizeof(TMSFontGlyph) + ceil(bitsWidth / 8) * charHeight - 1;
-
-    { GetMem(font.glyphs[charIndex], size); }
-    {
-    if font.glyphs[charIndex] = nil then begin
-      writeLn('Unable to getMem with the size ', size, '!');
-      exit
-    end;
-    }
-
     font.glyphs[charIndex].width := bitsWidth;
     font.glyphs[charIndex].height := charHeight;
-    getmem(font.glyphs[charIndex].bitmapData, ceil(bitsWidth / 8) * charHeight);
+
+    getmem(
+      font.glyphs[charIndex].bitmapData,
+      ceil(bitsWidth / 8) * charHeight);
 
     Seek(fntFile, charOffset);
     BlockRead(fntFile, font.glyphs[charIndex].bitmapData^, ceil(bitsWidth / 8) * charHeight);
@@ -161,30 +151,8 @@ var
   currentByte, bitMask: byte;
   offset: word;
 begin
-  { Test char sizes }
-  {
-  for b:=0 to 15 do begin
-    for a:=0 to 15 do begin
-      if font^.glyphs[b * 15 + a] = nil then
-        write('nil ')
-      else
-        write('[' +
-          i32str(font^.glyphs[b * 15 + a]^.width) + ', ' +
-          i32str(font^.glyphs[b * 15 + a]^.height) + '] ');
-    end;
-    writeLn
-  end;
-  }
-
-  {
-  if font.glyphs[ord(ch)] = nil then begin
-    panicHalt('testMSFontDisplay glyph ' + i32str(ord(ch)) + ' is nil!');
-    exit
-  end;
-  }
-
-  { Display the char }
   glyph := @(font.glyphs[ord(ch)]);
+
   for b:=0 to glyph^.height - 1 do begin
     for a:=0 to glyph^.width - 1 do begin
       offset := b + glyph^.height * (a div 8);
@@ -201,10 +169,11 @@ begin
 end;
 
 procedure FreeMSFont(var font: TMSFont);
-{ var
-  a: word; }
+var
+  a: word;
 begin
-  { Replaced reset on each glyph since it's of the type TMSFontGlyph }
+  { TODO: Manually free the glyphs }
+
   DefaultMSFont(font);
 
   {
