@@ -3,7 +3,7 @@
   Part of Posit-92 game engine
 }
 
-unit PCSPKR;
+unit P92SPKR;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

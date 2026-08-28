@@ -69,7 +69,7 @@ implementation
 
 uses
   DOS,
-  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92TEX, P92VGA, PCSPKR, P92PANIC
+  P92LOG, P92TIME, P92MEM, P92KBD, P92MOUSE, P92FPS, P92TEX, P92VGA, P92SPKR, P92PANIC
 {$IFDEF P92_ADLIB}
   , P92ADLIB
 {$ENDIF}
@@ -185,7 +185,7 @@ begin
   InitFPSCounter;
 
   if bootConfig.EnablePCSpeaker then
-    PCSPKR.Init;
+    P92SPKR.Init;
 
 {$IFDEF P92_ADLIB}
   P92ADLIB.Init;
@@ -206,7 +206,7 @@ begin
     ResetKeyHandler;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpkr.Stop;
+    P92SPKR.Stop;
 
 {$IFDEF P92_ADLIB}
   P92ADLIB.Shutdown;
@@ -234,7 +234,7 @@ begin
   IncrementFPS;
 
   if bootConfig.EnablePCSpeaker then
-    PCSpkr.Update;
+    P92SPKR.Update;
 
 {$IFDEF P92_ADLIB}
   P92ADLIB.Update;
