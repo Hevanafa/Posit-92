@@ -71,10 +71,11 @@ end;
 procedure DrawOnce; far;
 var
   s: string;
+  a: word;
 begin
   cls($4F);
 
-  s := 'Playing sine wave';
+  s := 'Playing the sine wave';
 
   RectFill(
     0,
@@ -86,7 +87,12 @@ begin
 
   PresentMode13h;
 
-  { TODO: Play the sine wave }
+  { Play the sine wave, blocking the main thread }
+  { TODO: expand the magic numbers into consts }
+  for a:=0 to 7999 do begin
+    DSPWrite($10);
+    DSPWrite(SinTable[a and 255]);
+  end;
 end;
 
 var
