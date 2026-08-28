@@ -14,7 +14,7 @@
 
 uses
   CRT,
-  P92Core, P92Mouse, P92CONV, P92LOG, P92TIME, P92TEX, ModeX; { , XBitmap }
+  P92CORE, P92FPS, P92MOUSE, P92CONV, P92LOG, P92TIME, P92TEX, P92MODEX; { , XBitmap }
 
 var
   { Asset variables }
@@ -62,7 +62,7 @@ begin
 
   Print('Hello from Mode X!', 160-72, 120, 15);
 
-  spr(imgCursor, mouseX, mouseY);
+  spr(imgCursor, GetMouseX, GetMouseY);
 end;
 
 

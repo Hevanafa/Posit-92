@@ -19,7 +19,7 @@ implementation
 
 uses
 {$IFDEF P92_MODE_X}
-  ModeX,
+  P92MODEX,
 {$ELSE}
   P92VGA,
 {$ENDIF}

@@ -5,7 +5,7 @@
   Requires InitMode13h call
 }
 
-unit ModeX;
+unit P92MODEX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 

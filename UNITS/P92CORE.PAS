@@ -77,7 +77,7 @@ uses
   , P92IMGUI
 {$ENDIF}
 {$IFDEF P92_MODE_X}
-  , ModeX
+  , P92MODEX
 {$ENDIF}
   ;
 

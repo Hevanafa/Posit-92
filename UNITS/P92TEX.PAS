@@ -93,7 +93,7 @@ implementation
 uses
   P92LOG, P92CONV, P92PANIC, P92VGA
 {$IFDEF P92_MODE_X}
-  , ModeX
+  , P92MODEX
 {$ENDIF}
   ;
 
@@ -266,7 +266,7 @@ begin
 
       if tex.data^[pxOffset] <> transparencyKey then
       {$IFDEF P92_MODE_X}
-        ModeX.PSet(x + srcX, y + srcY, tex.data^[pxOffset]);
+        P92MODEX.PSet(x + srcX, y + srcY, tex.data^[pxOffset]);
       {$ELSE}
         AsmPSet(x+srcX, y+srcY, tex.data^[pxOffset]);
       {$ENDIF}
