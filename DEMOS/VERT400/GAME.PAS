@@ -1,11 +1,11 @@
 
 uses
   CRT, DOS,
-  P92LOG, P92CONV, Bitmap, P92KBD, P92MOUSE, P92TIME, P92VGA;
+  P92LOG, P92CONV, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of PBitmap;
+  texDosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   done: boolean;
@@ -28,8 +28,8 @@ begin
 
   randomize;
 
-  loadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  loadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 
@@ -56,15 +56,16 @@ begin
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(dosuEXE[0], 148, 76)
+    spr(texDosuEXE[0], 148, 76)
   else
-    spr(dosuEXE[1], 148, 76);
+    spr(texDosuEXE[1], 148, 76);
 
   print('Hello world!', 160-48, 120, 15);
-  print('Mouse: ' + i32str(mouseX) + ', ' + i32str(mouseY), 0, 8, 15);
+  print('Mouse: ' + i32str(GetMouseX) + ', ' + i32str(GetMouseY), 0, 8, 15);
 
-  DoubleFlush;
-  drawMouse
+  { DoubleFlush; }
+  PresentMode13h;
+  { drawMouse }
 end;
 
 
@@ -81,8 +82,8 @@ begin
   until done;
 
   { TODO: Your cleanup code here }
-  freeBMP(dosuEXE[0]);
-  freeBMP(dosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 
   ResetMouse;
   ResetKeyHandler;

@@ -5,7 +5,7 @@
 
 uses
   CRT, DOS,
-  P92CORE, Bitmap, P92GRAPH, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA;
+  P92CORE, P92GRAPH, P92LOG, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
@@ -20,14 +20,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(texDosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(texDosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(texDosuEXE[0]);
-  FreeBMP(texDosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
