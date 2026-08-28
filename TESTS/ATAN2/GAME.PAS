@@ -1,11 +1,13 @@
 
 uses
   CRT, DOS,
-  P92Core, P92TEX, P92CONV, P92FPS, P92GRAPH, P92LOG, P92KBD, P92Mouse, P92MATHS, P92TIME, P92VGA;
+  P92Core, P92TEX, P92CONV, P92FPS, P92GRAPH, P92LOG, P92KBD, P92MOUSE,
+  P92MATHS, P92TIME, P92VGA;
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
+
   { Game state variables }
   t: double;
   x, y: double;
@@ -13,14 +15,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(DosuEXE[0]);
-  FreeTex(DosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -78,14 +80,15 @@ procedure Draw; far;
 var
   angle: double;
 begin
-  cls($7D);
+  cls($4F);
 
   circfill(160, 100, 20, 12);
   circfill(trunc(x), trunc(y), 8, 15);
 
   angle := GetAngle(x, y, 160, 100);
-  print('Angle: ' + f32str(angle), 0, 8, 7);
-  print('Angle (deg): ' + f32str(rad2deg(angle)), 0, 16, 7);
+
+  print('Angle: ' + f32str(angle), 0, 8, 0);
+  print('Angle (deg): ' + f32str(rad2deg(angle)), 0, 16, 0);
 end;
 
 
@@ -93,6 +96,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
