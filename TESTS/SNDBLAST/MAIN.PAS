@@ -7,13 +7,15 @@ program BaseTest;
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
+  P92Core, P92CONV, P92BMFON, P92GRAPH, P92PANIC, P92TIME, P92VGA;
 
 const
   DSPBase = $220;  { SoundBlaster base port }
 
 var
   fontP92Sans: TBMFont;
+
+  SinTable: array[0..255] of byte;
 
 function DSPReset: boolean;
 var
@@ -56,32 +58,35 @@ begin
 end;
 
 procedure OnReady; far;
+var
+  a: word;
 begin
+  for a:=0 to 255 do
+    SinTable[a] := 128 + round(127 * sin(a * 2 * pi / 256));
 
+  if not DSPReset then
+    PanicHalt('Couldn''t find the SoundBlaster driver');
 end;
 
 procedure DrawOnce; far;
-const
-  OpCount = 1;
 var
-  startTick, endTick: double;
   s: string;
 begin
-  cls($70);
-  startTick := GetTimer;
+  cls($4F);
 
-  { TODO: Your stress test here }
-
-  endTick := GetTimer;
-
-  s := i32str(OpCount) + ' operations done in ' + F32Str(endTick - startTick) + 's';
+  s := 'Playing sine wave';
 
   RectFill(
     0,
     VGAHeight - fontP92Sans.lineHeight * 2,
     MeasureBMFont(fontP92Sans, s),
     VGAHeight - fontP92Sans.lineHeight, $00);
+
   PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
+
+  PresentMode13h;
+
+  { TODO: Play the sine wave }
 end;
 
 var
