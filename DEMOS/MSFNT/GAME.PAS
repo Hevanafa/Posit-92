@@ -12,8 +12,9 @@ var
 
 procedure OnPreload; far;
 begin
+  { The font file must be a font resource (FNT), not a font collection (FON) }
   { LoadMSFont(fontSystem, 'FONTS\8514OEM.FNT'); }
-  LoadMSFont(fontSystem, 'FONTS\VGASYS.FON');
+  LoadMSFont(fontSystem, 'FONTS\VGASYS.FNT');
 end;
 
 procedure OnCleanup; far;

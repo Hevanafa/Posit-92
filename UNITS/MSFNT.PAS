@@ -118,6 +118,9 @@ begin
   writeLog('Pixel height: ' + i32str(font.header.pixHeight));
 {$ENDIF}
 
+  for charIndex := 0 to high(font.glyphs) do
+    FillChar(font.glyphs, SizeOf(TMSFontGlyph), 0);
+
   for charIndex := font.header.firstChar to font.header.lastChar do begin
   { for charIndex := font.header.firstChar to font^.header.firstChar + 9 do begin }
     Seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - font.header.firstChar) * 4);
@@ -156,6 +159,7 @@ var
   a, b: word;
   glyph: PMSFontGlyph;
   currentByte, bitMask: byte;
+  offset: word;
 begin
   { Test char sizes }
   {
@@ -183,7 +187,8 @@ begin
   glyph := @(font.glyphs[ord(ch)]);
   for b:=0 to glyph^.height - 1 do begin
     for a:=0 to glyph^.width - 1 do begin
-      currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
+      offset := b + glyph^.height * (a div 8);
+      currentByte := glyph^.bitmapData^[offset];
       bitMask := 1 shl (7 - (a mod 8));
 
       if (currentByte and bitMask) <> 0 then
@@ -223,27 +228,29 @@ var
   a, b, c, left: word;
   charcode, currentByte, bitMask: byte;
   glyph: PMSFontGlyph;
+  offset: word;
 begin
   left := 0;
 
   for c:=1 to length(text) do begin
     charcode := ord(text[c]);
 
-    if font.glyphs[charcode] = nil then
-      glyph := font.glyphs[font.header.defaultChar]
+    if font.glyphs[charcode].bitmapData = nil then
+      glyph := @(font.glyphs[font.header.defaultChar])
     else
-      glyph := font.glyphs[charcode];
+      glyph := @(font.glyphs[charcode]);
 
     for b:=0 to glyph^.height - 1 do
       for a:=0 to glyph^.width - 1 do begin
-        currentByte := glyph^.bitmapData[b + glyph^.height * (a div 8)];
+        offset := b + glyph^.height * (a div 8);
+        currentByte := glyph^.bitmapData^[offset];
         bitMask := 1 shl (7 - (a mod 8));
 
         if (currentByte and bitMask) <> 0 then
           asmPset(x + left + a, y + b, colour);
       end;
 
-    inc(left, font.glyphs[charcode]^.width)
+    inc(left, font.glyphs[charcode].width)
   end;
 end;
 
@@ -257,10 +264,10 @@ begin
   for a:=1 to length(text) do begin
     charcode := ord(text[a]);
 
-    if font.glyphs[charcode] = nil then
-      width := font.glyphs[font.header.defaultChar]^.width
+    if font.glyphs[charcode].bitmapData = nil then
+      width := font.glyphs[font.header.defaultChar].width
     else
-      width := font.glyphs[charcode]^.width;
+      width := font.glyphs[charcode].width;
 
     inc(result, width)
   end;
