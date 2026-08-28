@@ -1,4 +1,4 @@
-![Posit-92](./posit-92_logo.png) **Posit-92**
+# ![Posit-92](./posit-92_logo.png) **Posit-92**
 
 ![preview 1](./preview_1.png)
 
@@ -25,15 +25,38 @@ https://hevanafa.itch.io/
 
 ## Getting started
 
+Clone this project without the commit history:
+
+```powershell
+git clone --depth 1 https://github.com/Hevanafa/Posit-92.git
+```
+
 ### Creating a project
+
+1. Copy the latest boilerplate: `DEMOS\SIMPLE`
+
+   This directory will be the root of your new project
+2. Copy the `UNITS` folder, rename it as `SHARED` in your project
+3. Create a new `UNITS` folder. This is where your custom units will live
+4. Copy Turbo Pascal 7.0 into your new project, at the root
+
+The project structure should look more or less like this:
+
+```text
+- IMG\
+- SHARED\
+- UNITS\
+- TP\
+- CURSOR.BMP
+- PROJECT.LPI
+- GAME.PAS
+```
+
+### Compiling
 
 (TODO)
 
 ### Configuring custom directives
-
-(TODO)
-
-### Compiling
 
 (TODO)
 
