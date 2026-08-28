@@ -24,11 +24,21 @@ Games that I've made are available on my itch.io page: https://hevanafa.itch.io/
 
 ## Requirements
 
-(TODO)
+- Turbo Pascal 7.0
+- DOS or a DOS emulator such as DOSBox-X
+- Perl (at least v5.38.2) for the dev helper scripts
 
 ## Getting started
 
 (TODO)
+
+## Recommended emulator settings
+
+For general use, change the `cycles` to `12010`, which is the speed of a 486DX CPU
+
+For test projects, set the `cycles` to `20000`
+
+As for the memory size, make it at least 4 MB
 
 ## Project structure
 
