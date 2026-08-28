@@ -6,7 +6,7 @@
   files as used in Windows 95 and prior
 }
 
-unit MSFNT;
+unit P92MSFNT;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 {$DEFINE DEBUG}

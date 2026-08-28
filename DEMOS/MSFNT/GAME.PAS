@@ -5,7 +5,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92TEX, MSFNT, P92KBD, P92TIME, P92VGA;
+  P92Core, P92TEX, P92MSFNT, P92KBD, P92TIME, P92VGA;
 
 var
   { Asset variables }
