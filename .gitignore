@@ -4,6 +4,9 @@ backup/
 *.BK1
 LOG.TXT
 
+# Microsoft FON/FNT files
+DEMOS/MSFNT/FONTS/
+
 # Compiled files
 *.EXE
 *.TPU
