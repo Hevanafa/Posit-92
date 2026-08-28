@@ -1,4 +1,7 @@
-{ Game implementation with PCSpeaker }
+{
+  Game implementation with PC speaker demo
+  Part of Posit-92 game engine
+}
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
@@ -209,6 +212,7 @@ begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
+  appConfig.WaitMode := P92WaitVSync;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
