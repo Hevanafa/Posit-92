@@ -76,13 +76,16 @@ const
 var
   timeConst: byte;
 begin
-  timeConst := byte(longint(256) - (1000000 div longint(rate));
+  timeConst := byte(longint(256) - (1000000 div longint(rate)));
 
   DSPWrite(DSPCmdSetTimeConst);
   DSPWrite(timeConst)
 end;
 
 procedure PlayTone(const freq, durationMs: word);
+const
+  { Direct DAC output command }
+  DSPCmdDirectOut = $10;
 var
   sampleCount,
   phase,
@@ -147,12 +150,17 @@ begin
 
   { Play the sine wave, blocking the main thread }
   { ~8000 samples, the duration depends on the CPU speed }
+  {
   for a:=0 to 7999 do begin
     DSPWrite(DSPCmdDirectOut);
     DSPWrite(SinTable[a and 255]);
   end;
+  }
 
-  { TODO: Call PlayTone }
+  { C4 E4 G4 }
+  PlayTone(262, 500);
+  PlayTone(330, 500);
+  PlayTone(392, 500);
 end;
 
 var
