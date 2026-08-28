@@ -172,21 +172,15 @@ procedure FreeMSFont(var font: TMSFont);
 var
   a: word;
 begin
-  { TODO: Manually free the glyphs }
+  for a:=0 to high(font.glyphs) do
+    if Assigned(font.glyphs[a].bitmapData) then
+      freemem(
+        font.glyphs[a].bitmapData,
+        ceil(font.glyphs[a].width / 8) * font.glyphs[a].height);
 
-  DefaultMSFont(font);
-
-  {
-  for a:=0 to high(font^.glyphs) do
-    if font^.glyphs[a] <> nil then begin
-      freeMem(font^.glyphs[a], sizeof(font^.glyphs[a]));
-      font^.glyphs[a] := nil
-    end;
-
-  freeMem(font, sizeof(TMSFont));
-  font := nil
-  }
+  DefaultMSFont(font)
 end;
+
 
 procedure PrintMSFont(
   const font: TMSFont;
