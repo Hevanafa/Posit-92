@@ -6,7 +6,7 @@
 }
 uses
   CRT, DOS,
-  P92Core, Bitmap, BMPROT, P92CONV, P92GRAPH, P92LOG, P92Mouse, P92TIME, P92VGA;
+  P92Core, P92CONV, P92GRAPH, P92LOG, P92MOUSE, P92TEX, P92ROTO, P92TIME, P92VGA;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
@@ -20,14 +20,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMP(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadBMP(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(dosuEXE[0]);
-  FreeBMP(dosuEXE[1]);
+  FreeTex(dosuEXE[0]);
+  FreeTex(dosuEXE[1]);
 end;
 
 
@@ -80,12 +80,12 @@ begin
 
   { After each optimisation step: 0.6443s, 0.5956s, 0.5389s
     with AsmPSet: 0.4958s }
-  { for a:=1 to 100 do
+  for a:=1 to 100 do
     SprRot(
       DosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
-      random(360)); }
+      random(360));
 
   { 5.1285s, 5.0451s }
   { for a:=1 to 100 do
@@ -98,6 +98,7 @@ begin
 
   { 5.1915s, 5.2167s
     After `jae` optimisation on PSet: 5.0971s }
+  {
   for a:=1 to 100 do
     SprScaleRotLUT(
       DosuEXE[0],
@@ -105,6 +106,7 @@ begin
       random(DefaultVGAHeight + 40) - 20,
       2, 2,
       random(36));
+  }
 
   s := '100 operations done in ' + f32str(GetTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
@@ -119,8 +121,8 @@ var
 begin
   Cls($7D);
 
-  { Draw100; }
-  Draw1000;
+  Draw100;
+  { Draw1000; }
 end;
 
 var

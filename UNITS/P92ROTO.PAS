@@ -3,7 +3,7 @@
   Part of Posit-92 game engine
 }
 
-unit BMPROT;
+unit P92ROTO;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
