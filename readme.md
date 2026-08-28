@@ -44,7 +44,7 @@ As for the memory size, make it at least 4 MB
 
 The name comes from **Positron** and **1992** (the year in which TP7 was released), combined to resemble an isotope like Uranium-235 because it sounds cool  `:D`
 
-My goal is to create something like a fantasy computer such as **PICO-8** and **TIC-80** but uses TP7 because I believe it's fast enough & easier than C, added with inline assembly, it's **even closer to metal**
+My goal is to create a framework that resembles a fantasy computer, that is similar in spirit to **PICO-8** and **TIC-80**, but built around TP7.  Why? I believe it's fast enough & easier than C, added with inline assembly, it's **even closer to metal**
 
 I'm also inspired by:
 
