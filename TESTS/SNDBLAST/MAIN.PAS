@@ -36,7 +36,13 @@ begin
       end;
 end;
 
+procedure DSPWrite(const value: byte);
+begin
+  { TODO: Expand the magic numbers into consts }
 
+  while (port[DSPBase + $C] and $80) <> 0 do ; { poll until ready }
+  port[DSPBase + $C] :=  value
+end;
 
 
 procedure OnPreload; far;
