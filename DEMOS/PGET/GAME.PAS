@@ -20,6 +20,7 @@ begin
     PGet := 0;
     exit
   end;
+
   offset := y * 320 + x;
 
   { PGet := Mem[$A000:offset] }
@@ -45,10 +46,10 @@ var
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
-  if (lastX <> mouseX) or (lastY <> mouseY) then begin
-    lastX := mouseX;
-    lastY := mouseY;
-    colour := PGet(mouseX, mouseY);
+  if (lastX <> GetMouseX) or (lastY <> GetMouseY) then begin
+    lastX := GetMouseX;
+    lastY := GetMouseY;
+    colour := PGet(GetMouseX, GetMouseY);
   end;
 end;
 
