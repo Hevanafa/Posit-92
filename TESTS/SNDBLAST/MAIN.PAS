@@ -47,18 +47,23 @@ begin
 
   for a:=1 to high(word) do
     if (port[DSPBase + DSPReadStatus] and DSPBitBusy) <> 0 then
-      if port[DSPBase + DSPReadDataPort] = DSPReady then begin
+      if port[DSPBase + DSPReadData] = DSPReady then begin
         DSPReset := true;
         exit
       end;
 end;
 
 procedure DSPWrite(const value: byte);
-begin
-  { TODO: Expand the magic numbers into consts }
+const
+  DSPWriteData = $0C;
+  DSPWriteStatus = $0C;
 
-  while (port[DSPBase + $C] and $80) <> 0 do ; { poll until ready }
-  port[DSPBase + $C] :=  value
+  DSPBitBusy = $80;
+begin
+   { poll until ready }
+  while (port[DSPBase + DSPWriteStatus] and DSPBitBusy) <> 0 do ;
+
+  port[DSPBase + DSPWriteData] :=  value
 end;
 
 
