@@ -42,4 +42,6 @@ As for the memory size, make it at least 4 MB
 
 ## Project structure
 
-(TODO)
+- `DEMOS` - Example Posit-92 programmes
+- `UNITS` - Posit-92 engine units
+- `TESTS` - Test programmes
