@@ -6,13 +6,13 @@
 }
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92GRAPH, P92LOG, P92MOUSE, P92TEX, P92ROTO, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92GRAPH, P92LOG, P92MOUSE, P92TEX, P92ROTO, P92TIME, P92VGA;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
 var
   { Asset variables }
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;
@@ -20,14 +20,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(dosuEXE[0]);
-  FreeTex(dosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 end;
 
 
@@ -42,18 +42,18 @@ begin
   { for a:=0 to 1000 do }
     { bounds check + UnsafeAsmPSet: 1.8706s
       AsmPSet: 1.6775s }
-    { PascalSpr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0D); }
+    { PascalSpr(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0D); }
 
   { 1.8869s
     AsmPSet: 1.4280s, 1.4451s }
   { for a:=0 to 1000 do
-    SprTint(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C); }
+    SprTint(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, $0C); }
 
   { Original: 1.4057s, 1.4158s
     With clipping: 0.8373s
     With inline assembly hot spot loop: 0.1787s, 0.1593s }
   for a:=0 to 1000 do
-    AsmSpr(dosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
+    AsmSpr(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
 
   s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
@@ -74,7 +74,7 @@ begin
     AsmPset: 0.5550s
   }
   { for a:=1 to 100 do
-    SprScaled(dosuEXE[0],
+    SprScaled(texDosuEXE[0],
       random(DefaultVGAWidth) - 20,
       random(DefaultVGAHeight) - 20, 2); }
 
@@ -82,7 +82,7 @@ begin
     with AsmPSet: 0.4958s }
   for a:=1 to 100 do
     SprRot(
-      DosuEXE[0],
+      texDosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
       random(360));
@@ -90,7 +90,7 @@ begin
   { 5.1285s, 5.0451s }
   { for a:=1 to 100 do
     SprScaleRot(
-      DosuEXE[0],
+      texDosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
       2, 2,
@@ -101,7 +101,7 @@ begin
   {
   for a:=1 to 100 do
     SprScaleRotLUT(
-      DosuEXE[0],
+      texDosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
       2, 2,

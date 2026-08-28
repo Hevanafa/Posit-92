@@ -6,7 +6,7 @@ var
   { Asset variables }
   tempTex: TTexture;
   sampleRLE: TRLETexture;
-  DosuEXE: array[0..1] of TTexture;
+  texDosuEXE: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;
@@ -16,14 +16,14 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadTex(dosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadTex(dosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(dosuEXE[0]);
-  FreeTex(dosuEXE[1]);
+  FreeTex(texDosuEXE[0]);
+  FreeTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -46,9 +46,9 @@ begin
   { TODO: Your drawing code here }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    Spr(dosuEXE[0], 148, 76)
+    Spr(texDosuEXE[0], 148, 76)
   else
-    Spr(dosuEXE[1], 148, 76);
+    Spr(texDosuEXE[1], 148, 76);
 
   SprRLEOpaque(sampleRLE, 178, 76);
 

@@ -11,16 +11,16 @@ uses
   P92CORE, P92TEX, P92CONV, P92GRAPH, P92TIME, P92VGA;
 
 var
-  imgTabby: TTexture;
+  texTabby: TTexture;
 
 procedure OnPreload; far;
 begin
-  LoadBMP(imgTabby, 'cat.bmp');
+  LoadTex(texTabby, 'cat.bmp');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMP(imgTabby);
+  FreeTex(texTabby);
 end;
 
 procedure DrawOnce; far;
@@ -33,13 +33,13 @@ begin
 {
   cls($7D);
 
-  spr(imgTabby,
-    (VGAWidth - imgTabby.width) div 2,
-    (VGAHeight - imgTabby.height) div 2);
+  spr(texTabby,
+    (VGAWidth - texTabby.width) div 2,
+    (VGAHeight - texTabby.height) div 2);
 
-  SprFlipped(imgTabby, 144, 128, SprFlipHorizontal);
-  SprFlipped(imgTabby, 176, 128, SprFlipVertical);
-  SprFlipped(imgTabby, 208, 128, SprFlipBoth);
+  SprFlipped(texTabby, 144, 128, SprFlipHorizontal);
+  SprFlipped(texTabby, 176, 128, SprFlipVertical);
+  SprFlipped(texTabby, 208, 128, SprFlipBoth);
 }
 
   { Benchmark }
@@ -49,15 +49,15 @@ begin
   for a:=1 to 1000 do begin
     { Original: 2.3945s
       After row-level opt: 1.6550s }
-    { SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal); }
+    { SprFlipped(texTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipHorizontal); }
 
     { Original: 2.3968s
       After row-level opt: 1.6557s }
-    { SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipVertical); }
+    { SprFlipped(texTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipVertical); }
 
     { Original: 2.6996s
       After row-level opt: 1.9632s }
-    SprFlipped(imgTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipBoth);
+    SprFlipped(texTabby, random(VGAWidth + 20) - 40, random(VGAHeight + 20) - 40, SprFlipBoth);
   end;
 
   s := '1000 operations done in ' + F32Str(GetTimer - startTick) + 's';
