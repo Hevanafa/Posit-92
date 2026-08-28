@@ -1,9 +1,11 @@
 {
   1-bit BMP support unit
   Part of Posit-92 game engine
+
+  Used together with P92MONO
 }
 
-unit MonoTex;
+unit P92MNTEX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
@@ -28,9 +30,7 @@ procedure SprMono8(const tex: TMonoTexture; const x, y: integer);
 
 implementation
 
-uses P92CONV, P92LOG, P92MATHS, P92PANIC, MonoVGA;
-
-const DEBUG = true;
+uses P92CONV, P92LOG, P92MATHS, P92PANIC, P92MONO;
 
 procedure LoadMonoTex(var tex: TMonoTexture; const filename: string);
 var
@@ -73,12 +73,12 @@ begin
   tex.height := h;
   tex.bytesWidth := bytesWidth;
 
-  if debug then begin
-    writeLog('Width:' + i32str(tex.width));
-    writeLog('Height:' + i32str(tex.height));
-    writeLog('Bytes width:' + i32str(tex.bytesWidth));
-    writeLog('Start:' + i32str(dataOffset));
-  end;
+{$IFDEF DEBUG}
+  writeLog('Width:' + i32str(tex.width));
+  writeLog('Height:' + i32str(tex.height));
+  writeLog('Bytes width:' + i32str(tex.bytesWidth));
+  writeLog('Start:' + i32str(dataOffset));
+{$ENDIF}
 
   for b:=0 to h-1 do begin
     seek(f, dataOffset + (b * tex.bytesWidth));
@@ -90,10 +90,10 @@ begin
     lastUsedByte := tex.width div 8;
     unusedBits := 8 - (tex.width mod 8);
 
-    if debug then begin
-      writeLog('Last used byte: ' + i32str(lastUsedByte));
-      writeLog('Unused bits: ' + i32str(unusedBits));
-    end;
+{$IFDEF DEBUG}
+    writeLog('Last used byte: ' + i32str(lastUsedByte));
+    writeLog('Unused bits: ' + i32str(unusedBits));
+{$ENDIF}
 
     { Sanitise the partial byte }
     if tex.width mod 8 > 0 then

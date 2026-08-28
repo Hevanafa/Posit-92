@@ -2,12 +2,12 @@
 uses
   CRT, DOS,
   P92CORE, P92CONV, P92LOG, P92FPS, P92KBD, P92MOUSE, P92TIME, P92VGA,
-  MonoTex, MonoVGA;
+  P92MONO, P92MNTEX;
 
 var
   { Asset variables }
-  imgCursor: TMonoTexture;
-  imgDosuEXE: array[0..1] of TMonoTexture;
+  texCursor: TMonoTexture;
+  texDosuEXE: array[0..1] of TMonoTexture;
 
   { Game state variables }
   done: boolean;
@@ -16,16 +16,16 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadMonoTex(imgCursor, 'CUR1BPP.BMP');
-  LoadMonoTex(imgDosuEXE[0], 'DOSU_1.BMP');
-  LoadMonoTex(imgDosuEXE[1], 'DOSU_2.BMP');
+  LoadMonoTex(texCursor, 'CUR1BPP.BMP');
+  LoadMonoTex(texDosuEXE[0], 'DOSU_1.BMP');
+  LoadMonoTex(texDosuEXE[1], 'DOSU_2.BMP');
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeMonoTex(imgCursor);
-  FreeMonoTex(imgDosuEXE[0]);
-  FreeMonoTex(imgDosuEXE[1]);
+  FreeMonoTex(texCursor);
+  FreeMonoTex(texDosuEXE[0]);
+  FreeMonoTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
@@ -35,7 +35,7 @@ end;
 
 procedure DrawMouseMono;
 begin
-  SprMono8(imgCursor, mouseX, mouseY)
+  SprMono8(texCursor, GetMouseX, GetMouseY)
 end;
 
 
@@ -52,9 +52,9 @@ begin
   Cls1BPP($00);
 
   if frac(t * 1.5) >= 0.5 then
-    SprMonoBaseRef(imgDosuEXE[1], 148, 76)
+    SprMonoBaseRef(texDosuEXE[1], 148, 76)
   else
-    SprMonoBaseRef(imgDosuEXE[0], 148, 76);
+    SprMonoBaseRef(texDosuEXE[0], 148, 76);
 
   { PSet1BPP(10, 10, 1); }
   Print1BPP('Hello from 1BPP!', VGAWidth div 2 - 64, 120, 1);

@@ -4,7 +4,7 @@
 }
 
 
-unit MonoVGA;
+unit P92MONO;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
