@@ -83,7 +83,9 @@ For example, if you want to enable both AdLib and immediate GUI for your game:
 P92_ADLIB;P92_IMGUI
 ```
 
-After adding a new directive, **always** rebuild all the TPU files from the **Compile menu > Build**
+After adding a new directive, **always** rebuild all the TPU files from the **Compile menu > Build**, or **Alt+C** then **B**
+
+If you want to make the conditional defines persist, press **Options menu > Save**, or shorter: **Alt+O** then **S**
 
 ## Recommended emulator settings
 
