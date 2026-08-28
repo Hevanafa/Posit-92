@@ -93,12 +93,13 @@ var
   a: longint;
 begin
   sampleCount := longint(SampleRate) * durationMs div 1000;
-  phaseIncrement := longint(256) * freq div SampleRate;
+
+  phaseIncrement := longint(256) * freq * 256 div SampleRate;
   phase := 0;
 
   for a:=0 to sampleCount - 1 do begin
     DSPWrite(DSPCmdDirectOut);
-    DSPWrite(SinTable[phase and 255]);
+    DSPWrite(SinTable[(phase shr 8) and 255]);
     inc(phase, phaseIncrement)
   end;
 end;
