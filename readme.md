@@ -21,10 +21,22 @@ https://hevanafa.itch.io/
 - Turbo Pascal 7.0
 - DOS or a DOS emulator such as DOSBox-X
 - Perl (at least v5.38.2) for the dev helper scripts
+- Optional: Lazarus IDE with FPC configured with the **msdos-i8086** target
 
 ## Getting started
 
+### Creating a project
+
 (TODO)
+
+### Configuring custom directives
+
+(TODO)
+
+### Compiling
+
+(TODO)
+
 
 ## Recommended emulator settings
 
