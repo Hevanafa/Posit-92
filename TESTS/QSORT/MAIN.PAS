@@ -1,6 +1,6 @@
 uses
   CRT,
-  P92CONV, P92PANIC, QSort;
+  P92CONV, P92PANIC, QSORT;
 
 
 procedure PrintArrayI16(const ary: array of integer);
