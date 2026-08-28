@@ -5,6 +5,8 @@
 
 program BaseTest;
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 uses
   CRT, DOS,
   P92Core, P92CONV, P92BMFON, P92GRAPH, P92PANIC, P92TIME, P92VGA;
@@ -67,6 +69,18 @@ begin
 end;
 
 
+procedure DSPSetSampleRate(const rate: word);
+const
+  DSPCmdSetTimeConst = $40;
+var
+  timeConst: byte;
+begin
+  timeConst := byte(longint(256) - (1000000 div longint(rate));
+
+  DSPWrite(DSPCmdSetTimeConst);
+  DSPWrite(timeConst)
+end;
+
 procedure OnPreload; far;
 begin
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
@@ -86,6 +100,8 @@ begin
 
   if not DSPReset then
     PanicHalt('Couldn''t find the SoundBlaster driver');
+
+  DSPSetSampleRate(11025);  { 11025 Hz: common DOS game rate }
 end;
 
 procedure DrawOnce; far;
