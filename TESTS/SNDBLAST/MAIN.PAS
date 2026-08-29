@@ -25,7 +25,9 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(fontP92Sans)
+  FreeBMFont(fontP92Sans);
+
+  P92SNDBL.Close;
 end;
 
 procedure OnReady; far;
@@ -39,32 +41,7 @@ begin
   DSPSetSampleRate(SampleRate);
 
   HookSBIRQ;
-
   PlayTone(262);
-
-  {
-  for a:=0 to 2047 do
-    mem[Seg(BorrowDMABuffer^):Ofs(BorrowDMABuffer^) + a] :=
-      GetSinLUT(a and 255);
-
-  ProgramDMA(GetDMABufferPhys, 2048);
-  }
-
-  { TODO: Convert the magic numbers into consts }
-  { DSPWrite($40); }  { set time constant }
-  { DSPWrite(byte(longint(256) - (1000000 div SampleRate))); }
-
-  {
-  DSPWrite($14);
-  DSPWrite(lo(2048 - 1));
-  DSPWrite(hi(2048 - 1));
-  }
-
-  {
-  PlayToneBlocking(262, 500);
-  PlayToneBlocking(330, 500);
-  PlayToneBlocking(392, 500);
-  }
 
   frames := 0;
 end;

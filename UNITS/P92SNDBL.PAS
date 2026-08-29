@@ -9,6 +9,9 @@ const
   SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
 
+procedure Init;
+procedure Close;
+
 procedure HookSBIRQ;
 procedure UnhookSBIRQ;
 
@@ -43,6 +46,13 @@ var
   DMABufferRaw: pointer;
   DMABuffer: pointer;
   DMABufferPhys: longint;  { 20-bit physical address }
+
+
+procedure Close;
+begin
+  UnhookSBIRQ;
+  freemem(DMABufferRaw, DMABufferSize * 2);
+end;
 
 function BorrowDMABuffer: pointer;
 begin
