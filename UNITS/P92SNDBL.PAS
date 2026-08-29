@@ -8,6 +8,10 @@ const
   DSPBase = $220;  { SoundBlaster base port }
   SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
+
+procedure HookSBIRQ;
+procedure UnhookSBIRQ;
+
 function BorrowDMABuffer: pointer;
 function GetSinLUT(const idx: byte): byte;
 function GetDMABufferPhys: longint;
@@ -55,12 +59,32 @@ end;
 
 
 procedure SBInterrupt; interrupt;
+var
+  ack: byte;
 begin
   { TODO: Expand the magic numbers into consts }
   isIRQFired := true;
 
-  port[DSPBase + $0E];
-  port[$20] := $20
+  { Acknowledge DSP: Just read the status port }
+  ack := port[DSPBase + $0E];
+  port[$20] := $20;
+end;
+
+procedure HookSBIRQ;
+begin
+  { TODO: Expand the magic numbers into consts }
+  isIRQFired := false;
+
+  getintvec($0D, OldIRQ5);
+  setintvec($0D, @SBInterrupt);
+
+  port[$21] := port[$21] and $DF
+end;
+
+procedure UnhookSBIRQ;
+begin
+  port[$21] := port[$21] or $20;
+  setintvec($0D, OldIRQ5)
 end;
 
 function DSPReset: boolean;

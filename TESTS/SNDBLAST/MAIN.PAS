@@ -38,6 +38,8 @@ begin
   AllocDMABuffer(2048);
   DSPSetSampleRate(SampleRate);
 
+  HookSBIRQ;
+
   PlayTone(262);
 
   {
