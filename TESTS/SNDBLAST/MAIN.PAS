@@ -9,7 +9,7 @@ program SNDBLAST;
 
 uses
   CRT, DOS,
-  P92CORE, P92CONV, P92BMFON, P92GRAPH, P92PANIC, P92TIME, P92VGA,
+  P92CORE, P92CONV, P92BMFON, P92KBD, P92GRAPH, P92PANIC, P92TIME, P92VGA,
   P92SNDBL;
 
 var
@@ -49,6 +49,33 @@ begin
   DSPWrite($14);
   DSPWrite(lo(2048 - 1));
   DSPWrite(hi(2048 - 1));
+
+  PlayTone(262, 500);
+  PlayTone(330, 500);
+  PlayTone(392, 500);
+end;
+
+
+procedure Update; far;
+begin
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+end;
+
+procedure Draw; far;
+var
+  s: string;
+begin
+  cls($4F);
+
+  s := 'Playing the sine wave';
+
+  RectFill(
+    0,
+    VGAHeight - fontP92Sans.lineHeight * 2,
+    MeasureBMFont(fontP92Sans, s),
+    VGAHeight - fontP92Sans.lineHeight, $00);
+
+  PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
 end;
 
 procedure DrawOnce; far;
@@ -90,24 +117,27 @@ begin
   PlayTone(392, 500);
 end;
 
+const
+  UseDrawOnce = false;
 var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
 
   appConfig.LoadDefaultCursor := false;
-  appConfig.EnableKeyHandler := false;
+  appConfig.EnableKeyHandler := not UseDrawOnce;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
 
   { Use either Update + Draw, or DrawOnce }
-  {
-  @appConfig.Update := @Update;
-  @appConfig.Draw := @Draw;
-  }
+  if UseDrawOnce then
+    @appConfig.DrawOnce := @DrawOnce
+  else begin
+    @appConfig.Update := @Update;
+    @appConfig.Draw := @Draw;
+  end;
 
-  @appConfig.DrawOnce := @DrawOnce;
   @appConfig.OnCleanup := @OnCleanup;
 
   P92Start(appConfig)
