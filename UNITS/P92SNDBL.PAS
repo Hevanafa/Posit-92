@@ -174,19 +174,19 @@ const
   { Obtained from Creative Labs' DSP documentation }
   DSPResetPort = $06;
 
-  { The rest are also ports relative to DSPBase }
+  { Ports relative to DSPBase }
 
   DSPReadData = $0A;
   DSPWriteData = $0C;
 
-  { The same as WriteData, but the meaning differs on the context }
+  { The same as DSPWriteData, but the meaning differs depending on the context }
   DSPWriteStatus = $0C;
   DSPReadStatus = $0E;
 
   { Magic bits }
 
   DSPReady = $AA;
-  DSPBitBusy = $80;  { Specifically bit 7 }
+  DSPBitBusy = $80;  { Specifically bit 7: 0b1000_0000 }
 var
   a: word;
 begin
