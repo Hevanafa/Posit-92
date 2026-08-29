@@ -31,6 +31,8 @@ begin
   if not DSPReset then
     PanicHalt('Couldn''t find the SoundBlaster driver');
 
+  AllocDMABuffer(2048);
+
   DSPSetSampleRate(SampleRate);
 end;
 
@@ -53,6 +55,8 @@ begin
     VGAHeight - fontP92Sans.lineHeight, $00);
 
   PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
+
+  PrintBMFont(fontP92Sans, 'DMABuf: ' + i32str(GetDMABufferPhys), 0, 20);
 
   PresentMode13h;
 

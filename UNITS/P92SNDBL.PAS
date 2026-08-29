@@ -6,7 +6,11 @@ const
   DSPBase = $220;  { SoundBlaster base port }
   SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
+function GetDMABufferPhys: longint;
+
+procedure AllocDMABuffer(const size: word);
 function DSPReset: boolean;
+
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
 procedure PlayTone(const freq, durationMs: word);
@@ -21,10 +25,16 @@ var
   DMABuffer: pointer;
   DMABufferPhys: longint;  { 20-bit physical address }
 
+function GetDMABufferPhys: longint;
+begin
+  GetDMABufferPhys := DMABufferPhys
+end;
+
 procedure AllocDMABuffer(const size: word);
 var
   rawPhys, alignedPhys: longint;
 begin
+  { TODO: Convert the magic numbers into consts }
   getmem(DMABufferRaw, size * 2);
 
   rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
