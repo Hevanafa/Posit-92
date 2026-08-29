@@ -69,7 +69,6 @@ begin
 
   AllocDMABuffer(2048);
   DSPSetSampleRate(SampleRate);
-
   HookSBIRQ;
 
   isInitialised := true;
@@ -337,6 +336,8 @@ begin
 end;
 
 procedure PlayTone(const freq: word);
+const
+  DSPCmdSingleCycle = $14;
 var
   phase, phaseIncrement: longint;
   a: word;
@@ -353,10 +354,7 @@ begin
 
   ProgramDMA(DMABufferPhys, DMABufferSize);
 
-  DSPWrite($40);  { set time constant }
-  DSPWrite(byte(longint(256) - (1000000 div SampleRate)));
-
-  DSPWrite($14);
+  DSPWrite(DSPCmdSingleCycle);
   DSPWrite(lo(DMABufferSize - 1));
   DSPWrite(hi(DMABufferSize - 1));
 end;
