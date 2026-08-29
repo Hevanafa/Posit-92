@@ -17,13 +17,17 @@ procedure ProgramDMA(const physAddr: longint; const size: word);
 
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
+
 procedure PlayToneBlocking(const freq, durationMs: word);
+procedure PlayTone(const freq: word);
 
 
 implementation
 
 var
   SinTable: array[0..255] of byte;
+
+  DMABufferSize: word;
 
   DMABufferRaw: pointer;
   DMABuffer: pointer;
@@ -86,12 +90,14 @@ var
   rawPhys, alignedPhys: longint;
 begin
   { TODO: Convert the magic numbers into consts }
-  getmem(DMABufferRaw, size * 2);
+
+  DMABufferSize := size;
+  getmem(DMABufferRaw, DMABufferSize * 2);
 
   rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
 
   if (rawPhys and $FFFF0000) <>
-     ((rawPhys + size - 1) and $FFFF0000) then
+     ((rawPhys + DMABufferSize - 1) and $FFFF0000) then
     alignedPhys := (rawPhys and $FFFF0000) + $10000
   else
     alignedPhys := rawPhys;
@@ -100,6 +106,7 @@ begin
   DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
 end;
 
+{ TODO: Review what does the "size" mean }
 procedure ProgramDMA(const physAddr: longint; const size: word);
 var
   offset: word;
@@ -170,6 +177,32 @@ begin
     inc(phase, phaseIncrement)
   end;
 end;
+
+procedure PlayTone(const freq: word);
+var
+  phase, phaseIncrement: longint;
+  a: word;
+begin
+  phaseIncrement := longint(256) * freq * 256 div SampleRate;
+  phase := 0;
+
+  for a:=0 to DMABufferSize - 1 do begin
+    mem[Seg(DMABuffer^):Ofs(DMABuffer^) + a] :=
+      SinTable[a and 255];
+
+    inc(phase, phaseIncrement)
+  end;
+
+  ProgramDMA(DMABufferPhys, DMABufferSize);
+
+  DSPWrite($40);  { set time constant }
+  DSPWrite(byte(longint(256) - (1000000 div SampleRate)));
+
+  DSPWrite($14);
+  DSPWrite(lo(DMABufferSize - 1));
+  DSPWrite(hi(DMABufferSize - 1));
+end;
+
 
 var
   a: word;
