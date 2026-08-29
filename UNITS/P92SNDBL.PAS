@@ -34,7 +34,7 @@ function GetDMABufferPhys: longint;
 function DSPReset: boolean;
 procedure AllocDMABuffer(const size: word);
 { Programme the DMA for a transfer }
-procedure ProgramDMA(const physAddr: longint; const size: word);
+procedure ProgramDMA(const physAddr: longint; const transferLen: word);
 
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
@@ -57,6 +57,7 @@ var
   DMABufferSize: word;
   DMAHalf: byte;
 
+  { assigned in AllocDMABuffer }
   DMABufferRaw: pointer;
   DMABuffer: pointer;
   DMABufferPhys: longint;  { 20-bit physical address }
@@ -225,30 +226,44 @@ begin
   DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
 end;
 
-{ TODO: Review what does the "size" mean }
-procedure ProgramDMA(const physAddr: longint; const size: word);
+
+procedure ProgramDMA(const physAddr: longint; const transferLen: word);
+const
+  DMAMaskPort = $0A;
+  DMAModePort = $0B;
+  DMAFlipFlop = $0C;
+  DMAAddrPort = $02;
+  DMACountPort = $03;
+  DMAPagePort = $83;
+
+  DMADisableCh1 = $05;
+  DMAEnableCh1 = $01;
+
+  DMAModeSingle = $49;
+  DMAModeAutoInit = $59;
 var
   offset: word;
   page: byte;
 begin
-  { TODO: Convert the magic numbers into consts }
   offset := word(physAddr and $FFFF);
   page := byte(physAddr shr 16);
 
-  port[$0A] := $05;
-  port[$0C] := 0;
+  port[DMAMaskPort] := DMADisableCh1;
+  port[DMAFlipFlop] := 0;
 
-  { port[$0B] := $49; }  { $49 = single cycle, read from memory, channel 1 }
-  port[$0B] := $59;  { $59 = auto-init }
+  { read from memory, channel 1 }
+  port[DMAModePort] := DMAModeSingle;
+  { port[$0B] := $59; }  { $59 = auto-init }
 
-  port[$02] := lo(offset);
-  port[$02] := hi(offset);
+  port[DMAAddrPort] := lo(offset);
+  port[DMAAddrPort] := hi(offset);
 
-  port[$03] := lo(size - 1);
-  port[$03] := hi(size - 1);
+  { Len - 1 because the DMA controller counts from 0 }
+  port[DMACountPort] := lo(transferLen - 1);
+  port[DMACountPort] := hi(transferLen - 1);
 
-  port[$83] := page;
-  port[$0A] := $01;
+  port[DMAPagePort] := page;
+  port[DMAMaskPort] := DMAEnableCh1;
 end;
 
 procedure DSPWrite(const value: byte);
