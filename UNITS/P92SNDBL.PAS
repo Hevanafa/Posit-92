@@ -1,3 +1,14 @@
+{
+  SoundBlaster utility unit
+  Part of Posit-92 game engine
+
+  Rule on magic numbers:
+  The constants must be placed closest to the context it's in
+
+  The downside is that I'll have a lot of duplicate consts, but I won't have to
+  scroll up and then jump back to the procedure (Alt+G in Lazarus)
+}
+
 unit P92SNDBL;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
