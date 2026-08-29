@@ -43,6 +43,7 @@ var
   isIRQFired: boolean;
 
   DMABufferSize: word;
+  DMAHalf: byte;
 
   DMABufferRaw: pointer;
   DMABuffer: pointer;
@@ -88,9 +89,19 @@ end;
 procedure SBInterrupt; interrupt;
 var
   ack: byte;
+  offset: word;
 begin
   { TODO: Expand the magic numbers into consts }
   isIRQFired := true;
+
+  offset := DMAHalf * (DMABufferSize div 2);
+
+  { Fill this half with silence for now (128) }
+  fillchar(
+    mem[seg(DMABuffer^):ofs(DMABuffer^) + offset],
+    DMABufferSize div 2, 128);
+
+  DMAHalf := 1 - DMAHalf;
 
   { Acknowledge DSP: Just read the status port }
   ack := port[DSPBase + $0E];
@@ -183,7 +194,9 @@ begin
 
   port[$0A] := $05;
   port[$0C] := 0;
-  port[$0B] := $49;  { $49 = single cycle, read from memory, channel 1 }
+
+  { port[$0B] := $49; }  { $49 = single cycle, read from memory, channel 1 }
+  port[$0B] := $59;  { $59 = auto-init }
 
   port[$02] := lo(offset);
   port[$02] := hi(offset);
