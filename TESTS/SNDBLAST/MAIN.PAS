@@ -50,9 +50,9 @@ begin
   DSPWrite(lo(2048 - 1));
   DSPWrite(hi(2048 - 1));
 
-  PlayTone(262, 500);
-  PlayTone(330, 500);
-  PlayTone(392, 500);
+  PlayToneBlocking(262, 500);
+  PlayToneBlocking(330, 500);
+  PlayToneBlocking(392, 500);
 end;
 
 
@@ -112,9 +112,9 @@ begin
   }
 
   { C4 E4 G4 }
-  PlayTone(262, 500);
-  PlayTone(330, 500);
-  PlayTone(392, 500);
+  PlayToneBlocking(262, 500);
+  PlayToneBlocking(330, 500);
+  PlayToneBlocking(392, 500);
 end;
 
 const

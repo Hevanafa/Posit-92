@@ -17,7 +17,7 @@ procedure ProgramDMA(const physAddr: longint; const size: word);
 
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
-procedure PlayTone(const freq, durationMs: word);
+procedure PlayToneBlocking(const freq, durationMs: word);
 
 
 implementation
@@ -149,7 +149,7 @@ begin
   DSPWrite(timeConst)
 end;
 
-procedure PlayTone(const freq, durationMs: word);
+procedure PlayToneBlocking(const freq, durationMs: word);
 const
   { Direct DAC output command }
   DSPCmdDirectOut = $10;
