@@ -91,7 +91,7 @@ var
   ack: byte;
   offset: word;
 begin
-  { TODO: Expand the magic numbers into consts }
+  { TODO: Expand the magic numbers into consts -- DON'T add more comments }
   isIRQFired := true;
 
   offset := DMAHalf * (DMABufferSize div 2);
@@ -110,7 +110,7 @@ end;
 
 procedure HookSBIRQ;
 begin
-  { TODO: Expand the magic numbers into consts }
+  { TODO: Expand the magic numbers into consts -- DON'T add more comments }
   isIRQFired := false;
 
   GetIntVec($0D, OldIRQ5);

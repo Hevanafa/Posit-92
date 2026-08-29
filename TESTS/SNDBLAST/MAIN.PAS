@@ -13,6 +13,7 @@ uses
   P92SNDBL;
 
 var
+  lastSpacebar: boolean;
   fontP92Sans: TBMFont;
 
   frames: longint;
@@ -36,8 +37,6 @@ var
 begin
   P92SNDBL.Open;
 
-  P92SNDBL.PlayTone(262);
-
   frames := 0;
 end;
 
@@ -45,6 +44,13 @@ end;
 procedure Update; far;
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  if lastSpacebar <> IsKeyDown(SC_SPACE) then begin
+    lastSpacebar := IsKeyDown(SC_SPACE);
+
+    if lastSpacebar then
+      P92SNDBL.PlayTone(262);
+  end;
 
   inc(frames);
 end;
@@ -55,7 +61,7 @@ var
 begin
   cls($4F);
 
-  s := 'Playing the sine wave';
+  s := 'Spacebar - Play tone C in sine wave';
 
   RectFill(
     0,
