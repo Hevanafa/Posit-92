@@ -40,7 +40,7 @@ var
   isInitialised: boolean;
   SinTable: array[0..255] of byte;
 
-  OldIRQ5: pointer;
+  OldIRQ7: pointer;
   isIRQFired: boolean;
 
   DMABufferSize: word;
@@ -119,16 +119,16 @@ begin
   { TODO: Expand the magic numbers into consts -- DON'T add more comments }
   isIRQFired := false;
 
-  GetIntVec($0D, OldIRQ5);
-  SetIntVec($0D, @SBInterrupt);
+  GetIntVec($0F, OldIRQ7);
+  SetIntVec($0F, @SBInterrupt);
 
-  port[$21] := port[$21] and $DF
+  port[$21] := port[$21] and $7F
 end;
 
 procedure UnhookSBIRQ;
 begin
   port[$21] := port[$21] or $20;
-  SetIntVec($0D, OldIRQ5)
+  SetIntVec($0D, OldIRQ7)
 end;
 
 function DSPReset: boolean;
