@@ -34,14 +34,9 @@ procedure OnReady; far;
 var
   a: word;
 begin
-  if not DSPReset then
-    PanicHalt('Couldn''t find the SoundBlaster driver');
+  P92SNDBL.Open;
 
-  AllocDMABuffer(2048);
-  DSPSetSampleRate(SampleRate);
-
-  HookSBIRQ;
-  PlayTone(262);
+  P92SNDBL.PlayTone(262);
 
   frames := 0;
 end;

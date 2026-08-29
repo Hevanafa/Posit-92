@@ -9,7 +9,7 @@ const
   SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
 
-procedure Init;
+procedure Open;
 procedure Close;
 
 procedure HookSBIRQ;
@@ -33,9 +33,10 @@ procedure PlayTone(const freq: word);
 
 implementation
 
-uses DOS;
+uses DOS, P92PANIC;
 
 var
+  isInitialised: boolean;
   SinTable: array[0..255] of byte;
 
   OldIRQ5: pointer;
@@ -47,9 +48,23 @@ var
   DMABuffer: pointer;
   DMABufferPhys: longint;  { 20-bit physical address }
 
+procedure Open;
+begin
+  if not DSPReset then
+    PanicHalt('Couldn''t find the SoundBlaster driver');
+
+  AllocDMABuffer(2048);
+  DSPSetSampleRate(SampleRate);
+
+  HookSBIRQ;
+
+  isInitialised := true;
+end;
 
 procedure Close;
 begin
+  if not isInitialised then exit;
+
   UnhookSBIRQ;
   freemem(DMABufferRaw, DMABufferSize * 2);
 end;
@@ -257,6 +272,8 @@ end;
 var
   a: word;
 begin
+  isInitialised := false;
+
   for a:=0 to 255 do
     SinTable[a] := 128 + round(127 * sin(a * 2 * pi / 256));
 end.
