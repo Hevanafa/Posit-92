@@ -1,5 +1,7 @@
 unit P92SNDBL;
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 interface
 
 const
@@ -27,6 +29,9 @@ implementation
 var
   SinTable: array[0..255] of byte;
 
+  OldIRQ5: pointer;
+  isIRQFired: boolean;
+
   DMABufferSize: word;
 
   DMABufferRaw: pointer;
@@ -48,6 +53,15 @@ begin
   GetDMABufferPhys := DMABufferPhys
 end;
 
+
+procedure SBInterrupt; interrupt;
+begin
+  { TODO: Expand the magic numbers into consts }
+  isIRQFired := true;
+
+  port[DSPBase + $0E];
+  port[$20] := $20
+end;
 
 function DSPReset: boolean;
 const
