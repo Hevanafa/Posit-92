@@ -206,24 +206,43 @@ begin
 end;
 
 procedure AllocDMABuffer(const size: word);
+const
+  DMAPageBoundary = $10000;
+  DMAPageMask = $FFFF0000;
 var
   rawPhys, alignedPhys: longint;
 begin
-  { TODO: Convert the magic numbers into consts }
-
   DMABufferSize := size;
   getmem(DMABufferRaw, DMABufferSize * 2);
 
   rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
 
-  if (rawPhys and $FFFF0000) <>
-     ((rawPhys + DMABufferSize - 1) and $FFFF0000) then
-    alignedPhys := (rawPhys and $FFFF0000) + $10000
+  {
+  The trick with `rawPhys and DMAPageMask` is to check whether
+  the buffer start and end are in the same page, and if they don't,
+  bump up to the next page boundary
+  }
+
+  if (rawPhys and DMAPageMask) <>
+     ((rawPhys + DMABufferSize - 1) and DMAPageMask) then
+    alignedPhys := (rawPhys and DMAPageMask) + DMAPageBoundary
   else
     alignedPhys := rawPhys;
 
   DMABufferPhys := alignedPhys;
-  DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
+
+  {
+  The bit shifting here converts a 20-bit physical address
+  back into a `segment:offset` pointer
+
+  Real mode addresses work as `segment * 16 + offset`, so
+  by dividing by 16 (`shr 4`) gives the `segment`, and
+  the remainder gives the `offset`
+  }
+
+  DMABuffer := ptr(
+    word(alignedPhys shr 4),
+    word(alignedPhys and $F));
 end;
 
 
