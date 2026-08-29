@@ -188,7 +188,7 @@ begin
 
   for a:=0 to DMABufferSize - 1 do begin
     mem[Seg(DMABuffer^):Ofs(DMABuffer^) + a] :=
-      SinTable[a and 255];
+      SinTable[(phase shr 8) and 255];
 
     inc(phase, phaseIncrement)
   end;
