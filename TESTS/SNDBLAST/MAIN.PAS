@@ -41,6 +41,14 @@ begin
       GetSinLUT(a and 255);
 
   ProgramDMA(GetDMABufferPhys, 2048);
+
+  { TODO: Convert the magic numbers into consts }
+  DSPWrite($40);  { set time constant }
+  DSPWrite(byte(longint(256) - (1000000 div SampleRate)));
+
+  DSPWrite($14);
+  DSPWrite(lo(2048 - 1));
+  DSPWrite(hi(2048 - 1));
 end;
 
 procedure DrawOnce; far;
