@@ -8,8 +8,8 @@ const
 
 function GetDMABufferPhys: longint;
 
-procedure AllocDMABuffer(const size: word);
 function DSPReset: boolean;
+procedure AllocDMABuffer(const size: word);
 
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
@@ -28,25 +28,6 @@ var
 function GetDMABufferPhys: longint;
 begin
   GetDMABufferPhys := DMABufferPhys
-end;
-
-procedure AllocDMABuffer(const size: word);
-var
-  rawPhys, alignedPhys: longint;
-begin
-  { TODO: Convert the magic numbers into consts }
-  getmem(DMABufferRaw, size * 2);
-
-  rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
-
-  if (rawPhys and $FFFF0000) <>
-     ((rawPhys + size - 1) and $FFFF0000) then
-    alignedPhys := (rawPhys and $FFFF0000) + $10000
-  else
-    alignedPhys := rawPhys;
-
-  DMABufferPhys := alignedPhys;
-  DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
 end;
 
 
@@ -85,6 +66,27 @@ begin
         exit
       end;
 end;
+
+procedure AllocDMABuffer(const size: word);
+var
+  rawPhys, alignedPhys: longint;
+begin
+  { TODO: Convert the magic numbers into consts }
+  getmem(DMABufferRaw, size * 2);
+
+  rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
+
+  if (rawPhys and $FFFF0000) <>
+     ((rawPhys + size - 1) and $FFFF0000) then
+    alignedPhys := (rawPhys and $FFFF0000) + $10000
+  else
+    alignedPhys := rawPhys;
+
+  DMABufferPhys := alignedPhys;
+  DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
+end;
+
+
 
 procedure DSPWrite(const value: byte);
 const
