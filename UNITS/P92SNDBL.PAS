@@ -249,6 +249,9 @@ begin
   page := byte(physAddr shr 16);
 
   port[DMAMaskPort] := DMADisableCh1;
+
+  { Writing 0 resets it so that the next write
+    to Port[DMAAddrPort] is guaranteed to be the low byte }
   port[DMAFlipFlop] := 0;
 
   { read from memory, channel 1 }
