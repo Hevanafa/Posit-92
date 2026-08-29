@@ -27,13 +27,20 @@ begin
 end;
 
 procedure OnReady; far;
+var
+  a: word;
 begin
   if not DSPReset then
     PanicHalt('Couldn''t find the SoundBlaster driver');
 
   AllocDMABuffer(2048);
-
   DSPSetSampleRate(SampleRate);
+
+  for a:=0 to 2047 do
+    mem[Seg(BorrowDMABuffer^):Ofs(BorrowDMABuffer^) + a] :=
+      GetSinLUT(a and 255);
+
+  ProgramDMA(GetDMABufferPhys, 2048);
 end;
 
 procedure DrawOnce; far;

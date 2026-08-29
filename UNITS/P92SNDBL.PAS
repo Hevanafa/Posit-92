@@ -6,10 +6,14 @@ const
   DSPBase = $220;  { SoundBlaster base port }
   SampleRate = 11025;  { 11025 Hz: common DOS game rate }
 
+function BorrowDMABuffer: pointer;
+function GetSinLUT(const idx: byte): byte;
 function GetDMABufferPhys: longint;
 
 function DSPReset: boolean;
 procedure AllocDMABuffer(const size: word);
+{ Programme the DMA for a transfer }
+procedure ProgramDMA(const physAddr: longint; const size: word);
 
 procedure DSPWrite(const value: byte);
 procedure DSPSetSampleRate(const rate: word);
@@ -24,6 +28,16 @@ var
   DMABufferRaw: pointer;
   DMABuffer: pointer;
   DMABufferPhys: longint;  { 20-bit physical address }
+
+function BorrowDMABuffer: pointer;
+begin
+  BorrowDMABuffer := DMABuffer
+end;
+
+function GetSinLUT(const idx: byte): byte;
+begin
+  GetSinLUT := SinTable[idx]
+end;
 
 function GetDMABufferPhys: longint;
 begin
