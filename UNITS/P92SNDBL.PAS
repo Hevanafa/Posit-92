@@ -45,7 +45,7 @@ procedure PlayTone(const freq: word);
 
 implementation
 
-uses DOS, P92PANIC;
+uses DOS, P92LOG, P92PANIC;
 
 var
   isInitialised: boolean;
@@ -66,6 +66,8 @@ procedure Open;
 begin
   if not DSPReset then
     PanicHalt('Couldn''t find the SoundBlaster driver');
+
+  writelog('P92SNDBL.Open: BLASTER=' + GetEnv('BLASTER'));
 
   AllocDMABuffer(2048);
   DSPSetSampleRate(SampleRate);
