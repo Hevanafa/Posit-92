@@ -12,6 +12,7 @@ const
 procedure Open;
 procedure Close;
 
+function GetIsIRQFired: boolean;
 procedure HookSBIRQ;
 procedure UnhookSBIRQ;
 
@@ -106,6 +107,11 @@ begin
   { Acknowledge DSP: Just read the status port }
   ack := port[DSPBase + $0E];
   port[$20] := $20;
+end;
+
+function GetIsIRQFired:boolean;
+begin
+  GetIsIRQFired := isIRQFired;
 end;
 
 procedure HookSBIRQ;

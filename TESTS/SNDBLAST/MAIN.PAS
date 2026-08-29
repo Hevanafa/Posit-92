@@ -72,6 +72,8 @@ begin
   PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
 
   PrintBMFont(fontP92Sans, 'Frame: ' + i32str(frames), 0, 30);
+
+  PrintBMFont(fontP92Sans, 'isIRQFired: ' + BoolStr(GetIsIRQFired), 0, 50);
 end;
 
 procedure DrawOnce; far;
