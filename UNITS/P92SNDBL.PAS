@@ -86,7 +86,28 @@ begin
   DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
 end;
 
+procedure ProgramDMA(const physAddr: longint; const size: word);
+var
+  offset: word;
+  page: byte;
+begin
+  { TODO: Convert the magic numbers into consts }
+  offset := word(physAddr and $FFFF);
+  page := byte(physAddr shr 16);
 
+  port[$0A] := $05;
+  port[$0C] := 0;
+  port[$0B] := $49;  { $49 = single cycle, read from memory, channel 1 }
+
+  port[$02] := lo(offset);
+  port[$02] := hi(offset);
+
+  port[$03] := lo(size - 1);
+  port[$03] := hi(size - 1);
+
+  port[$83] := page;
+  port[$0A] := $01;
+end;
 
 procedure DSPWrite(const value: byte);
 const
