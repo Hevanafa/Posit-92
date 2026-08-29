@@ -84,8 +84,10 @@ var
   kv: array[0..1] of string; { key-value pair }
   glyphID: integer;
 begin
-  writelog('Attempting to parse this line:');
+{$IFDEF DEBUG}
+  writelog('ParseBMFontGlyph: Attempting to parse this line:');
   writelog(line);
+{$ENDIF}
 
   while Contains(line, '  ') do
     line := ReplaceAll(line, '  ', ' ');
@@ -164,7 +166,7 @@ var
   b: integer;
   f: text;
 
-  count: word;
+  glyphCount: word;
   line: string;
   pairs: array[0..11] of string;
   pairCount: word;
@@ -185,7 +187,7 @@ begin
   if IOResult <> 0 then
     PanicHalt('LoadBMFont: Couldn''t find "' + filename + '"!');
 
-  count := 0;
+  glyphCount := 0;
 
   { First pass }
   writelog('Entering first pass');
@@ -234,17 +236,16 @@ begin
   while not eof(f) do begin
     readln(f, line);
 
-    { writelog('What is line?');
-    writelog(line); }
-
-    if StartsWith(line, 'char') then
+    if StartsWith(line, 'char') then begin
       ParseBMFontGlyph(font, line);
+      inc(glyphCount)
+    end;
   end;
 
   close(f);
 
   LoadTex(font.texture, bitmapPath);
-  writeLog('Loaded ' + i32str(count) + ' glyphs');
+  writeLog('LoadBMFont: Loaded ' + i32str(glyphCount) + ' glyphs');
 end;
 
 
