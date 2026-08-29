@@ -115,14 +115,31 @@ begin
 end;
 
 procedure HookSBIRQ;
+const
+  {
+  This must match DOSBox config at this section:
+  [sblaster]
+  irq = (number)
+  }
+  SBIRQNumber = 7;
+
+  {
+  $0D is bit 5
+  $0F is bit 7
+  }
+  SBIntVector = $08 + SBIRQNumber;
+  SBIRQMask = 1 shl SBIRQNumber;
+
+  PICMaskPort = $21;
 begin
-  { TODO: Expand the magic numbers into consts -- DON'T add more comments }
   isIRQFired := false;
 
-  GetIntVec($0F, OldIRQ7);
-  SetIntVec($0F, @SBInterrupt);
+  GetIntVec(SBIntVector, OldIRQ7);
+  SetIntVec(SBIntVector, @SBInterrupt);
 
-  port[$21] := port[$21] and $7F
+  { Unmask IRQ bit, 7th bit in this case }
+  port[PICMaskPort] :=
+    port[PICMaskPort] and (not SBIRQMask)
 end;
 
 procedure UnhookSBIRQ;
