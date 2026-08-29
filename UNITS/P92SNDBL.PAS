@@ -30,6 +30,8 @@ procedure PlayTone(const freq: word);
 
 implementation
 
+uses DOS;
+
 var
   SinTable: array[0..255] of byte;
 
@@ -75,8 +77,8 @@ begin
   { TODO: Expand the magic numbers into consts }
   isIRQFired := false;
 
-  getintvec($0D, OldIRQ5);
-  setintvec($0D, @SBInterrupt);
+  GetIntVec($0D, OldIRQ5);
+  SetIntVec($0D, @SBInterrupt);
 
   port[$21] := port[$21] and $DF
 end;
@@ -84,7 +86,7 @@ end;
 procedure UnhookSBIRQ;
 begin
   port[$21] := port[$21] or $20;
-  setintvec($0D, OldIRQ5)
+  SetIntVec($0D, OldIRQ5)
 end;
 
 function DSPReset: boolean;
