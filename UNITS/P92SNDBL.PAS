@@ -17,6 +17,29 @@ implementation
 var
   SinTable: array[0..255] of byte;
 
+  DMABufferRaw: pointer;
+  DMABuffer: pointer;
+  DMABufferPhys: longint;  { 20-bit physical address }
+
+procedure AllocDMABuffer(const size: word);
+var
+  rawPhys, alignedPhys: longint;
+begin
+  getmem(DMABufferRaw, size * 2);
+
+  rawPhys := longint(seg(DMABufferRaw^)) shl 4 + ofs(DMABufferRaw^);
+
+  if (rawPhys and $FFFF0000) <>
+     ((rawPhys + size - 1) and $FFFF0000) then
+    alignedPhys := (rawPhys and $FFFF0000) + $10000
+  else
+    alignedPhys := rawPhys;
+
+  DMABufferPhys := alignedPhys;
+  DMABuffer := ptr(word(alignedPhys shr 4), word(alignedPhys and $F));
+end;
+
+
 function DSPReset: boolean;
 const
   { Obtained from Creative Labs' DSP documentation }
