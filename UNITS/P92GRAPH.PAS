@@ -38,7 +38,7 @@ procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 procedure RectFillDitherBase(x0, y0, x1, y1: integer; const colour: byte);
-procedure AsmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure AsmRectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -944,11 +944,6 @@ begin
   end;
 end;
 
-procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
-begin
-  AsmRectfillDither(x0, y0, x1, y1, colour)
-end;
-
 procedure RectFillDitherBase(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
@@ -969,7 +964,24 @@ begin
         surface^[b*320+a] := colour;
 end;
 
-procedure AsmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
+var
+  a, b, temp: integer;
+begin
+  if x0 > x1 then begin
+    temp := x0; x0 := x1; x1 := temp
+  end;
+  if y0 > y1 then begin
+    temp := y0; y0 := y1; y1 := temp
+  end;
+
+  for b:=y0 to y1 do
+    for a:=x0 to x1 do
+      if (a+b) and 1 = 1 then
+        surface^[b*320+a] := colour;
+end;
+
+procedure AsmRectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
   x, y, temp: integer;
   startX, endX, startY, endY: integer;

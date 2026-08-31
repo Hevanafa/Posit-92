@@ -104,7 +104,7 @@ begin
     Legacy AsmRectFillDither: 3.0664s
   }
   for a:=1 to OpCount do
-    AsmRectfillDither(
+    RectFillDither(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(VGAWidth + 20) - 10,
