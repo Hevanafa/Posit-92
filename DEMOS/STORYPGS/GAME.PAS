@@ -64,10 +64,13 @@ begin
       mgrStory.SetSpeaker('Marcus Aurelius');
     end;
     3: begin
-      lines[0] := 'This is the third page!';
-      lines[1] := 'Second line of the third page!';
-      lines[2] := 'Third line of the third page!';
+      lines[0] := 'It is not death that a man should fear,';
+      lines[1] := 'but he should fear';
+      lines[2] := 'never beginning to live';
       lineCount := 3;
+
+      mgrStory.SetPortrait(@texMarcus);
+      mgrStory.SetSpeaker('Marcus Aurelius');
     end;
     else
       isStory := false;
