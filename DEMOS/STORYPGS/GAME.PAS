@@ -43,6 +43,7 @@ begin
   activePage := pageNum;
 
   mgrStory.SetPortrait(nil);
+  mgrStory.SetSpeaker('');
 
   case pageNum of
     1: begin
@@ -52,6 +53,7 @@ begin
       lineCount := 3;
 
       mgrStory.SetPortrait(@texMarcus);
+      mgrStory.SetSpeaker('Marcus Aurelius');
     end;
     2: begin
       lines[0] := 'The best revenge is to be';
@@ -59,6 +61,7 @@ begin
       lineCount := 2;
 
       mgrStory.SetPortrait(@texMarcus);
+      mgrStory.SetSpeaker('Marcus Aurelius');
     end;
     3: begin
       lines[0] := 'This is the third page!';

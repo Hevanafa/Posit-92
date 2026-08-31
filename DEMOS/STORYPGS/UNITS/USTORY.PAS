@@ -16,6 +16,7 @@ type
   TStoryManager = object
     procedure StartPage(const lines: TQuoteLines; const lineCount: word);
     procedure SetPortrait(const tex: PTexture);
+    procedure SetSpeaker(const name: string);
 
     function IsEndOfPage: boolean;
     procedure SkipPage;
@@ -30,6 +31,7 @@ type
     fFont: PBMFont;
     fPortrait: PTexture;
 
+    fSpeakerName: string;
     fLines: TQuoteLines;
     fLineCount: word;
   end;
@@ -40,7 +42,8 @@ implementation
 uses P92CONV, P92TIME, P92VGA;
 
 const
-  charInterval = 0.016;
+  { in seconds }
+  CharInterval = 0.016;
 
 var
   storyRow, storyCol: integer;
@@ -58,6 +61,11 @@ end;
 procedure TStoryManager.SetPortrait(const tex: PTexture);
 begin
   fPortrait := tex
+end;
+
+procedure TStoryManager.SetSpeaker(const name: string);
+begin
+  fSpeakerName := name
 end;
 
 function TStoryManager.IsEndOfPage: boolean;
@@ -92,7 +100,7 @@ begin
   if storyRow < fLineCount then begin
     elapsed := elapsed + DeltaTime;
 
-    if elapsed >= charInterval then begin
+    if elapsed >= CharInterval then begin
       elapsed := 0;
       inc(storyCol)
     end;
@@ -138,6 +146,8 @@ begin
       (VGAWidth - w) div 2,
       Top + storyRow * fFont^.lineHeight);
   end;
+
+  { TODO: Render the name }
 end;
 
 
