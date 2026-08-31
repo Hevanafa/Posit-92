@@ -13,6 +13,8 @@ var
   { Game state variables }
   t: double;
   lastSpace: boolean;
+
+  isStory: boolean;
   activePage: word;
 
 procedure InitPage(const pageNum: word); forward;
@@ -55,8 +57,8 @@ begin
       lines[2] := 'Third line of the third page!';
       lineCount := 3;
     end;
-    { else
-      mgrStory.SetIsStory(false); }
+    else
+      isStory := false;
   end;
 
   mgrStory.StartPage(lines, lineCount);
@@ -84,6 +86,8 @@ begin
 
   InitPage(1);
 
+  isStory := true;
+
   lastSpace := false;
 end;
 
@@ -93,18 +97,20 @@ var
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if lastSpace <> isKeyDown(SC_SPACE) then begin
-    lastSpace := isKeyDown(SC_SPACE);
+  if isStory then begin
+    if lastSpace <> isKeyDown(SC_SPACE) then begin
+      lastSpace := isKeyDown(SC_SPACE);
 
-    if lastSpace then begin
-      if mgrStory.IsEndOfPage then
-        NextPage
-      else
-        TryNextPage;
+      if lastSpace then begin
+        if mgrStory.IsEndOfPage then
+          NextPage
+        else
+          TryNextPage;
+      end;
     end;
-  end;
 
-  mgrStory.Update;
+    mgrStory.Update;
+  end;
 
   t:=t + DeltaTime
 end;
@@ -116,8 +122,11 @@ var
 begin
   cls($7D);
 
-  mgrStory.Draw;
-  mgrStory.DrawDebug;
+  if isStory then begin
+    mgrStory.Draw;
+    mgrStory.DrawDebug;
+  end else
+    Print('Press Esc to exit', 0, VGAHeight - 8, 15);
 end;
 
 
