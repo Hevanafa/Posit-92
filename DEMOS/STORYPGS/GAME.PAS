@@ -42,14 +42,15 @@ begin
 
   case pageNum of
     1: begin
-      lines[0] := 'Hello world!';
-      lineCount := 1;
+      lines[0] := 'The happiness of your life';
+      lines[1] := 'depends upon the quality';
+      lines[2] := 'of your thoughts';
+      lineCount := 3;
     end;
     2: begin
-      lines[0] := 'This is the second page!';
-      lines[1] := 'Second line of the second page!';
-      lines[2] := 'Third line of the second page!';
-      lineCount := 3;
+      lines[0] := 'The best revenge is to be';
+      lines[1] := 'unlike him who performed the injury';
+      lineCount := 2;
     end;
     3: begin
       lines[0] := 'This is the third page!';
