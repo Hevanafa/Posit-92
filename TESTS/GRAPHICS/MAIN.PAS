@@ -117,6 +117,9 @@ begin
       random(256));
   }
 
+  {
+    Original: 12.5950s
+  }
   for a:=1 to OpCount do
     TriFill(
       random(VGAWidth + 20) - 10,

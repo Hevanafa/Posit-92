@@ -834,11 +834,9 @@ begin
   if (x < 0) or (x >= VGAWidth) then exit;
 
   if y0 <= y1 then begin
-    startY := y0;
-    endY := y1;
+    startY := y0; endY := y1
   end else begin
-    startY := y1;
-    endY := y0
+    startY := y1; endY := y0
   end;
 
   if (endY < 0) or (startY >= VGAHeight) then exit;
@@ -1047,7 +1045,7 @@ const
   FIX_SCALE = 1 shl FIX_SHIFT;
 var
   y, tmp, dx1, dx2, sx1, sx2, dy1, dy2: integer;
-  xStart, xEnd: integer;
+  startX, endX: integer;
 begin
   { Sort vertices }
   if y0>y1 then begin
@@ -1067,31 +1065,43 @@ begin
   dy1:=y1 - y0; dy2:=y2 - y0;
   if dy1 > 0 then dx1:=((x1-x0) * FIX_SCALE) div dy1 else dx1 := 0;
   if dy2 > 0 then dx2:=((x2-x0) * FIX_SCALE) div dy2 else dx2 := 0;
+
   sx1:=x0 * FIX_SCALE; sx2:=x0*FIX_SCALE;
+
   for y:=y0 to y1-1 do begin
-    xStart := sx1 shr FIX_SHIFT;
-    xEnd := sx2 shr FIX_SHIFT;
-    if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
-    while xStart <= xEnd do begin
-      AsmPset(xStart, y, colour);
-      inc(xStart);
+    startX := sx1 shr FIX_SHIFT;
+    endX := sx2 shr FIX_SHIFT;
+
+    if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
+
+    while startX <= endX do begin
+      AsmPset(startX, y, colour);
+      inc(startX);
     end;
-    inc(sx1, dx1); inc(sx2, dx2)
+
+    inc(sx1, dx1);
+    inc(sx2, dx2)
   end;
 
   { Second half }
   dy1:=y2-y1;
   if dy1 > 0 then dx1:=((x2-x1) * FIX_SCALE) div dy1 else dx1:=0;
+
   sx1:=x1 * FIX_SCALE;
+
   for y:=y1 to y2 do begin
-    xStart := sx1 shr FIX_SHIFT;
-    xEnd := sx2 shr FIX_SHIFT;
-    if xStart > xEnd then begin tmp:=xStart; xStart:=xEnd; xEnd:=tmp; end;
-    while xStart <= xEnd do begin
-      AsmPset(xStart, y, colour);
-      inc(xStart);
+    startX := sx1 shr FIX_SHIFT;
+    endX := sx2 shr FIX_SHIFT;
+
+    if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
+
+    while startX <= endX do begin
+      AsmPset(startX, y, colour);
+      inc(startX);
     end;
-    inc(sx1, dx1); inc(sx2, dx2)
+
+    inc(sx1, dx1);
+    inc(sx2, dx2)
   end;
 end;
 
