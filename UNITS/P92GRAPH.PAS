@@ -990,8 +990,6 @@ begin
   if (startY >= VGAHeight) or (endY < 0)
     or (startX >= VGAWidth) or (endX < 0) then exit;
 
-  { TODO: Handle inline asm }
-
   for b := startY to endY do begin
     rowOffset := b * VGAWidth;
 
@@ -999,6 +997,15 @@ begin
       a := startX
     else
       a := startX + 1;
+
+    asm
+push es
+les di, surface
+
+{ TODO: Handle inline asm }
+
+pop es
+    end;
 
     while a <= endX do begin
       surface^[rowOffset + a] := colour;
