@@ -443,10 +443,8 @@ begin
     hline(cx - x, cx + x, cy + y, colour);
     hline(cx - x, cx + x, cy - y, colour);
 
-    for a:=cx-y to cx+y do begin
-      AsmPset(a, cy + x, colour);
-      AsmPset(a, cy - x, colour)
-    end;
+    hline(cx - y, cx + y, cy + x, colour);
+    hline(cx - y, cx + y, cy - x, colour);
 
     if p < 0 then
       p := p+4 * x+6

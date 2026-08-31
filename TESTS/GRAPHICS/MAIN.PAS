@@ -142,6 +142,7 @@ begin
     Original: 8.8999s
     AsmCircFill: DNF
     After first HLine on [cx - x, cx + x]: 6.6979s
+    After second HLine on [cx - y, cx + y]: 0.5972s
   }
   for a:=1 to OpCount do
     CircFill(
