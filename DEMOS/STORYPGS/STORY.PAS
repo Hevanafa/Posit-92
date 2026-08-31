@@ -10,10 +10,15 @@ type
   TQuoteLines = array[0..3] of string;
 
   PStoryManager = ^TStoryManager;
+
+  { TStoryManager }
+
   TStoryManager = object
     isStory: boolean;
 
     procedure StartPage(const lines: TQuoteLines; const lineCount: word);
+
+    function IsEndOfPage: boolean;
     procedure NextPage;
     procedure TryNextPage;
 
@@ -39,7 +44,7 @@ const
   charInterval = 0.016;
 
 var
-  activePage, storyRow, storyCol: integer;
+  storyRow, storyCol: integer;
   elapsed: double;
 
 procedure TStoryManager.StartPage(const lines: TQuoteLines; const lineCount: word);
@@ -51,21 +56,11 @@ begin
 
   storyRow := 0; storyCol := 1;
   elapsed := 0;
-
 end;
 
-procedure TStoryManager.NextPage;
+function TStoryManager.IsEndOfPage: boolean;
 begin
-  inc(activePage);
-  StartPage(activePage)
-end;
-
-procedure TStoryManager.TryNextPage;
-begin
-  if storyRow >= lineCount then
-    NextPage
-  else
-    storyRow := lineCount;
+  IsEndOfPage := storyRow >= fLineCount
 end;
 
 constructor TStoryManager.Init(aFont: PBMFont);

@@ -15,6 +15,21 @@ var
   lastSpace: boolean;
   activePage: word;
 
+procedure InitPage(const pageNum: word); forward;
+
+procedure NextPage;
+begin
+  inc(activePage);
+  InitPage(activePage)
+end;
+
+procedure TryNextPage;
+begin
+  if mgrStory.IsEndOfPage then
+    NextPage
+  else
+    storyRow := lineCount;
+end;
 
 procedure InitPage(const pageNum: word);
 var
@@ -82,8 +97,13 @@ begin
   if mgrStory.isStory then begin
     if lastSpace <> isKeyDown(SC_SPACE) then begin
       lastSpace := isKeyDown(SC_SPACE);
-      if lastSpace then
-        mgrStory.TryNextPage;
+
+      if lastSpace then begin
+        if mgrStory.IsEndOfPage then
+          NextPage
+        else
+          TryNextPage;
+      end;
     end;
 
     mgrStory.Update;
