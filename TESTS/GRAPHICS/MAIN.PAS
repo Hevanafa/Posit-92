@@ -10,7 +10,7 @@ program BaseTest;
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
 
 var
   fontP92Sans: TBMFont;
@@ -66,11 +66,13 @@ begin
     Base: 0.6585s
     Inline asm: 0.0993s
   }
+  {
   for a:=1 to OpCount do
     VLine(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(VGAHeight + 20) - 10, random(256));
+  }
 
   {
   for a:=1 to OpCount do
@@ -96,6 +98,18 @@ begin
       random(VGAHeight + 20) - 10,
       random(256));
   }
+
+  {
+    Original: 5.4095s
+    Legacy AsmRectFillDither: 3.0664s
+  }
+  for a:=1 to OpCount do
+    AsmRectfillDither(
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      random(256));
 
   endTick := GetTimer;
 
