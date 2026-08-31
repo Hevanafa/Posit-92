@@ -1,5 +1,7 @@
 unit Story;
 
+{$IFDEF FPC}{$MODE TP}{$ENDIF}
+
 interface
 
 uses P92BMFON;
@@ -7,18 +9,16 @@ uses P92BMFON;
 type
   TStoryManager = object
     isStory: boolean;
+    procedure StartPage(const page: word);
+    procedure NextPage;
+    procedure TryNextPage;
+    constructor Create(font: PBMFont);
+    procedure Update;
+    procedure Draw;
+    procedure DrawDebug;
+  private
     fFont: TBMFont;
-    procedure startPage(const page: word);
-    procedure nextPage;
-    procedure tryNextPage;
-    procedure init(font: TBMFont);
-    procedure update;
-    procedure draw;
-    procedure drawDebug;
   end;
-
-var
-  StoryMan: TStoryManager;
 
 
 implementation
@@ -34,7 +34,7 @@ var
   activePage, storyRow, storyCol: integer;
   elapsed: double;
 
-procedure TStoryManager.startPage(const page: word);
+procedure TStoryManager.StartPage(const page: word);
 begin
   isStory := true;
   activePage := page;
@@ -63,30 +63,30 @@ begin
   end;
 end;
 
-procedure TStoryManager.nextPage;
+procedure TStoryManager.NextPage;
 begin
   inc(activePage);
-  startPage(activePage)
+  StartPage(activePage)
 end;
 
-procedure TStoryManager.tryNextPage;
+procedure TStoryManager.TryNextPage;
 begin
   if storyRow >= lineCount then
-    nextPage
+    NextPage
   else
     storyRow := lineCount;
 end;
 
-procedure TStoryManager.init(font: TBMFont);
+procedure TStoryManager.Create(aFont: PBMFont);
 begin
   isStory := false;
   storyRow := 0;
   storyCol := 1;
   elapsed := 0;
-  self.fFont := font
+  self.fFont := aFont
 end;
 
-procedure TStoryManager.update;
+procedure TStoryManager.Update;
 begin
   if not isStory then exit;
 
@@ -104,7 +104,7 @@ begin
   end;
 end;
 
-procedure TStoryManager.draw;
+procedure TStoryManager.Draw;
 var
   a: integer;
 begin
@@ -123,7 +123,7 @@ begin
 end;
 
 
-procedure TStoryManager.drawDebug;
+procedure TStoryManager.DrawDebug;
 begin
   if not isStory then
     print('isStory is false', 0, 0, 15)
