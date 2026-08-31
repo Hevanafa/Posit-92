@@ -1,5 +1,5 @@
 {
-  Base for test projects
+  Primitive drawing test project
   Part of Posit-92 game engine
 
   Tested on DOSBox-X with 20000 cycles/ms
