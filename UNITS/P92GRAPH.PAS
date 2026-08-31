@@ -37,7 +37,7 @@ procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
 procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
-procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDitherBase(x0, y0, x1, y1: integer; const colour: byte);
 procedure AsmRectfillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -949,7 +949,7 @@ begin
   AsmRectfillDither(x0, y0, x1, y1, colour)
 end;
 
-procedure PascalRectfillDither(x0, y0, x1, y1: integer; const colour: byte);
+procedure RectFillDitherBase(x0, y0, x1, y1: integer; const colour: byte);
 var
   a, b, temp: integer;
 begin
