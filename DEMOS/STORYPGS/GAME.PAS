@@ -2,7 +2,7 @@
 uses
   CRT, DOS,
   P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX,
-  Story;
+  UStory;
 
 var
   { Asset variables }

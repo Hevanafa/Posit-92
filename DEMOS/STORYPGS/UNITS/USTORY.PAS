@@ -1,4 +1,4 @@
-unit Story;
+unit UStory;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
 
