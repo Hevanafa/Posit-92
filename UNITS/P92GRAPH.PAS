@@ -36,9 +36,8 @@ procedure RectFill(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 
+{ Optimised dithered rectangle fill based on RectFillDitherBase }
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
-procedure RectFillDitherBase(x0, y0, x1, y1: integer; const colour: byte);
-procedure AsmRectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
@@ -1030,86 +1029,6 @@ begin
     end;
   }
   end;
-end;
-
-procedure AsmRectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
-var
-  x, y, temp: integer;
-  startX, endX, startY, endY: integer;
-begin
-  startX := x0; endX := x1;
-  startY := y0; endY := y1;
-
-  if x0 > x1 then begin
-    startX := x1; endX := x0
-  end;
-  if y0 > y1 then begin
-    startY := y1; endY := y0
-  end;
-
-  if startX < 0 then startX := 0;
-  if endX >= 320 then endX := 319;
-  if startY < 0 then startY := 0;
-  if endY >= 200 then endY := 199;
-
-asm
-{ for (y = startY; y <= endY; y++) }
-@y_init:
-  mov ax, startY
-  mov y, ax
-
-@y_condition:
-  mov ax, endY
-  cmp y, ax
-  jg @y_done
-
-@y_loop:
-
-{ for (x = startX; x <= endX; x += 2) }
-@x_init:
-  mov ax, startX
-
-  { if (y and 1) = 1 then inc(x); }
-  test y, 1
-  jz @skip_inc
-  inc ax
-
-@skip_inc:  
-  mov x, ax
-
-@x_condition:
-  mov ax, endX
-  cmp x, ax
-  jg @x_done
-
-@x_loop:
-  { Pset }
-  { Offset: y * 320 + x }
-  mov ax, y
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, x
-  mov bx, ax
-
-  les di, surface
-  mov al, colour
-  mov es:[di+bx], al
-
-@x_next:
-  inc x; inc x
-  jmp @x_condition
-
-@x_done:
-
-@y_next:
-  inc y
-  jmp @y_condition
-
-@y_done:
-
-@done:
-end;
-
 end;
 
 
