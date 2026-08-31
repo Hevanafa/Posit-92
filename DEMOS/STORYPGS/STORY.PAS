@@ -7,19 +7,27 @@ interface
 uses P92BMFON;
 
 type
+  TQuoteLines = array[0..3] of string;
+
   PStoryManager = ^TStoryManager;
   TStoryManager = object
     isStory: boolean;
-    procedure StartPage(const page: word);
+
+    procedure StartPage(const lines: TQuoteLines; const lineCount: word);
     procedure NextPage;
     procedure TryNextPage;
+
     constructor Init(aFont: PBMFont);
     destructor Done; virtual;
+
     procedure Update;
     procedure Draw;
     procedure DrawDebug;
   private
     fFont: PBMFont;
+
+    fLines: TQuoteLines;
+    fLineCount: word;
   end;
 
 
@@ -31,21 +39,23 @@ const
   charInterval = 0.016;
 
 var
-  lines: array[0..3] of string;
-  lineCount: word;
   activePage, storyRow, storyCol: integer;
   elapsed: double;
 
-procedure TStoryManager.StartPage(const page: word);
+procedure TStoryManager.StartPage(const lines: TQuoteLines; const lineCount: word);
 begin
   isStory := true;
-  activePage := page;
+
+  fLines := lines;
+  fLineCount := lineCount;
+
   storyRow := 0; storyCol := 1;
   elapsed := 0;
 
+{
   case page of
     1: begin
-      lines[0] := 'Hello world!';
+      fLines[0] := 'Hello world!';
       lineCount := 1;
     end;
     2: begin
@@ -63,6 +73,7 @@ begin
     else
       isStory := false;
   end;
+}
 end;
 
 procedure TStoryManager.NextPage;
@@ -114,6 +125,8 @@ begin
 end;
 
 procedure TStoryManager.Draw;
+const
+  Top = 100;
 var
   a: integer;
 begin
@@ -121,14 +134,15 @@ begin
 
   { Render full text }
   for a:=0 to storyRow - 1 do
-    PrintBMFont(fFont^, lines[a], 0, fFont^.lineHeight * a);
+    PrintBMFont(fFont^, lines[a], 10, Top + fFont^.lineHeight * a);
 
   { Render partially }
   if storyRow < lineCount then
     PrintBMFont(
       fFont^,
       copy(lines[storyRow], 1, storyCol),
-      0, storyRow * fFont^.lineHeight);
+      10,
+      Top + storyRow * fFont^.lineHeight);
 end;
 
 
