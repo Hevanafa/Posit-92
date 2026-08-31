@@ -32,6 +32,8 @@ function HasHoveredWidget: boolean;
 { Required: Called before UpdateMouse }
 procedure UpdateGUILastMouseButton;
 
+function GetMouseJustPressed: boolean;
+
 { Required: Called after UpdateMouse }
 procedure UpdateGUIMousePoint;
 
@@ -139,6 +141,11 @@ begin
 
   mouseJustPressed := (GetMouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
   mouseJustReleased := (GetMouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
+end;
+
+function GetMouseJustPressed: boolean;
+begin
+  GetMouseJustPressed := mouseJustPressed
 end;
 
 function IsMousePointInZone(const zone: TZone): boolean;

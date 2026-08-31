@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX, P92IMGUI, P92Geom,
+  P92CORE, P92BMFON, P92GRAPH, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX, P92IMGUI, P92Geom,
   UStory;
 
 var
@@ -81,7 +81,7 @@ function LabelButton(const caption: string; const x, y, width, height: integer):
 var
   zone: TZone;
   thisWidgetID: integer;
-  buttonColour: word;
+  buttonColour: byte;
 begin
   zone.x := x;
   zone.y := y;
@@ -95,28 +95,28 @@ begin
   if IsMousePointInZone(zone) then begin
     SetHotWidget(thisWidgetID);
 
-    if mouseJustPressed then
-      activeWidget := thisWidgetID;
+    if GetMouseJustPressed then
+      SetActiveWidget(thisWidgetID);
   end;
 
   { Render logic }
-  if activeWidget = thisWidgetID then
-    buttonColour := ButtonPressColour
-  else if hotWidget = thisWidgetID then
-    buttonColour := ButtonHoverColour
+  if GetActiveWidget = thisWidgetID then
+    buttonColour := $05
+  else if GetHotWidget = thisWidgetID then
+    buttonColour := $0F
   else
-    buttonColour := ButtonIdleColour;
+    buttonColour := $09;
 
-  RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
-  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), ButtonIdleColour);
+  { RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour); }
+  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
 
-  UnderlinedLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4));
+  UnderlinedLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4), buttonColour);
 
-  if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
+  if mouseJustReleased and (GetHotWidget = thisWidgetID) and (GetActiveWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
-    Button := true
+    LabelButton := true
   else
-    Button := false;
+    LabelButton := false;
 end;
 
 
