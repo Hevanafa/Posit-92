@@ -1130,40 +1130,47 @@ begin
   end;
 
   { First half }
-  dy1:=y1 - y0; dy2:=y2 - y0;
-  if dy1 > 0 then dx1:=((x1-x0) * FixScale) div dy1 else dx1 := 0;
-  if dy2 > 0 then dx2:=((x2-x0) * FixScale) div dy2 else dx2 := 0;
+  dy1 := y1 - y0;
+  dy2 := y2 - y0;
 
-  sx1:=x0 * FixScale; sx2:=x0*FixScale;
+  if dy1 > 0 then
+    dx1:=((x1-x0) * FixScale) div dy1
+  else
+    dx1 := 0;
+
+  if dy2 > 0 then
+    dx2:=((x2-x0) * FixScale) div dy2
+  else
+    dx2 := 0;
+
+  sx1 := x0 * FixScale;
+  sx2 := x0 * FixScale;
 
   for y:=y0 to y1-1 do begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    hline(startX, endX, y, colour);
+    HLine(startX, endX, y, colour);
 
     inc(sx1, dx1);
     inc(sx2, dx2)
   end;
 
   { Second half }
-  dy1:=y2-y1;
-  if dy1 > 0 then dx1:=((x2-x1) * FixScale) div dy1 else dx1:=0;
+  dy1 := y2 - y1;
 
-  sx1:=x1 * FixScale;
+  if dy1 > 0 then
+    dx1 := ((x2-x1) * FixScale) div dy1
+  else
+    dx1 := 0;
+
+  sx1 := x1 * FixScale;
 
   for y:=y1 to y2 do begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    if startX > endX then begin
-      tmp:=startX; startX:=endX; endX:=tmp
-    end;
-
-    while startX <= endX do begin
-      AsmPset(startX, y, colour);
-      inc(startX);
-    end;
+    hline(startX, endX, y, colour);
 
     inc(sx1, dx1);
     inc(sx2, dx2)

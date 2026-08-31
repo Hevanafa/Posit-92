@@ -119,7 +119,8 @@ begin
 
   {
     Original: 12.5950s
-    First half with hline: 6.9680s
+    First half with HLine: 6.9680s
+    Second half with HLine: 0.8557s
   }
   for a:=1 to OpCount do
     TriFill(
