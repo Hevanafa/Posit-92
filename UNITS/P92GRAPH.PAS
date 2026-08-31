@@ -995,9 +995,15 @@ begin
   for b := startY to endY do begin
     rowOffset := b * VGAWidth;
 
-    for a := startX to endX do
-      if ((a + b) and 1) = 1 then
-        surface^[rowOffset + a] := colour;
+    if ((startX + b) and 1) = 1 then
+      a := startX
+    else
+      a := startX + 1;
+
+    while a <= endX do begin
+      surface^[rowOffset + a] := colour;
+      inc(a, 2)
+    end;
   end;
 end;
 
