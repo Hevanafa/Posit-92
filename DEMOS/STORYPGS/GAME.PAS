@@ -112,7 +112,7 @@ begin
 
   UnderlinedLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4), buttonColour);
 
-  if mouseJustReleased and (GetHotWidget = thisWidgetID) and (GetActiveWidget = thisWidgetID) then
+  if GetMouseJustReleased and (GetHotWidget = thisWidgetID) and (GetActiveWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
     LabelButton := true
   else
