@@ -7,17 +7,19 @@ interface
 uses P92BMFON;
 
 type
+  PStoryManager = ^TStoryManager;
   TStoryManager = object
     isStory: boolean;
     procedure StartPage(const page: word);
     procedure NextPage;
     procedure TryNextPage;
-    constructor Create(font: PBMFont);
+    constructor Init(aFont: PBMFont);
+    destructor Done; virtual;
     procedure Update;
     procedure Draw;
     procedure DrawDebug;
   private
-    fFont: TBMFont;
+    fFont: PBMFont;
   end;
 
 
@@ -77,13 +79,20 @@ begin
     storyRow := lineCount;
 end;
 
-procedure TStoryManager.Create(aFont: PBMFont);
+constructor TStoryManager.Init(aFont: PBMFont);
 begin
   isStory := false;
+
   storyRow := 0;
   storyCol := 1;
   elapsed := 0;
-  self.fFont := aFont
+  fFont := aFont
+end;
+
+destructor TStoryManager.Done;
+begin
+  if assigned(fFont) then
+    fFont := nil;
 end;
 
 procedure TStoryManager.Update;
@@ -112,14 +121,14 @@ begin
 
   { Render full text }
   for a:=0 to storyRow - 1 do
-    PrintBMFont(fFont, lines[a], 0, fFont.lineHeight * a);
+    PrintBMFont(fFont^, lines[a], 0, fFont^.lineHeight * a);
 
   { Render partially }
   if storyRow < lineCount then
     PrintBMFont(
-      fFont,
+      fFont^,
       copy(lines[storyRow], 1, storyCol),
-      0, storyRow * fFont.lineHeight);
+      0, storyRow * fFont^.lineHeight);
 end;
 
 

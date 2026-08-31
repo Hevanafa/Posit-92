@@ -8,7 +8,7 @@ var
   { Asset variables }
   texDosuEXE: array[0..1] of TTexture;
   fontP92Sans: TBMFont;
-  StoryMan: TStoryManager;
+  mgrStory: TStoryManager;
 
   { Game state variables }
   t: double;
@@ -25,14 +25,16 @@ end;
 
 procedure OnCleanup; far;
 begin
+  mgrStory.Done;
+
   FreeTex(texDosuEXE[0]);
   FreeTex(texDosuEXE[1]);
 end;
 
 procedure OnReady; far;
 begin
-  StoryMan := TStoryManager.Create(fontP92Sans);
-  StoryMan.StartPage(1);
+  mgrStory.Init(@fontP92Sans);
+  mgrStory.StartPage(1);
   lastSpace := false;
 end;
 
@@ -42,14 +44,14 @@ var
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if StoryMan.isStory then begin
+  if mgrStory.isStory then begin
     if lastSpace <> isKeyDown(SC_SPACE) then begin
       lastSpace := isKeyDown(SC_SPACE);
       if lastSpace then
-        StoryMan.TryNextPage;
+        mgrStory.TryNextPage;
     end;
 
-    StoryMan.Update;
+    mgrStory.Update;
   end;
 
   t:=t + DeltaTime
@@ -62,8 +64,8 @@ var
 begin
   cls($7D);
 
-  StoryMan.Draw;
-  StoryMan.DrawDebug;
+  mgrStory.Draw;
+  mgrStory.DrawDebug;
 end;
 
 
