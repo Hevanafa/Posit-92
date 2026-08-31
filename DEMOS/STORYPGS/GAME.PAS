@@ -10,7 +10,7 @@ var
   fontP92Sans: TBMFont;
 
   texDosuEXE: array[0..1] of TTexture;
-  texMarcus: TTexture;
+  texMarcus, texSeneca: TTexture;
 
   { Game state variables }
   t: double;
@@ -72,6 +72,35 @@ begin
       mgrStory.SetPortrait(@texMarcus);
       mgrStory.SetSpeaker('Marcus Aurelius');
     end;
+
+    4: begin
+      lines[0] := 'Sometimes even to live';
+      lines[1] := 'is an act of courage';
+      lineCount := 2;
+
+      mgrStory.SetPortrait(@texSeneca);
+      mgrStory.SetSpeaker('Lucius Annaeus Seneca');
+    end;
+    5: begin
+      lines[0] := 'Luck is what happens';
+      lines[1] := 'when preparation meets opportunity';
+      lineCount := 2;
+
+      mgrStory.SetPortrait(@texSeneca);
+      mgrStory.SetSpeaker('Lucius Annaeus Seneca');
+    end;
+
+    { template }
+    999: begin
+      lines[0] := '';
+      lines[1] := '';
+      lines[2] := '';
+      lineCount := 3;
+
+      mgrStory.SetPortrait(nil);
+      mgrStory.SetSpeaker('');
+    end;
+
     else
       isStory := false;
   end;
@@ -174,12 +203,13 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
-  LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
+  LoadTex(texDosuEXE[0], 'IMG\DOSU_1.BMP');
+  LoadTex(texDosuEXE[1], 'IMG\DOSU_2.BMP');
 
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
 
-  LoadTex(texMarcus, 'IMG/MARCUS_A.BMP');
+  LoadTex(texMarcus, 'IMG\MARCUS.BMP');
+  LoadTex(texSeneca, 'IMG\SENECA.BMP');
 end;
 
 procedure OnCleanup; far;
