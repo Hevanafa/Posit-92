@@ -4,7 +4,7 @@ unit UStory;
 
 interface
 
-uses P92BMFON;
+uses P92BMFON, P92TEX;
 
 type
   TQuoteLines = array[0..3] of string;
@@ -15,6 +15,8 @@ type
 
   TStoryManager = object
     procedure StartPage(const lines: TQuoteLines; const lineCount: word);
+    procedure SetPortrait(const tex: PTexture);
+
     function IsEndOfPage: boolean;
     procedure SkipPage;
 
@@ -26,6 +28,7 @@ type
     procedure DrawDebug;
   private
     fFont: PBMFont;
+    fPortrait: PTexture;
 
     fLines: TQuoteLines;
     fLineCount: word;
@@ -52,6 +55,11 @@ begin
   elapsed := 0;
 end;
 
+procedure TStoryManager.SetPortrait(const tex: PTexture);
+begin
+  fPortrait := tex
+end;
+
 function TStoryManager.IsEndOfPage: boolean;
 begin
   IsEndOfPage := storyRow >= fLineCount
@@ -68,7 +76,9 @@ begin
   storyRow := 0;
   storyCol := 1;
   elapsed := 0;
-  fFont := aFont
+
+  fFont := aFont;
+  fPortrait := nil;
 end;
 
 destructor TStoryManager.Done;
@@ -99,20 +109,35 @@ const
   Top = 100;
 var
   a: integer;
+  s: string;
+  w: word;
 begin
-  { Render full text }
-  for a:=0 to storyRow - 1 do
-    PrintBMFont(
-      fFont^, fLines[a],
-      10, Top + fFont^.lineHeight * a);
+  if assigned(fPortrait) then begin
+    spr(fPortrait^, (VGAWidth - fPortrait^.width) div 2, 8);
+  end;
 
-  { Render partially }
-  if storyRow < fLineCount then
+  { Render full text }
+  for a:=0 to storyRow - 1 do begin
+    w := MeasureBMFont(ffont^, fLines[a]);
+
     PrintBMFont(
       fFont^,
-      copy(fLines[storyRow], 1, storyCol),
-      10,
+      fLines[a],
+      (VGAWidth - w) div 2,
+      Top + fFont^.lineHeight * a);
+  end;
+
+  { Render partially }
+  if storyRow < fLineCount then begin
+    s := copy(fLines[storyRow], 1, storyCol);
+    w := MeasureBMFont(ffont^, s);
+
+    PrintBMFont(
+      fFont^,
+      s,
+      (VGAWidth - w) div 2,
       Top + storyRow * fFont^.lineHeight);
+  end;
 end;
 
 

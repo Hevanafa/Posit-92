@@ -6,9 +6,11 @@ uses
 
 var
   { Asset variables }
-  texDosuEXE: array[0..1] of TTexture;
-  fontP92Sans: TBMFont;
   mgrStory: TStoryManager;
+  fontP92Sans: TBMFont;
+
+  texDosuEXE: array[0..1] of TTexture;
+  texMarcus: TTexture;
 
   { Game state variables }
   t: double;
@@ -40,17 +42,23 @@ var
 begin
   activePage := pageNum;
 
+  mgrStory.SetPortrait(nil);
+
   case pageNum of
     1: begin
       lines[0] := 'The happiness of your life';
       lines[1] := 'depends upon the quality';
       lines[2] := 'of your thoughts';
       lineCount := 3;
+
+      mgrStory.SetPortrait(@texMarcus);
     end;
     2: begin
       lines[0] := 'The best revenge is to be';
       lines[1] := 'unlike him who performed the injury';
       lineCount := 2;
+
+      mgrStory.SetPortrait(@texMarcus);
     end;
     3: begin
       lines[0] := 'This is the third page!';
@@ -71,6 +79,8 @@ begin
   LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
+
+  LoadTex(texMarcus, 'IMG/MARCUS_A.BMP');
 end;
 
 procedure OnCleanup; far;
