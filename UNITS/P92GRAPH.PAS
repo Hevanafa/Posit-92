@@ -968,6 +968,7 @@ procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
   startX, endX, startY, endY: integer;
   a, b: integer;
+  rowOffset: word;
 begin
   if x0 < x1 then begin
     startX := x0; endX := x1
@@ -989,12 +990,14 @@ begin
   if (startY >= VGAHeight) or (endY < 0)
     or (startX >= VGAWidth) or (endX < 0) then exit;
 
-  { TODO: Handle row stride }
   { TODO: Handle inline asm }
-  for b:=y0 to y1 do
+  for b:=y0 to y1 do begin
+    rowOffset := b * VGAWidth;
+
     for a:=x0 to x1 do
       if (a+b) and 1 = 1 then
-        surface^[b*320+a] := colour;
+        surface^[rowOffset + a] := colour;
+  end;
 end;
 
 procedure AsmRectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
