@@ -40,7 +40,7 @@ procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
-procedure TriFillBase(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 
 implementation
@@ -770,11 +770,9 @@ begin
   if (x0 >= VGAWidth) and (x1 >= VGAWidth) then exit;
 
   if x0 <= x1 then begin
-    startX := x0;
-    endX := x1
+    startX := x0; endX := x1
   end else begin
-    startX := x1;
-    endX := x0
+    startX := x1; endX := x0
   end;
 
   if startX < 0 then startX := 0;
@@ -1072,7 +1070,9 @@ begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
+    if startX > endX then begin
+      tmp:=startX; startX:=endX; endX:=tmp
+    end;
 
     while startX <= endX do begin
       AsmPset(startX, y, colour);
@@ -1093,7 +1093,72 @@ begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
+    if startX > endX then begin
+      tmp:=startX; startX:=endX; endX:=tmp
+    end;
+
+    while startX <= endX do begin
+      AsmPset(startX, y, colour);
+      inc(startX);
+    end;
+
+    inc(sx1, dx1);
+    inc(sx2, dx2)
+  end;
+end;
+
+procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+const
+  FixShift = 8;
+  FixScale = 1 shl FixShift;
+var
+  y, tmp, dx1, dx2, sx1, sx2, dy1, dy2: integer;
+  startX, endX: integer;
+begin
+  { Sort vertices }
+  if y0>y1 then begin
+    tmp:=y0; y0:=y1; y1:=tmp;
+    tmp:=x0; x0:=x1; x1:=tmp
+  end;
+  if y0>y2 then begin
+    tmp:=y0; y0:=y2; y2:=tmp;
+    tmp:=x0; x0:=x2; x2:=tmp
+  end;
+  if y1>y2 then begin
+    tmp:=y1; y1:=y2; y2:=tmp;
+    tmp:=x1; x1:=x2; x2:=tmp
+  end;
+
+  { First half }
+  dy1:=y1 - y0; dy2:=y2 - y0;
+  if dy1 > 0 then dx1:=((x1-x0) * FixScale) div dy1 else dx1 := 0;
+  if dy2 > 0 then dx2:=((x2-x0) * FixScale) div dy2 else dx2 := 0;
+
+  sx1:=x0 * FixScale; sx2:=x0*FixScale;
+
+  for y:=y0 to y1-1 do begin
+    startX := sx1 shr FixShift;
+    endX := sx2 shr FixShift;
+
+    hline(startX, endX, y, colour);
+
+    inc(sx1, dx1);
+    inc(sx2, dx2)
+  end;
+
+  { Second half }
+  dy1:=y2-y1;
+  if dy1 > 0 then dx1:=((x2-x1) * FixScale) div dy1 else dx1:=0;
+
+  sx1:=x1 * FixScale;
+
+  for y:=y1 to y2 do begin
+    startX := sx1 shr FixShift;
+    endX := sx2 shr FixShift;
+
+    if startX > endX then begin
+      tmp:=startX; startX:=endX; endX:=tmp
+    end;
 
     while startX <= endX do begin
       AsmPset(startX, y, colour);
