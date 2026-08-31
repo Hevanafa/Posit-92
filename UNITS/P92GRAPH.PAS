@@ -1109,12 +1109,12 @@ end;
 
 procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 const
-  { TODO: Apparently this causes a bug: only up to 256, not the full VGAWidth }
-  FixShift = 8;
+  FixShift = 16;
   FixScale = 1 shl FixShift;
 var
-  y, tmp, dx1, dx2, sx1, sx2, dy1, dy2: integer;
-  startX, endX: integer;
+  y, tmp: integer;
+  dx1, dx2, sx1, sx2, dy1, dy2: longint;
+  startX, endX: longint;
 begin
   { Sort vertices }
   if y0>y1 then begin

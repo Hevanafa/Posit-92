@@ -32,8 +32,8 @@ end;
 
 procedure DrawOnce; far;
 const
-  { OpCount = 1000; }  { standard }
-  OpCount = 100;  { minimal }
+  OpCount = 1000;  { standard }
+  { OpCount = 100; }  { minimal }
   { OpCount = 5000; }
 var
   a: word;
@@ -122,6 +122,7 @@ begin
     Original: 12.5950s
     First half with HLine: 6.9680s
     Second half with HLine: 0.8557s
+    After longint precision fix: 0.9281s
   }
   for a:=1 to OpCount do
     TriFill(
