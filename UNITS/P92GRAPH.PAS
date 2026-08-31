@@ -991,11 +991,12 @@ begin
     or (startX >= VGAWidth) or (endX < 0) then exit;
 
   { TODO: Handle inline asm }
-  for b:=y0 to y1 do begin
+
+  for b := startY to endY do begin
     rowOffset := b * VGAWidth;
 
-    for a:=x0 to x1 do
-      if (a+b) and 1 = 1 then
+    for a := startX to endX do
+      if ((a + b) and 1) = 1 then
         surface^[rowOffset + a] := colour;
   end;
 end;
