@@ -50,6 +50,7 @@ procedure InitImmediateGUI(font: PBMFont);
 
 procedure TextLabel(const text: string; const x, y: integer);
 procedure CentredLabel(const text: string; const cx, y: integer);
+procedure UnderlinedLabel(const text: string; const x, y: integer; const lineColour: byte);
 
 function Button(const caption: string; const x, y, width, height: integer): boolean;
 
@@ -200,6 +201,19 @@ begin
   w := MeasureBMFont(activeFont^, text);
   PrintBMFont(activeFont^, text, cx - w shr 1, y)
 end;
+
+procedure UnderlinedLabel(const text: string; const x, y: integer; const lineColour: byte);
+var
+  w: integer;
+begin
+  AssertFontSet;
+
+  w := MeasureBMFont(activeFont^, text);
+  line(x, y + activeFont^.lineHeight - 1, x + w, y + activeFont^.lineHeight - 1, lineColour);
+
+  PrintBMFont(activeFont^, text, x, y)
+end;
+
 
 function Button(const caption: string; const x, y, width, height: integer): boolean;
 var
