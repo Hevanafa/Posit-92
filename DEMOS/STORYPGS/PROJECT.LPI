@@ -55,6 +55,9 @@
         <RunWithoutDebug Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dP92_IMGUI"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions>

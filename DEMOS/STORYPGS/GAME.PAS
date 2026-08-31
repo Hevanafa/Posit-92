@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX,
+  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX, P92IMGUI,
   UStory;
 
 var
@@ -138,7 +138,12 @@ begin
 
   if isStory then begin
     mgrStory.Draw;
-    mgrStory.DrawDebug;
+    { mgrStory.DrawDebug; }
+
+    if mgrStory.IsEndOfPage then begin
+      if Button('NEXT', 100, 100, 64, 32) then
+        TryNextPage;
+    end;
   end else
     Print('Press Esc to exit', 0, VGAHeight - 8, 15);
 end;
@@ -148,6 +153,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.DefaultBMFont := @fontP92Sans;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
