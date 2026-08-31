@@ -119,6 +119,53 @@ begin
     LabelButton := false;
 end;
 
+function LabelButtonFit(const caption: string; const x, y: integer): boolean;
+const
+  Padding = 4;
+var
+  zone: TZone;
+  thisWidgetID: integer;
+  buttonColour: byte;
+  w: word;
+begin
+  w := MeasureBMFont(fontP92Sans, caption);
+
+  zone.x := x;
+  zone.y := y;
+  zone.width := w + Padding * 2;
+  zone.height := fontP92Sans.lineHeight + Padding * 2;
+
+  { Update logic }
+  thisWidgetID := GetNextWidgetID;
+  IncNextWidgetID;
+
+  if IsMousePointInZone(zone) then begin
+    SetHotWidget(thisWidgetID);
+
+    if GetMouseJustPressed then
+      SetActiveWidget(thisWidgetID);
+  end;
+
+  { Render logic }
+  if GetActiveWidget = thisWidgetID then
+    buttonColour := $05
+  else if GetHotWidget = thisWidgetID then
+    buttonColour := $0F
+  else
+    buttonColour := $09;
+
+  { RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour); }
+  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
+
+  UnderlinedLabel(caption, trunc(zone.x + Padding), trunc(zone.y + Padding), buttonColour);
+
+  if GetMouseJustReleased and (GetHotWidget = thisWidgetID) and (GetActiveWidget = thisWidgetID) then
+    { activeWidget = -1 }  { Index reset is handled at the end of draw }
+    LabelButtonFit := true
+  else
+    LabelButtonFit := false;
+end;
+
 
 procedure OnPreload; far;
 begin
@@ -185,7 +232,7 @@ begin
     { mgrStory.DrawDebug; }
 
     if mgrStory.IsEndOfPage then begin
-      if LabelButton('NEXT >', 100, 100, 64, 32) then
+      if LabelButtonFit('NEXT >', 100, VGAHeight - 40) then
         TryNextPage;
     end;
   end else
