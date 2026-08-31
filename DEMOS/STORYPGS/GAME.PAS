@@ -78,6 +78,8 @@ end;
 
 
 function LabelButton(const caption: string; const x, y, width, height: integer): boolean;
+const
+  Padding = 4;
 var
   zone: TZone;
   thisWidgetID: integer;
@@ -108,9 +110,9 @@ begin
     buttonColour := $09;
 
   { RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour); }
-  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
+  { Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour); }
 
-  UnderlinedLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4), buttonColour);
+  UnderlinedLabel(caption, trunc(zone.x + Padding), trunc(zone.y + Padding), buttonColour);
 
   if GetMouseJustReleased and (GetHotWidget = thisWidgetID) and (GetActiveWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
@@ -224,6 +226,8 @@ end;
 procedure Draw; far;
 var
   a: integer;
+  s: string;
+  w: word;
 begin
   cls($7D);
 
@@ -232,7 +236,10 @@ begin
     { mgrStory.DrawDebug; }
 
     if mgrStory.IsEndOfPage then begin
-      if LabelButtonFit('NEXT >', 100, VGAHeight - 40) then
+      s := 'NEXT >';
+      w := MeasureBMFont(fontP92Sans, s);
+
+      if LabelButton(s, (VGAWidth - w) div 2, VGAHeight - 30, w + 8, fontP92Sans.lineHeight + 8) then
         TryNextPage;
     end;
   end else
