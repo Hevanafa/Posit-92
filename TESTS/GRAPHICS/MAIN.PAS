@@ -102,6 +102,7 @@ begin
   {
     Original: 5.4095s
     Legacy AsmRectFillDither: 3.0664s
+    After clipping: 1.3520s
   }
   for a:=1 to OpCount do
     RectFillDither(

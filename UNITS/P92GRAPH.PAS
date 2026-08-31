@@ -966,15 +966,31 @@ end;
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
-  a, b, temp: integer;
+  startX, endX, startY, endY: integer;
+  a, b: integer;
 begin
-  if x0 > x1 then begin
-    temp := x0; x0 := x1; x1 := temp
-  end;
-  if y0 > y1 then begin
-    temp := y0; y0 := y1; y1 := temp
+  if x0 < x1 then begin
+    startX := x0; endX := x1
+  end else begin
+    startX := x1; endX := x0
   end;
 
+  if y0 < y1 then begin
+    startY := y0; endY := y1
+  end else begin
+    startY := y1; endY := y0
+  end;
+
+  if startX < 0 then startX := 0;
+  if endX >= VGAWidth then endX := VGAWidth - 1;
+  if startY < 0 then startY := 0;
+  if endY >= VGAHeight then endY := VGAHeight - 1;
+
+  if (startY >= VGAHeight) or (endY < 0)
+    or (startX >= VGAWidth) or (endX < 0) then exit;
+
+  { TODO: Handle row stride }
+  { TODO: Handle inline asm }
   for b:=y0 to y1 do
     for a:=x0 to x1 do
       if (a+b) and 1 = 1 then
