@@ -32,7 +32,8 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1000;  { standard }
+  { OpCount = 1000; }  { standard }
+  OpCount = 100;  { minimal }
   { OpCount = 5000; }
 var
   a: word;

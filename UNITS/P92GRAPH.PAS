@@ -1109,6 +1109,7 @@ end;
 
 procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 const
+  { TODO: Apparently this causes a bug: only up to 256, not the full VGAWidth }
   FixShift = 8;
   FixScale = 1 shl FixShift;
 var
@@ -1134,7 +1135,7 @@ begin
   dy2 := y2 - y0;
 
   if dy1 > 0 then
-    dx1:=((x1-x0) * FixScale) div dy1
+    dx1 := ((x1-x0) * FixScale) div dy1
   else
     dx1 := 0;
 
@@ -1146,7 +1147,7 @@ begin
   sx1 := x0 * FixScale;
   sx2 := x0 * FixScale;
 
-  for y:=y0 to y1-1 do begin
+  for y := y0 to y1-1 do begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
@@ -1166,11 +1167,11 @@ begin
 
   sx1 := x1 * FixScale;
 
-  for y:=y1 to y2 do begin
+  for y := y1 to y2 do begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    hline(startX, endX, y, colour);
+    HLine(startX, endX, y, colour);
 
     inc(sx1, dx1);
     inc(sx2, dx2)
