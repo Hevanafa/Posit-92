@@ -141,9 +141,10 @@ begin
   {
     Original: 8.8999s
     AsmCircFill: DNF
+    After first HLine on [cx - x, cx + x]: 6.6979s
   }
   for a:=1 to OpCount do
-    AsmCircFill(
+    CircFill(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       10 + random(50),
