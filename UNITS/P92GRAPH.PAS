@@ -40,7 +40,7 @@ procedure CircFillDither(const cx, cy, radius: integer; const colour: byte);
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 
 procedure Tri(const x0, y0, x1, y1, x2, y2: integer; const colour: byte);
-procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure TriFillBase(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 
 
 implementation
@@ -1039,10 +1039,10 @@ begin
 end;
 
 
-procedure TriFill(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
+procedure TriFillBase(x0, y0, x1, y1, x2, y2: integer; const colour: byte);
 const
-  FIX_SHIFT = 8;
-  FIX_SCALE = 1 shl FIX_SHIFT;
+  FixShift = 8;
+  FixScale = 1 shl FixShift;
 var
   y, tmp, dx1, dx2, sx1, sx2, dy1, dy2: integer;
   startX, endX: integer;
@@ -1063,14 +1063,14 @@ begin
 
   { First half }
   dy1:=y1 - y0; dy2:=y2 - y0;
-  if dy1 > 0 then dx1:=((x1-x0) * FIX_SCALE) div dy1 else dx1 := 0;
-  if dy2 > 0 then dx2:=((x2-x0) * FIX_SCALE) div dy2 else dx2 := 0;
+  if dy1 > 0 then dx1:=((x1-x0) * FixScale) div dy1 else dx1 := 0;
+  if dy2 > 0 then dx2:=((x2-x0) * FixScale) div dy2 else dx2 := 0;
 
-  sx1:=x0 * FIX_SCALE; sx2:=x0*FIX_SCALE;
+  sx1:=x0 * FixScale; sx2:=x0*FixScale;
 
   for y:=y0 to y1-1 do begin
-    startX := sx1 shr FIX_SHIFT;
-    endX := sx2 shr FIX_SHIFT;
+    startX := sx1 shr FixShift;
+    endX := sx2 shr FixShift;
 
     if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
 
@@ -1085,13 +1085,13 @@ begin
 
   { Second half }
   dy1:=y2-y1;
-  if dy1 > 0 then dx1:=((x2-x1) * FIX_SCALE) div dy1 else dx1:=0;
+  if dy1 > 0 then dx1:=((x2-x1) * FixScale) div dy1 else dx1:=0;
 
-  sx1:=x1 * FIX_SCALE;
+  sx1:=x1 * FixScale;
 
   for y:=y1 to y2 do begin
-    startX := sx1 shr FIX_SHIFT;
-    endX := sx2 shr FIX_SHIFT;
+    startX := sx1 shr FixShift;
+    endX := sx2 shr FixShift;
 
     if startX > endX then begin tmp:=startX; startX:=endX; endX:=tmp; end;
 
