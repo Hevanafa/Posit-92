@@ -218,6 +218,11 @@ begin
 
   FreeTex(texDosuEXE[0]);
   FreeTex(texDosuEXE[1]);
+
+  FreeTex(texMarcus);
+  FreeTex(texSeneca);
+
+  FreeBMFont(fontP92Sans);
 end;
 
 procedure OnReady; far;
