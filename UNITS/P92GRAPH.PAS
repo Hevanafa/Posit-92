@@ -999,18 +999,36 @@ begin
       a := startX + 1;
 
     asm
-push es
-les di, surface
+  push es
+  les di, surface
 
-{ TODO: Handle inline asm }
+  add di, rowOffset
+  add di, a
 
-pop es
+  mov cx, endX
+  sub cx, a
+  jb @done
+  shr cx, 1
+  inc cx
+
+  mov al, colour
+  cld
+
+@dither:
+  stosb
+  inc di  { skip 1 pixel }
+  loop @dither
+
+@done:
+  pop es
     end;
 
+  {
     while a <= endX do begin
       surface^[rowOffset + a] := colour;
       inc(a, 2)
     end;
+  }
   end;
 end;
 

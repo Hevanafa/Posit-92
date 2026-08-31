@@ -105,6 +105,7 @@ begin
     After clipping: 9.8359s
     After row stride: 6.9543s
     After while-loop: 4.1920s
+    After inline asm: 0.9902s
   }
   for a:=1 to OpCount do
     RectFillDither(
