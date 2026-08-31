@@ -19,6 +19,8 @@ interface
 {$IFDEF P92_IMGUI}
 uses P92BMFON, P92TEX, P92GEOM;
 
+{ Interaction helpers }
+
 function GetHotWidget: integer;
 procedure SetHotWidget(const widgetID: integer);
 function GetActiveWidget: integer;
@@ -26,19 +28,18 @@ procedure SetActiveWidget(const widgetID: integer);
 function GetNextWidgetID: integer;
 procedure IncNextWidgetID;
 
+function GetMouseJustPressed: boolean;
+function GetMouseJustReleased: boolean;
+function IsMousePointInZone(const zone: TZone): boolean;
+
 { Can be used with drawMouse }
 function HasHoveredWidget: boolean;
 
 { Required: Called before UpdateMouse }
 procedure UpdateGUILastMouseButton;
 
-function GetMouseJustPressed: boolean;
-function GetMouseJustReleased: boolean;
-
 { Required: Called after UpdateMouse }
 procedure UpdateGUIMousePoint;
-
-function IsMousePointInZone(const zone: TZone): boolean;
 
 { Required: Called at the end of update routine }
 procedure ResetWidgetIndices;
@@ -125,6 +126,21 @@ begin
   inc(nextWidgetID)
 end;
 
+function GetMouseJustPressed: boolean;
+begin
+  GetMouseJustPressed := mouseJustPressed
+end;
+
+function GetMouseJustReleased: boolean;
+begin
+  GetMouseJustReleased := mouseJustReleased
+end;
+
+function IsMousePointInZone(const zone: TZone): boolean;
+begin
+  IsMousePointInZone := PointInZone(mousePoint, zone)
+end;
+
 function HasHoveredWidget: boolean;
 begin
   HasHoveredWidget := hotWidget > -1
@@ -142,21 +158,6 @@ begin
 
   mouseJustPressed := (GetMouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
   mouseJustReleased := (GetMouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
-end;
-
-function GetMouseJustPressed: boolean;
-begin
-  GetMouseJustPressed := mouseJustPressed
-end;
-
-function GetMouseJustReleased: boolean;
-begin
-  GetMouseJustReleased := mouseJustReleased
-end;
-
-function IsMousePointInZone(const zone: TZone): boolean;
-begin
-  IsMousePointInZone := PointInZone(mousePoint, zone)
 end;
 
 procedure ResetWidgetIndices;

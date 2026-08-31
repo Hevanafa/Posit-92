@@ -925,6 +925,7 @@ begin
       if ((a + cy - y) and 1) = 1 then
         AsmPset(a, cy - y, colour);
     end;
+
     for a:=cx-y to cx+y do begin
       if ((a + cy + x) and 1) = 1 then
         AsmPset(a, cy + x, colour);
