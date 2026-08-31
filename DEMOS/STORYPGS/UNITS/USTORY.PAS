@@ -147,7 +147,17 @@ begin
       Top + storyRow * fFont^.lineHeight);
   end;
 
-  { TODO: Render the name }
+  { Render the name }
+  if IsEndOfPage then begin
+    s := '- ' + fSpeakerName;
+    w := MeasureBMFont(fFont^, s);
+
+    PrintBMFont(
+      fFont^,
+      s,
+      (VGAWidth - w) div 2,
+      top + (fLineCount + 1) * ffont^.lineHeight)
+  end;
 end;
 
 
