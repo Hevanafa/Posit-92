@@ -4,6 +4,8 @@
 
   Tested on DOSBox-X with 20000 cycles/ms
   RandSeed is assigned in the OnReady procedure
+
+  Time limit: 10 seconds, otherwise DNF
 }
 
 program BaseTest;
@@ -124,6 +126,7 @@ begin
     Second half with HLine: 0.8557s
     After longint precision fix: 0.9281s
   }
+  {
   for a:=1 to OpCount do
     TriFill(
       random(VGAWidth + 20) - 10,
@@ -132,6 +135,18 @@ begin
       random(VGAHeight + 20) - 10,
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
+      random(256));
+  }
+
+  {
+    Original: 8.8999s
+    AsmCircFill: DNF
+  }
+  for a:=1 to OpCount do
+    AsmCircFill(
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      10 + random(50),
       random(256));
 
   endTick := GetTimer;
