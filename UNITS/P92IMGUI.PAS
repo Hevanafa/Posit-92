@@ -17,7 +17,7 @@ unit P92IMGUI;
 interface
 
 {$IFDEF P92_IMGUI}
-uses P92BMFON, P92TEX;
+uses P92BMFON, P92TEX, P92GEOM;
 
 function GetHotWidget: integer;
 procedure SetHotWidget(const widgetID: integer);
@@ -34,6 +34,8 @@ procedure UpdateGUILastMouseButton;
 
 { Required: Called after UpdateMouse }
 procedure UpdateGUIMousePoint;
+
+function IsMousePointInZone(const zone: TZone): boolean;
 
 { Required: Called at the end of update routine }
 procedure ResetWidgetIndices;
@@ -66,7 +68,7 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  P92GEOM, P92MOUSE, P92PANIC, P92GRAPH;
+  P92MOUSE, P92PANIC, P92GRAPH;
 
 const
   ButtonPressColour = $40;
@@ -137,6 +139,11 @@ begin
 
   mouseJustPressed := (GetMouseButton <> MouseButtonNone) and (lastMouseButton = MouseButtonNone);
   mouseJustReleased := (GetMouseButton = MouseButtonNone) and (lastMouseButton <> MouseButtonNone)
+end;
+
+function IsMousePointInZone(const zone: TZone): boolean;
+begin
+  IsMousePointInZone := PointInZone(mousePoint, zone)
 end;
 
 procedure ResetWidgetIndices;

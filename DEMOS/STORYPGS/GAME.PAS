@@ -1,7 +1,7 @@
 
 uses
   CRT, DOS,
-  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX, P92IMGUI,
+  P92CORE, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA, P92TEX, P92IMGUI, P92Geom,
   UStory;
 
 var
@@ -76,6 +76,50 @@ begin
   mgrStory.StartPage(lines, lineCount);
 end;
 
+
+function LabelButton(const caption: string; const x, y, width, height: integer): boolean;
+var
+  zone: TZone;
+  thisWidgetID: integer;
+  buttonColour: word;
+begin
+  zone.x := x;
+  zone.y := y;
+  zone.width := width;
+  zone.height := height;
+
+  { Update logic }
+  thisWidgetID := GetNextWidgetID;
+  IncNextWidgetID;
+
+  if IsMousePointInZone(zone) then begin
+    SetHotWidget(thisWidgetID);
+
+    if mouseJustPressed then
+      activeWidget := thisWidgetID;
+  end;
+
+  { Render logic }
+  if activeWidget = thisWidgetID then
+    buttonColour := ButtonPressColour
+  else if hotWidget = thisWidgetID then
+    buttonColour := ButtonHoverColour
+  else
+    buttonColour := ButtonIdleColour;
+
+  RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
+  Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), ButtonIdleColour);
+
+  UnderlinedLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4));
+
+  if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
+    { activeWidget = -1 }  { Index reset is handled at the end of draw }
+    Button := true
+  else
+    Button := false;
+end;
+
+
 procedure OnPreload; far;
 begin
   LoadTex(texDosuEXE[0], 'IMG/DOSU_1.BMP');
@@ -141,7 +185,7 @@ begin
     { mgrStory.DrawDebug; }
 
     if mgrStory.IsEndOfPage then begin
-      if Button('NEXT', 100, 100, 64, 32) then
+      if LabelButton('NEXT >', 100, 100, 64, 32) then
         TryNextPage;
     end;
   end else
