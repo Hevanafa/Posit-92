@@ -6,6 +6,8 @@ LOG.TXT
 
 # Microsoft FON/FNT files
 DEMOS/MSFNT/FONTS/
+TESTS/FON/*.FNT
+TESTS/FON/*.FON
 
 # Compiled files
 *.EXE
