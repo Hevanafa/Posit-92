@@ -28,7 +28,7 @@ begin
   if mgrStory.IsEndOfPage then
     NextPage
   else
-    storyRow := lineCount;
+    mgrStory.SkipPage;
 end;
 
 procedure InitPage(const pageNum: word);
@@ -55,8 +55,8 @@ begin
       lines[2] := 'Third line of the third page!';
       lineCount := 3;
     end;
-    else
-      mgrStory.SetIsStory(false);
+    { else
+      mgrStory.SetIsStory(false); }
   end;
 
   mgrStory.StartPage(lines, lineCount);
@@ -81,7 +81,6 @@ end;
 procedure OnReady; far;
 begin
   mgrStory.Init(@fontP92Sans);
-  mgrStory.StartPage(1);
 
   InitPage(1);
 
@@ -94,20 +93,18 @@ var
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if mgrStory.isStory then begin
-    if lastSpace <> isKeyDown(SC_SPACE) then begin
-      lastSpace := isKeyDown(SC_SPACE);
+  if lastSpace <> isKeyDown(SC_SPACE) then begin
+    lastSpace := isKeyDown(SC_SPACE);
 
-      if lastSpace then begin
-        if mgrStory.IsEndOfPage then
-          NextPage
-        else
-          TryNextPage;
-      end;
+    if lastSpace then begin
+      if mgrStory.IsEndOfPage then
+        NextPage
+      else
+        TryNextPage;
     end;
-
-    mgrStory.Update;
   end;
+
+  mgrStory.Update;
 
   t:=t + DeltaTime
 end;

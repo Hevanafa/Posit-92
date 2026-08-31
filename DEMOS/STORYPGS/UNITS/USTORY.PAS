@@ -14,13 +14,9 @@ type
   { TStoryManager }
 
   TStoryManager = object
-    isStory: boolean;
-
     procedure StartPage(const lines: TQuoteLines; const lineCount: word);
-
     function IsEndOfPage: boolean;
-    procedure NextPage;
-    procedure TryNextPage;
+    procedure SkipPage;
 
     constructor Init(aFont: PBMFont);
     destructor Done; virtual;
@@ -49,8 +45,6 @@ var
 
 procedure TStoryManager.StartPage(const lines: TQuoteLines; const lineCount: word);
 begin
-  isStory := true;
-
   fLines := lines;
   fLineCount := lineCount;
 
@@ -63,10 +57,14 @@ begin
   IsEndOfPage := storyRow >= fLineCount
 end;
 
+procedure TStoryManager.SkipPage;
+begin
+  storyRow := fLineCount;
+  storyCol := 1;
+end;
+
 constructor TStoryManager.Init(aFont: PBMFont);
 begin
-  isStory := false;
-
   storyRow := 0;
   storyCol := 1;
   elapsed := 0;
@@ -81,16 +79,15 @@ end;
 
 procedure TStoryManager.Update;
 begin
-  if not isStory then exit;
-
-  if storyRow < lineCount then begin
+  if storyRow < fLineCount then begin
     elapsed := elapsed + DeltaTime;
+
     if elapsed >= charInterval then begin
       elapsed := 0;
       inc(storyCol)
     end;
 
-    if storyCol > length(lines[storyRow]) then begin
+    if storyCol > length(fLines[storyRow]) then begin
       storyCol := 1;
       inc(storyRow);
     end;
@@ -103,17 +100,17 @@ const
 var
   a: integer;
 begin
-  if not isStory then exit;
-
   { Render full text }
   for a:=0 to storyRow - 1 do
-    PrintBMFont(fFont^, lines[a], 10, Top + fFont^.lineHeight * a);
+    PrintBMFont(
+      fFont^, fLines[a],
+      10, Top + fFont^.lineHeight * a);
 
   { Render partially }
-  if storyRow < lineCount then
+  if storyRow < fLineCount then
     PrintBMFont(
       fFont^,
-      copy(lines[storyRow], 1, storyCol),
+      copy(fLines[storyRow], 1, storyCol),
       10,
       Top + storyRow * fFont^.lineHeight);
 end;
@@ -121,10 +118,12 @@ end;
 
 procedure TStoryManager.DrawDebug;
 begin
+  {
   if not isStory then
     print('isStory is false', 0, 0, 15)
   else
-    print('col:' + i32str(storyCol) + ', row:' + i32str(storyRow), 0, 0, 15);
+  }
+  Print('col:' + i32str(storyCol) + ', row:' + i32str(storyRow), 0, 0, 15);
 end;
 
 end.
