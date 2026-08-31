@@ -52,28 +52,6 @@ begin
   storyRow := 0; storyCol := 1;
   elapsed := 0;
 
-{
-  case page of
-    1: begin
-      fLines[0] := 'Hello world!';
-      lineCount := 1;
-    end;
-    2: begin
-      lines[0] := 'This is the second page!';
-      lines[1] := 'Second line of the second page!';
-      lines[2] := 'Third line of the second page!';
-      lineCount := 3;
-    end;
-    3: begin
-      lines[0] := 'This is the third page!';
-      lines[1] := 'Second line of the third page!';
-      lines[2] := 'Third line of the third page!';
-      lineCount := 3;
-    end;
-    else
-      isStory := false;
-  end;
-}
 end;
 
 procedure TStoryManager.NextPage;
