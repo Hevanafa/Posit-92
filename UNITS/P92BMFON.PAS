@@ -413,7 +413,7 @@ var
 begin
   PrintBMFontGlyphSprRegion := font.glyphs[ord(ch)].xadvance;
   g := @(font.glyphs[ord(ch)]);
-  SprRegion(font.texture, g^.x, g^.y, g^.width, g^.height, x, y)
+  SprRegion(font.texture, g^.x, g^.y, g^.width, g^.height, x + g^.xoffset, y + g^.yoffset)
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
