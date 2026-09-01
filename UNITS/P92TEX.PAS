@@ -466,9 +466,30 @@ procedure SprRegion(
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
+  startX, endX, startY, endY: integer;
+  offsetX, offsetY: integer;
+
   a, b: integer;
   rowOffset, pxOffset: longint;
 begin
+  startX := destX;
+  startY := destY;
+  endX := destX + srcW;
+  endY := destY + srcH;
+
+  if startX < 0 then startX := 0;
+  if startY < 0 then startY := 0;
+  if endX >= VGAWidth then endX := VGAWidth - 1;
+  if endY >= VGAHeight then endY := VGAHeight - 1;
+
+  if (startX > endX) or (startY > endY) then exit;
+
+  { Source offset }
+  offsetX := startX - destX;
+  offsetY := startY - destY;
+
+  { TODO: Apply the start & end coordinates }
+
   for b := 0 to srcH - 1 do begin
     rowOffset := (srcY + b) * tex.width;
 
