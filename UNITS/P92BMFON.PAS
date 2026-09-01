@@ -39,13 +39,15 @@ procedure FreeBMFont(var font: TBMFont);
 
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 
-{ returns: xadvance }
+{
+  Uses SprRegion internally -- easier to read
+  returns: xadvance
+}
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 
 {
   Optimised variant of PrintBMFontGlyph
   Uses inline asm for the inner loop
-  See PrintBMFontGlyph for reference
 
   This function is limited by ASM's 64k number limit when
   accessing `font.texture.data`.  So the font's bitmap
@@ -55,11 +57,6 @@ function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integ
 }
 function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
 
-function PrintBMFontGlyphSprRegion(const font: TBMFont; const ch: char; const x, y: integer): integer;
-
-{
-  Forwards glyph calls to PrintBMFontGlyphFast
-}
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 
 function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
@@ -375,11 +372,11 @@ begin
   end;
 end;
 
-function PrintBMFontGlyphSprRegion(const font: TBMFont; const ch: char; const x, y: integer): integer;
+function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   g: PBMFontGlyph;
 begin
-  PrintBMFontGlyphSprRegion := font.glyphs[ord(ch)].xadvance;
+  PrintBMFontGlyph := font.glyphs[ord(ch)].xadvance;
   g := @(font.glyphs[ord(ch)]);
 
   SprRegion(
@@ -397,7 +394,7 @@ begin
 
   for a:=1 to length(text) do begin
     { inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y)); }
-    inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y));
+    inc(xOffset, PrintBMFontGlyph(font, text[a], x + xOffset, y));
 
     if a < length(text) then
       inc(xOffset, font.spacingX);
