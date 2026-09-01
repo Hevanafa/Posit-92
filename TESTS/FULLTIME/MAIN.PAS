@@ -85,7 +85,11 @@ begin
   dateSinceEpoch := dateSinceJDN - EpochJDN;
 
   PrintCentred(
-    'Today''s date: ' + I32Str(dateSinceJDN),
+    'Today: ' + I32Str(d) + '-' + I32Str(m) + '-' + I32Str(y),
+    VGAWidth shr 1, (VGAHeight shr 1) - fontP92Sans.lineHeight);
+
+  PrintCentred(
+    'Julian date number: ' + I32Str(dateSinceJDN),
     VGAWidth shr 1, VGAHeight shr 1);
 
   PrintCentred(
