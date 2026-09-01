@@ -509,16 +509,42 @@ begin
     lds si, pixelData
 
     { TODO: inline AsmPSet }
+    add si, srcPxOffset
 
+    mov ax, b
+    mov bx, VGAWidth
+    mul bx
+    add ax, startX
+    mov di, ax
+
+    mov cx, endX
+    sub cx, startX
+    inc cx  { pixel count, inclusive }
+
+    mov ah, transparencyKey
+
+    @loop:
+      lodsb  { al = [ds:si++] }
+      cmp al, ah
+      je @skip
+      mov es:[di], al
+
+    @skip:
+      inc di
+      loop @loop
+
+    pop ds
     pop es
     end;
 
+  {
     for a := startX to endX do begin
       if tex.data^[srcPxOffset] <> transparencyKey then
         AsmPSet(a, b, tex.data^[srcPxOffset]);
 
       inc(srcPxOffset)
     end;
+  }
   end;
 end;
 
