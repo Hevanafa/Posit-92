@@ -473,9 +473,11 @@ var
 
   a, b: integer;
   { pixel offset }
-  srcRowBase: longint;
+  srcRowBase: word;
   { pixel offset }
-  srcPxOffset: longint;
+  srcPxOffset: word;
+
+  pixelData: PByteArray;
 begin
   { Handle clipping logic }
   startX := destX;
@@ -493,9 +495,23 @@ begin
   srcOffsetX := startX - destX;
   srcOffsetY := startY - destY;
 
+  pixelData := tex.data;
+
   for b := startY to endY do begin
     srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
     srcPxOffset := srcRowBase + srcX + srcOffsetX;
+
+    asm
+    push es
+    push ds
+
+    les di, backBuffer
+    lds si, pixelData
+
+    { TODO: inline AsmPSet }
+
+    pop es
+    end;
 
     for a := startX to endX do begin
       if tex.data^[srcPxOffset] <> transparencyKey then
