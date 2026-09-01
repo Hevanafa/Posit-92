@@ -163,7 +163,7 @@ begin
           continue
         end;
 
-        surface^[destY * VGAWidth + destX + left] := colour;
+        backBuffer^[destY * VGAWidth + destX + left] := colour;
         inc(left)
       end;
     end else
@@ -207,7 +207,7 @@ begin
             continue
           end;
 
-          surface^[destY * VGAWidth + destX + left] := colour;
+          backBuffer^[destY * VGAWidth + destX + left] := colour;
           inc(left)
         end;
       end else
@@ -246,7 +246,7 @@ begin
 
     { Dangerous: no bounds check }
     for a:=1 to count do
-      surface^[destY * VGAWidth + destX + left + a - 1] := colour;
+      backBuffer^[destY * VGAWidth + destX + left + a - 1] := colour;
     
     inc(left, count);
 

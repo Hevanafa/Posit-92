@@ -115,7 +115,7 @@ asm
   add ax, x
   mov bx, ax
 
-  les di, surface
+  les di, backBuffer
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -138,7 +138,7 @@ asm
   sub ax, x
   mov bx, ax
 
-  les di, surface
+  les di, backBuffer
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -171,7 +171,7 @@ asm
   add ax, x
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -195,7 +195,7 @@ asm
   sub ax, x
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -234,7 +234,7 @@ asm
   add ax, y
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -257,7 +257,7 @@ asm
   sub ax, y
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -290,7 +290,7 @@ asm
   add ax, y
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -314,7 +314,7 @@ asm
   sub ax, y
   mov bx, ax
 
-  les di, surface  { reset ES:DI to surface }
+  les di, backBuffer  { reset ES:DI to backBuffer }
   add di, bx
   mov al, colour
   mov es:[di], al
@@ -475,7 +475,7 @@ asm
   add ax, x0
   mov bx, ax
 
-  les di, surface
+  les di, backBuffer
   mov al, colour
   mov es:[di+bx], al
 
@@ -539,7 +539,7 @@ asm
   add ax, x0
   mov bx, ax
 
-  les di, surface
+  les di, backBuffer
   mov al, colour
   mov es:[di+bx], al
 end;
@@ -581,10 +581,10 @@ begin
   { Inline AsmPSet }
   baseOffset := y * VGAWidth + startX;
 
-  { FillChar(surface^[baseOffset], endX - startX + 1, colour); }
+  { FillChar(backBuffer^[baseOffset], endX - startX + 1, colour); }
 
 asm
-  les di, surface
+  les di, backBuffer
   add di, baseOffset
 
   mov cx, endX
@@ -649,7 +649,7 @@ begin
 asm
   push es
 
-  les di, surface
+  les di, backBuffer
   add di, baseOffset
 
   mov al, colour
@@ -757,7 +757,7 @@ begin
   for b:=y0 to y1 do
     for a:=x0 to x1 do
       if (a+b) and 1 = 1 then
-        surface^[b*320+a] := colour;
+        backBuffer^[b*320+a] := colour;
 end;
 
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
@@ -796,7 +796,7 @@ begin
 
     asm
   push es
-  les di, surface
+  les di, backBuffer
 
   add di, rowOffset
   add di, a
@@ -821,7 +821,7 @@ begin
 
   {
     while a <= endX do begin
-      surface^[rowOffset + a] := colour;
+      backBuffer^[rowOffset + a] := colour;
       inc(a, 2)
     end;
   }

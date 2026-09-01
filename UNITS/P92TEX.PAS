@@ -319,7 +319,7 @@ begin
     asm
       push ds
 
-      les di, surface
+      les di, backBuffer
       add di, destOffset
 
       { Load DH with transparencyKey }

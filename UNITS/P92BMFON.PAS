@@ -371,8 +371,8 @@ begin
     colCount := endCol - startCol + 1;
 
     asm
-      { Load ES:DI with surface + screen offset }
-      les di, surface
+      { Load ES:DI with backBuffer + screen offset }
+      les di, backBuffer
       mov ax, screenY
       mov bx, VGAWidth
       mul bx

@@ -22,7 +22,7 @@ type
 
 var
   VGAWidth, VGAHeight: word;
-  surface: PByteArray;
+  backBuffer: PByteArray;
 
   clipStartX, clipEndX: word;
   clipStartY, clipEndY: word;
@@ -155,7 +155,7 @@ end;
 procedure PascalCls(const colour: byte);
 begin
   { Important: dereference buffer! }
-  FillChar(surface^, BufferSize, colour)
+  FillChar(backBuffer^, BufferSize, colour)
 end;
 
 procedure AsmCls(const colour: byte);
@@ -165,7 +165,7 @@ begin
   size := bufferSize div 2;
 asm
   push es
-  les di, surface  { Set ES:DI to surface pointer }
+  les di, backBuffer  { Set ES:DI to backBuffer pointer }
   cld  { Make sure DI move forward }
   mov al, colour
   mov ah, colour
@@ -209,7 +209,7 @@ var
 begin
   DrawCGAGlyph := 8;
 
-  surfacePtr := surface;
+  surfacePtr := backBuffer;
 
   { Handle edge cases }
 
@@ -305,12 +305,12 @@ end;
 procedure PascalPSet(const x, y: integer; const colour: byte);
 begin
   if (x < 0) or (x >= VGAWidth) or (y < 0) or (y >= VGAHeight) then exit;
-  surface^[y * VGAWidth + x] := colour
+  backBuffer^[y * VGAWidth + x] := colour
 end;
 
 procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
 begin
-  surface^[y * VGAWidth + x] := colour
+  backBuffer^[y * VGAWidth + x] := colour
 end;
 
 procedure AsmPSet(const x, y: integer; const colour: byte);
@@ -341,8 +341,8 @@ asm
 }
   mov bx, ax
 
-  { Load ES:DI with the address to the backbuffer (surface) }
-  les di, surface
+  { Load ES:DI with the address to the backbuffer (backBuffer) }
+  les di, backBuffer
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
   mov es:[di+bx], al
@@ -352,7 +352,7 @@ end;
 
 procedure AsmPSetOffset(const bufOffset: Word; const colour: byte); assembler;
 asm
-  les di, surface
+  les di, backBuffer
   add di, bufOffset
   mov al, colour
   mov es:[di], al
@@ -369,8 +369,8 @@ add ax, x
 { Load BX with AX because ES:[DI+BX] is valid, but not ES:[DI+AX] }
 mov bx, ax
 
-{ Load ES:DI with the address to the backbuffer (surface) }
-les di, surface
+{ Load ES:DI with the address to the backbuffer (backBuffer) }
+les di, backBuffer
 mov al, colour
 { mov es:[di+ax], colour } { <-- Invalid register combination }
 mov es:[di+bx], al
@@ -388,14 +388,14 @@ var
   y, srcOffset, destOffset: word;
 begin
   if useDefaultBufferSize then
-    Move(surface^, Mem[$A000:0], BufferSize)
+    Move(backBuffer^, Mem[$A000:0], BufferSize)
   else
     for y := 0 to VGAHeight - 1 do begin
       srcOffset := y * VGAWidth;
       destOffset := y * DefaultVGAWidth;
 
       Move(
-        PByteArray(surface)^[srcOffset],
+        PByteArray(backBuffer)^[srcOffset],
         mem[$A000:destOffset],
         VGAWidth);
     end;
@@ -404,7 +404,7 @@ end;
 {
   Based on fastFlush from FPS.PAS and MOVEMOU4.PAS
 
-  lds si, surface: loads DS:SI from surface
+  lds si, backBuffer: loads DS:SI from backBuffer
   mov es, $a000: targets the VGA framebuffer
   xor di, di: start writing at offset 0000
   rep movsw: fast string move; copies 2 bytes per iteration
@@ -421,7 +421,7 @@ asm
   push ds
   push es
 
-  lds si, surface { Load DS:SI with source pointer }
+  lds si, backBuffer { Load DS:SI with source pointer }
 
   mov ax, $a000
   mov es, ax      { Set ES to VGA segment }
@@ -457,7 +457,7 @@ asm
   mov y, 0
   mov srcOffset, 0
 
-  lds si, surface
+  lds si, backBuffer
   mov bx, si
 
 @y_body:
@@ -503,8 +503,8 @@ begin
     offset := y * DefaultVGAWidth;
     screenOffset := y * DefaultVGAWidth;
 
-    Move(surface^[offset], Mem[$A000:screenOffset], DefaultVGAWidth);
-    { Move(surface^[offset], Mem[$B000:screenOffset], DefaultVGAWidth); }
+    Move(backBuffer^[offset], Mem[$A000:screenOffset], DefaultVGAWidth);
+    { Move(backBuffer^[offset], Mem[$B000:screenOffset], DefaultVGAWidth); }
   end;
 end;
 
@@ -526,7 +526,7 @@ begin
   VGAHeight := height;
   bufferSize := width * height;
 
-  GetMem(surface, bufferSize);
+  GetMem(backBuffer, bufferSize);
 
   clipStartX := 0;
   clipEndX := VGAWidth - 1;
@@ -539,8 +539,8 @@ end;
 procedure FreeBuffer;
 begin
   if isBufferInitialised then begin
-    freeMem(surface, bufferSize);
-    surface := nil;
+    freeMem(backBuffer, bufferSize);
+    backBuffer := nil;
     isBufferInitialised := false;
   end;
 end;
