@@ -11,7 +11,6 @@ interface
 
 procedure Circ(const cx, cy, radius: integer; const colour: byte);
 procedure PascalCirc(const cx, cy, radius: integer; const colour: byte);
-procedure AsmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
 procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 
 { Optimised circle fill with HLine calls }
@@ -69,110 +68,6 @@ begin
     AsmPset(cx - y, cy + x, colour);
     AsmPset(cx + y, cy - x, colour);
     AsmPset(cx - y, cy - x, colour);
-
-    if p < 0 then
-      p := p+4 * x+6
-    else begin
-      p := p+4 * (x-y)+10;
-      dec(y);
-    end;
-    inc(x);
-  end;
-end;
-
-{ Unsafe: No bounds check (faster) }
-procedure AsmCircUnsafe(const cxi, cyi, radius: integer; const colour: byte);
-var
-  x, y, p: integer;
-begin
-  x := 0;
-  y := radius;
-  p := 3 - 2 * radius;
-
-  while x <= y do begin
-asm
-  { AsmPset(cxi + x, cyi + y, colour); }
-
-  { Pset }
-  { Offset: y * 320 + x }
-  mov ax, cyi
-  add ax, y
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, cxi
-  add ax, x
-  mov bx, ax
-
-  les di, surface
-  add di, bx
-  mov al, colour
-  mov es:[di], al
-
-  { AsmPset(cxi - x, cyi + y, colour); }
-  sub di, x
-  sub di, x
-  mov es:[di], al
-
-  { AsmPset(cxi + x, cyi - y, colour); }
-  mov ax, cyi
-  sub ax, y
-  mov bx, 320
-  mul bx
-  add ax, cxi
-  add ax, x
-  mov bx, ax
-
-  les di, surface  { reset ES:DI to surface }
-  add di, bx
-  mov al, colour
-  mov es:[di], al
-
-  { AsmPset(cxi - x, cyi - y, colour); }
-  sub di, x
-  sub di, x
-  mov es:[di], al
-end;
-
-
-asm
-  { AsmPset(cxi + y, cyi + x, colour); }
-  mov ax, cyi
-  add ax, x
-  mov bx, 320
-  mul bx
-  add ax, cxi
-  add ax, y
-  mov bx, ax
-
-  les di, surface  { reset ES:DI to surface }
-  add di, bx
-  mov al, colour
-  mov es:[di], al
-
-  { AsmPset(cxi - y, cyi + x, colour); }
-  sub di, y
-  sub di, y
-  mov es:[di], al
-
-  { AsmPset(cxi + y, cyi - x, colour); }
-  mov ax, cyi
-  sub ax, x
-  mov bx, 320
-  mul bx
-  add ax, cxi
-  add ax, y
-  mov bx, ax
-
-  les di, surface  { reset ES:DI to surface }
-  add di, bx
-  mov al, colour
-  mov es:[di], al
-
-  { AsmPset(cxi - y, cyi - x, colour); }
-  sub di, y
-  sub di, y
-  mov es:[di], al
-end;
 
     if p < 0 then
       p := p+4 * x+6
