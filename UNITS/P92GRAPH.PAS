@@ -9,7 +9,6 @@ unit P92GRAPH;
 
 interface
 
-procedure CircBase(const cx, cy, radius: integer; const colour: byte);
 procedure Circ(const cxi, cyi, radius: integer; const colour: byte);
 
 { Optimised circle fill with HLine calls }
@@ -272,6 +271,9 @@ asm
 
   mov ax, cxi
   add ax, y
+
+  cmp ax, 0
+  jl @segment_4
   cmp ax, VGAWidth
   jge @segment_4
 
