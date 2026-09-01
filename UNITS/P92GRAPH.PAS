@@ -84,9 +84,12 @@ begin
   while x <= y do begin
 asm
   { Note: Check coordinates first before plotting }
-  
+
+  { cyi + y }
   mov ax, cyi
   add ax, y
+  cmp ax, 0
+  jl @segment_3
   cmp ax, VGAHeight
   jge @segment_3
 
@@ -132,10 +135,14 @@ asm
 
 
 @segment_3:
+  { cyi - y }
   mov ax, cyi
   sub ax, y
+
   cmp ax, 0
   jl @skip
+  cmp ax, VGAHeight
+  jge @skip
 
   mov ax, cxi
   add ax, x
@@ -182,8 +189,13 @@ end;
 
 asm
   { Note: Check coordinates first before plotting }
+  { ax = cyi + x }
   mov ax, cyi
   add ax, x
+
+  { if (ax < 0) or (ax >= VGAHeight) }
+  cmp ax, 0
+  jl @segment_3
   cmp ax, VGAHeight
   jge @segment_3
 
@@ -210,6 +222,7 @@ asm
 @segment_2:
   mov ax, cxi
   sub ax, y
+
   cmp ax, 0
   jl @segment_3
 
@@ -229,10 +242,14 @@ asm
 
 
 @segment_3:
+  { cyi - x }
   mov ax, cyi
   sub ax, x
+
   cmp ax, 0
   jl @skip
+  cmp ax, VGAHeight
+  jge @skip
 
   mov ax, cxi
   add ax, y
