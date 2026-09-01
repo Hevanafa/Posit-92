@@ -501,6 +501,7 @@ begin
     srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
     srcPxOffset := srcRowBase + srcX + srcOffsetX;
 
+    {
     asm
     push es
     push ds
@@ -508,7 +509,6 @@ begin
     les di, backBuffer
     lds si, pixelData
 
-    { TODO: inline AsmPSet }
     add si, srcPxOffset
 
     mov ax, b
@@ -519,13 +519,13 @@ begin
 
     mov cx, endX
     sub cx, startX
-    inc cx  { pixel count, inclusive }
+    inc cx }  { pixel count, inclusive }
 
-    mov ah, transparencyKey
+    { mov ah, transparencyKey
 
     @loop:
-      lodsb  { al = [ds:si++] }
-      cmp al, ah
+      lodsb }  { al = [ds:si++] }
+    {  cmp al, ah
       je @skip
       mov es:[di], al
 
@@ -536,15 +536,14 @@ begin
     pop ds
     pop es
     end;
+    }
 
-  {
     for a := startX to endX do begin
       if tex.data^[srcPxOffset] <> transparencyKey then
         AsmPSet(a, b, tex.data^[srcPxOffset]);
 
       inc(srcPxOffset)
     end;
-  }
   end;
 end;
 
