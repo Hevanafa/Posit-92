@@ -494,13 +494,14 @@ begin
   srcOffsetY := startY - destY;
 
   for b := startY to endY do begin
-    srcRowBase := (srcY + (b - destY)) * tex.width;
+    srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
+    srcPxOffset := srcRowBase + srcX + srcOffsetX;
 
     for a := startX to endX do begin
-      srcPxOffset := srcRowBase + srcX + (a - destX);
-
       if tex.data^[srcPxOffset] <> transparencyKey then
         AsmPSet(a, b, tex.data^[srcPxOffset]);
+
+      inc(srcPxOffset)
     end;
   end;
 end;
