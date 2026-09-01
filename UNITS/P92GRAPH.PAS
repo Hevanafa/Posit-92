@@ -83,6 +83,14 @@ begin
   p := 3 - 2 * radius;
 
   while x <= y do begin
+    asm
+push es
+les di, surface
+
+{ TODO: Write the pixel plotting for each segment }
+
+pop es
+    end;
     { TODO: Optimise the hot path }
     AsmPset(cx + x, cy + y, colour);
     AsmPset(cx - x, cy + y, colour);
