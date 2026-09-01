@@ -473,9 +473,9 @@ var
 
   a, b: integer;
   { pixel offset }
-  rowOffset: longint;
+  srcRowBase: longint;
   { pixel offset }
-  pxOffset: longint;
+  srcPxOffset: longint;
 begin
   { Handle clipping logic }
   startX := destX;
@@ -490,20 +490,17 @@ begin
 
   if (startX > endX) or (startY > endY) then exit;
 
-  { Source offset }
   srcOffsetX := startX - destX;
   srcOffsetY := startY - destY;
 
-  { TODO: Apply the start & end coordinates }
-
   for b := startY to endY do begin
-    rowOffset := (srcY + (b - destY)) * tex.width;
+    srcRowBase := (srcY + (b - destY)) * tex.width;
 
     for a := startX to endX do begin
-      pxOffset := rowOffset + srcX + (a - destX);
+      srcPxOffset := srcRowBase + srcX + (a - destX);
 
-      if tex.data^[pxOffset] <> transparencyKey then
-        AsmPSet(a, b, tex.data^[pxOffset]);
+      if tex.data^[srcPxOffset] <> transparencyKey then
+        AsmPSet(a, b, tex.data^[srcPxOffset]);
     end;
   end;
 end;

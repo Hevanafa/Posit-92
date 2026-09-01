@@ -68,7 +68,7 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 100;
+  OpCount = 1000;
 var
   startTick, endTick: double;
   a: Integer;
@@ -90,9 +90,7 @@ begin
     01-09-2026:
     PrintBMFontGlyphFast: 0.5205s
     PrintBMFontGlyphSprRegion: 0.9841s
-
-    100 ops
-    PrintBMFontGlyphSprRegion: 0.1385s
+    after edge cases: 1.2083s
   }
   for a:=1 to OpCount do
     PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
