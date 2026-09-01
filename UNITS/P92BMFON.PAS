@@ -173,7 +173,7 @@ var
 
   glyphCount: word;
   line: string;
-  pairs: array[0..11] of string;
+  pairs: array[0..19] of string;
   pairCount: word;
   kv: array[0..1] of string; { key-value pair }
 
@@ -203,10 +203,26 @@ begin
     while Contains(line, '  ') do
       line := ReplaceAll(line, '  ', ' ');
 
-    if StartsWith(line, 'common') then begin
+    if StartsWith(line, 'info') then begin
       pairCount := Split(line, ' ', pairs);
+
       for b:=0 to pairCount-1 do begin
         Split(pairs[b], '=', kv);
+
+        if kv[0] = 'spacing' then begin
+          font.spacingX := ParseInt(copy(kv[1], 1, pos(',', kv[1]) - 1));
+
+          writelog('Spacing (X)=' + i32str(font.spacingX));
+        end;
+      end;
+    end;
+
+    if StartsWith(line, 'common') then begin
+      pairCount := Split(line, ' ', pairs);
+
+      for b:=0 to pairCount-1 do begin
+        Split(pairs[b], '=', kv);
+
         if kv[0] = 'lineHeight' then
           font.lineHeight := parseInt(kv[1]);
       end;
