@@ -114,11 +114,10 @@ const
   EpochJDN = 2440588;
 var
   y, m, d, dayOfWeek: word;
-  dateSinceJDN, dateSinceEpoch: longint;
+  dateSinceEpoch: longint;
 begin
   GetDate(y, m, d, dayOfWeek);
-  dateSinceJDN := DateToJDN(y, m, d);
-  dateSinceEpoch := dateSinceJDN - EpochJDN;
+  dateSinceEpoch := DateToJDN(y, m, d) - EpochJDN;
 
   GetFullTimer := dateSinceEpoch * 86400.0 + GetTimer
 end;
