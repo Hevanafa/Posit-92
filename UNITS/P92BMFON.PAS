@@ -289,57 +289,6 @@ begin
 end;
 
 
-function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
-var
-  row, col: integer;
-  rowBase: word;
-  colour: byte;
-  { Avoid copying of the record type }
-  g: PBMFontGlyph;
-
-  startRow, endRow, startCol, endCol: integer;
-  drawX, drawY: integer;
-begin
-  g := @(font.glyphs[ord(ch)]);
-  PrintBMFontGlyph := g^.xadvance;
-
-  { Edge case: Handle space }
-  if (g^.width = 0) and (g^.height = 0) then exit;
-
-  drawX := x + g^.xoffset;
-  drawY := y + g^.yoffset;
-
-  { Handle early exit }
-  if (drawX >= VGAWidth) or (drawY >= VGAHeight) then exit;
-  if (drawX + g^.width <= 0) or (drawY + g^.height <= 0) then exit;
-
-  { Clip to visible region }
-  startCol := 0;
-  endCol := g^.width - 1;
-  startRow := 0;
-  endRow := g^.height - 1;
-
-  if drawX < 0 then startCol := -drawX;
-  if drawX + endCol >= VGAWidth then
-    endCol := VGAWidth - 1 - drawX;
-
-  if drawY < 0 then startRow := -drawY;
-  if drawY + endRow >= VGAHeight then
-    endRow := VGAHeight - 1 - drawY;
-
-  { Begin loop }
-  for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.texture.width + g^.x;
-
-    for col := startCol to endCol do begin
-      colour := font.texture.data^[rowBase + col];
-
-      if colour <> transparencyKey then
-        AsmPSet(drawX + col, drawY + row, colour);
-    end;
-  end;
-end;
-
 function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
   row, col: integer;
