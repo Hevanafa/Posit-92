@@ -476,6 +476,7 @@ var
   srcRowBase: word;
   { pixel offset }
   srcPxOffset: word;
+  srcAdd: word;
 
   pixelData: PByteArray;
 begin
@@ -501,49 +502,50 @@ begin
     srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
     srcPxOffset := srcRowBase + srcX + srcOffsetX;
 
-    {
     asm
     push es
     push ds
 
     les di, backBuffer
-    lds si, pixelData
-
-    add si, srcPxOffset
 
     mov ax, b
     mov bx, VGAWidth
     mul bx
     add ax, startX
-    mov di, ax
+
+    add di, ax
+
+    lds si, pixelData
+    add si, srcPxOffset
 
     mov cx, endX
     sub cx, startX
-    inc cx }  { pixel count, inclusive }
+    inc cx
 
-    { mov ah, transparencyKey
+    mov dh, transparencyKey
 
-    @loop:
-      lodsb }  { al = [ds:si++] }
-    {  cmp al, ah
+    @x_loop:
+      lodsb
+      cmp al, dh
       je @skip
       mov es:[di], al
 
     @skip:
       inc di
-      loop @loop
+      loop @x_loop
 
     pop ds
     pop es
     end;
-    }
 
+    {
     for a := startX to endX do begin
       if tex.data^[srcPxOffset] <> transparencyKey then
         AsmPSet(a, b, tex.data^[srcPxOffset]);
 
       inc(srcPxOffset)
     end;
+    }
   end;
 end;
 
