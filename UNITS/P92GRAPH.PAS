@@ -10,8 +10,7 @@ unit P92GRAPH;
 interface
 
 procedure CircBase(const cx, cy, radius: integer; const colour: byte);
-procedure Circ(const cx, cy, radius: integer; const colour: byte);
-procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
+procedure Circ(const cxi, cyi, radius: integer; const colour: byte);
 
 { Optimised circle fill with HLine calls }
 procedure CircFill(const cx, cy, radius: integer; const colour: byte);
@@ -74,7 +73,7 @@ begin
   end;
 end;
 
-procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
+procedure Circ(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -88,19 +87,19 @@ asm
   
   mov ax, cyi
   add ax, y
-  cmp ax, 200
+  cmp ax, VGAHeight
   jge @segment_3
 
 @segment_1:
   mov ax, cxi
   add ax, x
-  cmp ax, 320
+  cmp ax, VGAWidth
   jge @segment_2
 
   { AsmPset(cxi + x, cyi + y, colour); }
   mov ax, cyi
   add ax, y
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx      { ax = ax * bx }
   add ax, cxi
   add ax, x
@@ -120,7 +119,7 @@ asm
   { AsmPset(cxi - x, cyi + y, colour); }
   mov ax, cyi
   add ax, y
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx      { ax = ax * bx }
   add ax, cxi
   sub ax, x
@@ -140,13 +139,13 @@ asm
 
   mov ax, cxi
   add ax, x
-  cmp ax, 320
+  cmp ax, VGAWidth
   jge @segment_4
 
   { AsmPset(cxi + x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   add ax, x
@@ -166,7 +165,7 @@ asm
   { AsmPset(cxi - x, cyi - y, colour); }
   mov ax, cyi
   sub ax, y
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   sub ax, x
@@ -185,19 +184,19 @@ asm
   { Note: Check coordinates first before plotting }
   mov ax, cyi
   add ax, x
-  cmp ax, 200
+  cmp ax, VGAHeight
   jge @segment_3
 
 @segment_1:
   mov ax, cxi
   add ax, y
-  cmp ax, 320
+  cmp ax, VGAWidth
   jge @segment_2
 
   { AsmPset(cxi + y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   add ax, y
@@ -217,7 +216,7 @@ asm
   { AsmPset(cxi - y, cyi + x, colour); }
   mov ax, cyi
   add ax, x
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   sub ax, y
@@ -237,13 +236,13 @@ asm
 
   mov ax, cxi
   add ax, y
-  cmp ax, 320
+  cmp ax, VGAWidth
   jge @segment_4
 
   { AsmPset(cxi + y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   add ax, y
@@ -263,7 +262,7 @@ asm
   { AsmPset(cxi - y, cyi - x, colour); }
   mov ax, cyi
   sub ax, x
-  mov bx, 320
+  mov bx, VGAWidth
   mul bx
   add ax, cxi
   sub ax, y
