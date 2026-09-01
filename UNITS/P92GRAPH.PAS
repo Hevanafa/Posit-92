@@ -76,6 +76,10 @@ procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
+  { Off-screen check }
+  if (cxi + radius < 0) or (cxi - radius >= VGAWidth) then exit;
+  if (cyi + radius < 0) or (cyi - radius >= VGAHeight) then exit;
+
   x := 0;
   y := radius;
   p := 3 - 2 * radius;
