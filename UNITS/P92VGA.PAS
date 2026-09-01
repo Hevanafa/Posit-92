@@ -205,11 +205,11 @@ var
   colStart, colEnd: integer;
   clipMask: byte;
 
-  surfacePtr: PByteArray;
+  backBufferPtr: PByteArray;
 begin
   DrawCGAGlyph := 8;
 
-  surfacePtr := backBuffer;
+  backBufferPtr := backBuffer;
 
   { Handle edge cases }
 
@@ -254,10 +254,10 @@ begin
     { Base col loop implementation }
     { for col := colStart to colEnd do
       if (mask and ($80 shr col)) <> 0 then
-        surfacePtr^[destOffset + col] := colour; }
+        backBufferPtr^[destOffset + col] := colour; }
 
     asm
-      les di, surfacePtr
+      les di, backBufferPtr
       add di, destOffset
       add di, colStart
 

@@ -58,9 +58,9 @@ end;
 procedure Cls1BPP(const bit: byte);
 begin
   if (bit and 1) = 1 then
-    FillChar(surface^, VGAWidth * VGAHeight div 8, $FF)
+    FillChar(backBuffer^, VGAWidth * VGAHeight div 8, $FF)
   else
-    FillChar(surface^, VGAWidth * VGAHeight div 8, $00)
+    FillChar(backBuffer^, VGAWidth * VGAHeight div 8, $00)
 end;
 
 procedure PSet1BPP(const x, y: integer; bit: byte);
@@ -77,9 +77,9 @@ begin
   bit := bit and 1;
 
   if bit <> 0 then
-    surface^[offset] := surface^[offset] or mask
+    backBuffer^[offset] := backBuffer^[offset] or mask
   else
-    surface^[offset] := surface^[offset] and not mask;
+    backBuffer^[offset] := backBuffer^[offset] and not mask;
 end;
 
 procedure AsmPSet1BPP(const x, y: integer; bit: byte);
@@ -105,7 +105,7 @@ begin
     mov al, 1
     shl al, cl
 
-    les di, surface
+    les di, backBuffer
     add di, bufOffset
     mov ah, al
     not ah
@@ -160,22 +160,22 @@ begin
   dest := 0;
 
   for src := 0 to (VGAWidth * VGAHeight div 8) - 1 do begin
-    move(LUT[surface^[src]], mem[$A000:dest], 8);
+    move(LUT[backBuffer^[src]], mem[$A000:dest], 8);
     inc(dest, 8)
   end;
 end;
 
 procedure AsmPresent1BPP;
 var
-  surfacePtr: PByteArray;
+  backBufferPtr: PByteArray;
   src, dest: word;
   b: byte;
 begin
-  surfacePtr := surface;
+  backBufferPtr := backBuffer;
   dest := 0;
 
   for src := 0 to (VGAWidth * VGAHeight div 8) - 1 do begin
-    b := surfacePtr^[src];
+    b := backBufferPtr^[src];
 
     asm
       push es
@@ -208,17 +208,17 @@ end;
 
 procedure AsmPresent1BPP_2;
 var
-  surfacePtr: PByteArray;
-  surfaceSegment: word;
+  backBufferPtr: PByteArray;
+  backBufferSeg: word;
 begin
-  surfacePtr := surface;
+  backBufferPtr := backBuffer;
 
   asm
     push ds
     mov dx, ds
 
-    mov ax, word ptr [surfacePtr + 2]
-    mov [surfaceSegment], ax
+    mov ax, word ptr [backBufferPtr + 2]
+    mov [backBufferSeg], ax
 
     { push es }
 
@@ -226,12 +226,12 @@ begin
     mov es, ax
     xor di, di
 
-    mov si, word ptr [surfacePtr]
+    mov si, word ptr [backBufferPtr]
 
     mov cx, 8000  { vgawidth * vgaheight div 8 }
 
   @loop:
-    mov ds, [surfaceSegment]
+    mov ds, [backBufferSeg]
     lodsb
     mov ds, dx
 
