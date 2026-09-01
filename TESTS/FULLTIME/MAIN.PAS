@@ -3,42 +3,14 @@
   Part of Posit-92 game engine
 }
 
-program BaseTest;
+program FullTime;
 
 uses
   CRT, DOS,
   P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
 
-const
-  EpochJDN = 2440588;
-
 var
   fontP92Sans: TBMFont;
-
-function DateToJDN(const y, m, d: word): longint;
-var
-  a: longint;
-begin
-  a := (14 - m) div 12;
-
-  DateToJDN :=
-    (1461 * (y + 4800 - a)) div 4
-    + (367 * (m + 12 * a - 2)) div 12
-    - (3 * ((y + 4900 - a) div 100)) div 4
-    + d - 32075
-end;
-
-function GetFullTimer: double;
-var
-  y, m, d, dayOfWeek: word;
-  dateSinceJDN, dateSinceEpoch: longint;
-begin
-  GetDate(y, m, d, dayOfWeek);
-  dateSinceJDN := DateToJDN(y, m, d);
-  dateSinceEpoch := dateSinceJDN - EpochJDN;
-
-  GetFullTimer := dateSinceEpoch * 86400.0 + GetTimer
-end;
 
 procedure PrintCentred(const text: string; const cx, y: integer);
 var
@@ -68,14 +40,13 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1;
+  EpochJDN = 2440588;
 var
-  startTick, endTick: double;
   s: string;
   w: word;
   y, m, d, dayOfWeek: word;
 
-  dateSinceJDN: longint;
+  dateSinceJDN,
   dateSinceEpoch: longint;
 begin
   cls($4F);

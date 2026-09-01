@@ -21,6 +21,18 @@ function Timer: real;
 }
 function GetTimer: real;
 
+{
+  Gets the Julian day number
+  Used together with GetDate from DOS unit
+}
+function DateToJDN(const y, m, d: word): longint;
+
+{
+  Gets the time in seconds since epoch,
+  added with GetTimer for the microsecond precision
+}
+function GetFullTimer: double;
+
 { Similar to QB64's _LIMIT, but does the busy wait }
 procedure Limit(const fps: integer);
 
@@ -81,6 +93,34 @@ begin
   asm sti end;
 
   GetTimer := (ticks + (65536 - counter) / 65536) / PITFreq;
+end;
+
+
+function DateToJDN(const y, m, d: word): longint;
+var
+  a: longint;
+begin
+  a := (14 - m) div 12;
+
+  DateToJDN :=
+    (1461 * (y + 4800 - a)) div 4
+    + (367 * (m + 12 * a - 2)) div 12
+    - (3 * ((y + 4900 - a) div 100)) div 4
+    + d - 32075
+end;
+
+function GetFullTimer: double;
+const
+  EpochJDN = 2440588;
+var
+  y, m, d, dayOfWeek: word;
+  dateSinceJDN, dateSinceEpoch: longint;
+begin
+  GetDate(y, m, d, dayOfWeek);
+  dateSinceJDN := DateToJDN(y, m, d);
+  dateSinceEpoch := dateSinceJDN - EpochJDN;
+
+  GetFullTimer := dateSinceEpoch * 86400.0 + GetTimer
 end;
 
 
