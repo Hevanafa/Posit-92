@@ -466,12 +466,18 @@ procedure SprRegion(
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
+  { all these are inclusive }
   startX, endX, startY, endY: integer;
-  offsetX, offsetY: integer;
+
+  srcOffsetX, srcOffsetY: integer;
 
   a, b: integer;
-  rowOffset, pxOffset: longint;
+  { pixel offset }
+  rowOffset: longint;
+  { pixel offset }
+  destOffset: longint;
 begin
+  { Handle clipping logic }
   startX := destX;
   startY := destY;
   endX := destX + srcW;
@@ -485,8 +491,8 @@ begin
   if (startX > endX) or (startY > endY) then exit;
 
   { Source offset }
-  offsetX := startX - destX;
-  offsetY := startY - destY;
+  srcOffsetX := startX - destX;
+  srcOffsetY := startY - destY;
 
   { TODO: Apply the start & end coordinates }
 
@@ -494,10 +500,10 @@ begin
     rowOffset := (srcY + b) * tex.width;
 
     for a := 0 to srcW - 1 do begin
-      pxOffset := rowOffset + (srcX + a);
+      destOffset := rowOffset + (srcX + a);
 
-      if tex.data^[pxOffset] <> transparencyKey then
-        AsmPSet(destX + a, destY + b, tex.data^[pxOffset]);
+      if tex.data^[destOffset] <> transparencyKey then
+        AsmPSet(destX + a, destY + b, tex.data^[destOffset]);
     end;
   end;
 end;
