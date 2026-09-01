@@ -79,7 +79,11 @@ procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integ
 
 procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
 
-{ Improved version of Spr with partial sprite drawing }
+procedure SprRegionBase(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer);
+
 procedure SprRegion(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
@@ -437,6 +441,26 @@ begin
   end;
 end;
 
+procedure SprRegionBase(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer);
+var
+  a, b: integer;
+  rowOffset, pxOffset: longint;
+begin
+  for b := 0 to srcH - 1 do begin
+    rowOffset := (srcY + b) * tex.width;
+
+    for a := 0 to srcW - 1 do begin
+      pxOffset := rowOffset + (srcX + a);
+
+      if tex.data^[pxOffset] <> transparencyKey then
+        AsmPSet(destX + a, destY + b, tex.data^[pxOffset]);
+    end;
+  end;
+end;
+
 procedure SprRegion(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
@@ -456,6 +480,7 @@ begin
     end;
   end;
 end;
+
 
 procedure SprFlipped(const tex: TTexture; const x, y: integer; const flip: integer);
 var
