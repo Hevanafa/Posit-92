@@ -212,7 +212,7 @@ begin
         if kv[0] = 'spacing' then begin
           font.spacingX := ParseInt(copy(kv[1], 1, pos(',', kv[1]) - 1));
 
-          writelog('Spacing (X)=' + i32str(font.spacingX));
+          { writelog('Spacing (X)=' + i32str(font.spacingX)); }
         end;
       end;
     end;
@@ -446,9 +446,13 @@ var
 begin
   xOffset := 0;
 
-  for a:=1 to length(text) do
+  for a:=1 to length(text) do begin
     { inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y)); }
     inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y));
+
+    if a < length(text) then
+      inc(xOffset, font.spacingX);
+  end;
 end;
 
 
@@ -486,8 +490,12 @@ var
 begin
   xOffset := 0;
 
-  for a:=1 to length(text) do
+  for a:=1 to length(text) do begin
     inc(xOffset, PrintBMFontGlyphTint(font, text[a], x + xOffset, y, tint));
+
+    if a < length(text) then
+      inc(xOffset, font.spacingX);
+  end;
 end;
 
 
