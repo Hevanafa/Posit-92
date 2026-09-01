@@ -475,7 +475,7 @@ var
   { pixel offset }
   rowOffset: longint;
   { pixel offset }
-  destOffset: longint;
+  pxOffset: longint;
 begin
   { Handle clipping logic }
   startX := destX;
@@ -496,14 +496,14 @@ begin
 
   { TODO: Apply the start & end coordinates }
 
-  for b := 0 to srcH - 1 do begin
-    rowOffset := (srcY + b) * tex.width;
+  for b := startY to endY do begin
+    rowOffset := (srcY + (b - destY)) * tex.width;
 
-    for a := 0 to srcW - 1 do begin
-      destOffset := rowOffset + (srcX + a);
+    for a := startX to endX do begin
+      pxOffset := rowOffset + srcX + (a - destX);
 
-      if tex.data^[destOffset] <> transparencyKey then
-        AsmPSet(destX + a, destY + b, tex.data^[destOffset]);
+      if tex.data^[pxOffset] <> transparencyKey then
+        AsmPSet(a, b, tex.data^[pxOffset]);
     end;
   end;
 end;
