@@ -28,8 +28,8 @@ function GetTimer: real;
 function DateToJDN(const y, m, d: word): longint;
 
 {
-  Gets the time in seconds since epoch,
-  added with GetTimer for the microsecond precision
+  Gets the time in seconds since epoch
+  up to microsecond precision
 }
 function GetFullTimer: double;
 
