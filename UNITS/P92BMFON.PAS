@@ -26,6 +26,7 @@ type
   TBMFont = record
     glyphs: array[0..255] of TBMFontGlyph;
     lineHeight: word;
+    spacingX: integer;
     texture: TTexture;
   end;
 
@@ -132,6 +133,8 @@ begin
   len := high(font.glyphs) - Low(font.glyphs) + 1;
   FillChar(font.glyphs, SizeOf(TBMFontGlyph) * len, 0);
   font.lineHeight := 0;
+  font.spacingX := 0;
+
   DefaultTex(font.texture);
 end;
 
