@@ -144,8 +144,21 @@ begin
     After first HLine on [cx - x, cx + x]: 6.6979s
     After second HLine on [cx - y, cx + y]: 0.5972s
   }
+  {
   for a:=1 to OpCount do
     CircFill(
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      10 + random(50),
+      random(256));
+  }
+
+  {
+    Original: 0.3450s
+    AsmCirc: 0.1598s
+  }
+  for a:=1 to OpCount do
+    AsmCirc(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       10 + random(50),

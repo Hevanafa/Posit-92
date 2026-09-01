@@ -9,8 +9,8 @@ unit P92GRAPH;
 
 interface
 
+procedure CircBase(const cx, cy, radius: integer; const colour: byte);
 procedure Circ(const cx, cy, radius: integer; const colour: byte);
-procedure PascalCirc(const cx, cy, radius: integer; const colour: byte);
 procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 
 { Optimised circle fill with HLine calls }
@@ -46,12 +46,7 @@ implementation
 uses P92MATHS, P92VGA;
 
 
-procedure Circ(const cx, cy, radius: integer; const colour: byte);
-begin
-  AsmCirc(cx, cy, radius, colour)
-end;
-
-procedure PascalCirc(const cx, cy, radius: integer; const colour: byte);
+procedure CircBase(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -79,6 +74,9 @@ begin
   end;
 end;
 
+procedure Circ(const cx, cy, radius: integer; const colour: byte);
+begin
+end;
 
 procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
 var
