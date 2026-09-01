@@ -483,8 +483,8 @@ begin
   { Handle clipping logic }
   startX := destX;
   startY := destY;
-  endX := destX + srcW;
-  endY := destY + srcH;
+  endX := destX + srcW - 1;
+  endY := destY + srcH - 1;
 
   if startX < 0 then startX := 0;
   if startY < 0 then startY := 0;
