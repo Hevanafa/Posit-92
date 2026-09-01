@@ -502,16 +502,17 @@ end;
 function MeasureBMFont(const font: TBMFont; const text: string): integer;
 var
   a: word;
-  ch: char;
   glyph: PBMFontGlyph;
   xOffset: integer;
 begin
   xOffset := 0;
 
   for a:=1 to length(text) do begin
-    ch := text[a];
-    glyph := @(font.glyphs[ord(ch)]);
+    glyph := @(font.glyphs[ord(text[a])]);
     inc(xOffset, glyph^.xadvance);
+
+    if a < length(text) then
+      inc(xOffset, font.spacingX);
   end;
 
   MeasureBMFont := xOffset

@@ -89,13 +89,18 @@ begin
 
     01-09-2026:
     PrintBMFontGlyphFast: 0.5205s
-    PrintBMFontGlyphSprRegion: 0.9772s
+    PrintBMFontGlyphSprRegion: 0.9841s
   }
   for a:=1 to OpCount do
     PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
-  { Original: 0.9003s
-    After row-level opt: 0.7982s }
+  {
+    Original: 0.9003s
+    After row-level opt: 0.7982s
+
+    01-09-2026
+    Original: 1.3769s
+  }
   {
   for a:=1 to 1000 do
     PrintBMFontTint(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
