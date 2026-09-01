@@ -424,8 +424,8 @@ begin
   xOffset := 0;
 
   for a:=1 to length(text) do
-    { inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y)); }
-    inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y));
+    inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y));
+    { inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y)); }
 end;
 
 

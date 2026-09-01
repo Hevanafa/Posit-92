@@ -24,6 +24,8 @@ end;
 
 procedure OnReady; far;
 begin
+  RandSeed := 255;
+
   bootTime := getTimer
 end;
 
@@ -65,8 +67,10 @@ begin
 end;
 
 procedure DrawOnce; far;
+const
+  OpCount = 1000;
 var
-  startTick: double;
+  startTick, endTick: double;
   a: Integer;
   s: string;
 begin
@@ -74,6 +78,7 @@ begin
   startTick := GetTimer;
 
   {
+    1000 ops
     Original: 1.4003s, 1.4025s
     After row-level opt: 1.0842s, 1.0609s
     After Word bounds check: 0.9086s, 0.9418s
@@ -81,8 +86,11 @@ begin
     With early exits: 0.7821s, 0.7369s, 0.6990s, 0.7139s
     With precomputed offset: 0.7583s, 0.7725s
     Inner loop `col` with inline assembly: 0.3496s, 0.3557s
+
+    01-09-2026:
+    PrintBMFontGlyphFast: 0.5205s
   }
-  for a:=1 to 10 do
+  for a:=1 to OpCount do
     PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
 
   { Original: 0.9003s
@@ -92,7 +100,9 @@ begin
     PrintBMFontTint(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
   }
 
-  s := '10 operations done in ' + F32Str(GetTimer - startTick) + 's';
+  endTick := GetTimer - startTick;
+
+  s := I32Str(OpCount) + ' operations done in ' + F32Str(endTick) + 's';
 
   RectFill(
     0,
