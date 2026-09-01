@@ -41,6 +41,8 @@ function BorrowCGAFont: PFont8x8;
 procedure InitBuffer(const width, height: word);
 procedure FreeBuffer;
 
+procedure SetClip(const x, y, width, height: integer);
+
 { Forwards call to AsmCls }
 procedure Cls(const colour: byte);
 procedure PascalCls(const colour: byte);
@@ -136,6 +138,13 @@ begin
   BorrowCGAFont := @font8x8
 end;
 
+procedure SetClip(const x, y, width, height:integer);
+begin
+  clipStartX := x;
+  clipEndX := x + width - 1;
+  clipStartY := y;
+  clipEndY := y + height - 1;
+end;
 
 procedure Cls(const colour: byte);
 begin
