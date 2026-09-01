@@ -24,6 +24,9 @@ var
   VGAWidth, VGAHeight: word;
   surface: PByteArray;
 
+  clipStartX, clipEndX: word;
+  clipStartY, clipEndY: word;
+
 procedure InitMode13h;
 procedure InitModeText;
 
@@ -515,6 +518,11 @@ begin
   bufferSize := width * height;
 
   GetMem(surface, bufferSize);
+
+  clipStartX := 0;
+  clipEndX := VGAWidth - 1;
+  clipStartY := 0;
+  clipEndY := VGAHeight - 1;
 
   isBufferInitialised := true;
 end;
