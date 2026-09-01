@@ -537,15 +537,6 @@ begin
     pop ds
     pop es
     end;
-
-    {
-    for a := startX to endX do begin
-      if tex.data^[srcPxOffset] <> transparencyKey then
-        AsmPSet(a, b, tex.data^[srcPxOffset]);
-
-      inc(srcPxOffset)
-    end;
-    }
   end;
 end;
 
