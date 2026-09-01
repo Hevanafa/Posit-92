@@ -472,11 +472,11 @@ var
   srcOffsetX, srcOffsetY: integer;
 
   a, b: integer;
-  { pixel offset }
+
   srcRowBase: word;
   { pixel offset }
   srcPxOffset: word;
-  srcAdd: word;
+  destRowBase: word;
 
   pixelData: PByteArray;
 begin
@@ -501,19 +501,14 @@ begin
   for b := startY to endY do begin
     srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
     srcPxOffset := srcRowBase + srcX + srcOffsetX;
+    destRowBase := b * VGAWidth + startX;
 
     asm
     push es
     push ds
 
     les di, backBuffer
-
-    mov ax, b
-    mov bx, VGAWidth
-    mul bx
-    add ax, startX
-
-    add di, ax
+    add di, destRowBase
 
     lds si, pixelData
     add si, srcPxOffset
