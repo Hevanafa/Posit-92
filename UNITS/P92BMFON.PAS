@@ -413,7 +413,11 @@ var
 begin
   PrintBMFontGlyphSprRegion := font.glyphs[ord(ch)].xadvance;
   g := @(font.glyphs[ord(ch)]);
-  SprRegion(font.texture, g^.x, g^.y, g^.width, g^.height, x + g^.xoffset, y + g^.yoffset)
+
+  SprRegion(
+    font.texture,
+    g^.x, g^.y, g^.width, g^.height,
+    x + g^.xoffset, y + g^.yoffset)
 end;
 
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
@@ -424,8 +428,8 @@ begin
   xOffset := 0;
 
   for a:=1 to length(text) do
-    inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y));
-    { inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y)); }
+    { inc(xOffset, PrintBMFontGlyphFast(font, text[a], x + xOffset, y)); }
+    inc(xOffset, PrintBMFontGlyphSprRegion(font, text[a], x + xOffset, y));
 end;
 
 

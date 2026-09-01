@@ -89,6 +89,7 @@ begin
 
     01-09-2026:
     PrintBMFontGlyphFast: 0.5205s
+    PrintBMFontGlyphSprRegion: 0.9772s
   }
   for a:=1 to OpCount do
     PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
