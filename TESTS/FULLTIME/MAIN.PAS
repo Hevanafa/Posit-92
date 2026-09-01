@@ -28,6 +28,18 @@ begin
     + d - 32075
 end;
 
+function GetFullTimer: double;
+var
+  y, m, d, dayOfWeek: word;
+  dateSinceJDN, dateSinceEpoch: longint;
+begin
+  GetDate(y, m, d, dayOfWeek);
+  dateSinceJDN := DateToJDN(y, m, d);
+  dateSinceEpoch := dateSinceJDN - EpochJDN;
+
+  GetFullTimer := dateSinceEpoch * 86400.0 + GetTimer
+end;
+
 procedure PrintCentred(const text: string; const cx, y: integer);
 var
   w: integer;
@@ -79,6 +91,10 @@ begin
   PrintCentred(
     'Days since epoch: ' + I32Str(dateSinceEpoch),
     VGAWidth shr 1, (VGAHeight shr 1) + fontP92Sans.lineHeight);
+
+  PrintCentred(
+    'Seconds since epoch: ' + F32Str(GetFullTimer),
+    VGAWidth shr 1, (VGAHeight shr 1) + fontP92Sans.lineHeight * 2);
 end;
 
 var
