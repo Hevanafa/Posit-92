@@ -156,6 +156,7 @@ begin
   {
     Original: 0.3450s
     AsmCirc: 0.1598s
+    AsmCirc with bounds check: 0.2028s
   }
   for a:=1 to OpCount do
     Circ(

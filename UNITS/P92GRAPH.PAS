@@ -88,6 +88,7 @@ asm
   { cyi + y }
   mov ax, cyi
   add ax, y
+
   cmp ax, 0
   jl @segment_3
   cmp ax, VGAHeight
@@ -96,6 +97,9 @@ asm
 @segment_1:
   mov ax, cxi
   add ax, x
+
+  cmp ax, 0
+  jl @segment_2
   cmp ax, VGAWidth
   jge @segment_2
 
@@ -116,8 +120,11 @@ asm
 @segment_2:
   mov ax, cxi
   sub ax, x
+
   cmp ax, 0
   jl @segment_3
+  cmp ax, VGAWidth
+  jge @segment_3
 
   { AsmPset(cxi - x, cyi + y, colour); }
   mov ax, cyi
@@ -146,6 +153,9 @@ asm
 
   mov ax, cxi
   add ax, x
+
+  cmp ax, 0
+  jl @segment_4
   cmp ax, VGAWidth
   jge @segment_4
 
@@ -164,10 +174,14 @@ asm
   mov es:[di], al
 
 @segment_4:
+  { cxi - x }
   mov ax, cxi
   sub ax, x
+
   cmp ax, 0
   jl @skip
+  cmp ax, VGAWidth
+  jge @skip
 
   { AsmPset(cxi - x, cyi - y, colour); }
   mov ax, cyi
@@ -202,6 +216,9 @@ asm
 @segment_1:
   mov ax, cxi
   add ax, y
+
+  cmp ax, 0
+  jl @segment_2
   cmp ax, VGAWidth
   jge @segment_2
 
@@ -225,6 +242,8 @@ asm
 
   cmp ax, 0
   jl @segment_3
+  cmp ax, VGAWidth
+  jge @segment_3
 
   { AsmPset(cxi - y, cyi + x, colour); }
   mov ax, cyi
@@ -271,10 +290,14 @@ asm
   mov es:[di], al
 
 @segment_4:
+  { cxi - y }
   mov ax, cxi
   sub ax, y
+
   cmp ax, 0
   jl @skip
+  cmp ax, VGAWidth
+  jge @skip
 
   { AsmPset(cxi - y, cyi - x, colour); }
   mov ax, cyi
