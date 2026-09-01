@@ -36,7 +36,7 @@ begin
 
   PrintBMFont(
     fontP92Sans, text,
-    (VGAWidth - w) shr 1, VGAHeight shr 1)
+    cx - w shr 1, y)
 end;
 
 procedure OnPreload; far;
@@ -70,10 +70,15 @@ begin
 
   GetDate(y, m, d, dayOfWeek);
   dateSinceJDN := DateToJDN(y, m, d);
-  dateSinceEpoch := dateSinceJDN - dateSinceEpoch;
+  dateSinceEpoch := dateSinceJDN - EpochJDN;
 
+  PrintCentred(
+    'Today''s date: ' + I32Str(dateSinceJDN),
+    VGAWidth shr 1, VGAHeight shr 1);
 
-  PrintCentred('Today''s date: ' + I32Str(dateSinceJDN), VGAWidth shr 1, VGAHeight shr 1);
+  PrintCentred(
+    'Days since epoch: ' + I32Str(dateSinceEpoch),
+    VGAWidth shr 1, (VGAHeight shr 1) + fontP92Sans.lineHeight);
 end;
 
 var
