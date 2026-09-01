@@ -158,7 +158,7 @@ begin
     AsmCirc: 0.1598s
   }
   for a:=1 to OpCount do
-    AsmCirc(
+    Circ(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       10 + random(50),

@@ -75,7 +75,32 @@ begin
 end;
 
 procedure Circ(const cx, cy, radius: integer; const colour: byte);
+var
+  x, y, p: integer;
 begin
+  x := 0;
+  y := radius;
+  p := 3 - 2 * radius;
+
+  while x <= y do begin
+    { TODO: Optimise the hot path }
+    AsmPset(cx + x, cy + y, colour);
+    AsmPset(cx - x, cy + y, colour);
+    AsmPset(cx + x, cy - y, colour);
+    AsmPset(cx - x, cy - y, colour);
+    AsmPset(cx + y, cy + x, colour);
+    AsmPset(cx - y, cy + x, colour);
+    AsmPset(cx + y, cy - x, colour);
+    AsmPset(cx - y, cy - x, colour);
+
+    if p < 0 then
+      p := p+4 * x+6
+    else begin
+      p := p+4 * (x-y)+10;
+      dec(y);
+    end;
+    inc(x);
+  end;
 end;
 
 procedure AsmCirc(const cxi, cyi, radius: integer; const colour: byte);
