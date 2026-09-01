@@ -28,6 +28,17 @@ begin
     + d - 32075
 end;
 
+procedure PrintCentred(const text: string; const cx, y: integer);
+var
+  w: integer;
+begin
+  w := MeasureBMFont(fontP92Sans, text);
+
+  PrintBMFont(
+    fontP92Sans, text,
+    (VGAWidth - w) shr 1, VGAHeight shr 1)
+end;
+
 procedure OnPreload; far;
 begin
   LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
@@ -50,31 +61,19 @@ var
   startTick, endTick: double;
   s: string;
   w: word;
+  y, m, d, dayOfWeek: word;
+
+  dateSinceJDN: longint;
+  dateSinceEpoch: longint;
 begin
-  cls($70);
+  cls($4F);
 
-  { startTick := GetTimer; }
+  GetDate(y, m, d, dayOfWeek);
+  dateSinceJDN := DateToJDN(y, m, d);
+  dateSinceEpoch := dateSinceJDN - dateSinceEpoch;
 
-  { TODO: Your stress test here }
 
-  { endTick := GetTimer; }
-
-  w := MeasureBMFont(fontP92Sans, s);
-
-  PrintBMFont(
-    fontP92Sans,
-    'Today''s date: ' + I32Str(DateToJDN()),
-    (VGAWidth - w) shr 1, VGAHeight shr 1);
-
-  {
-  s := i32str(OpCount) + ' operations done in ' + F32Str(endTick - startTick) + 's';
-  RectFill(
-    0,
-    VGAHeight - fontP92Sans.lineHeight * 2,
-    MeasureBMFont(fontP92Sans, s),
-    VGAHeight - fontP92Sans.lineHeight, $00);
-  PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
-  }
+  PrintCentred('Today''s date: ' + I32Str(dateSinceJDN), VGAWidth shr 1, VGAHeight shr 1);
 end;
 
 var
