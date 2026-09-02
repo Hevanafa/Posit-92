@@ -8,6 +8,9 @@
   - TextLabel
   - Button
   - ImageButton
+
+  Naming pattern:
+  [Widget][Attribute/Behaviour]
 }
 
 unit P92IMGUI;
@@ -58,7 +61,7 @@ procedure TextLabel(const text: string; const x, y: integer);
 procedure CentredLabel(const text: string; const cx, y: integer);
 procedure UnderlinedLabel(const text: string; const x, y: integer; const lineColour: byte);
 
-function Button(const caption: string; const x, y, width, height: integer): boolean;
+function ButtonSized(const caption: string; const x, y, width, height: integer): boolean;
 
 function ImageButton(
   const x, y: integer;
@@ -236,7 +239,7 @@ begin
 end;
 
 
-function Button(const caption: string; const x, y, width, height: integer): boolean;
+function ButtonSized(const caption: string; const x, y, width, height: integer): boolean;
 var
   zone: TZone;
   thisWidgetID: integer;
@@ -273,9 +276,9 @@ begin
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
-    Button := true
+    ButtonSized := true
   else
-    Button := false;
+    ButtonSized := false;
 end;
 
 function ImageButton(

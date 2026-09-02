@@ -101,7 +101,7 @@ begin
 
   CentredLabel('Hello world!', VGAWidth div 2, 120);
 
-  if Button('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
+  if ButtonSized('Clicks: ' + i32str(clicks), 10, 10, 64, 32) then
     inc(clicks);
 
   if ImageButton(10, 50, @texButtonNormal, @texButtonHovered, @texButtonPressed) then
