@@ -2,12 +2,16 @@
   DOS character map
   Part of Posit-92 game engine
 
-  The codepage can be changed in DOSBox config:
+  The codepage can be changed in DOSBox-X config:
   [config]
   country = [CountryCode],[CodePage]
 
   for codepage 437, you can use this:
   country = 1,437
+
+  As for plain DOSBox, though, it's available as keyboard settings under [dos]:
+  [dos]
+  keyboardlayout=en
 }
 
 program CharMap;
