@@ -106,7 +106,7 @@ var
   lastActiveWidget: integer;
 
   activeFont: PBMFont;
-  texCheckboxNormal, texCheckboxChecked: TTexture;
+  texCheckboxNormal, texCheckboxFill: TTexture;
 
 function GetHotWidget: integer;
 begin
@@ -369,10 +369,10 @@ begin
   end;
 
   { Render logic }
+  Spr(texCheckboxNormal, trunc(zone.x), trunc(zone.y));
+
   if state.checked then
-    Spr(texCheckboxChecked, trunc(zone.x), trunc(zone.y))
-  else
-    Spr(texCheckboxNormal, trunc(zone.x), trunc(zone.y));
+    Spr(texCheckboxFill, trunc(zone.x), trunc(zone.y));
 
   if activeWidget = thisWidgetID then
     { held down }
@@ -395,6 +395,6 @@ begin
   activeFont := nil;
 
   LoadTex(texCheckboxNormal, 'IMG\IMGUI\CB_OFF.BMP');
-  LoadTex(texCheckboxChecked, 'IMG\IMGUI\CB_ON.BMP');
+  LoadTex(texCheckboxFill, 'IMG\IMGUI\CB_ON.BMP');
 {$ENDIF}
 end.
