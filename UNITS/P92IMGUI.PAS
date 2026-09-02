@@ -239,14 +239,14 @@ begin
   PrintBMFont(activeFont^, text, x, y)
 end;
 
-function Button(const caption: string; const x, y: integer):boolean;
+function Button(const caption: string; const x, y: integer): boolean;
 const
   Padding = 4;
 var
   w: integer;
 begin
   w := MeasureBMFont(activeFont^, caption);
-  ButtonSized(caption, x, y, w + Padding * 2, activeFont^.lineHeight + Padding * 2);
+  Button := ButtonSized(caption, x, y, w + Padding * 2, activeFont^.lineHeight + Padding * 2)
 end;
 
 function ButtonSized(const caption: string; const x, y, width, height: integer): boolean;
