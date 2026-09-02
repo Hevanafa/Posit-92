@@ -25,6 +25,7 @@ var
   t: double;
   clicks: integer;
   testCheckboxState: boolean;
+  testSliderState: TSliderState;
 
 
 procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
@@ -70,7 +71,9 @@ procedure OnReady; far;
 begin
   { Init game state variables here }
   clicks := 0;
+
   testCheckboxState := false;
+  testSliderState.value := 50;
 
   t := 0.0;
 end;
@@ -116,6 +119,8 @@ begin
 
   if testCheckboxState then
     TextLabel('The light is on!', 10, 90);
+
+  Slider(10, 100, 80, testSliderState, 0, 100);
 
   DrawMouse
 end;
