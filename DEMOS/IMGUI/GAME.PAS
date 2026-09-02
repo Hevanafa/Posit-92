@@ -24,6 +24,7 @@ var
   { Game state variables }
   t: double;
   clicks: integer;
+  testCheckboxState: TCheckboxState;
 
 
 procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
@@ -69,6 +70,7 @@ procedure OnReady; far;
 begin
   { Init game state variables here }
   clicks := 0;
+  testCheckboxState.checked := false;
 
   t := 0.0;
 end;
@@ -109,6 +111,8 @@ begin
 
   if ImageButton(50, 50, @texButtonNormal, @texButtonHovered, @texButtonPressed) then
     inc(clicks);
+
+  Checkbox('Checkbox!', 10, 80, testCheckboxState);
 
   DrawMouse
 end;
