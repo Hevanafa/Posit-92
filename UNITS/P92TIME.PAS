@@ -13,13 +13,13 @@ interface
 function GetBIOSTicks: longint;
 
 { Get the seconds since midnight from the last boot }
-function Timer: real;
+function Timer: double;
 
 {
   Higher resolution TIMER with microsecond precision
   Returns time in seconds
 }
-function GetTimer: real;
+function GetTimer: double;
 
 {
   Gets the Julian day number
@@ -58,7 +58,7 @@ begin
 end;
 
 
-function Timer: real;
+function Timer: double;
 const
   PITFreq = 1193182.0 / 65536.0;
 begin
@@ -66,7 +66,7 @@ begin
 end;
 
 
-function GetTimer: real;
+function GetTimer: double;
 const
   PITFreq = 1193182.0 / 65536.0;
 var
