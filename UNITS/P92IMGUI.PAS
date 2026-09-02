@@ -22,6 +22,11 @@ interface
 {$IFDEF P92_IMGUI}
 uses P92BMFON, P92TEX, P92GEOM;
 
+type
+  TCheckboxState = record
+    checked: boolean;
+  end;
+
 { Interaction helpers }
 
 function GetHotWidget: integer;
@@ -68,6 +73,8 @@ function ImageButton(
   const x, y: integer;
   texNormal, texHovered, texPressed: PTexture
 ): boolean;
+
+procedure Checkbox(const caption: string; const x, y: integer; var state: TCheckboxState);
 
 {$ENDIF}
 
@@ -332,6 +339,57 @@ begin
     ImageButton := true
   else
     ImageButton := false;
+end;
+
+procedure Checkbox(const caption: string; const x,y: integer; var state: TCheckboxState);
+var
+  zone: TZone;
+  w: integer;
+  thisWidgetID: integer;
+  checkboxColour: byte;
+begin
+  AssertFontSet;
+
+  zone.x := x;
+  zone.y := y;
+
+  w := GuiMeasureText(caption);
+  zone.width := w + 9;
+  zone.height := activeFont^.lineHeight;
+
+  { Update logic }
+  thisWidgetID := nextWidgetID;
+  inc(nextWidgetID);
+
+  if pointInZone(mousePoint, zone) then begin
+    hotWidget := thisWidgetID;
+
+    if mouseJustPressed then activeWidget := thisWidgetID;
+  end;
+
+  { Render logic }
+  { TODO: Replace these rectangles with sprites }
+  if state.checked then
+    rectfill(trunc(zone.x), trunc(zone.y), trunc(zone.x + 7), trunc(zone.y + 7), ButtonIdleColour)
+  else
+    rectfill(trunc(zone.x), trunc(zone.y), trunc(zone.x + 7), trunc(zone.y + 7), ButtonIdleColour);
+
+  if activeWidget = thisWidgetID then
+    { on held down }
+    checkboxColour := IceCreamRed
+  else if hotWidget = thisWidgetID then
+    { on hover }
+    checkboxColour := IceCreamOrange
+  else
+    checkboxColour := Black;
+
+  rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + 5), trunc(zone.y + 5), $00);
+  TextLabel(caption, trunc(zone.x + 9), trunc(zone.y));
+
+  if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then begin
+    { activeWidget = -1 }  { Index reset is handled at the end of draw }
+    state.checked := not state.checked;
+  end;
 end;
 
 {$ENDIF}
