@@ -22,16 +22,6 @@ interface
 {$IFDEF P92_IMGUI}
 uses P92BMFON, P92TEX, P92GEOM;
 
-type
-  { TODO: Remove this }
-  TCheckboxState = record
-    checked: boolean;
-  end;
-
-  TSliderState = record
-    value: integer;
-  end;
-
 { Interaction helpers }
 
 function GetHotWidget: integer;
