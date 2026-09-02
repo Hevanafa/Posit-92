@@ -24,7 +24,7 @@ var
   { Game state variables }
   t: double;
   clicks: integer;
-  testCheckboxState: TCheckboxState;
+  testCheckboxState: boolean;
 
 
 procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
@@ -70,7 +70,7 @@ procedure OnReady; far;
 begin
   { Init game state variables here }
   clicks := 0;
-  testCheckboxState.checked := false;
+  testCheckboxState := false;
 
   t := 0.0;
 end;
@@ -113,6 +113,9 @@ begin
     inc(clicks);
 
   Checkbox('Checkbox!', 10, 80, testCheckboxState);
+
+  if testCheckboxState then
+    TextLabel('The light is on!', 10, 90);
 
   DrawMouse
 end;

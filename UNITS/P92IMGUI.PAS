@@ -74,7 +74,7 @@ function ImageButton(
   texNormal, texHovered, texPressed: PTexture
 ): boolean;
 
-procedure Checkbox(const caption: string; const x, y: integer; var state: TCheckboxState);
+procedure Checkbox(const caption: string; const x, y: integer; var checkedState: boolean);
 
 {$ENDIF}
 
@@ -342,7 +342,7 @@ begin
     ImageButton := false;
 end;
 
-procedure Checkbox(const caption: string; const x,y: integer; var state: TCheckboxState);
+procedure Checkbox(const caption: string; const x,y: integer; var checkedState: boolean);
 var
   zone: TZone;
   w: integer;
@@ -369,7 +369,7 @@ begin
   end;
 
   { Render logic }
-  if state.checked then
+  if checkedState then
     Spr(texCheckboxChecked, trunc(zone.x), trunc(zone.y))
   else
     Spr(texCheckboxNormal, trunc(zone.x), trunc(zone.y));
@@ -384,7 +384,7 @@ begin
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then begin
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
-    state.checked := not state.checked;
+    checkedState := not checkedState
   end;
 end;
 
