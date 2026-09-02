@@ -26,6 +26,8 @@ uses P92BMFON, P92TEX, P92GEOM;
 
 function GetHotWidget: integer;
 procedure SetHotWidget(const widgetID: integer);
+function IsWidgetHovered: boolean;
+
 function GetActiveWidget: integer;
 procedure SetActiveWidget(const widgetID: integer);
 function GetNextWidgetID: integer;
@@ -120,6 +122,11 @@ end;
 procedure SetHotWidget(const widgetID: integer);
 begin
   hotWidget := widgetID
+end;
+
+function IsWidgetHovered: boolean;
+begin
+  IsWidgetHovered := hotWidget = (nextWidgetID - 1)
 end;
 
 function GetActiveWidget: integer;

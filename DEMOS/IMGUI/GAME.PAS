@@ -122,6 +122,9 @@ begin
 
   Checkbox('', 80, 80, testCheckboxState);
 
+  if IsWidgetHovered then
+    TextLabel('This checkbox is hovered', 90, 80);
+
   Slider(
     10, 100, 80,
     testSliderState, 0, 100);
