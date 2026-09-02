@@ -7,7 +7,7 @@ program BaseTest;
 
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
 
 var
   fontP92Sans: TBMFont;
@@ -59,11 +59,6 @@ begin
 
   s := 'Done in ' + F32Str(endTick - startTick) + 's';
 
-  RectFill(
-    0,
-    VGAHeight - fontP92Sans.lineHeight * 2,
-    MeasureBMFont(fontP92Sans, s),
-    VGAHeight - fontP92Sans.lineHeight, $00);
   PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
 end;
 

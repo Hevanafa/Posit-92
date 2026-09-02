@@ -59,7 +59,9 @@ type
 
 
 procedure SignalDone;
+
 function FileExists(const filename: string): boolean;
+function GetCodePage: word;
 
 procedure DefaultP92AppConfig(var config: TP92AppConfig);
 procedure P92Start(const config: TP92AppConfig);
@@ -115,6 +117,19 @@ begin
   FileExists := (IOResult = 0);
   close(f)  { Safe, even if the file isn't open }
   {$I+}
+end;
+
+function GetCodePage: word;
+const
+  DOSAPI = $21;
+  GetGlobalCodePage = $6601;
+var
+  Regs: Registers;
+begin
+  regs.ax := GetGlobalCodePage;
+  intr(DOSAPI, regs);
+
+  GetCodePage := regs.bx;
 end;
 
 procedure LoadCursor;
