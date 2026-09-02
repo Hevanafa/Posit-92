@@ -486,6 +486,9 @@ end;
 procedure DrawTooltip;
 const
   Padding = 2;
+  { offset from the mouse coords }
+  OffsetX = 15;
+  OffsetY = 0;
 var
   x, y, right, bottom: integer;
   w: integer;
@@ -494,8 +497,8 @@ begin
 
   w := GuiMeasureText(activeTooltip);
 
-  x := trunc(mousePoint.x);
-  y := trunc(mousePoint.y);
+  x := trunc(mousePoint.x) + OffsetX;
+  y := trunc(mousePoint.y) + OffsetY;
   right := x + w + Padding * 2;
   bottom := y + activeFont^.lineHeight + Padding * 2;
 
