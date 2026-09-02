@@ -412,7 +412,7 @@ begin
   zone.x := x;
   zone.y := y;
   zone.width := width;
-  zone.height := 5;
+  zone.height := 7;
 
   { Update logic }
   thisWidgetID := nextWidgetID;
@@ -434,12 +434,12 @@ begin
   end;
 
   { Render logic }
-  line(x, y + 2, x + width, y + 2, SliderBackColour);
+  line(x, y + 3, x + width, y + 3, SliderBackColour);
 
   perc := (state.value - minValue) / range;
   thumbX := round(x + perc * width);
 
-  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), SliderHoverColour);
+  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 6), SliderHoverColour);
 
   if activeWidget = thisWidgetID then
     { dragging }
@@ -450,7 +450,7 @@ begin
   else
     colour := ButtonIdleColour;
 
-  rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), colour)
+  rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 6), colour)
 end;
 
 {$ENDIF}
