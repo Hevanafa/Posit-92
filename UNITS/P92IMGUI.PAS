@@ -23,8 +23,13 @@ interface
 uses P92BMFON, P92TEX, P92GEOM;
 
 type
+  { TODO: Remove this }
   TCheckboxState = record
     checked: boolean;
+  end;
+
+  TSliderState = record
+    value: integer;
   end;
 
 { Interaction helpers }
@@ -75,6 +80,8 @@ function ImageButton(
 ): boolean;
 
 procedure Checkbox(const caption: string; const x, y: integer; var checkedState: boolean);
+
+procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
 
 {$ENDIF}
 
@@ -386,6 +393,59 @@ begin
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
     checkedState := not checkedState
   end;
+end;
+
+procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
+var
+  zone: TZone;
+  thisWidgetID: smallint;
+  perc, range: double;
+  pendingValue, thumbX: smallint;
+  colour: longword;
+begin
+  if minValue >= maxValue then panicHalt('Slider: minValue has to be less than maxValue!');
+
+  zone.x := x;
+  zone.y := y;
+  zone.width := width;
+  zone.height := 5;
+
+  { Update logic }
+  thisWidgetID := nextWidgetID;
+  inc(nextWidgetID);
+
+  if pointInZone(mousePoint, zone) then begin
+    hotWidget := thisWidgetID;
+
+    if mouseJustPressed then activeWidget := thisWidgetID;
+  end;
+
+  { Value update logic }
+  range := maxValue - minValue;
+  if activeWidget = thisWidgetID then begin
+    pendingValue := trunc(clamp(mouseX, x, x + width) - x);
+    perc := pendingValue / width;
+    state.value := round(perc * range)
+  end;
+
+  { Render logic }
+  line(x, y + 2, x + width, y + 2, Black);
+
+  perc := (state.value - minValue) / range;
+  thumbX := round(x + perc * width);
+
+  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), White);
+
+  if activeWidget = thisWidgetID then
+    { dragging }
+    colour := IceCreamRed
+  else if hotWidget = thisWidgetID then
+    { hovering }
+    colour := IceCreamOrange
+  else
+    colour := Black;
+
+  rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), colour)
 end;
 
 {$ENDIF}
