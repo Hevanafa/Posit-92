@@ -79,6 +79,9 @@ procedure Slider(
   const minValue, maxValue: integer
 );
 
+procedure SetTooltip(const text: string);
+procedure ResetTooltip;
+
 {$ENDIF}
 
 
@@ -113,6 +116,8 @@ var
 
   activeFont: PBMFont;
   texCheckboxNormal, texCheckboxChecked: TTexture;
+
+  activeTooltip: string;
 
 function GetHotWidget: integer;
 begin
@@ -467,6 +472,16 @@ begin
     colour := ButtonIdleColour;
 
   rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + height - 1), colour)
+end;
+
+procedure SetTooltip(const text: string);
+begin
+  activeTooltip := text
+end;
+
+procedure ResetTooltip;
+begin
+  activeTooltip := ''
 end;
 
 {$ENDIF}

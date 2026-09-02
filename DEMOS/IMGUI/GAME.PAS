@@ -117,13 +117,14 @@ begin
 
   Checkbox('Checkbox!', 10, 80, testCheckboxState);
 
-  if testCheckboxState then
+  if testCheckboxState then begin
     TextLabel('The light is on!', 10, 95);
+  end;
 
   Checkbox('', 80, 80, testCheckboxState);
 
   if IsWidgetHovered then
-    TextLabel('This checkbox is hovered', 90, 80);
+    SetTooltip('This checkbox is hovered');
 
   Slider(
     10, 100, 80,
