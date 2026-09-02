@@ -109,6 +109,9 @@ begin
   if Button('Clicks: ' + i32str(clicks), 10, 10) then
     inc(clicks);
 
+  if IsWidgetHovered then
+    SetTooltip('Clicks: ' + I32Str(clicks));
+
   if ImageButton(10, 50, @texButtonNormal, @texButtonHovered, @texButtonPressed) then
     inc(clicks);
 
