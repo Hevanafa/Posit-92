@@ -31,17 +31,27 @@ procedure DrawOnce; far;
 const
   OpCount = 1;
   ColColour = $0A;
+  CellColour = $0F;
 var
   startTick, endTick: double;
   s: string;
-  a: word;
+  a, b: word;
 begin
   cls($70);
   startTick := GetTimer;
 
   for a:=0 to 15 do begin
-    Print(i32str(a mod 10), 24 + 16 * a, 24, ColColour);
-    print(i32str(a * 16), 8, 32 + a * 8, ColColour);
+    { Table header }
+    Print(i32str(a mod 10), 40 + 16 * a, 16, ColColour);
+
+    { Table first column }
+    Print(i32str(a * 16), 8, 32 + a * 8, ColColour);
+  end;
+
+  for b:=0 to 15 do begin
+    for a:=0 to 15 do begin
+      DrawCGAGlyph(char(b * 16 + a), 40 + 16 * a, 32 + b * 8, CellColour);
+    end;
   end;
 
   endTick := GetTimer;
