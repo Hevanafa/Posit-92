@@ -466,6 +466,8 @@ procedure SprRegion(
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 var
+  localTransparencyKey: byte;
+
   { all these are inclusive }
   startX, endX, startY, endY: integer;
 
@@ -496,6 +498,7 @@ begin
   srcOffsetX := startX - destX;
   srcOffsetY := startY - destY;
 
+  localTransparencyKey := transparencyKey;
   pixelData := tex.data;
 
   for b := startY to endY do begin
@@ -517,7 +520,7 @@ begin
     sub cx, startX
     inc cx
 
-    mov dh, transparencyKey
+    mov dh, localTransparencyKey
 
     @x_loop:
       lodsb
