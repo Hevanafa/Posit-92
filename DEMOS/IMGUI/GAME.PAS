@@ -58,9 +58,9 @@ begin
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 
-  LoadTex(texButtonNormal, 'IMG\BUTTON_N.BMP');
-  LoadTex(texButtonHovered, 'IMG\BUTTON_H.BMP');
-  LoadTex(texButtonPressed, 'IMG\BUTTON_P.BMP');
+  LoadTex(texButtonNormal, 'IMG\IMGUI\BUTTON_N.BMP');
+  LoadTex(texButtonHovered, 'IMG\IMGUI\BUTTON_H.BMP');
+  LoadTex(texButtonPressed, 'IMG\IMGUI\BUTTON_P.BMP');
 
   ReplaceColour(fontP92Sans.texture, $0F, $00);
 end;
