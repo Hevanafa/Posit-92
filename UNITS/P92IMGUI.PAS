@@ -79,9 +79,9 @@ uses
   P92MOUSE, P92PANIC, P92GRAPH;
 
 const
-  ButtonPressColour = $40;
-  ButtonHoverColour = $42;
-  ButtonIdleColour = $0F;
+  ButtonPressColour = $91;  {145}
+  ButtonHoverColour = $49;  {73}
+  ButtonIdleColour = $02;
 
 var
   { Immediate GUI }
