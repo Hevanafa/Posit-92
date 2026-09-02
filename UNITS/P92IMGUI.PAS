@@ -369,22 +369,17 @@ begin
   end;
 
   { Render logic }
-  { TODO: Replace these rectangles with sprites }
   if state.checked then
-    rectfill(trunc(zone.x), trunc(zone.y), trunc(zone.x + 7), trunc(zone.y + 7), ButtonIdleColour)
+    Spr(texCheckboxChecked, trunc(zone.x), trunc(zone.y))
   else
-    rectfill(trunc(zone.x), trunc(zone.y), trunc(zone.x + 7), trunc(zone.y + 7), ButtonIdleColour);
+    Spr(texCheckboxNormal, trunc(zone.x), trunc(zone.y));
 
   if activeWidget = thisWidgetID then
-    { on held down }
-    checkboxColour := IceCreamRed
+    { held down }
   else if hotWidget = thisWidgetID then
-    { on hover }
-    checkboxColour := IceCreamOrange
-  else
-    checkboxColour := Black;
+    rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + 6), trunc(zone.y + 6), ButtonHoverColour)
+  else ;
 
-  rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + 5), trunc(zone.y + 5), $00);
   TextLabel(caption, trunc(zone.x + 9), trunc(zone.y));
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then begin
