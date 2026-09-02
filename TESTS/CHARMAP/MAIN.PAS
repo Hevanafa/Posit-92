@@ -29,7 +29,7 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1;
+  HeadingColour = $0F;
   ColColour = $0A;
   CellColour = $0F;
 var
@@ -37,8 +37,11 @@ var
   s: string;
   a, b: word;
 begin
-  cls($70);
+  cls($4F);
+
   startTick := GetTimer;
+
+  print('Codepage ' + i32str(GetCodePage) + ' Map', 0, 0, HeadingColour);
 
   for a:=0 to 15 do begin
     { Table header }
@@ -48,15 +51,13 @@ begin
     Print(i32str(a * 16), 8, 32 + a * 8, ColColour);
   end;
 
-  for b:=0 to 15 do begin
-    for a:=0 to 15 do begin
+  for b:=0 to 15 do
+    for a:=0 to 15 do
       DrawCGAGlyph(char(b * 16 + a), 40 + 16 * a, 32 + b * 8, CellColour);
-    end;
-  end;
 
   endTick := GetTimer;
 
-  s := i32str(OpCount) + ' operations done in ' + F32Str(endTick - startTick) + 's';
+  s := 'Done in ' + F32Str(endTick - startTick) + 's';
 
   RectFill(
     0,
