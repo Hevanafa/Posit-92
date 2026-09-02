@@ -61,6 +61,7 @@ procedure TextLabel(const text: string; const x, y: integer);
 procedure CentredLabel(const text: string; const cx, y: integer);
 procedure UnderlinedLabel(const text: string; const x, y: integer; const lineColour: byte);
 
+function Button(const caption: string; const x, y: integer): boolean;
 function ButtonSized(const caption: string; const x, y, width, height: integer): boolean;
 
 function ImageButton(
@@ -238,8 +239,19 @@ begin
   PrintBMFont(activeFont^, text, x, y)
 end;
 
+function Button(const caption: string; const x, y: integer):boolean;
+const
+  Padding = 4;
+var
+  w: integer;
+begin
+  w := MeasureBMFont(activeFont^, caption);
+  ButtonSized(caption, x, y, w + Padding * 2, activeFont^.lineHeight + Padding * 2);
+end;
 
 function ButtonSized(const caption: string; const x, y, width, height: integer): boolean;
+const
+  Padding = 4;
 var
   zone: TZone;
   thisWidgetID: integer;
@@ -272,7 +284,7 @@ begin
 
   RectFill(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), buttonColour);
   Rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + zone.width), trunc(zone.y + zone.height), ButtonIdleColour);
-  TextLabel(caption, trunc(zone.x + 4), trunc(zone.y + 4));
+  TextLabel(caption, trunc(zone.x + Padding), trunc(zone.y + Padding));
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then
     { activeWidget = -1 }  { Index reset is handled at the end of draw }
