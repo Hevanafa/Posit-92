@@ -90,12 +90,15 @@ implementation
 
 {$IFDEF P92_IMGUI}
 uses
-  P92MOUSE, P92PANIC, P92GRAPH;
+  P92MOUSE, P92MATHS, P92PANIC, P92GRAPH;
 
 const
   ButtonPressColour = $91;  {145}
   ButtonHoverColour = $49;  {73}
   ButtonIdleColour = $02;
+
+  SliderBackColour = $12;  {18}
+  SliderHoverColour = $49;
 
 var
   { Immediate GUI }
@@ -398,12 +401,13 @@ end;
 procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
 var
   zone: TZone;
-  thisWidgetID: smallint;
+  thisWidgetID: integer;
   perc, range: double;
-  pendingValue, thumbX: smallint;
-  colour: longword;
+  pendingValue, thumbX: integer;
+  colour: byte;
 begin
-  if minValue >= maxValue then panicHalt('Slider: minValue has to be less than maxValue!');
+  if minValue >= maxValue then
+    PanicHalt('Slider: minValue has to be less than maxValue!');
 
   zone.x := x;
   zone.y := y;
@@ -422,28 +426,29 @@ begin
 
   { Value update logic }
   range := maxValue - minValue;
+
   if activeWidget = thisWidgetID then begin
-    pendingValue := trunc(clamp(mouseX, x, x + width) - x);
+    pendingValue := trunc(clamp(mousePoint.x, x, x + width) - x);
     perc := pendingValue / width;
     state.value := round(perc * range)
   end;
 
   { Render logic }
-  line(x, y + 2, x + width, y + 2, Black);
+  line(x, y + 2, x + width, y + 2, SliderBackColour);
 
   perc := (state.value - minValue) / range;
   thumbX := round(x + perc * width);
 
-  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), White);
+  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), SliderHoverColour);
 
   if activeWidget = thisWidgetID then
     { dragging }
-    colour := IceCreamRed
+    colour := ButtonHoverColour
   else if hotWidget = thisWidgetID then
     { hovering }
-    colour := IceCreamOrange
+    colour := ButtonHoverColour
   else
-    colour := Black;
+    colour := ButtonIdleColour;
 
   rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 4), colour)
 end;
