@@ -53,7 +53,7 @@ procedure ResetWidgetIndices;
 procedure ResetActiveWidget;
 
 procedure GuiSetFont(font: PBMFont);
-function GuiMeasureText(const text: string): word;
+function GuiMeasureText(const text: string): integer;
 
 procedure InitImmediateGUI(font: PBMFont);
 
@@ -80,6 +80,7 @@ procedure Slider(
 );
 
 procedure SetTooltip(const text: string);
+procedure DrawTooltip;
 procedure ResetTooltip;
 
 {$ENDIF}
@@ -213,7 +214,7 @@ begin
   activeFont := font
 end;
 
-function GuiMeasureText(const text: string): word;
+function GuiMeasureText(const text: string): integer;
 begin
   AssertFontSet;
   GuiMeasureText := MeasureBMFont(activeFont^, text)
@@ -477,6 +478,30 @@ end;
 procedure SetTooltip(const text: string);
 begin
   activeTooltip := text
+end;
+
+procedure DrawTooltip;
+const
+  Padding = 2;
+var
+  x, y: integer;
+  w: integer;
+begin
+  if activeTooltip = '' then exit;
+
+  w := GuiMeasureText(activeTooltip);
+
+  x := trunc(mousePoint.x);
+  y := trunc(mousePoint.y);
+
+  Rect(
+    x, y,
+    x + w + Padding * 2,
+    y + activeFont^.lineHeight + Padding * 2,
+    ButtonIdleColour);
+
+  { TODO: RectFill }
+  { TODO: render the label }
 end;
 
 procedure ResetTooltip;

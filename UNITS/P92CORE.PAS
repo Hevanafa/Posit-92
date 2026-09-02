@@ -264,6 +264,8 @@ end;
 procedure P92AfterDraw;
 begin
 {$IFDEF P92_IMGUI}
+  DrawTooltip;
+
   ResetTooltip;
   ResetActiveWidget;
 {$ENDIF}
