@@ -100,6 +100,9 @@ const
   SliderBackColour = $12;  {18}
   SliderHoverColour = $49;
 
+  TooltipBorderColour = $12;
+  TooltipBackColour = $5C;
+
 var
   { Immediate GUI }
   { Additional mouse variables }
@@ -484,7 +487,7 @@ procedure DrawTooltip;
 const
   Padding = 2;
 var
-  x, y: integer;
+  x, y, right, bottom: integer;
   w: integer;
 begin
   if activeTooltip = '' then exit;
@@ -493,15 +496,13 @@ begin
 
   x := trunc(mousePoint.x);
   y := trunc(mousePoint.y);
+  right := x + w + Padding * 2;
+  bottom := y + activeFont^.lineHeight + Padding * 2;
 
-  Rect(
-    x, y,
-    x + w + Padding * 2,
-    y + activeFont^.lineHeight + Padding * 2,
-    ButtonIdleColour);
+  RectFill(x, y, right, bottom, TooltipBackColour);
+  Rect(x, y, right, bottom, TooltipBorderColour);
 
-  { TODO: RectFill }
-  { TODO: render the label }
+  TextLabel(activeTooltip, x + Padding, y + Padding);
 end;
 
 procedure ResetTooltip;
