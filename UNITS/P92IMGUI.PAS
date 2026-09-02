@@ -81,7 +81,11 @@ function ImageButton(
 
 procedure Checkbox(const caption: string; const x, y: integer; var checkedState: boolean);
 
-procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
+procedure Slider(
+  const x, y, width: integer;
+  var sliderState: integer;
+  const minValue, maxValue: integer
+);
 
 {$ENDIF}
 
@@ -398,7 +402,11 @@ begin
   end;
 end;
 
-procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
+procedure Slider(
+  const x, y, width: integer;
+  var sliderState: integer;
+  const minValue, maxValue: integer
+);
 const
   Height = 7;
 var
@@ -432,14 +440,14 @@ begin
   if activeWidget = thisWidgetID then begin
     pendingValue := trunc(clamp(mousePoint.x, x, x + width) - x);
     perc := pendingValue / width;
-    state.value := round(perc * range)
+    sliderState := round(perc * range)
   end;
 
   { Render logic }
 
   line(x, y + height div 2, x + width, y + height div 2, SliderBackColour);
 
-  perc := (state.value - minValue) / range;
+  perc := (sliderState - minValue) / range;
   thumbX := round(x + perc * width);
 
   rectfill(

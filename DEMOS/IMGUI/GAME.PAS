@@ -25,7 +25,7 @@ var
   t: double;
   clicks: integer;
   testCheckboxState: boolean;
-  testSliderState: TSliderState;
+  testSliderState: integer;
 
 
 procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
@@ -73,7 +73,7 @@ begin
   clicks := 0;
 
   testCheckboxState := false;
-  testSliderState.value := 50;
+  testSliderState := 50;
 
   t := 0.0;
 end;
@@ -122,7 +122,7 @@ begin
 
   Slider(10, 100, 80, testSliderState, 0, 100);
 
-  CentredLabel(i32str(testSliderState.value), 45, 110);
+  CentredLabel(i32str(testSliderState), 50, 110);
 
   DrawMouse
 end;
