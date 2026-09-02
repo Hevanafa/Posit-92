@@ -122,6 +122,8 @@ begin
 
   Slider(10, 100, 80, testSliderState, 0, 100);
 
+  CentredLabel(i32str(testSliderState.value), 45, 110);
+
   DrawMouse
 end;
 
