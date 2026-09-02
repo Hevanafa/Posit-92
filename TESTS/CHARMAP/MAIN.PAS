@@ -1,9 +1,16 @@
 {
-  Base for test projects
+  DOS character map
   Part of Posit-92 game engine
+
+  The codepage can be changed in DOSBox config:
+  [config]
+  country = [CountryCode],[CodePage]
+
+  for codepage 437, you can use this:
+  country = 1,437
 }
 
-program BaseTest;
+program CharMap;
 
 uses
   CRT, DOS,
