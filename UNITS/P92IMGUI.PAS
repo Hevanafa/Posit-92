@@ -399,6 +399,8 @@ begin
 end;
 
 procedure Slider(const x, y, width: integer; var state: TSliderState; const minValue, maxValue: integer);
+const
+  Height = 7;
 var
   zone: TZone;
   thisWidgetID: integer;
@@ -412,7 +414,7 @@ begin
   zone.x := x;
   zone.y := y;
   zone.width := width;
-  zone.height := 7;
+  zone.height := Height;
 
   { Update logic }
   thisWidgetID := nextWidgetID;
@@ -434,12 +436,15 @@ begin
   end;
 
   { Render logic }
-  line(x, y + 3, x + width, y + 3, SliderBackColour);
+
+  line(x, y + height div 2, x + width, y + height div 2, SliderBackColour);
 
   perc := (state.value - minValue) / range;
   thumbX := round(x + perc * width);
 
-  rectfill(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 6), SliderHoverColour);
+  rectfill(
+    trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + height - 1),
+    SliderHoverColour);
 
   if activeWidget = thisWidgetID then
     { dragging }
@@ -450,7 +455,7 @@ begin
   else
     colour := ButtonIdleColour;
 
-  rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + 6), colour)
+  rect(trunc(thumbX - 2), trunc(zone.y), trunc(thumbX + 2), trunc(zone.y + height - 1), colour)
 end;
 
 {$ENDIF}
