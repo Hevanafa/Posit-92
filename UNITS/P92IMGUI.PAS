@@ -106,6 +106,7 @@ var
   lastActiveWidget: integer;
 
   activeFont: PBMFont;
+  texCheckboxNormal, texCheckboxChecked: TTexture;
 
 function GetHotWidget: integer;
 begin
@@ -396,6 +397,9 @@ end;
 
 begin
 {$IFDEF P92_IMGUI}
-  activeFont := nil
+  activeFont := nil;
+
+  LoadTex(texCheckboxNormal, 'IMG\IMGUI\CB_OFF.BMP');
+  LoadTex(texCheckboxChecked, 'IMG\IMGUI\CB_ON.BMP');
 {$ENDIF}
 end.
