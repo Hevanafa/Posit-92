@@ -358,9 +358,14 @@ begin
   zone.x := x;
   zone.y := y;
 
-  w := GuiMeasureText(caption);
-  zone.width := w + 9;
-  zone.height := activeFont^.lineHeight;
+  if caption <> '' then begin
+    w := GuiMeasureText(caption);
+    zone.width := w + 9;
+    zone.height := activeFont^.lineHeight;
+  end else begin
+    zone.width := 8;
+    zone.height := 8;
+  end;
 
   { Update logic }
   thisWidgetID := nextWidgetID;
@@ -384,7 +389,8 @@ begin
     rect(trunc(zone.x), trunc(zone.y), trunc(zone.x + 6), trunc(zone.y + 6), ButtonHoverColour)
   else ;
 
-  TextLabel(caption, trunc(zone.x + 9), trunc(zone.y));
+  if caption <> '' then
+    TextLabel(caption, trunc(zone.x + 9), trunc(zone.y));
 
   if mouseJustReleased and (hotWidget = thisWidgetID) and (activeWidget = thisWidgetID) then begin
     { activeWidget = -1 }  { Index reset is handled at the end of draw }

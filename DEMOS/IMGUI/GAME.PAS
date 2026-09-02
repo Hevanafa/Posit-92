@@ -118,11 +118,15 @@ begin
   Checkbox('Checkbox!', 10, 80, testCheckboxState);
 
   if testCheckboxState then
-    TextLabel('The light is on!', 10, 90);
+    TextLabel('The light is on!', 10, 95);
 
-  Slider(10, 100, 80, testSliderState, 0, 100);
+  Checkbox('', 80, 80, testCheckboxState);
 
-  CentredLabel(i32str(testSliderState), 50, 110);
+  Slider(
+    10, 100, 80,
+    testSliderState, 0, 100);
+
+  CentredLabel(i32str(testSliderState), 50, 120);
 
   DrawMouse
 end;
