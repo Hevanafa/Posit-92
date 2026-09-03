@@ -68,7 +68,7 @@ procedure SprFast(const tex: TTexture; const x, y: integer);
 { Blit directly to the VGA memory, not yet supported for Mode X }
 procedure VGASpr(const tex: TTexture; const x, y: integer);
 
-procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
+procedure SprStretchBase(const tex: TTexture; const x, y, w, h: integer);
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
 
 { Copied from SprFast, only the pixel plotter is different }
@@ -379,7 +379,7 @@ begin
   end;
 end;
 
-procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
+procedure SprStretchBase(const tex: TTexture; const x, y, w, h: integer);
 var
   srcX, srcY: integer;
   destX, destY: integer;

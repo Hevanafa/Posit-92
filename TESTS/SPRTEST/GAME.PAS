@@ -125,6 +125,9 @@ begin
 
   startTime := GetTimer;
 
+  {
+    Original: 3.3217s
+  }
   for a:=1 to OpCount do
     SprStretch(
       texDosuEXE[0],
