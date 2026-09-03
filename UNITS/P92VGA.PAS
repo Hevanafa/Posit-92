@@ -214,28 +214,28 @@ begin
   { Handle edge cases }
 
   { Edge case: off-screen }
-  if (x <= -8) or (x >= VGAWidth)
-    or (y <= -8) or (y >= VGAHeight) then exit;
+  if (x > clipEndX) or (x + 7 < clipStartX)
+    or (y > clipEndY) or (y + 7 < clipStartY) then exit;
 
   { Visible row range }
-  if y < 0 then
-    rowStart := -y
+  if y < clipStartY then
+    rowStart := clipStartY - y
   else
     rowStart := 0;
 
-  if y + 7 >= VGAHeight then
-    rowEnd := VGAHeight - 1 - y
+  if y + 7 > clipEndY then
+    rowEnd := clipEndY - y
   else
     rowEnd := 7;
 
   { Visible col range }
-  if x < 0 then
-    colStart := -x
+  if x < clipStartX then
+    colStart := clipStartX - x
   else
     colStart := 0;
 
-  if x + 7 >= VGAWidth then
-    colEnd := VGAWidth - 1 - x
+  if x + 7 > clipEndX then
+    colEnd := clipEndX - x
   else
     colEnd := 7;
 
