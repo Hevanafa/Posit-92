@@ -303,30 +303,19 @@ begin
 end;
 
 
+{ Copied from PrintBMFontGlyph }
 function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
 var
-  row, col: integer;
   g: PBMFontGlyph;
-  srcY: integer;
-  colour: byte;
 begin
+  PrintBMFontGlyphTint := font.glyphs[ord(ch)].xadvance;
   g := @(font.glyphs[ord(ch)]);
-  PrintBMFontGlyphTint := g^.xadvance;
 
-  { Bounds check }
-  if word(x + g^.width) >= VGAWidth then exit;
-  if word(y + g^.height) >= VGAHeight then exit;
-
-  for row := 0 to g^.height - 1 do begin
-    srcY := g^.y + row;
-
-    for col := 0 to g^.width - 1 do begin
-      colour := font.texture.data^[srcY * font.texture.width + (g^.x + col)];
-
-      if colour <> transparencyKey then
-        AsmPSet(x + g^.xoffset + col, y + g^.yoffset + row, tint);
-    end;
-  end;
+  SprRegionTint(
+    font.texture,
+    g^.x, g^.y, g^.width, g^.height,
+    x + g^.xoffset, y + g^.yoffset,
+    tint)
 end;
 
 procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const tint: byte);

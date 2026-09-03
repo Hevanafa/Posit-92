@@ -8,7 +8,7 @@
 
 uses
   CRT, DOS,
-  P92Core, P92BMFON, P92LOG, P92KBD, P92Mouse, P92GRAPH, P92TIME, P92VGA, P92TEX, P92CONV, P92FPS;
+  P92Core, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92GRAPH, P92TIME, P92VGA, P92TEX, P92CONV, P92FPS;
 
 var
   bootTime, t: double;
@@ -97,7 +97,12 @@ begin
     after applying inline asm on the hot path: 0.5710s
   }
   for a:=1 to OpCount do
-    PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20);
+    { PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20); }
+    PrintBMFontTint(
+      fontP92Sans,
+      'Hello world!',
+      random(VGAWidth) - 20, random(VGAHeight) - 20,
+      random(256));
 
   {
     Original: 0.9003s
