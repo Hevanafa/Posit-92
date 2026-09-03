@@ -146,6 +146,14 @@ begin
   clipEndY := y + height - 1;
 end;
 
+procedure ResetClip;
+begin
+  clipStartX := 0;
+  clipEndX := BufferWidth - 1;
+  clipStartY := 0;
+  clipEndY := BufferHeight - 1;
+end;
+
 procedure Cls(const colour: byte);
 begin
   AsmCls(colour)
@@ -535,13 +543,9 @@ begin
   VGAWidth := width;
   VGAHeight := height;
   bufferSize := width * height;
+  ResetClip;
 
   GetMem(backBuffer, bufferSize);
-
-  clipStartX := 0;
-  clipEndX := width - 1;
-  clipStartY := 0;
-  clipEndY := height - 1;
 
   isBufferInitialised := true
 end;
