@@ -89,6 +89,14 @@ procedure SprRegion(
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 
+{ Copied from SprRegion }
+procedure SprRegionTint(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const colour: byte
+);
+
 procedure SprFlipped(const tex: TTexture; const x, y: integer; const flip: integer);
 
 
@@ -526,6 +534,88 @@ begin
       lodsb
       cmp al, dh
       je @skip
+      mov es:[di], al
+
+    @skip:
+      inc di
+      loop @x_loop
+
+    pop ds
+    pop es
+    end;
+  end;
+end;
+
+{ Copied from SprRegion }
+procedure SprRegionTint(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const colour: byte
+);
+var
+  localTransparencyKey: byte;
+
+  { all these are inclusive }
+  startX, endX, startY, endY: integer;
+
+  srcOffsetX, srcOffsetY: integer;
+
+  a, b: integer;
+
+  srcRowBase: word;
+  { pixel offset }
+  srcPxOffset: word;
+  destRowBase: word;
+
+  pixelData: PByteArray;
+begin
+  { Handle clipping logic }
+  startX := destX;
+  startY := destY;
+  endX := destX + srcW - 1;
+  endY := destY + srcH - 1;
+
+  if startX < clipStartX then startX := clipStartX;
+  if startY < clipStartY then startY := clipStartY;
+  if endX > clipEndX then endX := clipEndX;
+  if endY > clipEndY then endY := clipEndY;
+
+  if (startX > endX) or (startY > endY) then exit;
+
+  srcOffsetX := startX - destX;
+  srcOffsetY := startY - destY;
+
+  localTransparencyKey := transparencyKey;
+  pixelData := tex.data;
+
+  for b := startY to endY do begin
+    srcRowBase := (srcY + srcOffsetY + (b - startY)) * tex.width;
+    srcPxOffset := srcRowBase + srcX + srcOffsetX;
+    destRowBase := b * VGAWidth + startX;
+
+    asm
+    push es
+    push ds
+
+    les di, backBuffer
+    add di, destRowBase
+
+    lds si, pixelData
+    add si, srcPxOffset
+
+    mov cx, endX
+    sub cx, startX
+    inc cx
+
+    mov dh, localTransparencyKey
+
+    @x_loop:
+      lodsb
+      cmp al, dh
+      je @skip
+
+      mov al, colour
       mov es:[di], al
 
     @skip:
