@@ -384,6 +384,7 @@ var
   srcX, srcY: integer;
   destX, destY: integer;
   a, b: integer;
+  colour: byte;
 begin
   if (w = 0) or (h = 0) then exit;
 
@@ -394,7 +395,11 @@ begin
     for destX := 0 to w - 1 do begin
       srcX := (destX * tex.width) div w;
       a := x + destX;
-      AsmPSet(a, b, tex.data^[srcY * tex.width + srcX])
+
+      colour := tex.data^[srcY * tex.width + srcX];
+
+      if colour <> transparencyKey then
+        AsmPSet(a, b, colour);
     end;
   end;
 end;
