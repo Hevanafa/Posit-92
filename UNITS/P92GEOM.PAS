@@ -61,9 +61,9 @@ procedure GetPhysicsCPoint(const body: TPhysicsBody; var result: TPoint);
 function GetPhysicsBodyCX(const body: TPhysicsBody): double;
 function GetPhysicsBodyCY(const body: TPhysicsBody): double;
 
+procedure InitZone(var z: TZone; const x, y, width, height: double);
 { TODO }
 {
-function NewZone(const x, y, width, height: double): TZone;
 function PhysicsBodyToZone(const body: TPhysicsBody): TZone;
 }
 
@@ -150,15 +150,15 @@ begin
   GetPhysicsBodyCY := trunc(body.y + body.height / 2)
 end;
 
-{
-function NewZone(const x, y, width, height: double): TZone;
+procedure InitZone(var z: TZone; const x, y, width, height: double);
 begin
-  NewZone.x := x;
-  NewZone.y := y;
-  NewZone.width := width;
-  NewZone.height := height;
+  z.x := x;
+  z.y := y;
+  z.width := width;
+  z.height := height;
 end;
 
+{
 function PhysicsBodyToZone(const body: TPhysicsBody): TZone;
 begin
   with PhysicsBodyToZone do begin
