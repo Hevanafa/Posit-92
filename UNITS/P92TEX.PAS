@@ -62,7 +62,7 @@ procedure SprOpaque(const tex: TTexture);
   Any images bigger than that, use PascalSpr }
 procedure Spr(const tex: TTexture; const x, y: integer);
 
-procedure PascalSpr(const tex: TTexture; const x, y: integer);
+procedure SprBase(const tex: TTexture; const x, y: integer);
 
 {$IFNDEF P92_MODE_X}
 { Handle the edge cases
@@ -242,7 +242,7 @@ begin
 {$ENDIF}
 end;
 
-procedure PascalSpr(const tex: TTexture; const x, y: integer);
+procedure SprBase(const tex: TTexture; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
