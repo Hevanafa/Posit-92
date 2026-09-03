@@ -50,6 +50,7 @@ procedure DrawZone(const zone: TZone; const colour: byte);
 procedure DrawPhysicsBody(const body: TPhysicsBody; const colour: byte);
 procedure DrawCircleZone(const zone: TCircle; const colour: byte);
 
+{ Returns the distance between two points, *not* square rooted }
 function GetDist(const a, b: TPoint): double;
 
 function GetZoneCX(const zone: TZone): double;
@@ -62,10 +63,7 @@ function GetPhysicsBodyCX(const body: TPhysicsBody): double;
 function GetPhysicsBodyCY(const body: TPhysicsBody): double;
 
 procedure InitZone(var z: TZone; const x, y, width, height: double);
-{ TODO }
-{
-function PhysicsBodyToZone(const body: TPhysicsBody): TZone;
-}
+procedure PhysicsBodyToZone(const body: TPhysicsBody; var zone: TZone);
 
 function ZoneIntersects(const self, other: TZone): boolean;
 function CircleIntersects(const self, other: TCircle): boolean;
@@ -158,17 +156,15 @@ begin
   z.height := height;
 end;
 
-{
-function PhysicsBodyToZone(const body: TPhysicsBody): TZone;
+procedure PhysicsBodyToZone(const body: TPhysicsBody; var zone: TZone);
 begin
-  with PhysicsBodyToZone do begin
+  with zone do begin
     x := body.x;
     y := body.y;
     width := body.width;
     height := body.height;
   end;
 end;
-}
 
 function ZoneIntersects(const self, other: TZone): boolean;
 begin

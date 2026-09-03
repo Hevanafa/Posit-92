@@ -69,7 +69,7 @@ procedure PascalSpr(const tex: TTexture; const x, y: integer);
   Hot spot with inline ASM
 
   The maximum texture data size is 64KB }
-procedure AsmSpr(const tex: TTexture; const x, y: integer);
+procedure SprFast(const tex: TTexture; const x, y: integer);
 {$ENDIF}
 
 { Blit directly to the VGA memory, not yet supported for Mode X }
@@ -238,7 +238,7 @@ begin
 {$IFDEF P92_MODE_X}
   PascalSpr(tex, x, y);
 {$ELSE}
-  AsmSpr(tex, x, y)
+  SprFast(tex, x, y)
 {$ENDIF}
 end;
 
@@ -287,7 +287,7 @@ begin
 end;
 
 {$IFNDEF P92_MODE_X}
-procedure AsmSpr(const tex: TTexture; const x, y: integer);
+procedure SprFast(const tex: TTexture; const x, y: integer);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
