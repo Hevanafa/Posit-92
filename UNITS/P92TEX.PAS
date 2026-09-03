@@ -417,6 +417,13 @@ var
   srcRowOffset: word;
   pixelData: PByteArray;
 
+  pixelCount: integer;
+  destOffset: word;
+  srcStart: word;
+  errAcc: word;
+  texWidth: integer;
+  stretchW: integer;
+
   { Final coordinates, used in AsmPSet }
   a, b: integer;
   colour: byte;
@@ -440,6 +447,13 @@ begin
   if (startX > endX) or (startY > endY) then exit;
 
   pixelData := tex.data;
+
+  pixelCount := endX - startX + 1;
+  destOffset := b + x + startX;
+  srcStart := srcRowOffset + (longint(startX) * tex.width) div w;
+  errAcc := (longint(startX) * tex.width) mod w;
+  texWidth := tex.width;
+  stretchW := w;
 
   for destY := startY to endY do begin
     srcY := (destY * tex.height) div h;
