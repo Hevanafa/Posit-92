@@ -44,19 +44,6 @@ procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
   returns: xadvance
 }
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
-
-{
-  Optimised variant of PrintBMFontGlyph
-  Uses inline asm for the inner loop
-
-  This function is limited by ASM's 64k number limit when
-  accessing `font.texture.data`.  So the font's bitmap
-  can't be more than 65535 bytes
-
-  returns: xadvance
-}
-function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
-
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 
 function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
@@ -285,92 +272,6 @@ begin
   CloneTex(src.texture, dest.texture);
 end;
 
-
-function PrintBMFontGlyphFast(const font: TBMFont; const ch: char; const x, y: integer): integer;
-var
-  row, col: integer;
-  rowBase: word;
-  colour: byte;
-  { Avoid copying of the record type }
-  g: PBMFontGlyph;
-
-  startRow, endRow, startCol, endCol: integer;
-  drawX, drawY: integer;
-
-  { Used by inline assembly }
-  screenX, screenY: integer;
-  colCount: word;
-  pixelData: pointer;
-begin
-  g := @(font.glyphs[ord(ch)]);
-  PrintBMFontGlyphFast := g^.xadvance;
-  pixelData := font.texture.data;
-
-  { Edge case: Handle space }
-  if (g^.width = 0) and (g^.height = 0) then exit;
-
-  drawX := x + g^.xoffset;
-  drawY := y + g^.yoffset;
-
-  { Handle early exit }
-  if (drawX >= VGAWidth) or (drawY >= VGAHeight) then exit;
-  if (drawX + g^.width <= 0) or (drawY + g^.height <= 0) then exit;
-
-  { Clip to visible region }
-  startCol := 0;
-  endCol := g^.width - 1;
-  startRow := 0;
-  endRow := g^.height - 1;
-
-  if drawX < 0 then startCol := -drawX;
-  if drawX + endCol >= VGAWidth then
-    endCol := VGAWidth - 1 - drawX;
-
-  if drawY < 0 then startRow := -drawY;
-  if drawY + endRow >= VGAHeight then
-    endRow := VGAHeight - 1 - drawY;
-
-  { Begin loop - See PrintBMFontGlyph for reference }
-  for row := startRow to endRow do begin
-    rowBase := (g^.y + row) * font.texture.width + g^.x + startCol;
-    screenY := drawY + row;
-    screenX := drawX + startCol;
-    colCount := endCol - startCol + 1;
-
-    asm
-      { Load ES:DI with backBuffer + screen offset }
-      les di, backBuffer
-      mov ax, screenY
-      mov bx, VGAWidth
-      mul bx
-      add ax, screenX
-      add di, ax
-
-      { Load the transparency key to DH (just because it's a spare register) }
-      mov dh, transparencyKey
-
-      { Load DS:SI with bitmap data + rowBase }
-      push ds
-      lds si, pixelData
-      mov bx, rowBase
-      add si, bx
-
-      mov cx, colCount
-
-    @col_loop:
-      lodsb
-      cmp al, dh
-      je @skip
-      mov es:[di], al
-
-    @skip:
-      inc di
-      loop @col_loop
-
-      pop ds
-    end;
-  end;
-end;
 
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 var
