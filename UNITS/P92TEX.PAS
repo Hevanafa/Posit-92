@@ -77,7 +77,7 @@ procedure VGASpr(const tex: TTexture; const x, y: integer);
 
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
 
-{ Copied from SprFast only the colour usage is different }
+{ Copied from SprFast, only the pixel plotter is different }
 procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
 
 procedure SprRegionBase(
@@ -90,7 +90,7 @@ procedure SprRegion(
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer);
 
-{ Copied from SprRegion }
+{ Copied from SprRegion, only the pixel plotter is different }
 procedure SprRegionTint(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
@@ -591,7 +591,7 @@ begin
   end;
 end;
 
-{ Copied from SprRegion }
+
 procedure SprRegionTint(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
