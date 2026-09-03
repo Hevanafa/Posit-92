@@ -320,13 +320,21 @@ begin
 {$ENDIF}
 asm
   { Bounds check }
-  mov ax, VGAHeight
+  mov ax, clipEndY
   cmp y, ax
-  jae @skip
+  jg @skip
 
-  mov bx, VGAWidth
-  cmp x, bx
-  jae @skip
+  mov ax, clipStartY
+  cmp y, ax
+  jl @skip
+
+  mov ax, clipEndX
+  cmp x, ax
+  jg @skip
+
+  mov ax, clipStartX
+  cmp x, ax
+  jl @skip
 
   { Calculate offset: y * 320 + x }
   mov ax, y
@@ -341,7 +349,7 @@ asm
 }
   mov bx, ax
 
-  { Load ES:DI with the address to the backbuffer (backBuffer) }
+  { Load ES:DI with the address to the backbuffer }
   les di, backBuffer
   mov al, colour
   { mov es:[di+ax], colour } { <-- Invalid register combination }
