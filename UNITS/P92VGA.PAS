@@ -21,7 +21,11 @@ type
   TFont8x8 = array[0..255, 0..7] of byte;
 
 var
-  VGAWidth, VGAHeight: word;
+  { assigned in InitBuffer }
+  VGAWidth,
+  { assigned in InitBuffer }
+  VGAHeight: word;
+
   backBuffer: PByteArray;
 
   clipStartX, clipEndX: word;
@@ -153,13 +157,13 @@ begin
   else
     clipStartY := y;
 
-  if x + width - 1 > BufferWidth - 1 then
-    clipEndX := BufferWidth - 1
+  if x + width - 1 > VGAWidth - 1 then
+    clipEndX := VGAWidth - 1
   else
     clipEndX := x + width - 1;
 
-  if y + height - 1 > BufferHeight - 1 then
-    clipEndY := BufferHeight - 1
+  if y + height - 1 > VGAHeight - 1 then
+    clipEndY := VGAHeight - 1
   else
     clipEndY := y + height - 1;
 
@@ -170,9 +174,9 @@ end;
 procedure ResetClip;
 begin
   clipStartX := 0;
-  clipEndX := BufferWidth - 1;
+  clipEndX := VGAWidth - 1;
   clipStartY := 0;
-  clipEndY := BufferHeight - 1;
+  clipEndY := VGAHeight - 1;
 end;
 
 procedure Cls(const colour: byte);
