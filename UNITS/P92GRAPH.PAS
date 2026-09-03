@@ -21,8 +21,6 @@ procedure HLine(const x0, x1, y: integer; const colour: byte);
 procedure VLine(const x, y0, y1: integer; const colour: byte);
 
 procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
-procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
-procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
 
 { Forward calls to HLine and VLine }
 procedure Rect(const x0, y0, x1, y1: integer; const colour: byte);
@@ -396,16 +394,6 @@ begin
 end;
 
 
-procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
-begin
-  if x0 = x1 then
-    VLine(x0, y0, y1, colour)
-  else if y0 = y1 then
-    HLine(x0, x1, y0, colour)
-  else
-    AsmLine(x0, y0, x1, y1, colour);
-end;
-
 procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
 var
   dx, dy, sx, sy, err, e2: integer;
@@ -436,114 +424,14 @@ begin
   AsmPset(x1, y1, colour)
 end;
 
-procedure AsmLine(x0, y0, x1, y1: integer; const colour: byte);
-var
-  dxi, dyi, sx, sy, err, e2: integer;
+procedure Line(const x0, y0, x1, y1: integer; const colour: byte);
 begin
-  dxi := abs(x1 - x0);
-  dyi := abs(y1 - y0);
-
-  if x0 < x1 then sx := 1 else sx := -1;
-  if y0 < y1 then sy := 1 else sy := -1;
-
-asm
-  { err := dxi - dyi; }
-  mov ax, dxi
-  sub ax, dyi
-  mov err, ax
-
-{ while (x0 <> x1) or (y0 <> y1) do begin }
-@loop_condition:
-  mov ax, x1
-  cmp x0, ax
-  jne @loop
-
-  mov ax, y1
-  cmp y0, ax
-  jne @loop
-
-  jmp @loop_done
-
-@loop:
-  { AsmPset(x0, y0, colour); }
-
-  { Pset }
-  { Offset: y * 320 + x }
-  mov ax, y0
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, x0
-  mov bx, ax
-
-  les di, backBuffer
-  mov al, colour
-  mov es:[di+bx], al
-
-  { e2 := 2 * err; }
-  mov ax, 2
-  mul err
-  mov e2, ax
-
-  { if e2 > -dyi then begin }
-  mov bx, dyi
-  neg bx
-  cmp e2, bx
-  jle @skip_e2_check
-
-  { err := err - dyi; }
-  mov ax, err
-  sub ax, dyi
-  mov err, ax
-
-  { x0 := x0 + sx; }
-  mov ax, x0
-  add ax, sx
-  mov x0, ax
-
-  { end; }
-@skip_e2_check:
-
-  { if e2 < dxi then begin }
-  mov ax, dxi
-  cmp e2, ax
-  jge @skip
-
-  { err := err + dxi; }
-  mov ax, err
-  add ax, dxi
-  mov err, ax
-
-  { y0 := y0 + sy; }
-  mov ax, y0
-  add ax, sy
-  mov y0, ax
-  { end; }
-
-@skip:
-
-@loop_next:
-  jmp @loop_condition
-
-@loop_done:
-end;
-  { end; } { end while }
-
-
-{ AsmPset(x0, y0, colour) }
-asm
-  { Pset }
-  { Offset: y * 320 + x }
-  mov ax, y0
-  mov bx, 320
-  mul bx      { ax = ax * bx }
-  add ax, x0
-  mov bx, ax
-
-  les di, backBuffer
-  mov al, colour
-  mov es:[di+bx], al
-end;
-
+  if x0 = x1 then
+    VLine(x0, y0, y1, colour)
+  else if y0 = y1 then
+    HLine(x0, x1, y0, colour)
+  else
+    PascalLine(x0, y0, x1, y1, colour);
 end;
 
 
