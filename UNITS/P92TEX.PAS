@@ -68,7 +68,7 @@ procedure SprFast(const tex: TTexture; const x, y: integer);
 { Blit directly to the VGA memory, not yet supported for Mode X }
 procedure VGASpr(const tex: TTexture; const x, y: integer);
 
-procedure SprStretchBase(const tex: TTexture; const x, y, w, h: integer);
+procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
 
 { Copied from SprFast, only the pixel plotter is different }
@@ -395,6 +395,52 @@ begin
     b := y + destY;
 
     for destX := 0 to w - 1 do begin
+      srcX := (destX * tex.width) div w;
+      a := x + destX;
+
+      colour := tex.data^[srcY * tex.width + srcX];
+
+      if colour <> transparencyKey then
+        AsmPSet(a, b, colour);
+    end;
+  end;
+end;
+
+procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
+var
+  srcX, srcY: integer;
+  destX, destY: integer;
+
+  startX, endX: integer;
+  startY, endY: integer;
+
+  { Final coordinates, used in AsmPSet }
+  a, b: integer;
+  colour: byte;
+begin
+  if (w = 0) or (h = 0) then exit;
+  if w < 0 then PanicHalt('SprStretch: Negative width is not supported');
+  if h < 0 then PanicHalt('SprStretch: Negative height is not supported');
+
+  { Handle clipping }
+
+  startX := 0;
+  endX := w - 1;
+  startY := 0;
+  endY := h - 1;
+
+  if x < 0 then startX := -x;
+  if y < 0 then startY := -y;
+  if x + endX >= VGAWidth then endX := VGAWidth - 1 - x;
+  if y + endY >= VGAHeight then endY := VGAHeight - 1 - y;
+
+  if (startX > endX) or (startY > endY) then exit;
+
+  for destY := startY to endY do begin
+    srcY := (destY * tex.height) div h;
+    b := y + destY;
+
+    for destX := startX to endX do begin
       srcX := (destX * tex.width) div w;
       a := x + destX;
 

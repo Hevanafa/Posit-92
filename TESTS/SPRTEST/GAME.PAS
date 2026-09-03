@@ -127,6 +127,7 @@ begin
 
   {
     Original: 3.3217s
+    With screen clipping: 2.8067s
   }
   for a:=1 to OpCount do
     SprStretch(
