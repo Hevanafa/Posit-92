@@ -539,11 +539,11 @@ begin
   GetMem(backBuffer, bufferSize);
 
   clipStartX := 0;
-  clipEndX := VGAWidth - 1;
+  clipEndX := width - 1;
   clipStartY := 0;
-  clipEndY := VGAHeight - 1;
+  clipEndY := height - 1;
 
-  isBufferInitialised := true;
+  isBufferInitialised := true
 end;
 
 procedure FreeBuffer;
