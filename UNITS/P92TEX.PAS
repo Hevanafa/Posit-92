@@ -454,21 +454,16 @@ begin
       srcX := (destX * tex.width) div w;
       a := x + destX;
 
-      {
       colour := pixelData^[srcRowOffset + srcX];
 
+      {
       if colour <> transparencyKey then
         backBuffer^[b + a] := colour;
       }
       asm
       push es
-      push ds
 
-      lds si, pixelData
-      add si, srcRowOffset
-      add si, srcX
-
-      mov al, ds:[si]
+      mov al, colour
       cmp al, localTransparencyKey
       je @skip
 
@@ -480,7 +475,6 @@ begin
 
       @skip:
 
-      pop ds
       pop es
       end;
     end;
