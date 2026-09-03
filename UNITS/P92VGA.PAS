@@ -46,6 +46,8 @@ procedure InitBuffer(const width, height: word);
 procedure FreeBuffer;
 
 procedure SetClip(const x, y, width, height: integer);
+procedure ResetClip;
+procedure ClsClip(const colour: byte);
 
 { Forwards call to AsmCls }
 procedure Cls(const colour: byte);
@@ -177,6 +179,17 @@ begin
   clipEndX := VGAWidth - 1;
   clipStartY := 0;
   clipEndY := VGAHeight - 1;
+end;
+
+procedure ClsClip(const colour: byte);
+var
+  row: integer;
+begin
+  for row := clipStartY to clipEndY do
+    FillChar(
+      backBuffer^[row * VGAWidth + clipStartX],
+      clipEndX - clipStartX + 1,
+      colour);
 end;
 
 procedure Cls(const colour: byte);
