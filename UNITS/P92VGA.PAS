@@ -304,8 +304,10 @@ end;
 
 procedure PascalPSet(const x, y: integer; const colour: byte);
 begin
-  if (x < 0) or (x >= VGAWidth) or (y < 0) or (y >= VGAHeight) then exit;
-  backBuffer^[y * VGAWidth + x] := colour
+  if (y < clipStartY) or (y > clipEndY) then exit;
+  if (x < clipStartX) or (x > clipEndX) then exit;
+
+  backBuffer^[word(y) * VGAWidth + x] := colour
 end;
 
 procedure UnsafePascalPSet(const x, y: integer; const colour: byte);
