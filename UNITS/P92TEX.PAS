@@ -387,10 +387,16 @@ var
 begin
   if (w = 0) or (h = 0) then exit;
 
-  { TODO: Implement the pixel plotter, nearest neighbour }
+  for destY := 0 to h - 1 do begin
+    srcY := (destY * tex.height) div h;
+    b := y + destY;
 
-  AsmPSet(x, y, colour);
-
+    for destX := 0 to w - 1 do begin
+      srcX := (destX * tex.width) div w;
+      a := x + destX;
+      AsmPSet(a, b, tex.data^[srcY * tex.width + srcX])
+    end;
+  end;
 end;
 
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
