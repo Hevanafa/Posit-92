@@ -140,10 +140,28 @@ end;
 
 procedure SetClip(const x, y, width, height:integer);
 begin
-  clipStartX := x;
-  clipEndX := x + width - 1;
-  clipStartY := y;
-  clipEndY := y + height - 1;
+  if (width <= 0) or (height <= 0) then
+    PanicHalt('SetClip: width or height cannot be 0 or less');
+
+  if x < 0 then
+    clipStartX := 0
+  else
+    clipStartX := x;
+
+  if y < 0 then
+    clipStartY := 0
+  else
+    clipStartY := y;
+
+  if x + width - 1 > BufferWidth - 1 then
+    clipEndX := BufferWidth - 1
+  else
+    clipEndX := x + width - 1;
+
+  if y + height - 1 > BufferHeight - 1 then
+    clipEndY := BufferHeight - 1
+  else
+    clipEndY := y + height - 1;
 end;
 
 procedure ResetClip;
