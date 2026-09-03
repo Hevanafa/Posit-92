@@ -162,6 +162,9 @@ begin
     clipEndY := BufferHeight - 1
   else
     clipEndY := y + height - 1;
+
+  if (clipStartX > clipEndX) or (clipStartY > clipEndY) then
+    PanicHalt('SetClip: clip rect is entirely off-screen');
 end;
 
 procedure ResetClip;
