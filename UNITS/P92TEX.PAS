@@ -1,13 +1,6 @@
 {
   Software texture unit
   Part of Posit-92 game engine
-
-  The key drawing procedures are:
-  - Spr
-  - SprRegion
-  - SprFlipped
-
-  The rest will be left unoptimised
 }
 
 unit P92TEX;
@@ -75,6 +68,7 @@ procedure SprFast(const tex: TTexture; const x, y: integer);
 { Blit directly to the VGA memory, not yet supported for Mode X }
 procedure VGASpr(const tex: TTexture; const x, y: integer);
 
+procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
 
 { Copied from SprFast, only the pixel plotter is different }
@@ -383,6 +377,20 @@ begin
         Mem[$A000:rowOffset + (x+a)] := tex.data^[pos];
     end;
   end;
+end;
+
+procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
+var
+  srcX, srcY: integer;
+  destX, destY: integer;
+  a, b: integer;
+begin
+  if (w = 0) or (h = 0) then exit;
+
+  { TODO: Implement the pixel plotter, nearest neighbour }
+
+  AsmPSet(x, y, colour);
+
 end;
 
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);

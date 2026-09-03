@@ -117,6 +117,8 @@ begin
 
   startTime := GetTimer;
 
+  SprStretch(texDosuEXE[0], 10, 10, 20, 10);
+
   endTime := GetTimer - startTime;
 
   s := 'Done in ' + f32str(GetTimer - startTime) + 's';
