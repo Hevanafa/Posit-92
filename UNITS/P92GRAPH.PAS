@@ -135,7 +135,7 @@ begin
 end;
 
 
-procedure PascalLine(x1, y1, x2, y2: integer; const colour: byte);
+procedure LineBase(x1, y1, x2, y2: integer; const colour: byte);
 var
   dx, dy, sx, sy, err, e2: integer;
 begin
@@ -172,7 +172,7 @@ begin
   else if y0 = y1 then
     HLine(x0, x1, y0, colour)
   else
-    PascalLine(x0, y0, x1, y1, colour);
+    LineBase(x0, y0, x1, y1, colour);
 end;
 
 
