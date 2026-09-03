@@ -141,9 +141,10 @@ begin
       10 + random(30));
   }
 
-  { Original: 5.3390s }
+  { Original: 5.3390s
+    with stretch: 6.3214s }
   for a:=1 to OpCount do
-    SprScaled(
+    SprScaledWithStretch(
       texDosuEXE[0],
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,

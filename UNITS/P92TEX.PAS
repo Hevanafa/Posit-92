@@ -69,7 +69,10 @@ procedure SprFast(const tex: TTexture; const x, y: integer);
 procedure VGASpr(const tex: TTexture; const x, y: integer);
 
 procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
+
 procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
+{ Forwards call to SprStretch }
+procedure SprScaledWithStretch(const tex: TTexture; const x, y: integer; const scale: integer);
 
 { Copied from SprFast, only the pixel plotter is different }
 procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
@@ -495,6 +498,11 @@ begin
           AsmPSet(destX + c, destY + d, tex.data^[pxOffset]);
     end;
   end;
+end;
+
+procedure SprScaledWithStretch(const tex: TTexture; const x, y: integer; const scale: integer);
+begin
+  SprStretch(tex, x, y, tex.width * scale, tex.height * scale);
 end;
 
 procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
