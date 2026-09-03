@@ -42,7 +42,7 @@ implementation
 uses P92MATHS, P92VGA;
 
 
-procedure CircBase(const cx, cy, radius: integer; const colour: byte);
+procedure Circ(const cx, cy, radius: integer; const colour: byte);
 var
   x, y, p: integer;
 begin
@@ -68,12 +68,6 @@ begin
     end;
     inc(x);
   end;
-end;
-
-
-procedure Circ(const cx, cy, radius: integer; const colour: byte);
-begin
-  CircBase(cx, cy, radius, colour)
 end;
 
 
