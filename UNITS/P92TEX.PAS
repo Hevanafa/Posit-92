@@ -70,7 +70,7 @@ procedure VGASpr(const tex: TTexture; const x, y: integer);
 
 procedure SprStretch(const tex: TTexture; const x, y, w, h: integer);
 
-procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
+procedure SprScaled(const tex: TTexture; const x, y: integer; const scaleX, scaleY: integer);
 { Forwards call to SprStretch }
 procedure SprScaledWithStretch(const tex: TTexture; const x, y: integer; const scale: integer);
 
@@ -465,17 +465,18 @@ begin
   end;
 end;
 
-procedure SprScaled(const tex: TTexture; const x, y: integer; const scale: integer);
+procedure SprScaled(const tex: TTexture; const x, y: integer; const scaleX, scaleY: integer);
 var
   srcX, srcY, c, d: integer;
   destX, destY: integer; { top left corner of the scaled pixel }
   rowOffset, pxOffset: longint;
 begin
-  if scale = 0 then exit;
-  if scale < 0 then PanicHalt('SprScaled: Scale cannot be negative!');
+  if (scaleX = 0) or (scaleY = 0) then exit;
+  if scaleX < 0 then PanicHalt('SprScaled: ScaleX cannot be negative!');
+  if scaleY < 0 then PanicHalt('SprScaled: ScaleY cannot be negative!');
 
   for srcY := 0 to tex.height-1 do begin
-    destY := y + srcY * scale;
+    destY := y + srcY * scaleY;
 
     if destY >= VGAHeight then break;
     if destY < 0 then continue;
@@ -483,7 +484,7 @@ begin
     rowOffset := srcY * tex.width;
 
     for srcX := 0 to tex.width-1 do begin
-      destX := x + srcX * scale;
+      destX := x + srcX * scaleX;
 
       if destX >= VGAWidth then break;
       if destX < 0 then continue;
@@ -493,8 +494,8 @@ begin
       if tex.data^[pxOffset] = transparencyKey then continue;
 
       { Begin drawing the scaled pixels }
-      for d := 0 to scale-1 do
-        for c := 0 to scale-1 do
+      for d := 0 to scaleY-1 do
+        for c := 0 to scaleX-1 do
           AsmPSet(destX + c, destY + d, tex.data^[pxOffset]);
     end;
   end;
