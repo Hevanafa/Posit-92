@@ -53,7 +53,8 @@ begin
     With clipping: 0.8373s
     With inline assembly hot spot loop: 0.1787s, 0.1593s }
   for a:=0 to 1000 do
-    AsmSpr(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40);
+    { Spr(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40); }
+    SprTint(texDosuEXE[0], random(VGAWidth + 80) - 40, random(VGAHeight + 80) - 40, random(256));
 
   s := '1000 operations done in ' + f32str(getTimer - startTime) + 's';
   rectfill(0, 0, length(s) * 8 - 1, 8, 0);
