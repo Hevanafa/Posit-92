@@ -414,7 +414,8 @@ var
   startX, endX: integer;
   startY, endY: integer;
 
-  rowOffset: word;
+  srcRowOffset: word;
+  pixelData: PByteArray;
 
   { Final coordinates, used in AsmPSet }
   a, b: integer;
@@ -438,16 +439,18 @@ begin
 
   if (startX > endX) or (startY > endY) then exit;
 
+  pixelData := tex.data;
+
   for destY := startY to endY do begin
     srcY := (destY * tex.height) div h;
-    rowOffset := srcY * tex.width;
+    srcRowOffset := srcY * tex.width;
     b := (y + destY) * VGAWidth;
 
     for destX := startX to endX do begin
       srcX := (destX * tex.width) div w;
       a := x + destX;
 
-      colour := tex.data^[rowOffset + srcX];
+      colour := tex.data^[srcRowOffset + srcX];
 
       if colour <> transparencyKey then
         backBuffer^[b + a] := colour;
