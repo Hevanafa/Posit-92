@@ -418,12 +418,6 @@ var
   pixelData: PByteArray;
 
   localTransparencyKey: byte;
-  pixelCount: integer;
-  destOffset: word;
-  srcStart: word;
-  errAcc: word;
-  texWidth: integer;
-  stretchW: integer;
 
   { Final coordinates, used in AsmPSet }
   a, b: integer;
@@ -451,61 +445,19 @@ begin
 
   localTransparencyKey := transparencyKey;
 
-  pixelCount := endX - startX + 1;
-  destOffset := b + x + startX;
-  srcStart := srcRowOffset + (longint(startX) * tex.width) div w;
-  errAcc := (longint(startX) * tex.width) mod w;
-  texWidth := tex.width;
-  stretchW := w;
-
   for destY := startY to endY do begin
-    {
     srcY := (destY * tex.height) div h;
     srcRowOffset := srcY * tex.width;
     b := (y + destY) * VGAWidth;
-    }
 
-    asm
-    push es
-    push ds
+    for destX := startX to endX do begin
+      srcX := (destX * tex.width) div w;
+      a := x + destX;
 
-    lds si, pixelData
-    add si, srcStart
+      colour := pixelData^[srcRowOffset + srcX];
 
-    les di, backBuffer
-    add di, destOffset
-
-    mov cx, pixelCount
-    mov dx, errAcc
-    mov bx, texWidth
-
-    push bp
-    mov bp, stretchW
-
-    @loop:
-      mov al, ds:[si]
-      cmp al, localTransparencyKey
-      je @skip
-      mov es:[di], al
-
-    @skip:
-      inc di
-      add dx, bx  { inc(errAcc, texWidth) }
-      cmp dx, bp
-      jb @next
-
-    @advance:  { advance source pixel }
-      inc si
-      sub dx, bp
-      cmp dx, bp
-      jae @advance
-
-    @next:
-      dec cx
-      jnz @loop
-
-    pop ds
-    pop es
+      if colour <> transparencyKey then
+        backBuffer^[b + a] := colour;
     end;
   end;
 end;
