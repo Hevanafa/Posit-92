@@ -221,22 +221,26 @@ var
   startY, endY, y: integer;
   baseOffset: word;
 begin
-  { Handle clipping }
-  if (x < 0) or (x >= VGAWidth) then exit;
+  { Early exit }
+  if (x < clipStartX) or (x > clipEndX) then exit;
 
+  { Sorting }
   if y0 <= y1 then begin
     startY := y0; endY := y1
   end else begin
     startY := y1; endY := y0
   end;
 
-  if (endY < 0) or (startY >= VGAHeight) then exit;
+  { Early exit }
+  if (endY < clipStartY) or (startY > clipEndY) then exit;
 
-  if startY < 0 then startY := 0;
+  { Clamping }
+  if startY < clipStartY then startY := clipStartY;
 
-  if endY >= VGAHeight then
-    endY := VGAHeight - 1;
+  if endY > clipEndY then
+    endY := clipEndY;
 
+  { Pixel plotting }
   baseOffset := startY * VGAWidth + x;
 
 asm
