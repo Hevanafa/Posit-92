@@ -80,12 +80,12 @@ begin
 
   { After each optimisation step: 0.6443s, 0.5956s, 0.5389s
     with AsmPSet: 0.4958s }
-  for a:=1 to 100 do
+  { for a:=1 to 100 do
     SprRot(
       texDosuEXE[0],
       random(DefaultVGAWidth + 40) - 20,
       random(DefaultVGAHeight + 40) - 20,
-      random(360));
+      random(360)); }
 
   { 5.1285s, 5.0451s }
   { for a:=1 to 100 do
@@ -121,8 +121,8 @@ var
 begin
   Cls($7D);
 
-  Draw100;
-  { Draw1000; }
+  { Draw100; }
+  Draw1000;
 end;
 
 var

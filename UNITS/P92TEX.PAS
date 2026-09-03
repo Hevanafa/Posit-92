@@ -302,8 +302,8 @@ var
   srcAdd: word;
 begin
   { Early exits }
-  if (x >= VGAWidth) or (y >= VGAHeight) then exit;
-  if (x + tex.width <= 0) or (y + tex.height <= 0) then exit;
+  if (x > clipEndX) or (y > clipEndY) then exit;
+  if (x + tex.width - 1 < clipStartX) or (y + tex.height - 1 < clipStartY) then exit;
 
   pixelData := tex.data;
 
@@ -311,15 +311,15 @@ begin
   startY := 0;
   endY := tex.height - 1;
 
-  if y < 0 then startY := -y;
-  if y + endY >= VGAHeight then endY := VGAHeight - 1 - y;
+  if y < clipStartY then startY := clipStartY - y;
+  if y + endY > clipEndY then endY := clipEndY - y;
 
   { Handle horizontal clipping }
   startX := 0;
   endX := tex.width - 1;
 
-  if x < 0 then startX := -x;
-  if x + endX >= VGAWidth then endX := VGAWidth - 1 - x;
+  if x < clipStartX then startX := clipStartX - x;
+  if x + endX > clipEndX then endX := clipEndX - x;
 
   { Begin loop }
 
