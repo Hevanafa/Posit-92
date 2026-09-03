@@ -336,17 +336,17 @@ asm
   cmp x, ax
   jl @skip
 
-  { Calculate offset: y * 320 + x }
+  { Calculate backbuffer offset:
+    ax = y * VGAWidth + x }
   mov ax, y
-  { BX still has the value of VGAWidth,
-  and the result goes to AX }
+  mov bx, VGAWidth
   mul bx
-  add ax, x   { AX = y * 320 + x }
+  add ax, x
 
-{
-  Load BX with AX because the ES:[DI+BX] syntax is valid,
-  but not ES:[DI+AX]
-}
+  {
+    Load BX with AX because the ES:[DI+BX] syntax is valid,
+    but not ES:[DI+AX]
+  }
   mov bx, ax
 
   { Load ES:DI with the address to the backbuffer }
