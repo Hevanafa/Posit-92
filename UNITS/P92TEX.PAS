@@ -416,18 +416,6 @@ begin
       for d := 0 to scale-1 do
         for c := 0 to scale-1 do
           AsmPSet(destX + c, destY + d, tex.data^[pxOffset]);
-
-      { for d := 0 to scale-1 do begin
-        if destY + d >= VGAHeight then break;
-        if destY + d < 0 then continue;
-
-	for c := 0 to scale-1 do begin
-          if destX + c >= VGAWidth then break;
-          if destX + c < 0 then continue;
-
-          UnsafeAsmPSet(destX + c, destY + d, tex^.data[pxOffset]);
-        end;
-      end; }
     end;
   end;
 end;
