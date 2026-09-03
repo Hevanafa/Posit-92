@@ -24,6 +24,11 @@ begin
   LoadTex(texDosuEXE[1], 'IMG/DOSU_2.BMP');
 end;
 
+procedure OnReady; far;
+begin
+  randseed := 255
+end;
+
 procedure OnCleanup; far;
 begin
   FreeTex(texDosuEXE[0]);
@@ -109,19 +114,28 @@ begin
 end;
 
 procedure DrawOnce; far;
+const
+  OpCount = 1000;
 var
   s: string;
   startTime, endTime: double;
+  a: word;
 begin
   Cls($7D);
 
   startTime := GetTimer;
 
-  SprStretch(texDosuEXE[0], 10, 10, 20, 10);
+  for a:=1 to OpCount do
+    SprStretch(
+      texDosuEXE[0],
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      10 + random(30),
+      10 + random(30));
 
   endTime := GetTimer - startTime;
 
-  s := 'Done in ' + f32str(GetTimer - startTime) + 's';
+  s := i32str(OpCount) + ' operations done in ' + f32str(endTime) + 's';
   rectfill(0, VGAHeight - 16, length(s) * 8, VGAHeight - 9, 0);
   Print(s, 0, VGAHeight - 16, 15);
 
@@ -137,6 +151,7 @@ begin
   appConfig.EnableKeyHandler := false;
 
   @appConfig.OnPreload := @OnPreload;
+  @appConfig.OnReady := @OnReady;
   @appConfig.DrawOnce := @DrawOnce;
   @appConfig.OnCleanup := @OnCleanup;
 
