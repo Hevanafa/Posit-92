@@ -7,7 +7,7 @@
   Copied from the WASM version of the engine
 }
 
-unit P92Geom;
+unit P92GEOM;
 
 {$IFDEF FPC}
 {$MODE TP}
@@ -44,6 +44,8 @@ type
     vx, vy: double;
   end;
 
+procedure InitPoint(var p: TPoint; const x, y: double);
+
 procedure DrawZone(const zone: TZone; const colour: byte);
 procedure DrawPhysicsBody(const body: TPhysicsBody; const colour: byte);
 procedure DrawCircleZone(const zone: TCircle; const colour: byte);
@@ -59,8 +61,8 @@ procedure GetPhysicsCPoint(const body: TPhysicsBody; var result: TPoint);
 function GetPhysicsBodyCX(const body: TPhysicsBody): double;
 function GetPhysicsBodyCY(const body: TPhysicsBody): double;
 
+{ TODO }
 {
-function NewPoint(const x, y: double): TPoint;
 function NewZone(const x, y, width, height: double): TZone;
 function PhysicsBodyToZone(const body: TPhysicsBody): TZone;
 }
@@ -75,6 +77,12 @@ function PointInZone(const p: TPoint; const zone: TZone): boolean;
 implementation
 
 uses P92MATHS, P92GRAPH;
+
+procedure InitPoint(var p: TPoint; const x, y: double);
+begin
+  p.x := x;
+  p.y := y;
+end;
 
 procedure DrawZone(const zone: TZone; const colour: byte);
 begin
@@ -143,12 +151,6 @@ begin
 end;
 
 {
-function NewPoint(const x, y: double): TPoint;
-begin
-  NewPoint.x := x;
-  NewPoint.y := y;
-end;
-
 function NewZone(const x, y, width, height: double): TZone;
 begin
   NewZone.x := x;
