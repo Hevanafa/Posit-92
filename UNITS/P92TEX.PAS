@@ -95,7 +95,7 @@ procedure SprRegionTint(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
-  const colour: byte
+  const tint: byte
 );
 
 procedure SprFlipped(const tex: TTexture; const x, y: integer; const flip: integer);
@@ -596,7 +596,7 @@ procedure SprRegionTint(
   const tex: TTexture;
   const srcX, srcY, srcW, srcH: integer;
   const destX, destY: integer;
-  const colour: byte
+  const tint: byte
 );
 var
   localTransparencyKey: byte;
@@ -660,7 +660,7 @@ begin
       cmp al, dh
       je @skip
 
-      mov al, colour
+      mov al, tint
       mov es:[di], al
 
     @skip:
