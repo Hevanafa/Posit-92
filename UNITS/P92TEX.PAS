@@ -387,6 +387,8 @@ var
   colour: byte;
 begin
   if (w = 0) or (h = 0) then exit;
+  if w < 0 then PanicHalt('SprStretch: Negative width is not supported');
+  if h < 0 then PanicHalt('SprStretch: Negative height is not supported');
 
   for destY := 0 to h - 1 do begin
     srcY := (destY * tex.height) div h;
