@@ -92,7 +92,6 @@ begin
     Forward call to legacy AsmRectFill2: 0.6324s
     With clipping: 0.6195s
   }
-  {
   for a:=1 to OpCount do
     RectFill(
       random(VGAWidth + 20) - 10,
@@ -100,7 +99,6 @@ begin
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(256));
-  }
 
   {
     Original: 5.4095s
@@ -158,12 +156,14 @@ begin
     AsmCirc: 0.1598s
     AsmCirc with bounds check: 0.2072s
   }
+  {
   for a:=1 to OpCount do
     Circ(
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       10 + random(50),
       random(256));
+  }
 
   endTick := GetTimer;
 

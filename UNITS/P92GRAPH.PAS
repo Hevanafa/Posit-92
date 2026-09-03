@@ -158,9 +158,9 @@ var
   baseOffset: word;
 begin
   { Handle early exits }
-  if word(y) >= VGAHeight then exit;
-  if (x0 < 0) and (x1 < 0) then exit;
-  if (x0 >= VGAWidth) and (x1 >= VGAWidth) then exit;
+  if (y < clipStartY) or (y > clipEndY) then exit;
+  if (x0 < clipStartX) and (x1 < clipStartX) then exit;
+  if (x0 > clipEndX) and (x1 > clipEndX) then exit;
 
   if x0 <= x1 then begin
     startX := x0; endX := x1
@@ -168,8 +168,8 @@ begin
     startX := x1; endX := x0
   end;
 
-  if startX < 0 then startX := 0;
-  if endX > VGAWidth then endX := VGAWidth - 1;
+  if startX < clipStartX then startX := clipStartX;
+  if endX > clipEndX then endX := clipEndX;
 
   { Inline AsmPSet }
   baseOffset := y * VGAWidth + startX;
