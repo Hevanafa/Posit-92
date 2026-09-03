@@ -131,6 +131,7 @@ begin
     After row-level stride: 1.7007s
     After inline AsmPSet: 1.7679s
   }
+  {
   for a:=1 to OpCount do
     SprStretch(
       texDosuEXE[0],
@@ -138,6 +139,15 @@ begin
       random(VGAHeight + 20) - 10,
       10 + random(30),
       10 + random(30));
+  }
+
+  { Original: 5.3390s }
+  for a:=1 to OpCount do
+    SprScaled(
+      texDosuEXE[0],
+      random(VGAWidth + 20) - 10,
+      random(VGAHeight + 20) - 10,
+      1 + random(3));
 
   endTime := GetTimer - startTime;
 
