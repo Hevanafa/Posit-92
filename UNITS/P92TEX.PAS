@@ -456,27 +456,8 @@ begin
 
       colour := pixelData^[srcRowOffset + srcX];
 
-      {
       if colour <> transparencyKey then
         backBuffer^[b + a] := colour;
-      }
-      asm
-      push es
-
-      mov al, colour
-      cmp al, localTransparencyKey
-      je @skip
-
-      les di, backBuffer
-      add di, b
-      add di, a
-
-      mov es:[di], al
-
-      @skip:
-
-      pop es
-      end;
     end;
   end;
 end;

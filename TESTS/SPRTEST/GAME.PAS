@@ -128,8 +128,8 @@ begin
   {
     Original: 3.3217s
     With screen clipping: 2.8067s
-    After row-level stride: 1.7502s
-    After inline AsmPSet: 1.7178s
+    After row-level stride: 1.7007s
+    After inline AsmPSet: 1.7679s
   }
   for a:=1 to OpCount do
     SprStretch(
