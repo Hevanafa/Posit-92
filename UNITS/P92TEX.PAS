@@ -488,10 +488,10 @@ begin
   endX := destX + srcW - 1;
   endY := destY + srcH - 1;
 
-  if startX < 0 then startX := 0;
-  if startY < 0 then startY := 0;
-  if endX >= VGAWidth then endX := VGAWidth - 1;
-  if endY >= VGAHeight then endY := VGAHeight - 1;
+  if startX < clipStartX then startX := clipStartX;
+  if startY < clipStartY then startY := clipStartY;
+  if endX > clipEndX then endX := clipEndX;
+  if endY > clipEndY then endY := clipEndY;
 
   if (startX > endX) or (startY > endY) then exit;
 
