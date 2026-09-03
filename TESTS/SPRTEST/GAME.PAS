@@ -110,14 +110,21 @@ end;
 
 procedure DrawOnce; far;
 var
-  a, x, y: integer;
   s: string;
-  startTime: double;
+  startTime, endTime: double;
 begin
   Cls($7D);
 
+  startTime := GetTimer;
+
+  endTime := GetTimer - startTime;
+
+  s := 'Done in ' + f32str(GetTimer - startTime) + 's';
+  rectfill(0, VGAHeight - 16, length(s) * 8, VGAHeight - 9, 0);
+  Print(s, 0, VGAHeight - 16, 15);
+
   { Draw100; }
-  Draw1000;
+  { Draw1000; }
 end;
 
 var
