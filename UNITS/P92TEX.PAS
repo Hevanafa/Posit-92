@@ -6,7 +6,10 @@
 unit P92TEX;
 
 {$IFDEF FPC}{$MODE TP}{$ENDIF}
-{$DEFINE DEBUG}
+{$R-}  { Turn off range checking }
+{$S-}  { Turn off stack checking }
+
+{DEFINE DEBUG}
 
 interface
 
