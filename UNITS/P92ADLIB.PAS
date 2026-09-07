@@ -32,6 +32,10 @@ const
 
   
 type
+  PNoteArray = ^TNoteArray;
+  { Dummy type, prefer using PNoteArray with getmem }
+  TNoteArray = array[0..254] of TNote;
+
   TNote = record
     freq: word;
     octave: byte;
