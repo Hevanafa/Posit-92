@@ -74,7 +74,7 @@ procedure Shutdown;
 procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 { Playback }
-procedure PlayMelody(const melody: PMelody; const voice: byte);
+procedure PlayMelody(const melody: TMelody; const voice: byte);
 procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
 procedure StopVoice(const voice: byte);
 procedure StopAllVoices;
@@ -273,25 +273,25 @@ begin
 end;
 
 
-procedure PlayMelody(const melody: PMelody; const voice: byte);
+procedure PlayMelody(const melody: TMelody; const voice: byte);
 begin
   StopVoice(voice);
 
-  if melody = nil then panicHalt('playMelody: Attempting to play a nil melody!');
+  { if melody = nil then PanicHalt('playMelody: Attempting to play a nil melody!'); }
 
   voices[voice].active := true;
-  voices[voice].melody := melody;
+  voices[voice].melody := @melody;
   voices[voice].noteIndex := 0;
-  voices[voice].noteEndTick := getTimer + melody^.notes[0].duration;
-  voices[voice].instrument := melody^.instrument;
+  voices[voice].noteEndTick := (getTimer + melody.notes[0].duration);
+  voices[voice].instrument := melody.instrument;
 
   AssignInstrument(voice, voices[voice].instrument);
 
   PlayNote(
     voice,
-    melody^.notes[0].freq,
-    melody^.notes[0].octave,
-    melody^.notes[0].velocity)
+    melody.notes[0].freq,
+    melody.notes[0].octave,
+    melody.notes[0].velocity)
 end;
 
 procedure PlayNote(

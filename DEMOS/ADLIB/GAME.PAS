@@ -148,8 +148,7 @@ begin
     if coins[a].hitbox.intersects(playerHitbox) then begin
       inc(score, 1);
       InitCoin(coins[a]);
-      { PCSpeaker.playMelody(SoundIDs(random(3))); }
-      P92ADLIB.PlayMelody(@sfxCoin, 0);
+      P92ADLIB.PlayMelody(sfxCoin, 0);
     end;
 end;
 
