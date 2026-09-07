@@ -32,10 +32,6 @@ const
 
   
 type
-  PNoteArray = ^TNoteArray;
-  { Dummy type, prefer using PNoteArray with getmem }
-  TNoteArray = array[0..254] of TNote;
-
   TNote = record
     freq: word;
     octave: byte;
@@ -43,6 +39,11 @@ type
     velocity: byte  { 0..127 }
   end;
 
+  PNoteArray = ^TNoteArray;
+  { Dummy type, prefer using PNoteArray with getmem }
+  TNoteArray = array[0..254] of TNote;
+
+  { Used by TInstrument }
   TInstrParams = record
     tremolo: boolean;
     vibrato: boolean;
@@ -65,7 +66,7 @@ type
 
   PMelody = ^TMelody;
   TMelody = record
-    notes: array[0..15] of TNote; { TODO: Convert this into `PNoteArray` }
+    notes: PNoteArray;
     noteCount: byte;
     instrument: PInstrument;
   end;
@@ -79,6 +80,7 @@ procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 { Playback }
 procedure PlayMelody(const melody: TMelody; const voice: byte);
+
 procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
 procedure StopVoice(const voice: byte);
 procedure StopAllVoices;
@@ -286,16 +288,16 @@ begin
   voices[voice].active := true;
   voices[voice].melody := @melody;
   voices[voice].noteIndex := 0;
-  voices[voice].noteEndTick := (getTimer + melody.notes[0].duration);
+  voices[voice].noteEndTick := (getTimer + melody.notes^[0].duration);
   voices[voice].instrument := melody.instrument;
 
   AssignInstrument(voice, voices[voice].instrument);
 
   PlayNote(
     voice,
-    melody.notes[0].freq,
-    melody.notes[0].octave,
-    melody.notes[0].velocity)
+    melody.notes^[0].freq,
+    melody.notes^[0].octave,
+    melody.notes^[0].velocity)
 end;
 
 procedure PlayNote(
@@ -397,7 +399,7 @@ begin
         continue
       end;
       
-      with voices[a].melody^.notes[voices[a].noteIndex] do begin
+      with voices[a].melody^.notes^[voices[a].noteIndex] do begin
         PlayNote(a, freq, octave, velocity);
         voices[a].noteEndTick := now + duration
       end;
