@@ -16,6 +16,9 @@ type
   end;
 
 
+const
+  Velocity = 60;  { pixels per second }
+
 var
   { Asset variables }
   texDosuEXE: array[0..1] of TTexture;
@@ -137,9 +140,9 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      spr(texCoin, coins[a].zone.x, coins[a].zone.y)
+      Spr(texCoin, trunc(coins[a].zone.x), trunc(coins[a].zone.y))
     else
-      sprTint(texCoin, coins[a].zone.x, coins[a].zone.y, 15);
+      SprTint(texCoin, trunc(coins[a].zone.x), trunc(coins[a].zone.y), $0F);
 end;
 
 procedure Update; far;
@@ -148,20 +151,28 @@ var
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
 
-  if isKeyDown($11) then playerY := playerY - DeltaTime * 60;
-  if isKeyDown($1F) then playerY := playerY + DeltaTime * 60;
+  if isKeyDown(SC_W) then
+    playerZone.y := playerZone.y - Velocity * DeltaTime;
 
-  if isKeyDown($1E) then playerX := playerX - DeltaTime * 60;
-  if isKeyDown($20) then playerX := playerX + DeltaTime * 60;
+  if isKeyDown(SC_S) then
+    playerZone.y := playerZone.y + Velocity * DeltaTime;
+
+  if isKeyDown(SC_A) then
+    playerZone.x := playerZone.x - Velocity * DeltaTime;
+
+  if isKeyDown(SC_D) then
+    playerZone.x := playerZone.x + Velocity * DeltaTime;
 
   { Check bounds }
-  if playerX < 0 then playerX := 0;
-  if playerX > 320 - 24 then playerX := 320 - 24;
-  if playerY < 0 then playerY := 0;
-  if playerY > 200 - 24 then playerY := 200 - 24;
+  if playerZone.x < 0 then
+    playerZone.x := 0;
+  if playerZone.x > VGAWidth - 24 then
+    playerZone.x := VGAWidth - 24;
 
-  playerZone.x := trunc(playerX);
-  playerZone.y := trunc(playerY);
+  if playerZone.y < 0 then
+    playerZone.y := 0;
+  if playerZone.y > VGAHeight - 24 then
+    playerZone.y := VGAHeight - 24;
 
   UpdateCoins;
 
@@ -171,37 +182,19 @@ end;
 
 procedure Draw; far;
 var
-  a: integer;
   scoreStr: string;
 begin
   cls($7D);
 
-  { TODO: Your drawing code here }
-
   print('WASD - Move', 160-48, 120, 15);
-  { print('B - beep', 160-32, 130, 15); }
 
   if (trunc(t * 1.5) and 1) = 0 then
-    spr(texDosuEXE[0], trunc(playerX), trunc(playerY))
+    spr(texDosuEXE[0], trunc(playerZone.x), trunc(playerZone.y))
   else
-    spr(texDosuEXE[1], trunc(playerX), trunc(playerY));
+    spr(texDosuEXE[1], trunc(playerZone.x), trunc(playerZone.y));
 
   DrawCoins;
 
-  { Optional rotated sprite }
-  { sprPro(texDosuEXE[0], 48, 48, rotation, 13); }
-
-  { Rotated sprites test }
-  { for a:=0 to 3 do
-    sprPro2(texDosuEXE[0], 144 + a * 40, 48, 1.5, 1, rotation + 90, 13); }
-
-  { for a:=0 to 3 do
-    sprProLUT(texDosuEXE[0], 144 + a * 40, 48, 1.5, 1, trunc(rotation) mod 360 div 10, 13); }
-
-  { Debug rotation }
-  { print('Rotation:' + f32str(rotation), 0, 0, 15); }
-
-  { print('x:' + f32str(playerX) + ', y:' + f32str(playerY), 0, 0, 7); }
   scoreStr := i32str(score);
   print(scoreStr, (320 - length(scoreStr) * 8) div 2, 8, 15);
 end;
@@ -211,6 +204,8 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.LoadDefaultCursor := false;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
