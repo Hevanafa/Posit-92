@@ -1,6 +1,6 @@
-info face="Droid Sans" size=-8 bold=0 italic=0 charset="ANSI" unicode=0 stretchH=100 smooth=0 aa=1 padding=0,3,1,0 spacing=1,0 outline=0
+info face="P92 Sans" size=-8 bold=1 italic=0 charset="ANSI" unicode=0 stretchH=100 smooth=0 aa=1 padding=0,3,1,0 spacing=0,0 outline=0
 common lineHeight=9 base=7 scaleW=96 scaleH=128 pages=1 packed=0 alphaChnl=0 redChnl=4 greenChnl=4 blueChnl=4
-page id=0 file="droid_sans_8px_2_0.png"
+page id=0 file="FONTS\P92SAN_B.BMP"
 chars count=95
 char id=32   x=12    y=48    width=6     height=2     xoffset=0    yoffset=8     xadvance=5     page=0  chnl=15
 char id=33   x=91    y=21    width=4     height=7     xoffset=0     yoffset=1     xadvance=3     page=0  chnl=15
