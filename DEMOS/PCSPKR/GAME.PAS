@@ -67,7 +67,7 @@ begin
   LoadTex(texCoin, 'IMG\COIN.BMP');
 
   { C4 E4 G4 }
-  CreateMelody(listCoinMelody[0], 3);
+  InitMelody(listCoinMelody[0], 3);
   with listCoinMelody[0] do begin
     InitNote(notes^[0], 261, 0.1);
     InitNote(notes^[1], 329, 0.1);
@@ -75,14 +75,14 @@ begin
   end;
 
   { D4 F#4 A4 }
-  CreateMelody(listCoinMelody[1], 3);
+  InitMelody(listCoinMelody[1], 3);
   with listCoinMelody[1] do begin
     InitNote(notes^[0], 293, 0.1);
     InitNote(notes^[1], 370, 0.1);
     InitNote(notes^[2], 440, 0.1);
   end;
 
-  CreateMelody(listCoinMelody[2], 3);
+  InitMelody(listCoinMelody[2], 3);
   with listCoinMelody[2] do begin
     InitNote(notes^[0], 329, 0.1);
     InitNote(notes^[1], 415, 0.1);

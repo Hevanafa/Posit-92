@@ -42,7 +42,7 @@ procedure Update;
 }
 procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
-procedure CreateMelody(var mel: TMelody; const noteCount: byte);
+procedure InitMelody(var mel: TMelody; const noteCount: byte);
 procedure FreeMelody(var mel: TMelody);
 
 { The melody is borrowed from the user's assets }
@@ -102,7 +102,7 @@ begin
   isPlaying := false;
 end;
 
-procedure CreateMelody(var mel: TMelody; const noteCount: byte);
+procedure InitMelody(var mel: TMelody; const noteCount: byte);
 begin
   getmem(mel.notes, sizeof(TNote) * noteCount);
   mel.noteCount := noteCount;
