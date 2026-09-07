@@ -10,3 +10,9 @@ The order is like this:
   - $0D: transparency key
 
 The font in the DOS version is simply a copy, but with the format of an indexed bitmap
+
+(Temporary 07-09-2026)
+
+The canon for **P92 Sans 8px** is in DOS as for now
+
+![preview](./P92_Sans_8px_preview.png)
