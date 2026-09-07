@@ -32,7 +32,8 @@ begin
   { loadBMFont(fontP92Sans, 'FR12.FNT'); }
   { LoadBMFont(fontP92Sans, 'NOKIA.TXT') }
   { LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT'); }
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS8.TXT');
+  { LoadBMFont(fontP92Sans, 'FONTS\P92SANS8.TXT'); }
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN_B.TXT');
 end;
 
 procedure OnReady; far;
@@ -81,7 +82,7 @@ end;
 
 procedure DrawOnce; far;
 const
-  OpCount = 1000;
+  OpCount = 1;
 var
   startTick, endTick: double;
   a: Integer;
@@ -134,7 +135,10 @@ begin
 
   endTick := GetTimer - startTick;
 
-  s := I32Str(OpCount) + ' operations done in ' + F32Str(endTick) + 's';
+  if OpCount = 1 then
+    s := 'Done in ' + F32Str(endTick) + 's'
+  else
+    s := I32Str(OpCount) + ' operations done in ' + F32Str(endTick) + 's';
 
   RectFill(
     0,
