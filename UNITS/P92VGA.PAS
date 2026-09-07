@@ -474,22 +474,30 @@ var
   w, defaultW, h: word; { Accessible via SS:BP }
 begin
   if useDefaultBufferSize then begin
-asm
+  asm
   push ds
   push es
 
-  lds si, backBuffer { Load DS:SI with source pointer }
+  { Load DS:SI with source pointer }
+  lds si, backBuffer
 
   mov ax, $A000
   mov es, ax      { Set ES to VGA segment }
   xor di, di      { Reset DI (Destination srcOffset) }
 
-  mov cx, 32000   { 64000 bytes / 2 = 32000 words }
-  rep movsw       { Copy CX words from DS:SI to ES:DI }
+  { Load the counter }
+  { mov cx, 32000 }
+  { Copy CX words from DS:SI to ES:DI }
+  { rep movsw }
+
+  { This snippet requires at least 386 CPU }
+  db $66; xor cx, cx  { $66 makes CX -> ECX }
+  mov cx, 16000
+  db $66; rep movsw   { $66 here makes rep movsw -> rep movsd }
 
   pop es
   pop ds
-end;
+  end;
   exit
   end;
 
