@@ -1,12 +1,9 @@
 uses
   CRT, DOS,
-  P92Core, P92CONV, P92GRAPH,
-  P92KBD, P92Mouse, P92TIME, P92VGA;
+  P92CORE, P92GEOM, P92CONV, P92GRAPH,
+  P92KBD, P92MOUSE, P92TIME, P92VGA;
 
 type
-  TPoint = record
-    x, y: byte;
-  end;
   TParticle = record
     alive: boolean;
     colour: byte;
@@ -30,6 +27,7 @@ begin
   t := 0.0;
 
   nextParticleTick := getTimer + 0.5;
+
   for a:=0 to high(stars) do begin
     stars[a].x := 20 + random(280);
     stars[a].y := 20 + random(160);
@@ -132,13 +130,13 @@ var
   a, i: word;
   aliveCount: word;
 begin
-  asmCls($00);
+  Cls($00);
   
   for a:=0 to high(stars) do begin
     if (a and 1) = 1 then
-      asmPset(stars[a].x, stars[a].y, 15)
+      AsmPSet(trunc(stars[a].x), trunc(stars[a].y), $0F)
     else
-      asmPset(stars[a].x, stars[a].y, 7);
+      AsmPSet(trunc(stars[a].x), trunc(stars[a].y), $07);
   end;
 
   aliveCount := 0;
@@ -148,21 +146,17 @@ begin
     inc(aliveCount);
     
     for i:=0 to high(particles[a].lastX) - 1 do
-      line(
+      Line(
         trunc(particles[a].lastX[i]),
         trunc(particles[a].lastY[i]),
         trunc(particles[a].lastX[i+1]),
         trunc(particles[a].lastY[i+1]),
         particles[a].colour);
     
-    line(
+    Line(
       trunc(particles[a].lastX[0]), trunc(particles[a].lastY[0]),
       trunc(particles[a].x), trunc(particles[a].y),
       particles[a].colour);
-      
-    { asmPset(
-      trunc(particles[a].x), trunc(particles[a].y),
-      15); }
   end;
   
   {
