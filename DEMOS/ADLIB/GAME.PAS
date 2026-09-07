@@ -7,26 +7,14 @@
 
 uses
   CRT, DOS,
-  P92Core, P92TEX, P92CONV, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA,
+  P92CORE, P92GEOM, P92TEX, P92CONV, P92LOG, P92KBD, P92MOUSE, P92TIME, P92VGA,
   P92ADLIB;
 
 type
-  TRect = object
-    x, y, width, height: integer;
-    function intersects(other: TRect): boolean;
-  end;
   TCoin = record
-    hitbox: TRect
+    zone: TZone
   end;
 
-function TRect.intersects(other: TRect): boolean;
-begin
-  intersects :=
-    (other.x < self.x + self.width) and
-    (self.x < other.x + other.width) and
-    (other.y < self.y + self.height) and
-    (self.y < other.y + other.height)
-end;
 
 var
   { Asset variables }
@@ -38,11 +26,8 @@ var
   { Game state variables }
   t: double;
   score: integer;
-  playerX, playerY: single;
-  playerHitbox: TRect;
-  lastB: boolean;
+  playerZone: TZone;
   coins: array[0..9] of TCoin;
-  rotation: double;
 
 
 procedure InitInstruments;
@@ -84,10 +69,10 @@ end;
 
 procedure InitCoin(var c: TCoin);
 begin
-  c.hitbox.x := random(300);
-  c.hitbox.y := random(180);
-  c.hitbox.width := 24;
-  c.hitbox.height := 16
+  c.zone.x := random(300);
+  c.zone.y := random(180);
+  c.zone.width := 24;
+  c.zone.height := 16
 end;
 
 procedure RandomiseCoins;
@@ -124,19 +109,14 @@ end;
 
 procedure OnReady; far;
 begin
-  playerX := 148;
-  playerY := 76;
-
-  with playerHitbox do begin
-    x := trunc(playerX);
-    y := trunc(playerY);
+  with playerZone do begin
+    x := 148;
+    y := 76;
     width := 24;
     height := 24;
   end;
 
-  rotation := 45;
-
-  RandomiseCoins;
+  RandomiseCoins
 end;
 
 procedure UpdateCoins;
@@ -144,7 +124,7 @@ var
   a: word;
 begin
   for a:=0 to high(coins) do
-    if coins[a].hitbox.intersects(playerHitbox) then begin
+    if ZoneIntersects(playerZone, coins[a].zone) then begin
       inc(score, 1);
       InitCoin(coins[a]);
       P92ADLIB.PlayMelody(sfxCoin, 0);
@@ -157,9 +137,9 @@ var
 begin
   for a:=0 to high(coins) do
     if (a and 1) = 0 then
-      spr(texCoin, coins[a].hitbox.x, coins[a].hitbox.y)
+      spr(texCoin, coins[a].zone.x, coins[a].zone.y)
     else
-      sprTint(texCoin, coins[a].hitbox.x, coins[a].hitbox.y, 15);
+      sprTint(texCoin, coins[a].zone.x, coins[a].zone.y, 15);
 end;
 
 procedure Update; far;
@@ -167,23 +147,6 @@ var
   a: integer;
 begin
   if isKeyDown(SC_ESCAPE) then SignalDone;
-
-  {
-  if lastB <> isKeydown($30) then begin
-    lastB := isKeydown($30);
-    if lastB then
-      PCSpeaker.playMelody(Melody1);
-  end;
-  }
-
-
-  if lastB <> isKeydown($30) then begin
-    lastB := isKeydown($30);
-    {
-    if lastB then
-      AdlibDrv.startMelody;
-    }
-  end;
 
   if isKeyDown($11) then playerY := playerY - DeltaTime * 60;
   if isKeyDown($1F) then playerY := playerY + DeltaTime * 60;
@@ -197,8 +160,8 @@ begin
   if playerY < 0 then playerY := 0;
   if playerY > 200 - 24 then playerY := 200 - 24;
 
-  playerHitbox.x := trunc(playerX);
-  playerHitbox.y := trunc(playerY);
+  playerZone.x := trunc(playerX);
+  playerZone.y := trunc(playerY);
 
   UpdateCoins;
 
