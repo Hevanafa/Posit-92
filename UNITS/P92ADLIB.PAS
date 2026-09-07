@@ -80,6 +80,7 @@ procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 { Playback }
 procedure InitMelody(var melody: TMelody; const instrument: TInstrument; const noteCount: byte);
+procedure FreeMelody(var melody: TMelody);
 
 procedure PlayMelody(const melody: TMelody; const voice: byte);
 
@@ -285,6 +286,15 @@ begin
   melody.noteCount := noteCount;
   getmem(melody.notes, sizeof(TNote) * noteCount);
   melody.instrument := @instrument;
+end;
+
+procedure FreeMelody(var melody: TMelody);
+begin
+  if (melody.noteCount = 0) or not assigned(melody.notes) then exit;
+
+  melody.instrument := nil;
+  freemem(melody.notes, sizeof(TNote));
+  melody.noteCount := 0;
 end;
 
 procedure PlayMelody(const melody: TMelody; const voice: byte);
