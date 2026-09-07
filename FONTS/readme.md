@@ -15,4 +15,6 @@ The font in the DOS version is simply a copy, but with the format of an indexed 
 
 The canon for **P92 Sans 8px** is in DOS as for now
 
-![preview](./P92_Sans_8px_preview.png)
+![regular font preview](./P92_Sans_8px_preview.png)
+
+![bold font preview](./P92_Sans_8px_Bold_preview.png)
