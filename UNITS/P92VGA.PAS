@@ -66,10 +66,8 @@ procedure AsmPSet(const x, y: integer; const colour: byte);
 procedure AsmPSetOffset(const bufOffset: Word; const colour: byte);
 procedure UnsafeAsmPSet(const x, y: integer; const colour: byte);
 
-{ Forwards call to AsmFlush }
+{ Forwards call to AsmPresentMode13h }
 procedure PresentMode13h;
-procedure PascalPresentMode13h;
-procedure AsmPresentMode13h;
 
 { Only applicable to the 400 scanlines mode }
 procedure PresentModeX;
@@ -432,6 +430,9 @@ mov al, colour
 mov es:[di+bx], al
 end;
 
+procedure PascalPresentMode13h; forward;
+procedure AsmPresentMode13h; forward;
+
 procedure PresentMode13h;
 begin
   { PascalPresentMode13h }
@@ -479,7 +480,7 @@ asm
 
   lds si, backBuffer { Load DS:SI with source pointer }
 
-  mov ax, $a000
+  mov ax, $A000
   mov es, ax      { Set ES to VGA segment }
   xor di, di      { Reset DI (Destination srcOffset) }
 
