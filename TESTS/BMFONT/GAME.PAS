@@ -6,6 +6,8 @@
   the tests have the same amount of cycles
 }
 
+{$R-}
+
 uses
   CRT, DOS,
   P92Core, P92BMFON, P92LOG, P92KBD, P92MOUSE, P92GRAPH, P92TIME, P92VGA, P92TEX, P92CONV, P92FPS;
@@ -14,12 +16,23 @@ var
   bootTime, t: double;
   fontP92Sans: TBMFont;
 
+
+procedure GlyphTest;
+begin
+  PrintBMFont(fontP92Sans, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10, 10);
+  PrintBMFont(fontP92Sans, 'abcdefghijklmnopqrstuvwxyz', 10, 20);
+  PrintBMFont(fontP92Sans, '1234567890', 10, 30);
+  PrintBMFont(fontP92Sans, '!"#$%&''()*+,-./:;<=>?[\]^_`{|}~', 10, 40);
+end;
+
+
 procedure OnPreload; far;
 begin
   { loadBMFont(fontP92Sans, 'COMMOD64.FNT'); }
   { loadBMFont(fontP92Sans, 'FR12.FNT'); }
   { LoadBMFont(fontP92Sans, 'NOKIA.TXT') }
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
+  { LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT'); }
+  LoadBMFont(fontP92Sans, 'FONTS\P92SANS8.TXT');
 end;
 
 procedure OnReady; far;
@@ -96,13 +109,14 @@ begin
     after hoisting srcPxOffset out of innermost for-loop: 0.9439s
     after applying inline asm on the hot path: 0.5710s
   }
+  {
   for a:=1 to OpCount do
-    { PrintBMFont(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20); }
     PrintBMFontTint(
       fontP92Sans,
       'Hello world!',
       random(VGAWidth) - 20, random(VGAHeight) - 20,
       random(256));
+  }
 
   {
     Original: 0.9003s
@@ -115,6 +129,8 @@ begin
   for a:=1 to 1000 do
     PrintBMFontTint(fontP92Sans, 'Hello world!', random(VGAWidth) - 20, random(VGAHeight) - 20, random(248));
   }
+
+  GlyphTest;
 
   endTick := GetTimer - startTick;
 
