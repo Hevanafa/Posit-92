@@ -79,6 +79,8 @@ procedure Shutdown;
 procedure AssignInstrument(const voice: byte; const instr: PInstrument);
 
 { Playback }
+procedure InitMelody(var melody: TMelody; const instrument: TInstrument; const noteCount: byte);
+
 procedure PlayMelody(const melody: TMelody; const voice: byte);
 
 procedure PlayNote(const voice: byte; const freq: word; const octave, velocity: byte);
@@ -278,6 +280,12 @@ begin
   AdLibWrite($B0 + voice, 0);
 end;
 
+procedure InitMelody(var melody: TMelody; const instrument: TInstrument; const noteCount: byte);
+begin
+  melody.noteCount := noteCount;
+  getmem(melody.notes, sizeof(TNote) * noteCount);
+  melody.instrument := @instrument;
+end;
 
 procedure PlayMelody(const melody: TMelody; const voice: byte);
 begin

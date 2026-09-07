@@ -48,6 +48,20 @@ var
 procedure InitInstruments;
 begin
   with BrightFMInstrument do begin
+    with carrier do begin
+      tremolo := false;
+      vibrato := false;
+      sustain := true;
+      keyScale := false;
+      multiplier := 1;
+      totalLevel := 0;
+      attackRate := 15;
+      decayRate := 4;
+      sustainRate := 2;
+      releaseRate := 7;
+      waveform := 0;
+    end;
+
     with modulator do begin
       tremolo := false;
       vibrato := true;
@@ -61,21 +75,7 @@ begin
       releaseRate := 6;
       waveform := 0;
     end;
-    
-    with carrier do begin
-      tremolo := false;
-      vibrato := false;
-      sustain := true;
-      keyScale := false;
-      multiplier := 1;
-      totalLevel := 0;
-      attackRate := 15;
-      decayRate := 4; 
-      sustainRate := 2;
-      releaseRate := 7;
-      waveform := 0;
-    end;
-    
+
     feedback := 5;
     algorithm := 0
   end;
