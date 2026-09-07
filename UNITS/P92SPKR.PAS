@@ -44,9 +44,7 @@ procedure InitNote(var output: TNote; const freq: word; const duration: double);
 
 procedure InitMelody(var mel: TMelody; const noteCount: byte);
 procedure FreeMelody(var mel: TMelody);
-
-{ The melody is borrowed from the user's assets }
-procedure PlayMelody(const mel: PMelody);
+procedure PlayMelody(const mel: TMelody);
 
 
 implementation
@@ -113,16 +111,17 @@ begin
   if mel.noteCount = 0 then exit;
 
   FreeMem(mel.notes, sizeof(TNote) * mel.noteCount);
+  mel.notes := nil;
   mel.noteCount := 0;
 end;
 
-procedure PlayMelody(const mel: PMelody);
+procedure PlayMelody(const mel: TMelody);
 begin
   if isPlaying then exit;
-  if mel^.noteCount = 0 then exit;
+  if mel.noteCount = 0 then exit;
 
   currentNote := -1;
-  currentMelody := mel;
+  currentMelody := @mel;
   isPlaying := true;
   playNextNote
 end;

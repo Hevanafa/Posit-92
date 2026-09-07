@@ -127,7 +127,7 @@ begin
     if coins[a].hitbox.Intersects(playerHitbox) then begin
       inc(score, 1);
       InitCoin(coins[a]);
-      PlayMelody(@listCoinMelody[random(3)]);
+      PlayMelody(listCoinMelody[random(3)]);
     end;
 end;
 
