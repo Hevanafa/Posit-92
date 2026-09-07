@@ -105,15 +105,12 @@ begin
   LoadTex(texCoin, 'IMG\COIN.BMP');
 
   InitInstruments;
-  { AdlibDrv.AssignInstrument(0, @BrightFMInstrument); }
 
-  with sfxCoin do begin
-    noteCount := 3;
-    instrument := @BrightFMInstrument;
-    InitNote(notes[0], NOTE_C, 5, 0.05, 127);
-    InitNote(notes[1], NOTE_E, 5, 0.05, 127);
-    InitNote(notes[2], NOTE_F, 5, 0.05, 127)
-  end;
+  InitMelody(sfxCoin, BrightFMInstrument, 3);
+
+  InitNote(sfxCoin.notes^[0], NOTE_C, 5, 0.05, 127);
+  InitNote(sfxCoin.notes^[1], NOTE_E, 5, 0.05, 127);
+  InitNote(sfxCoin.notes^[2], NOTE_F, 5, 0.05, 127)
 end;
 
 procedure OnCleanup; far;
@@ -121,6 +118,8 @@ begin
   FreeTex(texDosuEXE[0]);
   FreeTex(texDosuEXE[1]);
   FreeTex(texCoin);
+
+  FreeMelody(sfxCoin);
 end;
 
 procedure OnReady; far;
