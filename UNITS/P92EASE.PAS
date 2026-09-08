@@ -33,7 +33,7 @@ function Lerp(a, z, perc: double): double;
 }
 function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
-function EaseOutQuad(const perc: double): double; far;
+function EaseOutQuad(perc: double): double; far;
 
 
 
@@ -69,7 +69,7 @@ begin
   LerpEased := a + ease(perc) * (z - a)
 end;
 
-function EaseOutQuad(const perc: double): double;
+function EaseOutQuad(perc: double): double;
 begin
   EaseOutQuad := 1 - (1 - perc) * (1 - perc)
 end;

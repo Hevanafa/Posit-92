@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92LOG, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA, P92EASE;
+  P92CORE, P92EASE, P92LOG, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
@@ -12,7 +12,7 @@ var
 
   { Game state variables }
   t: double;
-
+  clickTick: double;
 
 procedure OnPreload; far;
 begin
@@ -25,6 +25,7 @@ procedure OnReady; far;
 begin
   { Init game state variables here }
   t := 0.0;
+  clickTick := 0.0;
 end;
 
 procedure OnCleanup; far;
@@ -45,13 +46,19 @@ begin
 end;
 
 procedure Draw; far;
+var
+  perc: double;
+  x: integer;
 begin
   Cls($4F);
 
+  perc := GetPerc(clickTick, 3.0, t);
+  x := trunc(LerpEased(50, 150, perc, EaseOutQuad));
+
   if frac(t * 1.5) >= 0.5 then
-    Spr(texSpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], x, 76)
   else
-    Spr(texSpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], x, 76);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
