@@ -11,11 +11,6 @@ interface
 
 type
   TEaseFunc = function(perc: double): double;
-  TLerpTimer = record
-    startTick, endTick: double;
-  end;
-
-procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
 
 {
   startTick: in seconds
@@ -26,9 +21,6 @@ function GetPerc(startTick, duration, t: double): double;
 function Lerp(a, z, perc: double): double;
 function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
-{ t: current time, in seconds }
-function IsLerpComplete(const lt: TLerpTimer; const t: double): boolean;
-
 function EaseOutQuad(const perc: double): double; far;
 
 
@@ -37,25 +29,17 @@ implementation
 
 uses P92MATHS, P92PANIC;
 
-procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
-begin
-  { lt.active := true; }
-  lt.startTick := startTick;
-  lt.endTick := startTick + duration;
-end;
-
 function GetPerc(startTick, duration, t: double): double;
 var
   endTick: double;
 begin
+  if duration = 0.0 then begin
+    GetPerc := 1.0;
+    exit
+  end;
+
   endTick := startTick + duration;
-
-  GetPerc := Clamp((t - startTick) / (endTick - startTick), 0.0, 1.0)
-end;
-
-function IsLerpComplete(const lt: TLerpTimer; const t: double): boolean;
-begin
-  IsLerpComplete := t >= lt.endTick
+  GetPerc := Clamp((t - startTick) / duration, 0.0, 1.0)
 end;
 
 function Lerp(a, z, perc: double): double;
