@@ -93,6 +93,11 @@ begin
 
   PrintDefault('t: ' + F32Str(normalisedT), 120, 120);
   PrintDefault('value: ' + F32Str(lerpVal), 120, 128);
+
+  { Header }
+
+  PrintBold('Easing Demo', 10, 10);
+  PrintDefault('Part of Posit-92 game engine', 10, 20);
 end;
 
 
