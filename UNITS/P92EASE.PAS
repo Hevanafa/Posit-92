@@ -11,17 +11,18 @@ interface
 
 type
   TLerpTimer = record
-    { active: boolean; }
     startTick, endTick: double;
   end;
 
 procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
 
 { t: current time, in seconds }
-function GetLerpPerc(const lt: TLerpTimer; const t: double): double;
+function GetPerc(const lt: TLerpTimer; const t: double): double;
 
 { t: current time, in seconds }
 function IsLerpComplete(const lt: TLerpTimer; const t: double): boolean;
+
+
 
 function Linear(const a, z: double; perc: double): double;
 function EaseOutQuad(const perc: double): double;
@@ -39,14 +40,14 @@ begin
   lt.endTick := startTick + duration;
 end;
 
-function GetLerpPerc(const lt: TLerpTimer; const t: double): double;
+function GetPerc(const lt: TLerpTimer; const t: double): double;
 begin
   { if not lt.active then begin
-    GetLerpPerc := 0.0;
+    GetPerc := 0.0;
     exit
   end; }
 
-  GetLerpPerc := clamp((t - lt.startTick) / (lt.endTick - lt.startTick), 0.0, 1.0)
+  GetPerc := clamp((t - lt.startTick) / (lt.endTick - lt.startTick), 0.0, 1.0)
 end;
 
 function IsLerpComplete(const lt: TLerpTimer; const t: double): boolean;
