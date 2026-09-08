@@ -20,7 +20,8 @@ const
 
 type
   PByteArray = ^TByteArray;
-  TByteArray = array[0..0] of byte;
+  { Using a dummy range, use PByteArray instead }
+  TByteArray = array[0..65534] of byte;
 
   PTexture = ^TTexture;
   TTexture = record
