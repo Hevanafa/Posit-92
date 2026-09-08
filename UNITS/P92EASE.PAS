@@ -45,7 +45,7 @@ uses P92MATHS, P92PANIC;
 
 function GetPerc(startTick, duration, t: double): double;
 begin
-  if duration = 0.0 then begin
+  if duration <= 0.0 then begin
     GetPerc := 1.0;
     exit
   end;
