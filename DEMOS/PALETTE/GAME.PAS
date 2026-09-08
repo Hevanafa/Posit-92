@@ -13,7 +13,7 @@ const
 
 var
   { Asset variables }
-  fontP92Sans: TBMFont;
+  fontP92Sans, fontBold: TBMFont;
   texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
@@ -30,6 +30,11 @@ begin
   PrintBMFont(fontP92Sans, text, x, y)
 end;
 
+procedure PrintBold(const text: string; const x, y: integer);
+begin
+  PrintBMFont(fontBold, text, x, y)
+end;
+
 { r, g, b: 0..255, not the original mapping of 0..63 }
 procedure GetVGAColour(const index: byte; var r, g, b: byte);
 begin
@@ -42,7 +47,9 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT');
+  LoadBMFont(fontBold, 'FONTS\P92SAN8B.TXT');
+
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
@@ -50,6 +57,8 @@ end;
 procedure OnCleanup; far;
 begin
   FreeBMFont(fontP92Sans);
+  FreeBMFont(fontBold);
+
   FreeTex(texSpecimenP92[0]);
   FreeTex(texSpecimenP92[1]);
 end;
@@ -129,7 +138,7 @@ begin
 
   Cls($4F);
 
-  PrintDefault('Mode 13h Palette', 12, 8);
+  PrintBold('Mode 13h Palette', 12, 8);
 
   if frac(t * 1.5) >= 0.5 then
     Spr(texSpecimenP92[0], 148, 76)
@@ -170,7 +179,7 @@ begin
   if (hoverRow <> -1) and (hoverCol <> -1) then begin
     idx := hoverRow * 16 + hoverCol;
 
-    PrintDefault('Hovered', 190, 80);
+    PrintBold('Hovered', 190, 80);
 
     PrintDefault(
       'Index: ' + I32Str(idx) + ' ($' + I8HexStr(idx) + ')',
