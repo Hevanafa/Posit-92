@@ -99,6 +99,9 @@ begin
 end;
 
 procedure Draw; far;
+const
+  StartX = 100;
+  EndX = 220;
 var
   perc, lerpVal: double;
   x: integer;
@@ -111,15 +114,14 @@ begin
 
   case actualDemo of
   EDInQuad:
-    lerpVal := trunc(LerpEased(100, 220, perc, EaseInQuad));
+    lerpVal := trunc(LerpEased(StartX, EndX, perc, EaseInQuad));
   EDOutQuad:
-    lerpVal := trunc(LerpEased(100, 220, perc, EaseOutQuad));
+    lerpVal := trunc(LerpEased(StartX, EndX, perc, EaseOutQuad));
   else
     lerpVal := 0.0;
   end;
 
-
-  hline(100, 220, 80, $00);
+  HLine(StartX, EndX, 80, $00);
 
   x := trunc(lerpVal - texSpecimenP92[0].width / 2);
 
