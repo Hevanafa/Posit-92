@@ -18,19 +18,16 @@ program CharMap;
 
 uses
   CRT, DOS,
-  P92CORE, P92CONV, P92BMFON, P92GRAPH, P92TIME, P92VGA;
-
-var
-  fontP92Sans: TBMFont;
+  P92CORE, P92CONV, P92GRAPH, P92TIME, P92VGA;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
+
 end;
 
 procedure OnCleanup; far;
 begin
-  FreeBMFont(fontP92Sans)
+
 end;
 
 procedure OnReady; far;
@@ -52,7 +49,7 @@ begin
 
   startTick := GetTimer;
 
-  print('Codepage ' + i32str(GetCodePage) + ' Map', 0, 0, HeadingColour);
+  Print('Codepage ' + i32str(GetCodePage) + ' Map', 0, 0, HeadingColour);
 
   for a:=0 to 15 do begin
     { Table header }
@@ -70,7 +67,7 @@ begin
 
   s := 'Done in ' + F32Str(endTick - startTick) + 's';
 
-  PrintBMFont(fontP92Sans, s, 0, VGAHeight - fontP92Sans.lineHeight * 2);
+  Print(s, 0, VGAHeight - 16, $0F);
 end;
 
 var
