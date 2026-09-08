@@ -23,18 +23,19 @@ procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
   t: current time, in seconds
 }
 function GetPerc(startTick, duration, t: double): double;
+function Lerp(a, z, perc: double): double;
+function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
 { t: current time, in seconds }
 function IsLerpComplete(const lt: TLerpTimer; const t: double): boolean;
 
 function EaseOutQuad(const perc: double): double; far;
 
-function Linear(const a, z: double; perc: double): double;
 
 
 implementation
 
-uses P92MATHS;
+uses P92MATHS, P92PANIC;
 
 procedure InitLerp(var lt: TLerpTimer; const startTick, duration: double);
 begin
@@ -57,23 +58,24 @@ begin
   IsLerpComplete := t >= lt.endTick
 end;
 
-function Linear(const a, z: double; perc: double): double;
+function Lerp(a, z, perc: double): double;
 begin
   perc := clamp(perc, 0.0, 1.0);
-  Linear := a + perc * (z - a)
-end;
-
-function EaseOutQuad(const perc: double): double;
-begin
-  EaseOutQuad := 1 - (1 - perc) * (1 - perc)
+  Lerp := a + perc * (z - a)
 end;
 
 function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 begin
   if not assigned(ease) then
-    PanicHalt('LerpEased: ease is not defined!');
+    PanicHalt('LerpEased: ease function is not supplied!');
 
-  LerpEased := a + (z - a) * ease(perc)
+  perc := Clamp(perc, 0.0, 1.0);
+  LerpEased := a + ease(perc) * (z - a)
+end;
+
+function EaseOutQuad(const perc: double): double;
+begin
+  EaseOutQuad := 1 - (1 - perc) * (1 - perc)
 end;
 
 end.
