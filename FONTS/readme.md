@@ -11,10 +11,18 @@ The order is like this:
 
 The font in the DOS version is simply a copy, but with the format of an indexed bitmap
 
-(Temporary 07-09-2026)
-
-The canon for **P92 Sans 8px** is in DOS as for now
-
 ![regular font preview](./P92_Sans_8px_preview.png)
 
 ![bold font preview](./P92_Sans_8px_Bold_preview.png)
+
+The filenames follow this pattern:
+
+```text
+P92SAN + size + weight
+```
+
+So it would be like this:
+
+- P92SAN11
+- P92SAN8R
+- P92SAN8B
