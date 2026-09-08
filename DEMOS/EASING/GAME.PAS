@@ -4,19 +4,32 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92EASE, P92LOG, P92GRAPH, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
+  P92CORE, P92EASE, P92LOG, P92GRAPH, P92BMFON, P92CONV, P92KBD, P92MOUSE, P92MATHS, P92STR, P92TEX, P92TIME, P92VGA;
+
+type
+  TEasingDemo = (
+    EDOutQuad
+  );
 
 var
   { Asset variables }
+  fontP92Sans: TBMFont;
   texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
   t: double;
   clickTick: double;
 
+
+procedure PrintDefault(const text: string; const x, y: integer);
+begin
+  PrintBMFont(fontP92Sans, text, x, y)
+end;
+
 procedure OnPreload; far;
 begin
   { Load assets here }
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT');
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
@@ -49,8 +62,11 @@ procedure Draw; far;
 var
   perc, lerpVal: double;
   x: integer;
+  normalisedT: double;
 begin
   Cls($4F);
+
+  normalisedT := clamp(t - clickTick, 0.0, 3.0);
 
   perc := GetPerc(clickTick, 3.0, t);
   lerpVal := trunc(LerpEased(100, 220, perc, EaseOutQuad));
@@ -64,7 +80,7 @@ begin
   else
     Spr(texSpecimenP92[1], x, 64);
 
-  Print('Hello world!', 160-48, 120, 15);
+  PrintDefault('t:' + F32Str(normalisedT), 160-48, 120);
 end;
 
 
