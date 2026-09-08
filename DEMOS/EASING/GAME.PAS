@@ -37,6 +37,21 @@ begin
   PrintBMFont(fontBold, text, x, y)
 end;
 
+function GetDemoName(const ease: TEasingDemo): string;
+var
+  result: string;
+begin
+  case ease of
+  EDInQuad:
+    result := 'EaseInQuad';
+  EDOutQuad:
+    result := 'EaseOutQuad';
+  else
+    result := 'Unknown easing ' + I32Str(ord(ease));
+  end;
+
+  GetDemoName := result
+end;
 
 procedure OnPreload; far;
 begin
@@ -63,6 +78,7 @@ begin
   { Init game state variables here }
   t := 0.0;
   clickTick := 0.0;
+  actualDemo := TEasingDemo(0);
 end;
 
 procedure Update; far;
@@ -91,9 +107,17 @@ begin
   Cls($4F);
 
   normalisedT := clamp(t - clickTick, 0.0, 3.0);
-
   perc := GetPerc(clickTick, 3.0, t);
-  lerpVal := trunc(LerpEased(100, 220, perc, EaseOutQuad));
+
+  case actualDemo of
+  EDInQuad:
+    lerpVal := trunc(LerpEased(100, 220, perc, EaseInQuad));
+  EDOutQuad:
+    lerpVal := trunc(LerpEased(100, 220, perc, EaseOutQuad));
+  else
+    lerpVal := 0.0;
+  end;
+
 
   hline(100, 220, 80, $00);
 
@@ -111,6 +135,8 @@ begin
 
   PrintBold('Easing Demo', 10, 10);
   PrintDefault('Part of Posit-92 game engine', 10, 20);
+
+  PrintDefault('< ' + GetDemoName(actualDemo) + ' >', 10, 40);
 end;
 
 
