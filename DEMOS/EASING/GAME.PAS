@@ -100,6 +100,8 @@ begin
     lastLeft := IsKeyDown(SC_LEFT);
 
     if lastLeft then begin
+      { The pattern with a typed enum is "check before"
+        Because it inherently uses `Byte`, rather than `Integer` }
       if actualDemo = low(TEasingDemo) then
         actualDemo := high(TEasingDemo)
       else
@@ -109,7 +111,18 @@ begin
     end;
   end;
 
-  { TODO: Handle increment }
+  if lastRight <> IsKeyDown(SC_RIGHT) then begin
+    lastRight := IsKeyDown(SC_RIGHT);
+
+    if lastRight then begin
+      if actualDemo = high(TEasingDemo) then
+        actualDemo := low(TEasingDemo)
+      else
+        inc(actualDemo);
+
+      clickTick := t;
+    end;
+  end;
 
   { Handle game state updates here }
 
