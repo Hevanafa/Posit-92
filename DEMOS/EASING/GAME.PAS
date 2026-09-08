@@ -43,6 +43,8 @@ var
   result: string;
 begin
   case ease of
+  EDLinear:
+    result := 'EaseLinear (Lerp)';
   EDInQuad:
     result := 'EaseInQuad';
   EDOutQuad:
@@ -134,7 +136,7 @@ begin
   EDOutQuad:
     lerpVal := trunc(LerpEased(StartX, EndX, perc, EaseOutQuad));
   else
-    lerpVal := 0.0;
+    lerpVal := trunc(lerp(StartX, EndX, perc));
   end;
 
   HLine(StartX, EndX, 80, $00);
