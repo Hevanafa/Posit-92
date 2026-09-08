@@ -52,7 +52,7 @@ end;
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT');
 
   LoadTex(texCursor, 'CURSOR.BMP');
   LoadTex(texHand, 'HAND.BMP');
