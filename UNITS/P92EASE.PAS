@@ -33,8 +33,9 @@ function Lerp(a, z, perc: double): double;
 }
 function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
-function EaseOutQuad(perc: double): double; far;
+{ Easing functions }
 
+function EaseOutQuad(perc: double): double; far;
 
 
 implementation
@@ -42,15 +43,12 @@ implementation
 uses P92MATHS, P92PANIC;
 
 function GetPerc(startTick, duration, t: double): double;
-var
-  endTick: double;
 begin
   if duration = 0.0 then begin
     GetPerc := 1.0;
     exit
   end;
 
-  endTick := startTick + duration;
   GetPerc := Clamp((t - startTick) / duration, 0.0, 1.0)
 end;
 
