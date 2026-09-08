@@ -13,7 +13,7 @@ type
 
 var
   { Asset variables }
-  fontP92Sans: TBMFont;
+  fontRegular, fontBold: TBMFont;
   texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
@@ -23,29 +23,40 @@ var
 
 procedure PrintDefault(const text: string; const x, y: integer);
 begin
-  PrintBMFont(fontP92Sans, text, x, y)
+  PrintBMFont(fontRegular, text, x, y)
 end;
+
+procedure PrintBold(const text: string; const x, y: integer);
+begin
+  PrintBMFont(fontBold, text, x, y)
+end;
+
 
 procedure OnPreload; far;
 begin
   { Load assets here }
-  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT');
+  LoadBMFont(fontRegular, 'FONTS\P92SAN8R.TXT');
+  LoadBMFont(fontBold, 'FONTS\P92SAN8B.TXT');
+
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
+
+procedure OnCleanup; far;
+begin
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
+
+  FreeBMFont(fontBold);
+  FreeBMFont(fontRegular);
+end;
+
 
 procedure OnReady; far;
 begin
   { Init game state variables here }
   t := 0.0;
   clickTick := 0.0;
-end;
-
-procedure OnCleanup; far;
-begin
-  { Free all the resources here }
-  FreeTex(texSpecimenP92[0]);
-  FreeTex(texSpecimenP92[1]);
 end;
 
 procedure Update; far;
