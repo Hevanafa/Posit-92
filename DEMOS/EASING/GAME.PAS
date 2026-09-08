@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92EASE, P92LOG, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
+  P92CORE, P92EASE, P92LOG, P92GRAPH, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
@@ -47,18 +47,22 @@ end;
 
 procedure Draw; far;
 var
-  perc: double;
+  perc, lerpVal: double;
   x: integer;
 begin
   Cls($4F);
 
   perc := GetPerc(clickTick, 3.0, t);
-  x := trunc(LerpEased(50, 150, perc, EaseOutQuad));
+  lerpVal := trunc(LerpEased(100, 220, perc, EaseOutQuad));
+
+  hline(100, 220, 80, $00);
+
+  x := trunc(lerpVal - texSpecimenP92[0].width / 2);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(texSpecimenP92[0], x, 76)
+    Spr(texSpecimenP92[0], x, 64)
   else
-    Spr(texSpecimenP92[1], x, 76);
+    Spr(texSpecimenP92[1], x, 64);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
