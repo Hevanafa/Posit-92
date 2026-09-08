@@ -8,15 +8,21 @@ uses
 
 type
   TEasingDemo = (
+    EDInQuad,
     EDOutQuad
   );
 
 var
+  { Key state variables }
+  lastSpacebar: boolean;
+  lastLeft, lastRight: boolean;
+
   { Asset variables }
   fontRegular, fontBold: TBMFont;
   texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
+  actualDemo: TEasingDemo;
   t: double;
   clickTick: double;
 
@@ -63,6 +69,13 @@ procedure Update; far;
 begin
   { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  if lastSpacebar <> IsKeyDown(SC_SPACE) then begin
+    lastSpacebar := IsKeyDown(SC_SPACE);
+
+    if lastSpacebar then
+      clickTick := t;
+  end;
 
   { Handle game state updates here }
 
