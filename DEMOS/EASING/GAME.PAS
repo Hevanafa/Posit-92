@@ -8,6 +8,7 @@ uses
 
 type
   TEasingDemo = (
+    EDLinear,
     EDInQuad,
     EDOutQuad
   );
@@ -78,7 +79,7 @@ begin
   { Init game state variables here }
   t := 0.0;
   clickTick := 0.0;
-  actualDemo := TEasingDemo(0);
+  actualDemo := low(TEasingDemo);
 end;
 
 procedure Update; far;
@@ -92,6 +93,21 @@ begin
     if lastSpacebar then
       clickTick := t;
   end;
+
+  if lastLeft <> IsKeyDown(SC_LEFT) then begin
+    lastLeft := IsKeyDown(SC_LEFT);
+
+    if lastLeft then begin
+      if actualDemo = low(TEasingDemo) then
+        actualDemo := high(TEasingDemo)
+      else
+        dec(actualDemo);
+
+      clickTick := t;
+    end;
+  end;
+
+  { TODO: Handle increment }
 
   { Handle game state updates here }
 
