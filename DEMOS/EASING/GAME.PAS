@@ -80,7 +80,8 @@ begin
   else
     Spr(texSpecimenP92[1], x, 64);
 
-  PrintDefault('t:' + F32Str(normalisedT), 160-48, 120);
+  PrintDefault('t: ' + F32Str(normalisedT), 120, 120);
+  PrintDefault('value: ' + F32Str(lerpVal), 120, 128);
 end;
 
 
