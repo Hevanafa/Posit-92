@@ -139,6 +139,8 @@ begin
   PrintDefault('Part of Posit-92 game engine', 10, 20);
 
   PrintDefault('< ' + GetDemoName(actualDemo) + ' >', 10, 40);
+
+  PrintDefault('ESC - exit demo', 10, VGAHeight - fontRegular.lineHeight * 2);
 end;
 
 
