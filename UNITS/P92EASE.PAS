@@ -18,7 +18,19 @@ type
   t: current time, in seconds
 }
 function GetPerc(startTick, duration, t: double): double;
+
+{
+  a: start value
+  z: end value (inclusive)
+  perc: lerp percentage, can be obtained from GetPerc
+}
 function Lerp(a, z, perc: double): double;
+
+{
+  a: start value
+  z: end value (inclusive)
+  perc: lerp percentage, can be obtained from GetPerc
+}
 function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
 function EaseOutQuad(const perc: double): double; far;
