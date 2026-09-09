@@ -7,8 +7,10 @@ interface
 uses P92TEX;
 
 type
-  { Stateless sprite animator
-    Requires external frame index & start tick variables }
+{ Stateless sprite animator
+
+  Playback state is stored externally: the start tick and the frame index,
+  usually this pair: `startTick: double` and `frameIdx: integer` }
   TSprAnim = record
     texture: PTexture;
 
