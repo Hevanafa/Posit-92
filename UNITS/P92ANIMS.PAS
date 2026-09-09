@@ -8,7 +8,7 @@ uses P92TEX;
 
 type
   { Stateless sprite animator
-    Requires 2 variables: frame index, start tick }
+    Requires external frame index & start tick variables }
   TSprAnim = record
     texture: PTexture;
 
@@ -16,13 +16,15 @@ type
     frameWidth: word;
     frameHeight: word;
 
-    { in seconds }
+    { frame interval in seconds }
     interval: double;
     looping: boolean;
   end;
 
 {
-  tex: Must be a horizontal strip, max pixel data: 64KB
+  tex:
+  - Must be a horizontal strip,
+  - Texture pixel data must be 64KB or below
 }
 procedure InitSprAnim(
   var anim: TSprAnim;
@@ -31,8 +33,8 @@ procedure InitSprAnim(
   const interval: double);
 
 {
-  t: current time, it can be either real time or gameTime, in seconds
-  startTick gets reset if the sprite loops
+  t: current time in seconds, it can be either real time or gameTime
+  startTick: reset when a looping animation wraps to the first frame
 }
 procedure UpdateSprAnim(
   const anim: TSprAnim;
@@ -41,7 +43,7 @@ procedure UpdateSprAnim(
   var frameIdxRef: integer);
 
 {
-  This procedure only rewinds the state variables
+  Rewinds only the external animation state
 }
 procedure RewindSprAnim(
   var startTickRef: double;
