@@ -51,7 +51,7 @@ begin
   if frac(gameTime * 1.5) >= 0.5 then
     Spr(texSpecimenP92[0], 148, 76)
   else
-    SprTint(texSpecimenP92[1], 148, 76, $0F);
+    SprShadow(texSpecimenP92[1], 148, 76, $07);
 
   Print('Hello world!', 160-48, 120, 15);
 end;

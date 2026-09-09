@@ -9,6 +9,8 @@ uses P92TEX;
 { Copied from SprFast, only the pixel plotter is different }
 procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
 
+procedure SprShadow(const tex: TTexture; const x, y: integer; const shadow: byte);
+
 
 implementation
 
@@ -89,6 +91,12 @@ begin
       pop ds
     end;
   end;
+end;
+
+procedure SprShadow(const tex: TTexture; const x, y: integer; const shadow: byte);
+begin
+  SprTint(tex, x + 1, y + 1, shadow);
+  Spr(tex, x, y);
 end;
 
 begin
