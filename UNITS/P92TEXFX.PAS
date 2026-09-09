@@ -11,6 +11,12 @@ procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
 
 procedure SprShadow(const tex: TTexture; const x, y: integer; const shadow: byte);
 
+procedure SprRegionShadow(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const shadow: byte
+);
 
 implementation
 
@@ -97,6 +103,17 @@ procedure SprShadow(const tex: TTexture; const x, y: integer; const shadow: byte
 begin
   SprTint(tex, x + 1, y + 1, shadow);
   Spr(tex, x, y);
+end;
+
+procedure SprRegionShadow(
+  const tex: TTexture;
+  const srcX, srcY, srcW, srcH: integer;
+  const destX, destY: integer;
+  const shadow: byte
+);
+begin
+  SprRegionTint(tex, srcX, srcY, srcW, srcH, destX + 1, destY + 1, shadow);
+  SprRegion(tex, srcX, srcY, srcW, srcH, destX, destY);
 end;
 
 begin
