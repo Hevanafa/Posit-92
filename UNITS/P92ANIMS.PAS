@@ -32,6 +32,7 @@ procedure InitSpriteAnim(
 
 {
   t: current time, it can be either real time or gameTime, in seconds
+  startTick gets reset if the sprite loops
 }
 procedure UpdateSpriteAnim(
   const sprite: TSpriteAnim;
@@ -48,6 +49,8 @@ procedure DrawSpriteAnim(
   const sprite: TSpriteAnim;
   const frameIdx: integer;
   const x, y: integer);
+
+function IsSpriteCompleted(const sprite: TSpriteAnim; const t: double): boolean;
 
 
 implementation
@@ -66,7 +69,6 @@ begin
   sprite.looping := true;
 
   { TODO: Sanity checks }
-
 end;
 
 procedure UpdateSpriteAnim(
@@ -114,6 +116,12 @@ begin
     sprite.frameWidth,
     sprite.frameHeight,
     x, y);
+end;
+
+function IsSpriteCompleted(const sprite: TSpriteAnim; const startTick, t: double): boolean;
+begin
+  IsSpriteCompleted := not sprite.looping
+    and ((t - startTick) / sprite.interval >= sprite.frameCount);
 end;
 
 end.
