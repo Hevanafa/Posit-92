@@ -13,8 +13,11 @@ type
     texture: PTexture;
 
     frameCount: word;
-    frameWidth, frameHeight: word;
-    interval: double;  { in seconds }
+    frameWidth: word;
+    frameHeight: word;
+
+    { in seconds }
+    interval: double;
     looping: boolean;
   end;
 
@@ -69,17 +72,37 @@ procedure UpdateSpriteAnim(
   var startTick: double;
   var frameIdxRef: integer);
 begin
-
+  if t >= startTick + sprite.interval then begin
+    if frameIdxRef < sprite.frameCount - 1 then begin
+      inc(frameIdxRef);
+      startTick := startTick + sprite.interval
+    end else if sprite.looping then begin
+      frameIdxRef := 0;
+      startTick := startTick + sprite.interval
+    end;
+  end;
 end;
 
-procedure RewindSpriteAnim(var startTickRef:double;const startTick:double;var frameIdxRef:integer);
+procedure RewindSpriteAnim(
+  var startTickRef: double;
+  const startTick: double;
+  var frameIdxRef: integer);
 begin
-
+  startTickRef := startTick;
+  frameIdxRef := 0
 end;
 
-procedure DrawSpriteAnim(const sprite:TSpriteAnim;const frameIdx:integer;const x,y:integer);
+procedure DrawSpriteAnim(
+  const sprite: TSpriteAnim;
+  const frameIdx: integer;
+  const x, y: integer);
 begin
+  if frameIdx >= sprite.frameCount then exit;
 
+  sprRegion(
+    sprite.imgHandle,
+    sprite.frameWidth * frameIdx, 0, sprite.frameWidth, sprite.frameHeight,
+    x, y);
 end;
 
 end.
