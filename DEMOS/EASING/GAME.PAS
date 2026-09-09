@@ -33,6 +33,14 @@ begin
   PrintBMFont(fontRegular, text, x, y)
 end;
 
+procedure PrintCentred(const text: string; const cx, y: integer);
+var
+  w: integer;
+begin
+  w := MeasureBMFont(fontRegular, text);
+  PrintBMFont(fontRegular, text, cx - w shr 1, y)
+end;
+
 procedure PrintBold(const text: string; const x, y: integer);
 begin
   PrintBMFont(fontBold, text, x, y)
@@ -169,9 +177,10 @@ begin
   PrintBold('Easing Demo', 10, 10);
   PrintDefault('Part of Posit-92 game engine', 10, 20);
 
-  PrintDefault('< ' + GetDemoName(actualDemo) + ' >', 10, 40);
+  PrintCentred('< ' + GetDemoName(actualDemo) + ' >', VGAWidth shr 1, 50);
 
-  PrintDefault('ESC - exit demo', 10, VGAHeight - fontRegular.lineHeight * 2);
+  PrintDefault('Left / Right - change function', 54, VGAHeight - fontRegular.lineHeight * 3);
+  PrintDefault('ESC - exit demo', 54, VGAHeight - fontRegular.lineHeight * 2);
 end;
 
 
