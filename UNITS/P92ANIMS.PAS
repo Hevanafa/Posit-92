@@ -25,7 +25,7 @@ type
   tex: Must be a horizontal strip, max pixel data: 64KB
 }
 procedure InitSprAnim(
-  var sprite: TSprAnim;
+  var anim: TSprAnim;
   const tex: TTexture;
   const frameCount, frameWidth, frameHeight: word;
   const interval: double);
@@ -35,55 +35,58 @@ procedure InitSprAnim(
   startTick gets reset if the sprite loops
 }
 procedure UpdateSprAnim(
-  const sprite: TSprAnim;
+  const anim: TSprAnim;
   const t: double;
   var startTick: double;
   var frameIdxRef: integer);
 
+{
+  This procedure only rewinds the state variables
+}
 procedure RewindSprAnim(
   var startTickRef: double;
   const startTick: double;
   var frameIdxRef: integer);
 
 procedure DrawSprAnim(
-  const sprite: TSprAnim;
+  const anim: TSprAnim;
   const frameIdx: integer;
   const x, y: integer);
 
-function IsSprAnimCompleted(const sprite: TSprAnim; const startTick, t: double): boolean;
+function IsSprAnimCompleted(const anim: TSprAnim; const startTick, t: double): boolean;
 
 
 implementation
 
 procedure InitSprAnim(
-  var sprite: TSprAnim;
+  var anim: TSprAnim;
   const tex: TTexture;
   const frameCount, frameWidth, frameHeight: word;
   const interval: double);
 begin
-  sprite.texture := @tex;
-  sprite.frameCount := frameCount;
-  sprite.frameWidth := frameWidth;
-  sprite.frameHeight := frameHeight;
-  sprite.interval := interval;
-  sprite.looping := true;
+  anim.texture := @tex;
+  anim.frameCount := frameCount;
+  anim.frameWidth := frameWidth;
+  anim.frameHeight := frameHeight;
+  anim.interval := interval;
+  anim.looping := true;
 
   { TODO: Sanity checks }
 end;
 
 procedure UpdateSprAnim(
-  const sprite: TSprAnim;
+  const anim: TSprAnim;
   const t: double;
   var startTick: double;
   var frameIdxRef: integer);
 begin
-  if t >= startTick + sprite.interval then begin
-    if frameIdxRef < sprite.frameCount - 1 then begin
+  if t >= startTick + anim.interval then begin
+    if frameIdxRef < anim.frameCount - 1 then begin
       inc(frameIdxRef);
-      startTick := startTick + sprite.interval
-    end else if sprite.looping then begin
+      startTick := startTick + anim.interval
+    end else if anim.looping then begin
       frameIdxRef := 0;
-      startTick := startTick + sprite.interval
+      startTick := startTick + anim.interval
     end;
   end;
 end;
@@ -98,7 +101,7 @@ begin
 end;
 
 procedure DrawSprAnim(
-  const sprite: TSprAnim;
+  const anim: TSprAnim;
   const frameIdx: integer;
   const x, y: integer);
 var
@@ -106,22 +109,22 @@ var
 begin
   localFrameIdx := frameIdx;
 
-  if not sprite.looping and (localFrameIdx >= sprite.frameCount) then
-    localFrameIdx := sprite.frameCount - 1;
+  if not anim.looping and (localFrameIdx >= anim.frameCount) then
+    localFrameIdx := anim.frameCount - 1;
 
   SprRegion(
-    sprite.texture^,
-    sprite.frameWidth * localFrameIdx,
+    anim.texture^,
+    anim.frameWidth * localFrameIdx,
     0,
-    sprite.frameWidth,
-    sprite.frameHeight,
+    anim.frameWidth,
+    anim.frameHeight,
     x, y);
 end;
 
-function IsSprAnimCompleted(const sprite: TSprAnim; const startTick, t: double): boolean;
+function IsSprAnimCompleted(const anim: TSprAnim; const startTick, t: double): boolean;
 begin
-  IsSprAnimCompleted := not sprite.looping
-    and ((t - startTick) / sprite.interval >= sprite.frameCount);
+  IsSprAnimCompleted := not anim.looping
+    and ((t - startTick) / anim.interval >= anim.frameCount);
 end;
 
 end.
