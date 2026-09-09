@@ -35,8 +35,13 @@ function LerpEased(a, z, perc: double; ease: TEaseFunc): double;
 
 { Easing functions }
 
-function EaseInQuad(perc: double): double; far;
-function EaseOutQuad(perc: double): double; far;
+function EaseInSine(perc: double): double;
+function EaseOutSine(perc: double): double;
+function EaseInOutSine(perc: double): double;
+
+function EaseInQuad(perc: double): double;
+function EaseOutQuad(perc: double): double;
+function EaseInOutQuad(perc: double): double;
 
 
 implementation
@@ -68,6 +73,23 @@ begin
   LerpEased := a + ease(perc) * (z - a)
 end;
 
+
+function EaseInSine(perc: double): double;
+begin
+  EaseInSine := 1 - cos(perc * pi / 2)
+end;
+
+function EaseOutSine(perc: double): double;
+begin
+  EaseOutSine := sin(perc * pi / 2)
+end;
+
+function EaseInOutSine(perc: double): double;
+begin
+  EaseInOutSine := -(cos(pi * perc) - 1) /2
+end;
+
+
 function EaseInQuad(perc: double):double;
 begin
   EaseInQuad := perc * perc
@@ -77,5 +99,16 @@ function EaseOutQuad(perc: double): double;
 begin
   EaseOutQuad := 1 - (1 - perc) * (1 - perc)
 end;
+
+function EaseInOutQuad(perc: double): double;
+begin
+  if perc < 0.5 then
+    EaseInOutQuad := 2 * perc * perc
+  else begin
+    perc := -2 * perc + 2;
+    EaseInOutQuad := 1 - (perc * perc) / 2;
+  end;
+end;
+
 
 end.
