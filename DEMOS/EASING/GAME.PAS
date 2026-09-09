@@ -22,7 +22,7 @@ type
 var
   { Key state variables }
   lastSpacebar: boolean;
-  lastLeft, lastRight: boolean;
+  lastUp, lastDown: boolean;
 
   { Asset variables }
   fontRegular, fontBold: TBMFont;
@@ -122,10 +122,10 @@ begin
       clickTick := t;
   end;
 
-  if lastLeft <> IsKeyDown(SC_LEFT) then begin
-    lastLeft := IsKeyDown(SC_LEFT);
+  if lastUp <> IsKeyDown(SC_UP) then begin
+    lastUp := IsKeyDown(SC_UP);
 
-    if lastLeft then begin
+    if lastUp then begin
       { The pattern with a typed enum is "check before"
         Because it inherently uses `Byte`, rather than `Integer` }
       if actualDemo = low(TEasingDemo) then
@@ -137,10 +137,10 @@ begin
     end;
   end;
 
-  if lastRight <> IsKeyDown(SC_RIGHT) then begin
-    lastRight := IsKeyDown(SC_RIGHT);
+  if lastDown <> IsKeyDown(SC_DOWN) then begin
+    lastDown := IsKeyDown(SC_DOWN);
 
-    if lastRight then begin
+    if lastDown then begin
       if actualDemo = high(TEasingDemo) then
         actualDemo := low(TEasingDemo)
       else
@@ -194,13 +194,26 @@ begin
 
   x := StartX + trunc(lerpVal - texSpecimenP92[0].width / 2);
 
-  if frac(t * 1.5) >= 0.5 then
+  if frac(t * 1.5) > 0.5 then
     Spr(texSpecimenP92[0], x, 64)
   else
     Spr(texSpecimenP92[1], x, 64);
 
-  PrintDefault('t: ' + F32Str(normalisedT), 120, 120);
-  PrintDefault('value: ' + F32Str(lerpVal), 120, 128);
+  { Linear }
+  HLine(StartX, StartX + SliderLength - 1, 120, $00);
+
+  lerpVal := trunc(lerp(0, SliderLength, perc));
+  x := StartX + trunc(lerpVal - texSpecimenP92[0].width / 2);
+
+  if frac(t * 1.5) > 0.5 then
+    Spr(texSpecimenP92[0], x, 104)
+  else
+    Spr(texSpecimenP92[1], x, 104);
+
+  PrintDefault('t: ' + F32Str(normalisedT), 120, 140);
+  PrintDefault('value: ' + F32Str(lerpVal), 120, 148);
+
+  { List of easings }
 
   for a:=ord(low(TEasingDemo)) to ord(high(TEasingDemo)) do begin
     if TEasingDemo(a) = actualDemo then
@@ -211,7 +224,7 @@ begin
     PrintBMFontTint(
       fontRegular,
       GetEasingName(TEasingDemo(a)),
-      230, 50 + a * fontRegular.lineHeight, colour);
+      240, 50 + a * fontRegular.lineHeight, colour);
   end;
 
   { Header }
@@ -221,7 +234,9 @@ begin
 
   PrintCentred('< ' + GetEasingName(actualDemo) + ' >', VGAWidth shr 1, 50);
 
-  PrintDefault('Left / Right - change function', 54, VGAHeight - fontRegular.lineHeight * 3);
+  PrintCentred('Linear', VGAWidth shr 1, 100);
+
+  PrintDefault('Up / Down - change function', 54, VGAHeight - fontRegular.lineHeight * 3);
   PrintDefault('ESC - exit demo', 54, VGAHeight - fontRegular.lineHeight * 2);
 end;
 
