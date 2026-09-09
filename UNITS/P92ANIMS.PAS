@@ -7,7 +7,7 @@ interface
 uses P92TEX;
 
 type
-  { Stateless sprite animation
+  { Stateless sprite animator
     Requires 2 variables: frame index, start tick }
   TSprAnim = record
     texture: PTexture;

@@ -10,58 +10,71 @@ var
   { Asset variables }
   texSpecimenP92: array[0..1] of TTexture;
   texSlimeGirl: TTexture;
+  animSlimeGirl: TSprAnim;
 
   { Game state variables }
-  t: double;
 
+  gameTime: double;
+
+  { use gameTime }
   startTick: double;
   frameIdx: integer;
 
 
+{ Load assets here }
 procedure OnPreload; far;
 begin
-  { Load assets here }
   LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
 
   LoadTex(texSlimeGirl, 'IMG\SLIMEGRL.BMP');
 end;
 
+{ Free all the resources here }
 procedure OnCleanup; far;
 begin
-  { Free all the resources here }
   FreeTex(texSpecimenP92[0]);
   FreeTex(texSpecimenP92[1]);
 
   FreeTex(texSlimeGirl);
 end;
 
+{ Init game state variables here }
 procedure OnReady; far;
 begin
-  { Init game state variables here }
-  t := 0.0;
+  gameTime := 0.0;
+
+  InitSprAnim(animSlimeGirl, texSlimeGirl, 5, 16, 16, 0.1);
+  startTick := gameTime;
+  frameIdx := 0;
 end;
 
 procedure Update; far;
+var
+  now: double;
 begin
+  now := GetTimer;
+
   { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   { Handle game state updates here }
+  UpdateSprAnim(animSlimeGirl, gameTime, startTick, frameIdx);
 
-  t := t + DeltaTime
+  gameTime := gameTime + DeltaTime
 end;
 
 procedure Draw; far;
 begin
   Cls($4F);
 
-  if frac(t * 1.5) >= 0.5 then
+  if frac(gameTime * 1.5) >= 0.5 then
     Spr(texSpecimenP92[0], 148, 76)
   else
     Spr(texSpecimenP92[1], 148, 76);
 
-  spr(texSlimeGirl, 10, 10);
+  { spr(texSlimeGirl, 10, 10); }
+  DrawSprAnim(animSlimeGirl, frameIdx, 10, 10);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
