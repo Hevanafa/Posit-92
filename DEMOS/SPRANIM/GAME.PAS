@@ -10,7 +10,7 @@ var
   { Asset variables }
   texSpecimenP92: array[0..1] of TTexture;
   texSlimeGirl: TTexture;
-  animSlimeGirl: TSprAnim;
+  animSlimeGirl, animSlimeGirlNoLoop: TSprAnim;
 
   { Game state variables }
 
@@ -47,6 +47,9 @@ begin
   InitSprAnim(animSlimeGirl, texSlimeGirl, 5, 16, 16, 0.1);
   startTick := gameTime;
   frameIdx := 0;
+
+  InitSprAnim(animSlimeGirlNoLoop, texSlimeGirl, 5, 16, 16, 0.1);
+  animSlimeGirlNoLoop.looping := false;
 end;
 
 procedure Update; far;
@@ -60,6 +63,7 @@ begin
 
   { Handle game state updates here }
   UpdateSprAnim(animSlimeGirl, gameTime, startTick, frameIdx);
+  UpdateSprAnim(animSlimeGirlNoLoop, gameTime, startTick, frameIdx);
 
   gameTime := gameTime + DeltaTime
 end;
@@ -75,6 +79,7 @@ begin
 
   { spr(texSlimeGirl, 10, 10); }
   DrawSprAnim(animSlimeGirl, 188, 80, frameIdx);
+  DrawSprAnim(animSlimeGirlNoLoop, 208, 80, frameIdx);
 
   Print('Hello world!', 160-48, 120, 15);
 end;

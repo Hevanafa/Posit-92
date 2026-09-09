@@ -57,9 +57,13 @@ procedure DrawSprAnim(
 
 {
   t: current time in seconds
-  startTick: external animation state
+  frameIdx: external animation state
 }
-function IsSprAnimCompleted(const anim: TSprAnim; const t, startTick: double): boolean;
+function IsSprAnimCompleted(
+  const anim: TSprAnim;
+  const t: double;
+  const frameIdx: integer
+): boolean;
 
 
 implementation
@@ -127,10 +131,14 @@ begin
     x, y);
 end;
 
-function IsSprAnimCompleted(const anim: TSprAnim; const t, startTick: double): boolean;
+function IsSprAnimCompleted(
+  const anim: TSprAnim;
+  const t: double;
+  const frameIdx: integer
+): boolean;
 begin
   IsSprAnimCompleted := not anim.looping
-    and ((t - startTick) / anim.interval >= anim.frameCount);
+    and (frameIdx >= anim.frameCount);
 end;
 
 end.
