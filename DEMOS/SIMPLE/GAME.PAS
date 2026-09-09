@@ -4,52 +4,51 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92LOG, P92KBD, P92MOUSE, P92STR, P92TEX, P92TIME, P92VGA;
+  P92CORE, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
 
 var
   { Asset variables }
-  { DosuEXE: array[0..1] of TTexture; }
+  { texDosuEXE: array[0..1] of TTexture; }
   texSpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
-  t: double;
+  gameTime: double;
 
 
+{ Load assets here }
 procedure OnPreload; far;
 begin
-  { Load assets here }
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
 end;
 
-procedure OnReady; far;
-begin
-  { Init game state variables here }
-  t := 0.0;
-end;
-
+{ Free all the resources here }
 procedure OnCleanup; far;
 begin
-  { Free all the resources here }
   FreeTex(texSpecimenP92[0]);
   FreeTex(texSpecimenP92[1]);
 end;
 
-procedure Update; far;
+{ Init game state variables here }
+procedure OnReady; far;
 begin
-  { Handle inputs here }
-  if IsKeyDown(SC_ESCAPE) then SignalDone;
-
-  { Handle game state updates here }
-
-  t := t + DeltaTime
+  gameTime := 0.0;
 end;
 
+{ Handle game state updates here }
+procedure Update; far;
+begin
+  if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  gameTime := gameTime + DeltaTime
+end;
+
+{ Render logic }
 procedure Draw; far;
 begin
   Cls($4F);
 
-  if frac(t * 1.5) >= 0.5 then
+  if frac(gameTime * 1.5) >= 0.5 then
     Spr(texSpecimenP92[0], 148, 76)
   else
     Spr(texSpecimenP92[1], 148, 76);
