@@ -46,8 +46,8 @@ procedure UpdateSprAnim(
   Rewinds only the external animation state
 }
 procedure RewindSprAnim(
-  var startTick: double;
   const newStartTick: double;
+  var startTick: double;
   var frameIdx: integer);
 
 procedure DrawSprAnim(
@@ -94,8 +94,8 @@ begin
 end;
 
 procedure RewindSprAnim(
-  var startTick: double;
   const newStartTick: double;
+  var startTick: double;
   var frameIdx: integer);
 begin
   startTick := newStartTick;
