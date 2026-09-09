@@ -132,7 +132,7 @@ end;
 procedure Draw; far;
 const
   StartX = 100;
-  EndX = 220;
+  SliderLength = 120;
 var
   perc, lerpVal: double;
   x: integer;
@@ -145,16 +145,16 @@ begin
 
   case actualDemo of
   EDInQuad:
-    lerpVal := trunc(LerpEased(StartX, EndX, perc, EaseInQuad));
+    lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInQuad));
   EDOutQuad:
-    lerpVal := trunc(LerpEased(StartX, EndX, perc, EaseOutQuad));
+    lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseOutQuad));
   else
-    lerpVal := trunc(lerp(StartX, EndX, perc));
+    lerpVal := trunc(lerp(0, SliderLength, perc));
   end;
 
-  HLine(StartX, EndX, 80, $00);
+  HLine(StartX, StartX + SliderLength - 1, 80, $00);
 
-  x := trunc(lerpVal - texSpecimenP92[0].width / 2);
+  x := StartX + trunc(lerpVal - texSpecimenP92[0].width / 2);
 
   if frac(t * 1.5) >= 0.5 then
     Spr(texSpecimenP92[0], x, 64)
@@ -179,6 +179,9 @@ var
   appConfig: TP92AppConfig;
 begin
   DefaultP92AppConfig(appConfig);
+
+  appConfig.WaitMode := P92WaitVSync;
+  appConfig.EnableDrawFPS := true;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
