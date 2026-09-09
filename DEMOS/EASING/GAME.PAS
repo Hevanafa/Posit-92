@@ -9,8 +9,14 @@ uses
 type
   TEasingDemo = (
     EDLinear,
+
+    EDInSine,
+    EDOutSine,
+    EDInOutSine,
+
     EDInQuad,
-    EDOutQuad
+    EDOutQuad,
+    EDInOutQuad
   );
 
 var
@@ -51,14 +57,25 @@ var
   result: string;
 begin
   case ease of
-  EDLinear:
-    result := 'EaseLinear (Lerp)';
-  EDInQuad:
-    result := 'EaseInQuad';
-  EDOutQuad:
-    result := 'EaseOutQuad';
-  else
-    result := 'Unknown easing ' + I32Str(ord(ease));
+    EDLinear:
+      result := 'EaseLinear (Lerp)';
+
+    EDInSine:
+      result := 'EaseInSine';
+    EDOutSine:
+      result := 'EaseOutSine';
+    EDInOutSine:
+      result := 'EaseInOutSine';
+
+    EDInQuad:
+      result := 'EaseInQuad';
+    EDOutQuad:
+      result := 'EaseOutQuad';
+    EDInOutQuad:
+      result := 'EaseInOutQuad';
+
+    else
+      result := 'Unknown easing ' + I32Str(ord(ease));
   end;
 
   GetEasingName := result
@@ -155,12 +172,22 @@ begin
   perc := GetPerc(clickTick, 3.0, t);
 
   case actualDemo of
-  EDInQuad:
-    lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInQuad));
-  EDOutQuad:
-    lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseOutQuad));
-  else
-    lerpVal := trunc(lerp(0, SliderLength, perc));
+    EDInSine:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInSine));
+    EDOutSine:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseOutSine));
+    EDInOutSine:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInOutSine));
+
+    EDInQuad:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInQuad));
+    EDOutQuad:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseOutQuad));
+    EDInOutQuad:
+      lerpVal := trunc(LerpEased(0, SliderLength, perc, EaseInOutQuad));
+
+    else
+      lerpVal := trunc(lerp(0, SliderLength, perc));
   end;
 
   HLine(StartX, StartX + SliderLength - 1, 80, $00);
