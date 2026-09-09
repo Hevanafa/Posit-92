@@ -74,7 +74,7 @@ begin
     Spr(texSpecimenP92[1], 148, 76);
 
   { spr(texSlimeGirl, 10, 10); }
-  DrawSprAnim(animSlimeGirl, frameIdx, 188, 80);
+  DrawSprAnim(animSlimeGirl, 188, 80, frameIdx);
 
   Print('Hello world!', 160-48, 120, 15);
 end;

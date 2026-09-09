@@ -52,8 +52,8 @@ procedure RewindSprAnim(
 
 procedure DrawSprAnim(
   const anim: TSprAnim;
-  const frameIdx: integer;
-  const x, y: integer);
+  const x, y: integer;
+  const frameIdx: integer);
 
 function IsSprAnimCompleted(const anim: TSprAnim; const startTick, t: double): boolean;
 
@@ -104,8 +104,8 @@ end;
 
 procedure DrawSprAnim(
   const anim: TSprAnim;
-  const frameIdx: integer;
-  const x, y: integer);
+  const x, y: integer;
+  const frameIdx: integer);
 var
   localFrameIdx: integer;
 begin
