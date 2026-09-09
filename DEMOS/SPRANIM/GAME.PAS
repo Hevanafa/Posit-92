@@ -8,24 +8,23 @@ uses
 
 var
   { Asset variables }
-  { DosuEXE: array[0..1] of TTexture; }
   texSpecimenP92: array[0..1] of TTexture;
+  texSlimeGirl: TTexture;
 
   { Game state variables }
   t: double;
+
+  startTick: double;
+  frameIdx: integer;
 
 
 procedure OnPreload; far;
 begin
   { Load assets here }
-  LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
-end;
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
 
-procedure OnReady; far;
-begin
-  { Init game state variables here }
-  t := 0.0;
+  LoadTex(texSlimeGirl, 'IMG\SLIMEGRL.BMP');
 end;
 
 procedure OnCleanup; far;
@@ -33,6 +32,14 @@ begin
   { Free all the resources here }
   FreeTex(texSpecimenP92[0]);
   FreeTex(texSpecimenP92[1]);
+
+  FreeTex(texSlimeGirl);
+end;
+
+procedure OnReady; far;
+begin
+  { Init game state variables here }
+  t := 0.0;
 end;
 
 procedure Update; far;
@@ -53,6 +60,8 @@ begin
     Spr(texSpecimenP92[0], 148, 76)
   else
     Spr(texSpecimenP92[1], 148, 76);
+
+  spr(texSlimeGirl, 10, 10);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
