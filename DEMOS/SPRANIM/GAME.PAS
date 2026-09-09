@@ -20,6 +20,9 @@ var
   startTick: double;
   frameIdx: integer;
 
+  slime2StartTick: double;
+  slime2FrameIdx: integer;
+
 
 { Load assets here }
 procedure OnPreload; far;
@@ -50,6 +53,9 @@ begin
 
   InitSprAnim(animSlimeGirlNoLoop, texSlimeGirl, 5, 16, 16, 0.1);
   animSlimeGirlNoLoop.looping := false;
+
+  slime2StartTick := gameTime;
+  slime2FrameIdx := 0;
 end;
 
 procedure Update; far;
@@ -63,7 +69,7 @@ begin
 
   { Handle game state updates here }
   UpdateSprAnim(animSlimeGirl, gameTime, startTick, frameIdx);
-  UpdateSprAnim(animSlimeGirlNoLoop, gameTime, startTick, frameIdx);
+  UpdateSprAnim(animSlimeGirlNoLoop, gameTime, slime2StartTick, slime2FrameIdx);
 
   gameTime := gameTime + DeltaTime
 end;
@@ -79,7 +85,7 @@ begin
 
   { spr(texSlimeGirl, 10, 10); }
   DrawSprAnim(animSlimeGirl, 188, 80, frameIdx);
-  DrawSprAnim(animSlimeGirlNoLoop, 208, 80, frameIdx);
+  DrawSprAnim(animSlimeGirlNoLoop, 208, 80, slime2FrameIdx);
 
   Print('Hello world!', 160-48, 120, 15);
 end;
