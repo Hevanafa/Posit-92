@@ -30,11 +30,12 @@ type
     texture: TTexture;
   end;
 
-procedure DefaultBMFont(var font: TBMFont);
+procedure InitBMFont(var font: TBMFont);
 
-{ This calls DefaultBMFont internally }
+{ This calls InitBMFont internally }
 procedure LoadBMFont(var font: TBMFont; const filename: string);
-{ This also frees the bitmap handle }
+
+{ This also frees the texture }
 procedure FreeBMFont(var font: TBMFont);
 
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
@@ -110,7 +111,7 @@ begin
     destFont.glyphs[newGlyph.id] := newGlyph;
 end;
 
-procedure DefaultBMFont(var font: TBMFont);
+procedure InitBMFont(var font: TBMFont);
 var
   len: integer;
 begin
@@ -168,7 +169,7 @@ begin
   if IsLFOnly(filename) then
     PanicHalt('LoadBMFont: The font definition line ends only with LF');
 
-  DefaultBMFont(font);
+  InitBMFont(font);
 
   assign(f, filename);
   {$I-} reset(f); {$I+}
