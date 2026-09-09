@@ -40,15 +40,15 @@ procedure UpdateSprAnim(
   const anim: TSprAnim;
   const t: double;
   var startTick: double;
-  var frameIdxRef: integer);
+  var frameIdx: integer);
 
 {
   Rewinds only the external animation state
 }
 procedure RewindSprAnim(
-  var startTickRef: double;
-  const startTick: double;
-  var frameIdxRef: integer);
+  var startTick: double;
+  const newStartTick: double;
+  var frameIdx: integer);
 
 procedure DrawSprAnim(
   const anim: TSprAnim;
@@ -80,26 +80,26 @@ procedure UpdateSprAnim(
   const anim: TSprAnim;
   const t: double;
   var startTick: double;
-  var frameIdxRef: integer);
+  var frameIdx: integer);
 begin
   if t >= startTick + anim.interval then begin
-    if frameIdxRef < anim.frameCount - 1 then begin
-      inc(frameIdxRef);
+    if frameIdx < anim.frameCount - 1 then begin
+      inc(frameIdx);
       startTick := startTick + anim.interval
     end else if anim.looping then begin
-      frameIdxRef := 0;
+      frameIdx := 0;
       startTick := startTick + anim.interval
     end;
   end;
 end;
 
 procedure RewindSprAnim(
-  var startTickRef: double;
-  const startTick: double;
-  var frameIdxRef: integer);
+  var startTick: double;
+  const newStartTick: double;
+  var frameIdx: integer);
 begin
-  startTickRef := startTick;
-  frameIdxRef := 0
+  startTick := newStartTick;
+  frameIdx := 0
 end;
 
 procedure DrawSprAnim(
