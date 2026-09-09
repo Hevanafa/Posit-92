@@ -236,8 +236,14 @@ begin
 
   PrintCentred('Linear', VGAWidth shr 1, 100);
 
-  PrintDefault('Up / Down - change function', 54, VGAHeight - fontRegular.lineHeight * 3);
-  PrintDefault('ESC - exit demo', 54, VGAHeight - fontRegular.lineHeight * 2);
+  PrintDefault('Spacebar - replay',
+    54, VGAHeight - fontRegular.lineHeight * 4);
+
+  PrintDefault('Up / Down - change function',
+    54, VGAHeight - fontRegular.lineHeight * 3);
+
+  PrintDefault('ESC - exit demo',
+    54, VGAHeight - fontRegular.lineHeight * 2);
 end;
 
 
