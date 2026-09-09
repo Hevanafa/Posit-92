@@ -46,7 +46,7 @@ begin
   PrintBMFont(fontBold, text, x, y)
 end;
 
-function GetDemoName(const ease: TEasingDemo): string;
+function GetEasingName(const ease: TEasingDemo): string;
 var
   result: string;
 begin
@@ -61,7 +61,7 @@ begin
     result := 'Unknown easing ' + I32Str(ord(ease));
   end;
 
-  GetDemoName := result
+  GetEasingName := result
 end;
 
 procedure OnPreload; far;
@@ -89,7 +89,8 @@ begin
   { Init game state variables here }
   t := 0.0;
   clickTick := 0.0;
-  actualDemo := low(TEasingDemo);
+  actualDemo := TEasingDemo(
+    ord(low(TEasingDemo)) + 1);
 end;
 
 procedure Update; far;
@@ -145,6 +146,8 @@ var
   perc, lerpVal: double;
   x: integer;
   normalisedT: double;
+  a: integer;
+  colour: byte;
 begin
   Cls($4F);
 
@@ -172,12 +175,24 @@ begin
   PrintDefault('t: ' + F32Str(normalisedT), 120, 120);
   PrintDefault('value: ' + F32Str(lerpVal), 120, 128);
 
+  for a:=ord(low(TEasingDemo)) to ord(high(TEasingDemo)) do begin
+    if TEasingDemo(a) = actualDemo then
+      colour := $0E
+    else
+      colour := $00;
+
+    PrintBMFontTint(
+      fontRegular,
+      GetEasingName(TEasingDemo(a)),
+      230, 50 + a * fontRegular.lineHeight, colour);
+  end;
+
   { Header }
 
   PrintBold('Easing Demo', 10, 10);
   PrintDefault('Part of Posit-92 game engine', 10, 20);
 
-  PrintCentred('< ' + GetDemoName(actualDemo) + ' >', VGAWidth shr 1, 50);
+  PrintCentred('< ' + GetEasingName(actualDemo) + ' >', VGAWidth shr 1, 50);
 
   PrintDefault('Left / Right - change function', 54, VGAHeight - fontRegular.lineHeight * 3);
   PrintDefault('ESC - exit demo', 54, VGAHeight - fontRegular.lineHeight * 2);
