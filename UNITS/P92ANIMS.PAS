@@ -9,7 +9,7 @@ uses P92TEX;
 type
   { Stateless sprite animation
     Requires 2 variables: frame index, start tick }
-  TSpriteAnim = record
+  TSprAnim = record
     texture: PTexture;
 
     frameCount: word;
@@ -24,8 +24,8 @@ type
 {
   tex: Must be a horizontal strip, max pixel data: 64KB
 }
-procedure InitSpriteAnim(
-  var sprite: TSpriteAnim;
+procedure InitSprAnim(
+  var sprite: TSprAnim;
   const tex: TTexture;
   const frameCount, frameWidth, frameHeight: word;
   const interval: double);
@@ -34,29 +34,29 @@ procedure InitSpriteAnim(
   t: current time, it can be either real time or gameTime, in seconds
   startTick gets reset if the sprite loops
 }
-procedure UpdateSpriteAnim(
-  const sprite: TSpriteAnim;
+procedure UpdateSprAnim(
+  const sprite: TSprAnim;
   const t: double;
   var startTick: double;
   var frameIdxRef: integer);
 
-procedure RewindSpriteAnim(
+procedure RewindSprAnim(
   var startTickRef: double;
   const startTick: double;
   var frameIdxRef: integer);
 
-procedure DrawSpriteAnim(
-  const sprite: TSpriteAnim;
+procedure DrawSprAnim(
+  const sprite: TSprAnim;
   const frameIdx: integer;
   const x, y: integer);
 
-function IsSpriteCompleted(const sprite: TSpriteAnim; const t: double): boolean;
+function IsSprAnimCompleted(const sprite: TSprAnim; const startTick, t: double): boolean;
 
 
 implementation
 
-procedure InitSpriteAnim(
-  var sprite: TSpriteAnim;
+procedure InitSprAnim(
+  var sprite: TSprAnim;
   const tex: TTexture;
   const frameCount, frameWidth, frameHeight: word;
   const interval: double);
@@ -71,8 +71,8 @@ begin
   { TODO: Sanity checks }
 end;
 
-procedure UpdateSpriteAnim(
-  const sprite: TSpriteAnim;
+procedure UpdateSprAnim(
+  const sprite: TSprAnim;
   const t: double;
   var startTick: double;
   var frameIdxRef: integer);
@@ -88,7 +88,7 @@ begin
   end;
 end;
 
-procedure RewindSpriteAnim(
+procedure RewindSprAnim(
   var startTickRef: double;
   const startTick: double;
   var frameIdxRef: integer);
@@ -97,8 +97,8 @@ begin
   frameIdxRef := 0
 end;
 
-procedure DrawSpriteAnim(
-  const sprite: TSpriteAnim;
+procedure DrawSprAnim(
+  const sprite: TSprAnim;
   const frameIdx: integer;
   const x, y: integer);
 var
@@ -110,7 +110,7 @@ begin
     localFrameIdx := sprite.frameCount - 1;
 
   SprRegion(
-    sprite.imgHandle,
+    sprite.texture^,
     sprite.frameWidth * localFrameIdx,
     0,
     sprite.frameWidth,
@@ -118,9 +118,9 @@ begin
     x, y);
 end;
 
-function IsSpriteCompleted(const sprite: TSpriteAnim; const startTick, t: double): boolean;
+function IsSprAnimCompleted(const sprite: TSprAnim; const startTick, t: double): boolean;
 begin
-  IsSpriteCompleted := not sprite.looping
+  IsSprAnimCompleted := not sprite.looping
     and ((t - startTick) / sprite.interval >= sprite.frameCount);
 end;
 
