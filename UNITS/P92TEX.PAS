@@ -29,7 +29,7 @@ type
     data: PByteArray;
   end;
 
-procedure DefaultTex(var tex: TTexture);
+procedure InitTex(var tex: TTexture);
 
 {
   Loads an indexed bitmap file into a TTexture
@@ -119,7 +119,7 @@ begin
   transparencyKey := value
 end;
 
-procedure DefaultTex(var tex: TTexture);
+procedure InitTex(var tex: TTexture);
 begin
   tex.width := 0;
   tex.height := 0;
@@ -142,7 +142,7 @@ begin
     { FreeTex(tex) }
   end;
 
-  DefaultTex(tex);
+  InitTex(tex);
 
   assign(f, filename);
   {$I-} reset(f, 1); {$I+} { record size is 1 --> binary mode }

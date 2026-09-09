@@ -119,7 +119,7 @@ begin
   font.lineHeight := 0;
   font.spacingX := 0;
 
-  DefaultTex(font.texture);
+  InitTex(font.texture);
 end;
 
 function IsLFOnly(const filename: string): boolean;
