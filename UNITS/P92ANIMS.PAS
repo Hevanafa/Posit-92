@@ -63,7 +63,10 @@ begin
   sprite.frameWidth := frameWidth;
   sprite.frameHeight := frameHeight;
   sprite.interval := interval;
-  sprite.looping := true
+  sprite.looping := true;
+
+  { TODO: Sanity checks }
+
 end;
 
 procedure UpdateSpriteAnim(
@@ -96,12 +99,20 @@ procedure DrawSpriteAnim(
   const sprite: TSpriteAnim;
   const frameIdx: integer;
   const x, y: integer);
+var
+  localFrameIdx: integer;
 begin
-  if frameIdx >= sprite.frameCount then exit;
+  localFrameIdx := frameIdx;
 
-  sprRegion(
+  if not sprite.looping and (localFrameIdx >= sprite.frameCount) then
+    localFrameIdx := sprite.frameCount - 1;
+
+  SprRegion(
     sprite.imgHandle,
-    sprite.frameWidth * frameIdx, 0, sprite.frameWidth, sprite.frameHeight,
+    sprite.frameWidth * localFrameIdx,
+    0,
+    sprite.frameWidth,
+    sprite.frameHeight,
     x, y);
 end;
 
