@@ -20,6 +20,7 @@ type
 const
   BoardCols = 9;
   BoardRows = 9;
+  StartingMineCount = 10;
 
 var
   { Asset variables }
@@ -30,6 +31,7 @@ var
   { Game state variables }
   actualGameState: TGameState;
   gameTime: double;
+  mineCounter: integer;
 
   mineNumbers: array[0..80] of byte;
   mines: array[0..80] of boolean;
@@ -83,8 +85,10 @@ begin
   FillChar(mines, sizeof(mines), 0);
   FillChar(tileStates, sizeof(tileStates), TileStateOpen);
 
-  for a:=1 to 10 do
+  for a:=1 to StartingMineCount do
     mines[random(10) * 9 + random(10)] := true;
+
+  mineCounter := StartingMineCount;
 
   for b:=0 to BoardRows - 1 do
     for a:=0 to BoardCols - 1 do begin
@@ -112,6 +116,9 @@ end;
 
 { Render logic }
 procedure Draw; far;
+const
+  BoardTop = 30;
+  BoardLeft = 10;
 var
   s: string;
   idx: integer;
@@ -127,12 +134,13 @@ begin
 
   Print('Hello world!', 160-48, 120, 15);
 
-  for b:=0 to BoardRows - 1 do
+  for b:=0 to BoardRows - 1 do begin
+    y := BoardTop + b * 9;
+
     for a:=0 to BoardCols - 1 do begin
       idx := b * BoardCols + a;
 
-      x := 10 + a * 9;
-      y := 10 + b * 9;
+      x := BoardLeft + a * 9;
 
       case tileStates[idx] of
         TileStateClose:
@@ -148,6 +156,9 @@ begin
         end;
       end;
     end;
+  end;
+
+  print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
 
   s := 'Seed: ' + i32str(RandSeed);
   print(s, VGAWidth - length(s) * 8, VGAHeight - 8, $08)
