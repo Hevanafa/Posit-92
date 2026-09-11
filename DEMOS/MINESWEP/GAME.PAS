@@ -4,7 +4,7 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92CONV, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92KBD, P92MOUSE, P92SPKR, P92TEX, P92TIME, P92VGA;
 
 type
   TGameState = (
@@ -39,6 +39,7 @@ var
   texSpecimenP92: array[0..1] of TTexture;
   texOpenTile, texCloseTile, texPressedTile: TTexture;
   texFlag, texMine: TTexture;
+  melWin, melLose: TMelody;
 
   { Game state variables }
   actualGameState: TGameState;
@@ -180,6 +181,7 @@ begin
 
   if tiles[idx].hasMine then begin
     actualGameState := GameStateLose;
+    PlayMelody(melLose);
     RevealAllMines;
     exit
   end;
@@ -270,6 +272,11 @@ begin
 
   LoadTex(texFlag, 'IMG\FLAG.BMP');
   LoadTex(texMine, 'IMG\MINE.BMP');
+
+  InitMelody(melLose, 3);
+  InitNote(melLose.notes^[0], 392, 0.4);
+  InitNote(melLose.notes^[1], 311, 0.4);
+  InitNote(melLose.notes^[2], 261, 0.8);
 end;
 
 { Free all the resources here }
