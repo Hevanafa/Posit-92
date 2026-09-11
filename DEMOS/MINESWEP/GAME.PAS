@@ -47,6 +47,26 @@ begin
   GetTileMine := mines[row * BoardCols + col]
 end;
 
+function GetMineNumberColour(const count: integer): integer;
+var
+  result: integer;
+begin
+  case count of
+    1: result := $09;
+    2: result := $0A;
+    3: result := $0C;
+    4: result := $05;
+    5: result := $04;
+    6: result := $03;
+    7: result := $00;
+    8: result := $07;
+    else
+      result := $00;
+  end;
+
+  GetMineNumberColour := result
+end;
+
 { Load assets here }
 procedure OnPreload; far;
 begin
@@ -152,7 +172,7 @@ begin
             spr(texMine, x, y)
           else
             if mineNumbers[idx] > 0 then
-              print(i32str(mineNumbers[idx]), x + 1, y, $0F);
+              print(i32str(mineNumbers[idx]), x + 1, y, GetMineNumberColour(mineNumbers[idx]));
         end;
       end;
     end;
