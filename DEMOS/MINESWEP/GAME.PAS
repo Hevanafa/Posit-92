@@ -108,6 +108,11 @@ begin
 
   if tileStates[idx] = TileStateOpen then exit;
 
+  if mines[idx] then begin
+    actualGameState := GameStateOver;
+    exit
+  end;
+
   if mineNumbers[idx] > 0 then
     tileStates[idx] := TileStateOpen
   else
