@@ -34,6 +34,21 @@ const
   BoardTop = 60;
   BoardLeft = 60;
 
+  NOTE_B3  = 247;
+  NOTE_C4  = 262;
+  NOTE_CS4 = 277;
+  NOTE_D4  = 294;
+  NOTE_DS4 = 311;
+  NOTE_E4  = 330;
+  NOTE_F4  = 349;
+  NOTE_FS4 = 370;
+  NOTE_G4  = 392;
+  NOTE_GS4 = 415;
+  NOTE_A4  = 440;
+  NOTE_AS4 = 466;
+  NOTE_B4  = 494;
+  NOTE_C5  = 523;
+
 var
   { Asset variables }
   texSpecimenP92: array[0..1] of TTexture;
