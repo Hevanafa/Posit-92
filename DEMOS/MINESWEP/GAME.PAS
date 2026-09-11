@@ -72,6 +72,20 @@ begin
 end;
 
 
+procedure RevealAllMines;
+var
+  a, b: integer;
+  idx: integer;
+begin
+  for b:=0 to BoardRows - 1 do
+    for a:=0 to BoardCols - 1 do begin
+      idx := b * BoardCols + a;
+
+      if mines[idx] then
+        tileStates[idx] := TileStateOpen;
+    end;
+end;
+
 procedure FloodFill(const row, col: integer);
 var
   idx: integer;
@@ -101,6 +115,8 @@ procedure AttemptReveal(const row, col: integer);
 var
   idx: integer;
 begin
+  if actualGameState = GameStateOver then exit;
+
   if (row < 0) or (row >= BoardRows)
     or (col < 0) or (col >= BoardCols) then exit;
 
@@ -110,6 +126,7 @@ begin
 
   if mines[idx] then begin
     actualGameState := GameStateOver;
+    RevealAllMines;
     exit
   end;
 
