@@ -66,9 +66,10 @@ var
   thisSeed: longint;
 
   lastLeftMouse, lastRightMouse: boolean;
-  lastT: boolean;
+  { lastT: boolean; }
   mineCounter: integer;
   tiles: array[0..BoardRows * BoardCols] of TTile;
+  gameStartTick, gameEndTick: double;
 
 
 function IsGameOver: boolean;
@@ -202,8 +203,11 @@ begin
 
   if tiles[idx].hasMine then begin
     actualGameState := GameStateLose;
-    PlayMelody(melLose);
+
     RevealAllMines;
+    gameEndTick := GetTimer;
+
+    PlayMelody(melLose);
     exit
   end;
 
@@ -214,9 +218,16 @@ begin
 
   if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then begin
     actualGameState := GameStateWin;
+    gameEndTick := GetTimer;
     PlayMelody(melWin);
   end else begin
     pick := random(high(melReveal) + 1);
+
+    if actualGameState = GameStateNotStarted then begin
+      actualGameState := GameStatePlaying;
+      gameStartTick := GetTimer;
+    end;
+
     PlayMelody(melReveal[pick]);
   end;
 end;
@@ -418,7 +429,10 @@ var
   idx: integer;
   a, b: word;
   x, y: integer;
+  now: double;
 begin
+  now := GetTimer;
+
   Cls($4F);
 
   if frac(gameTime * 1.5) >= 0.5 then
@@ -482,6 +496,17 @@ begin
     print('You lose!', BoardLeft, 24, $0F)
   else
     print('Mines: ' + I32Str(mineCounter), BoardLeft, 24, $0F);
+
+
+  if IsGameOver then
+    print('Time: ' + i32str(trunc(gameEndTick - gameStartTick)),
+      BoardLeft, 40, $0F)
+  else if actualGameState = GameStatePlaying then
+    print('Time: ' + i32str(trunc(now - gameStartTick)),
+      BoardLeft, 40, $0F)
+  else
+    print('Time: 0',
+      BoardLeft, 40, $0F);
 
   { Debug row & col }
   { print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F); }
