@@ -62,7 +62,7 @@ begin
 
   fillchar(tileNumbers, sizeof(tileNumbers), 0);
   FillChar(mines, sizeof(mines), 0);
-  FillChar(tileStates, sizeof(tileStates), TileStateClose);
+  FillChar(tileStates, sizeof(tileStates), TileStateOpen);
 
   for a:=1 to 10 do
     mines[random(10) * 9 + random(10)] := true;
@@ -80,6 +80,7 @@ end;
 procedure Draw; far;
 var
   s: string;
+  idx: integer;
   a, b: word;
 begin
   Cls($4F);
@@ -93,11 +94,17 @@ begin
 
   for b:=0 to BoardRows - 1 do
     for a:=0 to BoardCols - 1 do begin
-      case tileStates[b * BoardCols + a] of
+      idx := b * BoardCols + a;
+
+      case tileStates[idx] of
         TileStateClose:
           spr(texCloseTile, 10 + a * 9, 10 + b * 9);
-        TileStateOpen:
+        TileStateOpen: begin
           spr(texOpenTile, 10 + a * 9, 10 + b * 9);
+
+          if mines[idx] then
+            spr(texMine, 10 + a * 9, 10 + b * 9);
+        end;
       end;
     end;
 
