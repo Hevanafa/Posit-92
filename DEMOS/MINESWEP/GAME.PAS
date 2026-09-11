@@ -22,6 +22,9 @@ const
   BoardRows = 9;
   StartingMineCount = 10;
 
+  BoardTop = 30;
+  BoardLeft = 10;
+
 var
   { Asset variables }
   texSpecimenP92: array[0..1] of TTexture;
@@ -31,8 +34,9 @@ var
   { Game state variables }
   actualGameState: TGameState;
   gameTime: double;
-  mineCounter: integer;
 
+  lastLeftMouse: boolean;
+  mineCounter: integer;
   mineNumbers: array[0..80] of byte;
   mines: array[0..80] of boolean;
   tileStates: array[0..80] of TTileState;
@@ -99,11 +103,12 @@ begin
   actualGameState := GameStateNotStarted;
   gameTime := 0.0;
 
+  lastLeftMouse := false;
   RandSeed := 255;
 
   FillChar(mineNumbers, sizeof(mineNumbers), 0);
   FillChar(mines, sizeof(mines), 0);
-  FillChar(tileStates, sizeof(tileStates), TileStateOpen);
+  FillChar(tileStates, sizeof(tileStates), TileStateClose);
 
   for a:=1 to StartingMineCount do
     mines[random(10) * 9 + random(10)] := true;
@@ -128,17 +133,41 @@ end;
 
 { Handle game state updates here }
 procedure Update; far;
+var
+  isLeftMousePressed: boolean;
+  row, col: integer;
+  idx: integer;
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  isLeftMousePressed := (GetMouseButton and MouseButtonLeft <> 0);
+
+  if lastLeftMouse <> isLeftMousePressed then begin
+    lastLeftMouse := isLeftMousePressed;
+
+    if lastLeftMouse then begin
+      row := (GetMouseY - BoardTop) div 9;
+      col := (GetMouseX - BoardLeft) div 9;
+
+      if (row >= 0) and (row < BoardRows)
+        and (col >= 0) and (col < BoardCols) then begin
+
+        idx := row * BoardCols + col;
+
+        if tileStates[idx] = TileStateClose then begin
+          tileStates[idx] := TileStateOpen;
+
+          { TODO: Make this a flood fill }
+        end;
+      end;
+    end;
+  end;
 
   gameTime := gameTime + DeltaTime
 end;
 
 { Render logic }
 procedure Draw; far;
-const
-  BoardTop = 30;
-  BoardLeft = 10;
 var
   s: string;
   idx: integer;
