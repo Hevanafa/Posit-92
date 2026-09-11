@@ -219,36 +219,14 @@ begin
   end;
 end;
 
-
-{ Load assets here }
-procedure OnPreload; far;
-begin
-  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
-  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
-
-  LoadTex(texOpenTile, 'IMG\OPEN.BMP');
-  LoadTex(texCloseTile, 'IMG\CLOSE.BMP');
-  LoadTex(texPressedTile, 'IMG\PRESSED.BMP');
-
-  LoadTex(texFlag, 'IMG\FLAG.BMP');
-  LoadTex(texMine, 'IMG\MINE.BMP');
-end;
-
-{ Free all the resources here }
-procedure OnCleanup; far;
-begin
-  FreeTex(texSpecimenP92[0]);
-  FreeTex(texSpecimenP92[1]);
-end;
-
-{ Init game state variables here }
-procedure OnReady; far;
+procedure InitBoard(const seed: longint);
 var
   a, b: integer;
   c, d: integer;
   count: integer;
   idx: word;
 begin
+  RandSeed := seed;
   actualGameState := GameStateNotStarted;
   gameTime := 0.0;
 
@@ -278,6 +256,33 @@ begin
 
       tiles[b * BoardCols + a].mineNumber := count;
     end;
+end;
+
+{ Load assets here }
+procedure OnPreload; far;
+begin
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
+
+  LoadTex(texOpenTile, 'IMG\OPEN.BMP');
+  LoadTex(texCloseTile, 'IMG\CLOSE.BMP');
+  LoadTex(texPressedTile, 'IMG\PRESSED.BMP');
+
+  LoadTex(texFlag, 'IMG\FLAG.BMP');
+  LoadTex(texMine, 'IMG\MINE.BMP');
+end;
+
+{ Free all the resources here }
+procedure OnCleanup; far;
+begin
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
+end;
+
+{ Init game state variables here }
+procedure OnReady; far;
+begin
+  InitBoard(255);
 end;
 
 { Handle game state updates here }
@@ -361,17 +366,17 @@ begin
   end;
 
   if actualGameState = GameStateWin then
-    print('You win!', 10, 10, $0F)
+    print('You win!', 80, 10, $0F)
   else if actualGameState = GameStateLose then
-    print('You lose!', 10, 10, $0F)
+    print('You lose!', 80, 10, $0F)
   else
-    print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
+    print('Mines: ' + I32Str(mineCounter), 80, 10, $0F);
 
   { Debug row & col }
   { print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F); }
 
   s := 'Seed: ' + i32str(RandSeed);
-  print(s, VGAWidth - length(s) * 8, VGAHeight - 8, $08)
+  print(s, VGAWidth - length(s) * 8 - 8, VGAHeight - 16, $08)
 end;
 
 
