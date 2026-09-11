@@ -63,6 +63,7 @@ var
   { Game state variables }
   actualGameState: TGameState;
   gameTime: double;
+  thisSeed: longint;
 
   lastLeftMouse, lastRightMouse: boolean;
   lastT: boolean;
@@ -256,13 +257,13 @@ var
   idx: word;
 begin
   RandSeed := seed;
+  thisSeed := seed;
+
   actualGameState := GameStateNotStarted;
   gameTime := 0.0;
 
   lastLeftMouse := false;
   lastRightMouse := false;
-
-  RandSeed := 255;
 
   FillChar(tiles, sizeof(TTile) * BoardRows * BoardCols, 0);
 
@@ -485,7 +486,7 @@ begin
   { Debug row & col }
   { print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F); }
 
-  s := 'Seed: ' + i32str(RandSeed);
+  s := 'Seed: ' + i32str(thisSeed);
   print(s, VGAWidth - length(s) * 8 - 8, VGAHeight - 16, $08)
 end;
 
