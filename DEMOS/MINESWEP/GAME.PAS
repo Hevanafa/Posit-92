@@ -15,7 +15,8 @@ type
 
   TTileState = (
     TileStateClose,
-    TileStateOpen
+    TileStateOpen,
+    TileStateFlagged
   );
 
   TTile = record
@@ -29,8 +30,8 @@ const
   BoardRows = 9;
   StartingMineCount = 10;
 
-  BoardTop = 30;
-  BoardLeft = 10;
+  BoardTop = 60;
+  BoardLeft = 60;
 
 var
   { Asset variables }
@@ -74,6 +75,34 @@ begin
   end;
 
   GetMineNumberColour := result
+end;
+
+function GetMouseRow: integer;
+var
+  y: integer;
+begin
+  y := GetMouseY - BoardTop;
+
+  if (y < 0) or (y >= BoardRows * 9) then begin
+    GetMouseRow := -1;
+    exit
+  end;
+
+  GetMouseRow := y div 9;
+end;
+
+function GetMouseCol: integer;
+var
+  x: integer;
+begin
+  x := GetMouseX - BoardLeft;
+
+  if (x < 0) or (x >= BoardCols * 9) then begin
+    GetMouseCol := -1;
+    exit
+  end;
+
+  GetMouseCol := x div 9;
 end;
 
 
@@ -214,10 +243,7 @@ begin
     lastLeftMouse := isLeftMousePressed;
 
     if lastLeftMouse then begin
-      row := (GetMouseY - BoardTop) div 9;
-      col := (GetMouseX - BoardLeft) div 9;
-
-      AttemptReveal(row, col);
+      AttemptReveal(GetMouseRow, GetMouseCol);
     end;
   end;
 
@@ -269,6 +295,8 @@ begin
   end;
 
   print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
+
+  print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F);
 
   s := 'Seed: ' + i32str(RandSeed);
   print(s, VGAWidth - length(s) * 8, VGAHeight - 8, $08)
