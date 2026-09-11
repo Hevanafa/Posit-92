@@ -156,7 +156,7 @@ begin
 
   idx := row * BoardCols + col;
 
-  if tiles[idx].tileState = TileStateOpen then exit;
+  if tiles[idx].tileState <> TileStateClose then exit;
 
   if tiles[idx].hasMine then begin
     actualGameState := GameStateOver;
@@ -185,12 +185,12 @@ begin
 
   case tiles[idx].tileState of
     TileStateClose: begin
-      tiles[idx].tileState = TileStateFlagged;
+      tiles[idx].tileState := TileStateFlagged;
       dec(mineCounter);
     end;
 
     TileStateFlagged: begin
-      tiles[idx].tileState = TileStateClose;
+      tiles[idx].tileState := TileStateClose;
       inc(mineCounter);
     end;
   end;
@@ -267,6 +267,7 @@ begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   isLeftMousePressed := (GetMouseButton and MouseButtonLeft <> 0);
+  { TODO: isRightMousePressed }
 
   if lastLeftMouse <> isLeftMousePressed then begin
     lastLeftMouse := isLeftMousePressed;
@@ -313,6 +314,7 @@ begin
       case tiles[idx].tileState of
         TileStateClose:
           spr(texCloseTile, x, y);
+
         TileStateOpen: begin
           spr(texOpenTile, x, y);
 
@@ -324,6 +326,11 @@ begin
                 i32str(tiles[idx].mineNumber),
                 x + 1, y,
                 GetMineNumberColour(tiles[idx].mineNumber));
+        end;
+
+        TileStateFlagged: begin
+          spr(texCloseTile, x, y);
+          spr(texFlag, x, y);
         end;
       end;
     end;
