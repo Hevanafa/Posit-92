@@ -296,7 +296,7 @@ begin
   if lastLeftMouse <> isLeftMousePressed then begin
     lastLeftMouse := isLeftMousePressed;
 
-    if lastLeftMouse then
+    if not lastLeftMouse then
       AttemptReveal(GetMouseRow, GetMouseCol);
   end;
 
