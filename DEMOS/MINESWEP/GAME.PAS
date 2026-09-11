@@ -267,7 +267,7 @@ begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   isLeftMousePressed := (GetMouseButton and MouseButtonLeft <> 0);
-  { TODO: isRightMousePressed }
+  isRightMousePressed := (GetMouseButton and MouseButtonRight <> 0);
 
   if lastLeftMouse <> isLeftMousePressed then begin
     lastLeftMouse := isLeftMousePressed;
