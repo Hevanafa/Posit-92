@@ -43,7 +43,7 @@ var
   actualGameState: TGameState;
   gameTime: double;
 
-  lastLeftMouse: boolean;
+  lastLeftMouse, lastRightMouse: boolean;
   mineCounter: integer;
   tiles: array[0..BoardRows * BoardCols] of TTile;
 
@@ -170,6 +170,27 @@ begin
     FloodFill(row, col);
 end;
 
+procedure AttemptFlag(const row, col: integer);
+var
+  idx: integer;
+begin
+  if actualGameState = GameStateOver then exit;
+
+  if (row < 0) or (row >= BoardRows)
+    or (col < 0) or (col >= BoardCols) then exit;
+
+  idx := row * BoardCols + col;
+
+  if tiles[idx].tileState = TileStateOpen then exit;
+
+  case tiles[idx].tileState of
+    TileStateClose:
+      tiles[idx].tileState = TileStateFlagged;
+    TileStateFlagged:
+      tiles[idx].tileState = TileStateClose;
+  end;
+end;
+
 { Load assets here }
 procedure OnPreload; far;
 begin
@@ -203,6 +224,8 @@ begin
   gameTime := 0.0;
 
   lastLeftMouse := false;
+  lastRightMouse := false;
+
   RandSeed := 255;
 
   FillChar(tiles, sizeof(tiles), 0);
@@ -232,6 +255,7 @@ end;
 procedure Update; far;
 var
   isLeftMousePressed: boolean;
+  isRightMousePressed: boolean;
   row, col: integer;
   idx: integer;
 begin
@@ -242,9 +266,15 @@ begin
   if lastLeftMouse <> isLeftMousePressed then begin
     lastLeftMouse := isLeftMousePressed;
 
-    if lastLeftMouse then begin
+    if lastLeftMouse then
       AttemptReveal(GetMouseRow, GetMouseCol);
-    end;
+  end;
+
+  if lastRightMouse <> isRightMousePressed then begin
+    lastRightMouse := isRightMousePressed;
+
+    if lastRightMouse then
+      AttemptFlag(GetMouseRow, GetMouseCol);
   end;
 
   gameTime := gameTime + DeltaTime
