@@ -477,11 +477,11 @@ begin
   end;
 
   if actualGameState = GameStateWin then
-    print('You win!', 80, 10, $0F)
+    print('You win!', BoardLeft, 24, $0F)
   else if actualGameState = GameStateLose then
-    print('You lose!', 80, 10, $0F)
+    print('You lose!', BoardLeft, 24, $0F)
   else
-    print('Mines: ' + I32Str(mineCounter), 80, 10, $0F);
+    print('Mines: ' + I32Str(mineCounter), BoardLeft, 24, $0F);
 
   { Debug row & col }
   { print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F); }
