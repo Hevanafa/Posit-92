@@ -55,8 +55,10 @@ var
   texSpecimenP92: array[0..1] of TTexture;
   texOpenTile, texCloseTile, texPressedTile: TTexture;
   texFlag, texMine: TTexture;
+
   melWin, melLose: TMelody;
   melReveal: array[0..2] of TMelody;
+  melFlagPlace, melFlagRemove: TMelody;
 
   { Game state variables }
   actualGameState: TGameState;
@@ -234,11 +236,13 @@ begin
   case tiles[idx].tileState of
     TileStateClosed: begin
       tiles[idx].tileState := TileStateFlagged;
+      PlayMelody(melFlagPlace);
       dec(mineCounter);
     end;
 
     TileStateFlagged: begin
       tiles[idx].tileState := TileStateClosed;
+      PlayMelody(melFlagRemove);
       inc(mineCounter);
     end;
   end;
@@ -347,6 +351,12 @@ begin
   InitMelody(melReveal[2], 2);
   InitNote(melReveal[2].notes^[0], NOTE_AS4, 0.1);
   InitNote(melReveal[2].notes^[1], NOTE_CS5, 0.1);
+
+  InitMelody(melFlagPlace, 1);
+  InitNote(melFlagPlace.notes^[0], 82, 0.05);
+
+  InitMelody(melFlagRemove, 1);
+  InitNote(melFlagRemove.notes^[0], 69, 0.05);
 end;
 
 { Free all the resources here }
@@ -389,11 +399,13 @@ begin
       AttemptFlag(GetMouseRow, GetMouseCol);
   end;
 
+  {
   if lastT <> IsKeyDown(SC_T) then begin
     lastT := IsKeyDown(SC_T);
 
     if lastT then PlayMelody(melWin);
   end;
+  }
 
   gameTime := gameTime + DeltaTime
 end;
