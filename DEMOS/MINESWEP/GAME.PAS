@@ -7,6 +7,11 @@ uses
   P92CORE, P92CONV, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
 
 type
+  TGameState = (
+    GameStateNotStarted,
+    GameStatePlaying,
+    GameStateOver
+  );
   TTileState = (
     TileStateClose,
     TileStateOpen
@@ -23,6 +28,7 @@ var
   texFlag, texMine: TTexture;
 
   { Game state variables }
+  actualGameState: TGameState;
   gameTime: double;
 
   mineNumbers: array[0..80] of byte;
@@ -68,11 +74,12 @@ var
   count: integer;
   idx: word;
 begin
+  actualGameState := GameStateNotStarted;
   gameTime := 0.0;
 
   RandSeed := 255;
 
-  fillchar(mineNumbers, sizeof(mineNumbers), 0);
+  FillChar(mineNumbers, sizeof(mineNumbers), 0);
   FillChar(mines, sizeof(mines), 0);
   FillChar(tileStates, sizeof(tileStates), TileStateOpen);
 
