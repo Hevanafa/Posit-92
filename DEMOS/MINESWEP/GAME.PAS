@@ -61,6 +61,7 @@ var
   gameTime: double;
 
   lastLeftMouse, lastRightMouse: boolean;
+  lastT: boolean;
   mineCounter: integer;
   tiles: array[0..BoardRows * BoardCols] of TTile;
 
@@ -292,6 +293,36 @@ begin
   InitNote(melLose.notes^[0], 392, 0.4);
   InitNote(melLose.notes^[1], 311, 0.4);
   InitNote(melLose.notes^[2], 261, 0.8);
+
+  InitMelody(melWin, 21);
+  with melWin do begin
+    InitNote(notes^[0], NOTE_FS4, 0.5);
+    InitNote(notes^[1], NOTE_D4, 1.0);
+    InitNote(notes^[2], NOTE_D4, 0.25);
+    InitNote(notes^[3], NOTE_E4, 0.25);
+
+    InitNote(notes^[4], NOTE_F4, 0.75);
+    InitNote(notes^[5], NOTE_E4, 0.75);
+    InitNote(notes^[6], NOTE_D4, 0.5);
+    InitNote(notes^[7], NOTE_CS4, 0.5);
+
+    InitNote(notes^[8], NOTE_D4, 0.75);
+    InitNote(notes^[9], NOTE_E4, 0.5);
+    InitNote(notes^[10], NOTE_F4, 0.75);
+    InitNote(notes^[11], NOTE_B4, 0.75);
+
+    InitNote(notes^[12], NOTE_B3, 0.25);
+    InitNote(notes^[13], NOTE_CS4, 0.25);
+    InitNote(notes^[14], NOTE_D4, 0.25);
+    InitNote(notes^[15], NOTE_E4, 0.25);
+
+    InitNote(notes^[16], NOTE_D4, 0.25);
+    InitNote(notes^[17], NOTE_CS4, 0.25);
+    InitNote(notes^[18], NOTE_A4, 0.25);
+    InitNote(notes^[19], NOTE_G4, 0.25);
+
+    InitNote(notes^[20], NOTE_FS4, 1.5);
+  end;
 end;
 
 { Free all the resources here }
@@ -332,6 +363,12 @@ begin
 
     if lastRightMouse then
       AttemptFlag(GetMouseRow, GetMouseCol);
+  end;
+
+  if lastT <> IsKeyDown(SC_T) then begin
+    lastT := IsKeyDown(SC_T);
+
+    if lastT then PlayMelody(melWin);
   end;
 
   gameTime := gameTime + DeltaTime
