@@ -101,12 +101,12 @@ begin
 
   idx := row * BoardCols + col;
 
-  if tileStates[idx] <> TileStateClose then exit;
+  if tiles[idx].tileState <> TileStateClose then exit;
 
   { Assign then take a step }
-  tileStates[idx] := TileStateOpen;
+  tiles[idx].tileState := TileStateOpen;
 
-  if mineNumbers[idx] > 0 then exit;
+  if tiles[idx].mineNumber > 0 then exit;
 
   for b:=-1 to 1 do
     for a:=-1 to 1 do begin
@@ -127,16 +127,16 @@ begin
 
   idx := row * BoardCols + col;
 
-  if tileStates[idx] = TileStateOpen then exit;
+  if tiles[idx].tileState = TileStateOpen then exit;
 
-  if mines[idx] then begin
+  if tiles[idx].hasMine then begin
     actualGameState := GameStateOver;
     RevealAllMines;
     exit
   end;
 
-  if mineNumbers[idx] > 0 then
-    tileStates[idx] := TileStateOpen
+  if tiles[idx].mineNumber > 0 then
+    tiles[idx].tileState := TileStateOpen
   else
     FloodFill(row, col);
 end;
@@ -176,12 +176,10 @@ begin
   lastLeftMouse := false;
   RandSeed := 255;
 
-  FillChar(mineNumbers, sizeof(mineNumbers), 0);
-  FillChar(mines, sizeof(mines), 0);
-  FillChar(tileStates, sizeof(tileStates), TileStateClose);
+  FillChar(tiles, sizeof(tiles), 0);
 
   for a:=1 to StartingMineCount do
-    mines[random(10) * 9 + random(10)] := true;
+    tiles[random(10) * 9 + random(10)].hasMine := true;
 
   mineCounter := StartingMineCount;
 
@@ -197,7 +195,7 @@ begin
             inc(count);
         end;
 
-      mineNumbers[b * BoardCols + a] := count;
+      tiles[b * BoardCols + a].mineNumber := count;
     end;
 end;
 
@@ -251,17 +249,20 @@ begin
 
       x := BoardLeft + a * 9;
 
-      case tileStates[idx] of
+      case tiles[idx].tileState of
         TileStateClose:
           spr(texCloseTile, x, y);
         TileStateOpen: begin
           spr(texOpenTile, x, y);
 
-          if mines[idx] then
+          if tiles[idx].hasMine then
             spr(texMine, x, y)
           else
-            if mineNumbers[idx] > 0 then
-              print(i32str(mineNumbers[idx]), x + 1, y, GetMineNumberColour(mineNumbers[idx]));
+            if tiles[idx].mineNumber > 0 then
+              print(
+                i32str(tiles[idx].mineNumber),
+                x + 1, y,
+                GetMineNumberColour(tiles[idx].mineNumber));
         end;
       end;
     end;
