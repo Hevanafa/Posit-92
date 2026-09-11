@@ -431,7 +431,7 @@ begin
   end;
 
   if GetMouseButton and MouseButtonLeft <> 0 then begin
-    if (GetMouseRow > 0) and (GetMouseCol > 0) then begin
+    if (GetMouseRow >= 0) and (GetMouseCol >= 0) then begin
       a := GetMouseCol;
       b := GetMouseRow;
       idx := b * BoardCols + a;
