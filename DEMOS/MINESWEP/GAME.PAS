@@ -15,7 +15,7 @@ type
   );
 
   TTileState = (
-    TileStateClose,
+    TileStateClosed,
     TileStateOpen,
     TileStateFlagged
   );
@@ -150,7 +150,7 @@ begin
 
   idx := row * BoardCols + col;
 
-  if tiles[idx].tileState <> TileStateClose then exit;
+  if tiles[idx].tileState <> TileStateClosed then exit;
 
   { Assign then take a step }
   tiles[idx].tileState := TileStateOpen;
@@ -176,7 +176,7 @@ begin
 
   idx := row * BoardCols + col;
 
-  if tiles[idx].tileState <> TileStateClose then exit;
+  if tiles[idx].tileState <> TileStateClosed then exit;
 
   if tiles[idx].hasMine then begin
     actualGameState := GameStateLose;
@@ -207,13 +207,13 @@ begin
   if tiles[idx].tileState = TileStateOpen then exit;
 
   case tiles[idx].tileState of
-    TileStateClose: begin
+    TileStateClosed: begin
       tiles[idx].tileState := TileStateFlagged;
       dec(mineCounter);
     end;
 
     TileStateFlagged: begin
-      tiles[idx].tileState := TileStateClose;
+      tiles[idx].tileState := TileStateClosed;
       inc(mineCounter);
     end;
   end;
@@ -341,7 +341,7 @@ begin
       x := BoardLeft + a * 9;
 
       case tiles[idx].tileState of
-        TileStateClose:
+        TileStateClosed:
           spr(texCloseTile, x, y);
 
         TileStateOpen: begin
@@ -361,6 +361,21 @@ begin
           spr(texCloseTile, x, y);
           spr(texFlag, x, y);
         end;
+      end;
+    end;
+  end;
+
+  if GetMouseButton and MouseButtonLeft <> 0 then begin
+    if (GetMouseRow > 0) and (GetMouseCol > 0) then begin
+      a := GetMouseCol;
+      b := GetMouseRow;
+      idx := b * BoardCols + a;
+
+      if tiles[idx].tileState = TileStateClosed then begin
+        x := BoardLeft + a * 9;
+        y := BoardTop + b * 9;
+
+        spr(texPressedTile, x, y)
       end;
     end;
   end;
