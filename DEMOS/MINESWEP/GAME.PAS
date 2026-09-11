@@ -75,6 +75,9 @@ procedure AttemptReveal(const row, col: integer);
 var
   idx: integer;
 begin
+  if (row < 0) or (row >= BoardRows)
+    or (col < 0) or (col >= BoardCols) then exit;
+
   idx := row * BoardCols + col;
 
   if tileStates[idx] = TileStateOpen then exit;
@@ -163,14 +166,7 @@ begin
       row := (GetMouseY - BoardTop) div 9;
       col := (GetMouseX - BoardLeft) div 9;
 
-      if (row >= 0) and (row < BoardRows)
-        and (col >= 0) and (col < BoardCols) then begin
-
-        idx := row * BoardCols + col;
-
-        if tileStates[idx] = TileStateClose then
-          AttemptReveal(row, col);
-      end;
+      AttemptReveal(row, col);
     end;
   end;
 
