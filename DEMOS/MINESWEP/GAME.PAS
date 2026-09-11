@@ -186,7 +186,7 @@ end;
 
 procedure AttemptReveal(const row, col: integer);
 var
-  idx: integer;
+  idx, pick: integer;
 begin
   if IsGameOver then exit;
 
@@ -212,8 +212,10 @@ begin
   if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then begin
     actualGameState := GameStateWin;
     PlayMelody(melWin);
-  end else
-    PlayMelody(melReveal);
+  end else begin
+    pick := random(high(melReveal) + 1);
+    PlayMelody(melReveal[pick]);
+  end;
 end;
 
 procedure AttemptFlag(const row, col: integer);
@@ -335,16 +337,16 @@ begin
 
   InitMelody(melReveal[0], 2);
 
-  InitNote(melReveal[0].notes^[0], NOTE_FS4, 0.2);
-  InitNote(melReveal[0].notes^[1], NOTE_AS4, 0.2);
+  InitNote(melReveal[0].notes^[0], NOTE_FS4, 0.1);
+  InitNote(melReveal[0].notes^[1], NOTE_GS4, 0.1);
 
   InitMelody(melReveal[1], 2);
-  InitNote(melReveal[1].notes^[0], NOTE_AS4, 0.2);
-  InitNote(melReveal[1].notes^[1], NOTE_BS4, 0.2);
+  InitNote(melReveal[1].notes^[0], NOTE_GS4, 0.1);
+  InitNote(melReveal[1].notes^[1], NOTE_AS4, 0.1);
 
   InitMelody(melReveal[2], 2);
-  InitNote(melReveal[2].notes^[0], NOTE_BS4, 0.2);
-  InitNote(melReveal[2].notes^[1], NOTE_CS5, 0.2);
+  InitNote(melReveal[2].notes^[0], NOTE_AS4, 0.1);
+  InitNote(melReveal[2].notes^[1], NOTE_CS5, 0.1);
 end;
 
 { Free all the resources here }
