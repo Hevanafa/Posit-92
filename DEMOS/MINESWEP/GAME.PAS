@@ -9,6 +9,8 @@ uses
 var
   { Asset variables }
   texSpecimenP92: array[0..1] of TTexture;
+  texOpenTile, texCloseTile, texPressedTile: TTexture;
+  texFlag, texMine: TTexture;
 
   { Game state variables }
   gameTime: double;
@@ -17,8 +19,15 @@ var
 { Load assets here }
 procedure OnPreload; far;
 begin
-  LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
+
+  LoadTex(texOpenTile, 'IMG\OPEN.BMP');
+  LoadTex(texCloseTile, 'IMG\CLOSE.BMP');
+  LoadTex(texPressedTile, 'IMG\PRESSED.BMP');
+
+  LoadTex(texFlag, 'IMG\FLAG.BMP');
+  LoadTex(texMine, 'IMG\MINE.BMP');
 end;
 
 { Free all the resources here }
