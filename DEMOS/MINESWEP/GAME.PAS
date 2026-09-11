@@ -48,6 +48,7 @@ const
   NOTE_AS4 = 466;
   NOTE_B4  = 494;
   NOTE_C5  = 523;
+  NOTE_CS5 = 554;
 
 var
   { Asset variables }
@@ -55,6 +56,7 @@ var
   texOpenTile, texCloseTile, texPressedTile: TTexture;
   texFlag, texMine: TTexture;
   melWin, melLose: TMelody;
+  melReveal: array[0..2] of TMelody;
 
   { Game state variables }
   actualGameState: TGameState;
@@ -210,7 +212,8 @@ begin
   if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then begin
     actualGameState := GameStateWin;
     PlayMelody(melWin);
-  end;
+  end else
+    PlayMelody(melReveal);
 end;
 
 procedure AttemptFlag(const row, col: integer);
@@ -329,6 +332,19 @@ begin
 
     InitNote(notes^[20], NOTE_FS4, 0.75);
   end;
+
+  InitMelody(melReveal[0], 2);
+
+  InitNote(melReveal[0].notes^[0], NOTE_FS4, 0.2);
+  InitNote(melReveal[0].notes^[1], NOTE_AS4, 0.2);
+
+  InitMelody(melReveal[1], 2);
+  InitNote(melReveal[1].notes^[0], NOTE_AS4, 0.2);
+  InitNote(melReveal[1].notes^[1], NOTE_BS4, 0.2);
+
+  InitMelody(melReveal[2], 2);
+  InitNote(melReveal[2].notes^[0], NOTE_BS4, 0.2);
+  InitNote(melReveal[2].notes^[1], NOTE_CS5, 0.2);
 end;
 
 { Free all the resources here }
