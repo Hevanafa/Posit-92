@@ -10,7 +10,8 @@ type
   TGameState = (
     GameStateNotStarted,
     GameStatePlaying,
-    GameStateOver
+    GameStateLose,
+    GameStateWin
   );
 
   TTileState = (
@@ -47,6 +48,11 @@ var
   mineCounter: integer;
   tiles: array[0..BoardRows * BoardCols] of TTile;
 
+
+function IsGameOver: boolean;
+begin
+  IsGameOver := (actualGameState = GameStateWin) or (actualGameState = GameStateLose)
+end;
 
 function GetTileMine(const row, col: integer): boolean;
 begin
@@ -149,7 +155,7 @@ procedure AttemptReveal(const row, col: integer);
 var
   idx: integer;
 begin
-  if actualGameState = GameStateOver then exit;
+  if IsGameOver then exit;
 
   if (row < 0) or (row >= BoardRows)
     or (col < 0) or (col >= BoardCols) then exit;
@@ -159,7 +165,7 @@ begin
   if tiles[idx].tileState <> TileStateClose then exit;
 
   if tiles[idx].hasMine then begin
-    actualGameState := GameStateOver;
+    actualGameState := GameStateLose;
     RevealAllMines;
     exit
   end;
@@ -174,7 +180,7 @@ procedure AttemptFlag(const row, col: integer);
 var
   idx: integer;
 begin
-  if actualGameState = GameStateOver then exit;
+  if IsGameOver then exit;
 
   if (row < 0) or (row >= BoardRows)
     or (col < 0) or (col >= BoardCols) then exit;
@@ -195,6 +201,7 @@ begin
     end;
   end;
 end;
+
 
 { Load assets here }
 procedure OnPreload; far;
