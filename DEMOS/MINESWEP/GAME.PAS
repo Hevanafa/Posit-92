@@ -71,6 +71,32 @@ begin
   GetMineNumberColour := result
 end;
 
+
+procedure FloodFill(const row, col: integer);
+var
+  idx: integer;
+  a, b: integer;
+begin
+  if (row < 0) or (row >= BoardRows)
+    or (col < 0) or (col >= BoardCols) then exit;
+
+  idx := row * BoardCols + col;
+
+  if tileStates[idx] <> TileStateClose then exit;
+
+  { Assign then take a step }
+  tileStates[idx] := TileStateOpen;
+
+  if mineNumbers[idx] > 0 then exit;
+
+  for b:=-1 to 1 do
+    for a:=-1 to 1 do begin
+      if (b=0) and (a=0) then continue;
+
+      FloodFill(row + b, col + a);
+    end;
+end;
+
 procedure AttemptReveal(const row, col: integer);
 var
   idx: integer;
@@ -84,8 +110,8 @@ begin
 
   if mineNumbers[idx] > 0 then
     tileStates[idx] := TileStateOpen
-  else ;
-    { FloodFill(row, col); }
+  else
+    FloodFill(row, col);
 end;
 
 { Load assets here }
