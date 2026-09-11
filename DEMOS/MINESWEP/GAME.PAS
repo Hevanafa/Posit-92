@@ -31,8 +31,8 @@ const
   BoardRows = 9;
   StartingMineCount = 10;
 
-  BoardTop = 60;
-  BoardLeft = 60;
+  BoardTop = 100 - 9 * 9 div 2;
+  BoardLeft = 160 - 9 * 9 div 2;
 
   NOTE_B3  = 247;
   NOTE_C4  = 262;
@@ -422,9 +422,9 @@ begin
   Cls($4F);
 
   if frac(gameTime * 1.5) >= 0.5 then
-    Spr(texSpecimenP92[0], 148, 76)
+    Spr(texSpecimenP92[0], 216, 76)
   else
-    Spr(texSpecimenP92[1], 148, 76);
+    Spr(texSpecimenP92[1], 216, 76);
 
   { Print('Hello world!', 160-48, 120, 15); }
 
