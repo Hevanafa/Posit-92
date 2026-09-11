@@ -4,7 +4,17 @@ program Game;
 
 uses
   CRT, DOS,
-  P92CORE, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
+  P92CORE, P92CONV, P92KBD, P92MOUSE, P92TEX, P92TIME, P92VGA;
+
+type
+  TTileState = (
+    TileStateClose,
+    TileStateOpen
+  );
+
+const
+  BoardCols = 9;
+  BoardRows = 9;
 
 var
   { Asset variables }
@@ -14,6 +24,10 @@ var
 
   { Game state variables }
   gameTime: double;
+
+  tileNumbers: array[0..80] of byte;
+  mines: array[0..80] of boolean;
+  tileStates: array[0..80] of TTileState;
 
 
 { Load assets here }
@@ -39,8 +53,19 @@ end;
 
 { Init game state variables here }
 procedure OnReady; far;
+var
+  a: word;
 begin
   gameTime := 0.0;
+
+  RandSeed := 255;
+
+  fillchar(tileNumbers, sizeof(tileNumbers), 0);
+  FillChar(mines, sizeof(mines), 0);
+  FillChar(tileStates, sizeof(tileStates), TileStateClose);
+
+  for a:=1 to 10 do
+    mines[random(10) * 9 + random(10)] := true;
 end;
 
 { Handle game state updates here }
@@ -53,6 +78,9 @@ end;
 
 { Render logic }
 procedure Draw; far;
+var
+  s: string;
+  a, b: word;
 begin
   Cls($4F);
 
@@ -62,6 +90,19 @@ begin
     Spr(texSpecimenP92[1], 148, 76);
 
   Print('Hello world!', 160-48, 120, 15);
+
+  for b:=0 to BoardRows - 1 do
+    for a:=0 to BoardCols - 1 do begin
+      case tileStates[b * BoardCols + a] of
+        TileStateClose:
+          spr(texCloseTile, 10 + a * 9, 10 + b * 9);
+        TileStateOpen:
+          spr(texOpenTile, 10 + a * 9, 10 + b * 9);
+      end;
+    end;
+
+  s := 'Seed: ' + i32str(RandSeed);
+  print(s, VGAWidth - length(s) * 8, VGAHeight - 8, $08)
 end;
 
 
