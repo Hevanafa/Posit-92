@@ -12,10 +12,17 @@ type
     GameStatePlaying,
     GameStateOver
   );
+
   TTileState = (
     TileStateClose,
     TileStateOpen
   );
+
+  TTile = record
+    hasMine: boolean;
+    mineNumber: byte;
+    tileState: TTileState;
+  end;
 
 const
   BoardCols = 9;
@@ -37,9 +44,7 @@ var
 
   lastLeftMouse: boolean;
   mineCounter: integer;
-  mineNumbers: array[0..80] of byte;
-  mines: array[0..80] of boolean;
-  tileStates: array[0..80] of TTileState;
+  tiles: array[0..BoardRows * BoardCols] of TTile;
 
 
 function GetTileMine(const row, col: integer): boolean;
@@ -48,7 +53,7 @@ begin
 
   if (row < 0) or (row >= BoardRows) or (col < 0) or (col >= BoardCols) then exit;
 
-  GetTileMine := mines[row * BoardCols + col]
+  GetTileMine := tiles[row * BoardCols + col].hasMine;
 end;
 
 function GetMineNumberColour(const count: integer): integer;
@@ -81,8 +86,8 @@ begin
     for a:=0 to BoardCols - 1 do begin
       idx := b * BoardCols + a;
 
-      if mines[idx] then
-        tileStates[idx] := TileStateOpen;
+      if tiles[idx].hasMine then
+        tiles[idx].tileState := TileStateOpen;
     end;
 end;
 
