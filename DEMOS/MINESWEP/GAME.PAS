@@ -264,10 +264,10 @@ begin
 
   RandSeed := 255;
 
-  FillChar(tiles, sizeof(tiles), 0);
+  FillChar(tiles, sizeof(TTile) * BoardRows * BoardCols, 0);
 
   for a:=1 to StartingMineCount do
-    tiles[random(10) * 9 + random(10)].hasMine := true;
+    tiles[random(BoardRows) * BoardCols + random(BoardCols)].hasMine := true;
 
   mineCounter := StartingMineCount;
 
