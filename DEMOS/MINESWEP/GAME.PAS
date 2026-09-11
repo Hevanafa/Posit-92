@@ -184,10 +184,15 @@ begin
   if tiles[idx].tileState = TileStateOpen then exit;
 
   case tiles[idx].tileState of
-    TileStateClose:
+    TileStateClose: begin
       tiles[idx].tileState = TileStateFlagged;
-    TileStateFlagged:
+      dec(mineCounter);
+    end;
+
+    TileStateFlagged: begin
       tiles[idx].tileState = TileStateClose;
+      inc(mineCounter);
+    end;
   end;
 end;
 
