@@ -207,8 +207,10 @@ begin
   else
     FloodFill(row, col);
 
-  if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then
+  if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then begin
     actualGameState := GameStateWin;
+    PlayMelody(melWin);
+  end;
 end;
 
 procedure AttemptFlag(const row, col: integer);
@@ -393,7 +395,7 @@ begin
   else
     Spr(texSpecimenP92[1], 148, 76);
 
-  Print('Hello world!', 160-48, 120, 15);
+  { Print('Hello world!', 160-48, 120, 15); }
 
   for b:=0 to BoardRows - 1 do begin
     y := BoardTop + b * 9;
