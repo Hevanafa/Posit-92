@@ -201,6 +201,11 @@ begin
 
   if tiles[idx].tileState <> TileStateClosed then exit;
 
+  if actualGameState = GameStateNotStarted then begin
+    actualGameState := GameStatePlaying;
+    gameStartTick := GetTimer;
+  end;
+
   if tiles[idx].hasMine then begin
     actualGameState := GameStateLose;
 
@@ -222,12 +227,6 @@ begin
     PlayMelody(melWin);
   end else begin
     pick := random(high(melReveal) + 1);
-
-    if actualGameState = GameStateNotStarted then begin
-      actualGameState := GameStatePlaying;
-      gameStartTick := GetTimer;
-    end;
-
     PlayMelody(melReveal[pick]);
   end;
 end;
@@ -244,6 +243,11 @@ begin
   idx := row * BoardCols + col;
 
   if tiles[idx].tileState = TileStateOpen then exit;
+
+  if actualGameState = GameStateNotStarted then begin
+    actualGameState := GameStatePlaying;
+    gameStartTick := GetTimer;
+  end;
 
   case tiles[idx].tileState of
     TileStateClosed: begin
