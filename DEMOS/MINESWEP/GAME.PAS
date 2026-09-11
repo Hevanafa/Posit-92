@@ -111,6 +111,20 @@ begin
   GetMouseCol := x div 9;
 end;
 
+function GetOpenTileCount: integer;
+var
+  result: integer;
+  a, b: word;
+begin
+  result := 0;
+
+  for b:=0 to BoardRows - 1 do
+    for a:=0 to BoardCols - 1 do
+      if tiles[b * BoardCols + a].tileState = TileStateOpen then
+        inc(result);
+
+  GetOpenTileCount := result
+end;
 
 procedure RevealAllMines;
 var
@@ -174,6 +188,9 @@ begin
     tiles[idx].tileState := TileStateOpen
   else
     FloodFill(row, col);
+
+  if GetOpenTileCount = BoardRows * BoardCols - StartingMineCount then
+    actualGameState := GameStateWin;
 end;
 
 procedure AttemptFlag(const row, col: integer);
@@ -351,7 +368,7 @@ begin
     print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
 
   { Debug row & col }
-  print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F);
+  { print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F); }
 
   s := 'Seed: ' + i32str(RandSeed);
   print(s, VGAWidth - length(s) * 8, VGAHeight - 8, $08)
