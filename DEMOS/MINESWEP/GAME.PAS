@@ -343,8 +343,14 @@ begin
     end;
   end;
 
-  print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
+  if actualGameState = GameStateWin then
+    print('You win!', 10, 10, $0F)
+  else if actualGameState = GameStateLose then
+    print('You lose!', 10, 10, $0F)
+  else
+    print('Mines: ' + I32Str(mineCounter), 10, 10, $0F);
 
+  { Debug row & col }
   print('Row: ' + i32str(GetMouseRow) + ', Col: ' + I32Str(GetMouseCol), 10, 30, $0F);
 
   s := 'Seed: ' + i32str(RandSeed);
