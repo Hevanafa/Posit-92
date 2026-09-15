@@ -11,9 +11,9 @@ The order is like this:
 
 The font in the DOS version is simply a copy, but with the format of an indexed bitmap
 
-![regular font preview](./P92_Sans_8px_preview.png)
+![regular font preview](./previews/P92_Sans_regular.png)
 
-![bold font preview](./P92_Sans_8px_Bold_preview.png)
+![bold font preview](./previews/P92_Sans_bold.png)
 
 The filenames follow this pattern:
 
