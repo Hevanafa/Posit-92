@@ -7,7 +7,7 @@ interface
 uses P92TEX;
 
 { Copied from SprFast, only the pixel plotter is different }
-procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
+procedure SprTint(const tex: TTexture; const x, y: integer; const colour: byte);
 
 procedure SprShadow(const tex: TTexture; const x, y: integer; const shadow: byte);
 
@@ -25,7 +25,7 @@ uses P92VGA;
 var
   transparencyKey: byte;
 
-procedure SprTint(const tex: TTexture; const x, y: integer; const tint: byte);
+procedure SprTint(const tex: TTexture; const x, y: integer; const colour: byte);
 var
   srcX, srcY: integer;
   rowOffset, pxOffset: longint;
@@ -86,7 +86,7 @@ begin
       cmp al, ah
       je @skip
 
-      mov al, tint
+      mov al, colour
       mov es:[di], al
 
     @skip:

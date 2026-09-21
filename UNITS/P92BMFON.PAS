@@ -40,15 +40,15 @@ procedure FreeBMFont(var font: TBMFont);
 
 procedure CloneBMFont(const src: TBMFont; var dest: TBMFont);
 
-{
-  Uses SprRegion internally -- easier to read
+{ Uses SprRegion internally -- easier to read
   returns: xadvance
 }
 function PrintBMFontGlyph(const font: TBMFont; const ch: char; const x, y: integer): integer;
 procedure PrintBMFont(const font: TBMFont; const text: string; const x, y: integer);
 
-function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
-procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const tint: byte);
+{ Returns xadvance }
+function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const colour: byte): integer;
+procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const colour: byte);
 
 { Returns accumulated xadvance }
 function MeasureBMFont(const font: TBMFont; const text: string): integer;
@@ -305,7 +305,7 @@ end;
 
 
 { Copied from PrintBMFontGlyph }
-function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const tint: byte): integer;
+function PrintBMFontGlyphTint(const font: TBMFont; const ch: char; const x, y: integer; const colour: byte): integer;
 var
   g: PBMFontGlyph;
 begin
@@ -316,10 +316,10 @@ begin
     font.texture,
     g^.x, g^.y, g^.width, g^.height,
     x + g^.xoffset, y + g^.yoffset,
-    tint)
+    colour)
 end;
 
-procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const tint: byte);
+procedure PrintBMFontTint(const font: TBMFont; const text: string; const x, y: integer; const colour: byte);
 var
   a: word;
   { relative from x }
@@ -328,7 +328,7 @@ begin
   xOffset := 0;
 
   for a:=1 to length(text) do begin
-    inc(xOffset, PrintBMFontGlyphTint(font, text[a], x + xOffset, y, tint));
+    inc(xOffset, PrintBMFontGlyphTint(font, text[a], x + xOffset, y, colour));
 
     if a < length(text) then
       inc(xOffset, font.spacingX);
