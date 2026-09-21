@@ -14,7 +14,7 @@ interface
 uses P92BMFON;
 
 const
-  Posit92Version = '0.2.1';
+  Posit92Version = '0.3';
 
 type
   TP92Callback = procedure;
