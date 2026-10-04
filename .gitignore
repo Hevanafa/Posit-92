@@ -5,7 +5,7 @@ backup/
 LOG.TXT
 
 # Microsoft FON/FNT files
-DEMOS/MSFNT/FONTS/
+# DEMOS/MSFNT/FONTS/
 TESTS/FON/*.FNT
 TESTS/FON/*.FON
 
