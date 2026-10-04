@@ -110,16 +110,16 @@ begin
   charHeight := font.header.pixHeight;
 
 {$IFDEF DEBUG}
-  writeLog('--- Begin loadMSFont "' + filename + '"');
+  writeLog('--- Begin LoadMSFont "' + filename + '"');
   writeLog('Copyright string: "' + font.header.copyright + '"');
-  writeLog('Pixel height: ' + i32str(font.header.pixHeight));
+  WriteLog('pixWidth: ' + i32str(font.header.pixWidth));
+  writeLog('pixHeight: ' + i32str(font.header.pixHeight));
 {$ENDIF}
 
   for charIndex := 0 to high(font.glyphs) do
     FillChar(font.glyphs, SizeOf(TMSFontGlyph), 0);
 
   for charIndex := font.header.firstChar to font.header.lastChar do begin
-  { for charIndex := font.header.firstChar to font^.header.firstChar + 9 do begin }
     Seek(fntFile,  sizeof(TMSFontHeader) + (charIndex - font.header.firstChar) * 4);
     BlockRead(fntFile, bitsWidth, 2);
     BlockRead(fntFile, charOffset, 2);
