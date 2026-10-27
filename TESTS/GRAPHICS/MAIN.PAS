@@ -71,20 +71,22 @@ begin
     Base: 0.6585s
     Inline asm: 0.0993s
   }
+  {
   for a:=1 to OpCount do
     VLine(
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       random(256));
+  }
 
   {
   for a:=1 to OpCount do
     Rect(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       random(256));
   }
 
@@ -96,10 +98,10 @@ begin
   {
   for a:=1 to OpCount do
     RectFill(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       random(256));
   }
 
@@ -111,15 +113,13 @@ begin
     After while-loop: 4.1920s
     After inline asm: 0.9902s
   }
-  {
   for a:=1 to OpCount do
     RectFillDither(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       random(256));
-  }
 
   {
     Original: 12.5950s

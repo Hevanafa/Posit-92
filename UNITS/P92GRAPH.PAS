@@ -360,7 +360,7 @@ end;
 procedure RectFillDither(const x0, y0, x1, y1: integer; const colour: byte);
 var
   startX, endX, startY, endY: integer;
-  a, b: integer;
+  a, b: word;
   rowOffset: word;
 begin
   if x0 < x1 then begin
