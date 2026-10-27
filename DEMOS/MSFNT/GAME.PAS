@@ -22,7 +22,7 @@ begin
 
   { The font file must be a font resource (FNT), not a font collection (FON) }
   { LoadMSFont(fontSystem, 'FONTS\8514OEM.FNT'); }
-  LoadMSFont(fontSystem, 'FONTS\VGASYS.FNT');
+  LoadMSFont(fontSystem, 'FONTS\P92BOOT.FNT');
 end;
 
 procedure OnCleanup; far;
