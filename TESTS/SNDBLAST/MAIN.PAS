@@ -21,7 +21,7 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT')
 end;
 
 procedure OnCleanup; far;

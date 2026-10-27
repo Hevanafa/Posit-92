@@ -28,12 +28,7 @@ end;
 
 procedure OnPreload; far;
 begin
-  { loadBMFont(fontP92Sans, 'COMMOD64.FNT'); }
-  { loadBMFont(fontP92Sans, 'FR12.FNT'); }
-  { LoadBMFont(fontP92Sans, 'NOKIA.TXT') }
-  { LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT'); }
-  { LoadBMFont(fontP92Sans, 'FONTS\P92SANS8.TXT'); }
-  LoadBMFont(fontP92Sans, 'FONTS\P92SAN_B.TXT');
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8B.TXT');
 end;
 
 procedure OnReady; far;
