@@ -611,7 +611,6 @@ begin
 end;
 
 
-{ Unsafe: No bounds checking }
 procedure RectDarken(const x0, y0, x1, y1: integer);
 var
   startX, endX, startY, endY: integer;
@@ -649,7 +648,7 @@ begin
       case backBuffer^[destOffset] of
         $08..$0F, $18..$1F:
           backBuffer^[destOffset] := backBuffer^[destOffset] - 8;
-        $20..$67, $68..$B0:
+        $20..$B0:
           backBuffer^[destOffset] := backBuffer^[destOffset] + $48;
         else
       end;
