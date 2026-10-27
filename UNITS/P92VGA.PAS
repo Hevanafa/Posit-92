@@ -25,12 +25,12 @@ var
   { assigned in InitBuffer }
   VGAWidth,
   { assigned in InitBuffer }
-  VGAHeight: word;
+  VGAHeight: integer;
 
   backBuffer: PByteArray;
 
-  clipStartX, clipEndX: word;
-  clipStartY, clipEndY: word;
+  clipStartX, clipEndX,
+  clipStartY, clipEndY: integer;
 
 procedure InitMode13h;
 procedure InitModeText;
@@ -323,7 +323,7 @@ begin
   clipMask := ($FF shr colStart) and ($FF shl (7 - colEnd));
 
   { implementation with base offset }
-  baseOffset := (y + rowStart) * VGAWidth + x;
+  baseOffset := word(y + rowStart) * VGAWidth + x;
 
   for row := rowStart to rowEnd do begin
     mask := font8x8[ord(ch), row] and clipMask;
