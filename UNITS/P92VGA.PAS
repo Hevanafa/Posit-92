@@ -10,8 +10,8 @@ unit P92VGA;
 interface
 
 const
-  DefaultVGAWidth: word = 320;
-  DefaultVGAHeight: word = 200;
+  DefaultVGAWidth = 320;
+  DefaultVGAHeight = 200;
 
 type
   PByteArray = ^TByteArray;
