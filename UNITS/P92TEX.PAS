@@ -57,6 +57,8 @@ procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
 
 procedure SprOpaque(const tex: TTexture);
 
+procedure UnsafeSpr(const tex: TTexture; const x, y: integer);
+
 { Forwards call to AsmSpr
   Note that the max texture data is 64KB
 
@@ -246,6 +248,64 @@ begin
 
     for a := 0 to tex.width - 1 do
       AsmPSet(a, b, tex.data^[rowOffset + a]);
+  end;
+end;
+
+
+procedure UnsafeSpr(const tex: TTexture; const x, y: integer);
+const
+  TransparencyKey = 13;
+var
+  srcX, srcY: integer;
+  rowOffset, pxOffset: longint;
+
+  startY, endY: integer;
+  startX, endX: integer;
+
+  pixelData: pointer;
+  srcOffset, destOffset: word;
+  drawCount: word;
+begin
+  pixelData := tex.data;
+
+  startX := 0;
+  endX := tex.width - 1;
+
+  srcOffset := startX;
+  destOffset := word(y) * VGAWidth + word(x + startX);
+  drawCount := endX - startX + 1;
+
+  { Render logic }
+
+  for srcY := 0 to tex.height-1 do begin
+    asm
+      push ds
+
+      les di, backBuffer
+      add di, destOffset
+
+      { Load DS:SI with the source tex's data }
+      lds si, pixelData
+      add si, srcOffset
+      mov cx, drawCount
+      mov ah, TransparencyKey
+
+    @loop:
+      lodsb
+      cmp al, ah
+      je @skip
+      mov es:[di], al
+
+    @skip:
+      inc di
+      dec cx
+      jnz @loop
+
+      pop ds
+    end;
+
+    inc(srcOffset, tex.width);
+    inc(destOffset, VGAWidth)
   end;
 end;
 
