@@ -640,21 +640,24 @@ begin
 
   { Render logic }
 
+  rowBaseOffset := word(startY) * VGAWidth + word(startX);
+
   for b := startY to endY do begin
-    rowBaseOffset := word(b) * VGAWidth;
-    destOffset := rowBaseOffset + startX;
+    destOffset := rowBaseOffset;
 
     for a := startX to endX do begin
       case backBuffer^[destOffset] of
         $08..$0F, $18..$1F:
           backBuffer^[destOffset] := backBuffer^[destOffset] - 8;
-        $20..$B0:
+        $20..$67, $68..$B0:
           backBuffer^[destOffset] := backBuffer^[destOffset] + $48;
         else
       end;
 
       inc(destOffset);
     end;
+
+    inc(rowBaseOffset, VGAWidth);
   end;
 end;
 
