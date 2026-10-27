@@ -19,7 +19,7 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadBMFont(fontP92Sans, 'FONTS\P92SANS.TXT')
+  LoadBMFont(fontP92Sans, 'FONTS\P92SAN8R.TXT')
 end;
 
 procedure OnCleanup; far;
@@ -92,6 +92,7 @@ begin
     Forward call to legacy AsmRectFill2: 0.6324s
     With clipping: 0.6195s
   }
+  {
   for a:=1 to OpCount do
     RectFill(
       random(VGAWidth + 20) - 10,
@@ -99,6 +100,7 @@ begin
       random(VGAWidth + 20) - 10,
       random(VGAHeight + 20) - 10,
       random(256));
+  }
 
   {
     Original: 5.4095s
