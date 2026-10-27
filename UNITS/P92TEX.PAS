@@ -49,6 +49,10 @@ procedure FreeTex(var tex: TTexture);
 { For debugging }
 procedure DrawTexInfo(const tex: TTexture);
 
+{ In-place texture procedures }
+
+procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
+
 { Begin drawing procedures }
 
 procedure SprOpaque(const tex: TTexture);
@@ -219,6 +223,17 @@ begin
   print('Width: ' + I32Str(tex.width), 10, 168, 15);
   print('Height: ' + I32Str(tex.height), 10, 176, 15);
   { print('Palette: ' + I32Str(tex^.palsize) + ' colours', 10, 184, 15) }
+end;
+
+procedure ReplaceColour(var tex: TTexture; const oldColour, newColour: byte);
+var
+  a: word;
+begin
+  if not assigned(tex.data) then exit;
+
+  for a:=0 to tex.width * tex.height - 1 do
+    if tex.data^[a] = oldColour then
+      tex.data^[a] := newColour;
 end;
 
 procedure SprOpaque(const tex: TTexture);
