@@ -649,7 +649,7 @@ begin
       case backBuffer^[destOffset] of
         $08..$0F, $18..$1F:
           backBuffer^[destOffset] := backBuffer^[destOffset] - 8;
-        $20..$67, $68..$B0:
+        $20..$AF:
           backBuffer^[destOffset] := backBuffer^[destOffset] + $48;
         else
       end;
