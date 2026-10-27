@@ -73,6 +73,8 @@ procedure PresentMode13h;
 { Only applicable to the 400 scanlines mode }
 procedure PresentModeX;
 
+procedure RectDarken(const x0, y0, x1, y1: integer);
+
 
 implementation
 
@@ -571,6 +573,31 @@ begin
 
     Move(backBuffer^[offset], Mem[$A000:screenOffset], DefaultVGAWidth);
     { Move(backBuffer^[offset], Mem[$B000:screenOffset], DefaultVGAWidth); }
+  end;
+end;
+
+
+{ Unsafe: No bounds checking }
+procedure RectDarken(const x0, y0, x1, y1: integer);
+var
+  a, b: integer;
+  rowBaseOffset, destOffset: word;
+begin
+  for b:=y0 to y1 do begin
+    rowBaseOffset := b * VGAWidth;
+    destOffset := rowBaseOffset + x0;
+
+    for a:=x0 to x1 do begin
+      case backBuffer^[destOffset] of
+        $08..$0F, $18..$1F:
+          backBuffer^[destOffset] := backBuffer^[destOffset] - 8;
+        $20..$67, $68..$B0:
+          backBuffer^[destOffset] := backBuffer^[destOffset] + $48;
+        else
+      end;
+
+      inc(destOffset);
+    end;
   end;
 end;
 
