@@ -145,6 +145,40 @@ begin
   BorrowCGAFont := @font8x8
 end;
 
+
+procedure InitBuffer(const width, height: word);
+begin
+  if isBufferInitialised then exit;
+
+  if width > DefaultVGAWidth then
+    PanicHalt('InitBuffer: Buffer width can''t be more than the VGA screen width!');
+
+  if height > DefaultVGAHeight then
+    PanicHalt('InitBuffer: Buffer height can''t be more than the VGA screen height!');
+
+  if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
+    useDefaultBufferSize := false;
+
+  VGAWidth := width;
+  VGAHeight := height;
+  bufferSize := width * height;
+  ResetClip;
+
+  GetMem(backBuffer, bufferSize);
+
+  isBufferInitialised := true
+end;
+
+procedure FreeBuffer;
+begin
+  if isBufferInitialised then begin
+    freeMem(backBuffer, bufferSize);
+    backBuffer := nil;
+    isBufferInitialised := false;
+  end;
+end;
+
+
 procedure SetClip(const x, y, width, height:integer);
 begin
   if (width <= 0) or (height <= 0) then
@@ -601,38 +635,6 @@ begin
   end;
 end;
 
-
-procedure InitBuffer(const width, height: word);
-begin
-  if isBufferInitialised then exit;
-
-  if width > DefaultVGAWidth then
-    PanicHalt('InitBuffer: Buffer width can''t be more than the VGA screen width!');
-
-  if height > DefaultVGAHeight then
-    PanicHalt('InitBuffer: Buffer height can''t be more than the VGA screen height!');
-
-  if (width <> DefaultVGAWidth) or (height <> DefaultVGAHeight) then
-    useDefaultBufferSize := false;
-
-  VGAWidth := width;
-  VGAHeight := height;
-  bufferSize := width * height;
-  ResetClip;
-
-  GetMem(backBuffer, bufferSize);
-
-  isBufferInitialised := true
-end;
-
-procedure FreeBuffer;
-begin
-  if isBufferInitialised then begin
-    freeMem(backBuffer, bufferSize);
-    backBuffer := nil;
-    isBufferInitialised := false;
-  end;
-end;
 
 begin
   useDefaultBufferSize := true;
