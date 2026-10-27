@@ -254,6 +254,7 @@ begin
 
   appConfig.WaitMode := P92WaitVSync;
   appConfig.EnableDrawFPS := true;
+  appConfig.DefaultBMFont := @fontRegular;
 
   @appConfig.OnPreload := @OnPreload;
   @appConfig.OnReady := @OnReady;
