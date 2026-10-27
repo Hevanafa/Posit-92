@@ -83,6 +83,8 @@ begin
   else
     Spr(texSpecimenP92[1], 148, 76);
 
+  RectDarken(148, 76, 172, 92);
+
   { spr(texSlimeGirl, 10, 10); }
   DrawSprAnim(animSlimeGirl, 188, 80, frameIdx);
   DrawSprAnim(animSlimeGirlNoLoop, 208, 80, slime2FrameIdx);

@@ -614,9 +614,34 @@ end;
 { Unsafe: No bounds checking }
 procedure RectDarken(const x0, y0, x1, y1: integer);
 var
+  startX, endX, startY, endY: integer;
   a, b: integer;
   rowBaseOffset, destOffset: word;
 begin
+  { Handle clipping }
+
+  if x0 <= x1 then begin
+    startX := x0;  endX := x1
+  end else begin
+    startX := x1;  endX := x0
+  end;
+
+  if y0 <= y1 then begin
+    startY := y0;  endY := y1
+  end else begin
+    startY := y1;  endY := y0;
+  end;
+
+  if startX < clipStartX then startX := clipStartX;
+  if endX > clipEndX then endX := clipEndX;
+  if startY < clipStartY then startY := clipStartY;
+  if endY > clipEndY then endY := clipEndY;
+
+  if (startX > endX) or (startY > endY) then exit;
+
+
+  { Render logic }
+
   for b:=y0 to y1 do begin
     rowBaseOffset := b * VGAWidth;
     destOffset := rowBaseOffset + x0;
