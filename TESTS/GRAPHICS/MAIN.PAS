@@ -113,6 +113,7 @@ begin
     After while-loop: 4.1920s
     After inline asm: 0.9902s
   }
+  {
   for a:=1 to OpCount do
     RectFillDither(
       integer(random(VGAWidth + 20)) - 10,
@@ -120,6 +121,7 @@ begin
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       random(256));
+  }
 
   {
     Original: 12.5950s
@@ -127,17 +129,15 @@ begin
     Second half with HLine: 0.8557s
     After longint precision fix: 0.9281s
   }
-  {
   for a:=1 to OpCount do
     TriFill(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       random(256));
-  }
 
   {
     Original: 8.8999s
