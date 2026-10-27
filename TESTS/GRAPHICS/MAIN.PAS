@@ -129,6 +129,7 @@ begin
     Second half with HLine: 0.8557s
     After longint precision fix: 0.9281s
   }
+  {
   for a:=1 to OpCount do
     TriFill(
       integer(random(VGAWidth + 20)) - 10,
@@ -138,6 +139,7 @@ begin
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       random(256));
+  }
 
   {
     Original: 8.8999s
@@ -148,8 +150,8 @@ begin
   {
   for a:=1 to OpCount do
     CircFill(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       10 + random(50),
       random(256));
   }
@@ -159,14 +161,12 @@ begin
     AsmCirc: 0.1598s
     AsmCirc with bounds check: 0.2072s
   }
-  {
   for a:=1 to OpCount do
     Circ(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
       10 + random(50),
       random(256));
-  }
 
   endTick := GetTimer;
 
