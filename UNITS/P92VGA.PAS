@@ -640,6 +640,6 @@ begin
   useDefaultBufferSize := true;
   VGAWidth := DefaultVGAWidth;
   VGAHeight := DefaultVGAHeight;
-  bufferSize := VGAWidth * VGAHeight;
+  bufferSize := word(VGAWidth) * VGAHeight;
 end.
 
