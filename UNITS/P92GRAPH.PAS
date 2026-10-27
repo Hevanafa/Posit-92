@@ -241,7 +241,7 @@ begin
     endY := clipEndY;
 
   { Pixel plotting }
-  baseOffset := startY * VGAWidth + x;
+  baseOffset := word(startY) * VGAWidth + x;
 
 asm
   push es

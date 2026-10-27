@@ -52,12 +52,14 @@ begin
     Inline asm: 0.0384s
     stosw: 0.0317s
   }
+  {
   for a:=1 to OpCount do
     HLine(
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAWidth + 20)) - 10,
       random(VGAHeight + 1),
       random(256));
+  }
 
   {
     Base: 0.1143s
@@ -69,12 +71,12 @@ begin
     Base: 0.6585s
     Inline asm: 0.0993s
   }
-  { for a:=1 to OpCount do
+  for a:=1 to OpCount do
     VLine(
-      random(VGAWidth + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(VGAHeight + 20) - 10,
-      random(256)); }
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      random(256));
 
   {
   for a:=1 to OpCount do
