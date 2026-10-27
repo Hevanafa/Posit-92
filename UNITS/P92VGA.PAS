@@ -639,14 +639,13 @@ begin
 
   if (startX > endX) or (startY > endY) then exit;
 
-
   { Render logic }
 
-  for b:=y0 to y1 do begin
-    rowBaseOffset := b * VGAWidth;
-    destOffset := rowBaseOffset + x0;
+  for b := startY to endY do begin
+    rowBaseOffset := word(b) * VGAWidth;
+    destOffset := rowBaseOffset + startX;
 
-    for a:=x0 to x1 do begin
+    for a := startX to endX do begin
       case backBuffer^[destOffset] of
         $08..$0F, $18..$1F:
           backBuffer^[destOffset] := backBuffer^[destOffset] - 8;
