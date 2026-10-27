@@ -123,6 +123,17 @@ begin
       random(256));
   }
 
+  { 1.2753s }
+  for a:=1 to OpCount do
+    tri(
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      integer(random(VGAWidth + 20)) - 10,
+      integer(random(VGAHeight + 20)) - 10,
+      random(256));
+
   {
     Original: 12.5950s
     First half with HLine: 6.9680s
@@ -161,12 +172,14 @@ begin
     AsmCirc: 0.1598s
     AsmCirc with bounds check: 0.2072s
   }
+  {
   for a:=1 to OpCount do
     Circ(
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       10 + random(50),
       random(256));
+  }
 
   endTick := GetTimer;
 
