@@ -124,6 +124,7 @@ begin
   }
 
   { 1.2753s }
+  {
   for a:=1 to OpCount do
     tri(
       integer(random(VGAWidth + 20)) - 10,
@@ -133,6 +134,7 @@ begin
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       random(256));
+  }
 
   {
     Original: 12.5950s
@@ -140,7 +142,6 @@ begin
     Second half with HLine: 0.8557s
     After longint precision fix: 0.9281s
   }
-  {
   for a:=1 to OpCount do
     TriFill(
       integer(random(VGAWidth + 20)) - 10,
@@ -150,7 +151,6 @@ begin
       integer(random(VGAWidth + 20)) - 10,
       integer(random(VGAHeight + 20)) - 10,
       random(256));
-  }
 
   {
     Original: 8.8999s

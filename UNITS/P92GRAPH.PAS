@@ -478,7 +478,7 @@ begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    HLine(startX, endX, y, colour);
+    {$R-} HLine(startX, endX, y, colour); {$R+}
 
     inc(sx1, dx1);
     inc(sx2, dx2)
@@ -498,7 +498,7 @@ begin
     startX := sx1 shr FixShift;
     endX := sx2 shr FixShift;
 
-    HLine(startX, endX, y, colour);
+    {$R-} HLine(startX, endX, y, colour); {$R+}
 
     inc(sx1, dx1);
     inc(sx2, dx2)
