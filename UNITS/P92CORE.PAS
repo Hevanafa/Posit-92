@@ -34,6 +34,9 @@ type
     WaitMode: TP92WaitMode;
 
     LoadDefaultCursor: boolean;
+    { paired with LoadDefaultCursor }
+    DefaultCursorPath: string;
+
     EnablePCSpeaker: boolean;
 
     { Turning this off enables the KeyPressed and ReadKey pattern
@@ -134,7 +137,7 @@ end;
 
 procedure LoadCursor;
 begin
-  LoadTex(texCursor, 'CURSOR.BMP')
+  LoadTex(texCursor, bootConfig.DefaultCursorPath)
 end;
 
 procedure FreeCursor;
@@ -159,6 +162,7 @@ begin
   waitFrequency := config.TargetFPS * 2;
 
   config.LoadDefaultCursor := true;
+  config.DefaultCursorPath := 'IMG\CURSOR.BMP';
 
   config.EnablePCSpeaker := true;
   config.EnableKeyHandler := true;
