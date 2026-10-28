@@ -54,8 +54,8 @@ procedure OnPreload; far;
 begin
   LoadBMFont(fontP92Sans, 'FONTS\P92SAN8B.TXT');
 
-  LoadTex(texCursor, 'CURSOR.BMP');
-  LoadTex(texHand, 'HAND.BMP');
+  LoadTex(texCursor, 'IMG\CURSOR.BMP');
+  LoadTex(texHand, 'IMG\HAND.BMP');
 
   LoadTex(texSpecimenP92[0], 'IMG/SPP92_1.BMP');
   LoadTex(texSpecimenP92[1], 'IMG/SPP92_2.BMP');
