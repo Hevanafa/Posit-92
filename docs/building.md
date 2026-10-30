@@ -31,3 +31,11 @@ The IDE will show something like this when it's done:
 and this is how the runtime looks like:
 
 ![preview](../preview_2.png)
+
+## Building from a new DOS project
+
+Use the project root as your working directory and open `GAME.PAS` in Turbo Pascal
+
+Keep the unit paths configured during setup
+
+Open the **Compile menu > Build** for the first build, and finally **Run menu > Run** (`Ctrl+F9`)

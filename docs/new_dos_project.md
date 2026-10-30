@@ -2,6 +2,8 @@
 
 This document is more of a guideline rather than rigid rules for bootstrapping a new DOS project
 
+After completing this guide, more info is available at the bottom
+
 ## Copying the boilerplate
 
 1. Copy the latest boilerplate: `DEMOS\SIMPLE`
@@ -98,3 +100,7 @@ This must be enabled in the Turbo Pascal IDE:
 - Click OK or simply press ENTER
 
 After pressing OK, don't forget to save your config by clicking the **Options** menu, then click **Save**, or shorter: `Alt+O, then S`
+
+## What to do after completing this
+
+Visit [building.md](./building.md) then read the **Building from a new DOS project** section at the bottom
