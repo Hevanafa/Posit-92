@@ -22,7 +22,7 @@ Assuming that you've made a shallow copy of the Posit-92 repo
 
 6. And lastly, press `F9` to **Make** the project, then you can run it by: **Run menu > Run** or by pressing `Ctrl+F9`
 
-When it's done, all the compiled unit files (`.TPU` files) and the EXE should be in the same directory as the primary file.
+When it's done, you'll see all the compiled unit files (`.TPU`) in `ENGINE`, and the `GAME.EXE` should be in the same directory as the primary file
 
 The IDE will show something like this when it's done:
 
