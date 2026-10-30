@@ -24,6 +24,8 @@ The project structure should look more or less like this:
 
 If you see `PROJECT.LPI`, you can edit the game using Lazarus IDE as a fancy autocomplete, while the compiler itself still uses Turbo Pascal
 
+You can use the directory where `GAME.PAS` and `PROJECT.LPI` belong as your working directory from now on
+
 ## Setting up unit paths
 
 After copying the boilerplate manually, the next step is to edit the unit search paths
