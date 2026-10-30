@@ -1,6 +1,6 @@
 # New DOS project guide
 
-This document is more of a guideline rather than rigid rules
+This document is more of a guideline rather than rigid rules for bootstrapping a new DOS project
 
 ## Copying the boilerplate
 
