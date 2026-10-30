@@ -46,3 +46,14 @@ The order is as follows:
 - User-defined units
 
 Think of it more like "The units get more specific use cases the further it's on the right"
+
+## `Double` type usage
+
+Posit-92 uses `double` all the time because it's faster, considering the use of FPU (floating point unit)
+
+This must be enabled in the Turbo Pascal IDE:
+- in the **Options --> Compiler**, then
+- under **Numeric processing**, enable 8087/80287
+- Click OK or simply press ENTER
+
+After pressing OK, don't forget to save your config by clicking the **Options** menu, then click **Save**, or shorter: `Alt+O, then S`
