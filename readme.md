@@ -35,19 +35,6 @@ git clone --depth 1 https://github.com/Hevanafa/Posit-92.git
 
 Refer to this documentation: [docs/new_dos_project.md](docs/new_dos_project.md)
 
-### Compiling
-
-1. Open your copy of Turbo Pascal:
-   `TP\BIN\TPX.EXE`
-2. Open `GAME.PAS`
-3. Build all units with **Compile menu > Build**
-4. Run `GAME.EXE` with **Ctrl+F9**
-   1. Or, if you're on DOSBox-X, **Run menu > Run**
-
-You should see a screen like this:
-
-![preview](./preview_2.png)
-
 ### Configuring custom directives
 
 In case you want to make use of the AdLib or immediate GUI, which aren't included during compile process by default, you can use any combination of these directives:
