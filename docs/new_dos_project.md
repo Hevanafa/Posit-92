@@ -26,6 +26,17 @@ If you see `PROJECT.LPI`, you can edit the game using Lazarus IDE as a fancy aut
 
 You can use the directory where `GAME.PAS` and `PROJECT.LPI` belong as your working directory from now on
 
+### Cleaning leftover files
+
+Sometimes there are existing TPU files, GAME.EXE, and some other leftovers, you can delete those
+
+Usually they're these:
+
+- `ENGINE\*.TPU`, or any `.TPU` files
+- `GAME.EXE`
+- `LOG.TXT`
+- `project.lps` (if you use Lazarus)
+
 ## Setting up unit paths
 
 After copying the boilerplate manually, the next step is to edit the unit search paths
