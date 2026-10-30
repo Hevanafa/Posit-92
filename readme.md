@@ -25,7 +25,7 @@ https://hevanafa.itch.io/
 
 ## Getting started
 
-Clone this project without the commit history:
+Make a shallow clone of this project, basically without all the commit history:
 
 ```powershell
 git clone --depth 1 https://github.com/Hevanafa/Posit-92.git
@@ -34,6 +34,10 @@ git clone --depth 1 https://github.com/Hevanafa/Posit-92.git
 ### Creating a new DOS project
 
 Refer to this documentation: [docs/new_dos_project.md](docs/new_dos_project.md)
+
+### Building
+
+Refer to this documentation: [docs/building.md](docs/building.md)
 
 ### Configuring custom directives
 
