@@ -37,6 +37,8 @@ Usually they're these:
 - `LOG.TXT`
 - `project.lps` (if you use Lazarus)
 
+Ideally, the `TPU` files should be in their original directories so that the cleanup can be easier, but it's up to you to implement
+
 ## Setting up unit paths
 
 After copying the boilerplate manually, the next step is to edit the unit search paths
