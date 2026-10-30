@@ -34,7 +34,7 @@ Sometimes there are existing TPU files, GAME.EXE, and some other leftovers, you 
 
 Usually they're these:
 
-- `ENGINE\*.TPU`, or any `.TPU` files
+- Generated engine & project `.TPU` files, usually in the `ENGINE` and `UNITS` dir
 - `GAME.EXE`
 - `LOG.TXT`
 - `project.lps` (if you use Lazarus)
