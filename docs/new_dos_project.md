@@ -47,6 +47,32 @@ The order is as follows:
 
 Think of it more like "The units get more specific use cases the further it's on the right"
 
+### Lazarus integration
+
+If you use Lazarus, change the unit search paths to reference your own `fpc-msdos-i8086` installation, then followed by `ENGINE` and `UNITS`
+
+How to do it:
+- **Project menu --> Project options**, or shorter: `Shift+Ctrl+F11`
+- On the left side panel: Under **Compiler options**, click **paths**
+- Click the triple dots next to the "Other unit files (-Fu)"
+
+Change the search paths to be more or less like this:
+
+- `E:\fpc-msdos-i8086\fpcsrc\rtl\units\msdos\`
+- `E:\fpc-msdos-i8086\fpc\units\i8086-msdos\rtl-console\`
+- `ENGINE`
+- `UNITS`
+
+Again, the path `E:\fpc-msdos-i8086` depends on your compiler setup
+
+After that, press OK, then OK again
+
+If there's an error like this:
+
+![msdos_i8086_lazarus_error.png](./msdos_i8086_lazarus_error.png)
+
+You can simply ignore it since we're compiling with Turbo Pascal anyway, but if you include the unit `CRT` or `DOS`, you can Ctrl+click any of those.  Lazarus still points to the right unit file
+
 ## `Double` type usage
 
 Posit-92 uses `double` all the time because it's faster, considering the use of FPU (floating point unit)
