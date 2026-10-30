@@ -31,26 +31,9 @@ Clone this project without the commit history:
 git clone --depth 1 https://github.com/Hevanafa/Posit-92.git
 ```
 
-### Creating a project
+### Creating a new DOS project
 
-1. Copy the latest boilerplate: `DEMOS\SIMPLE`
-
-   This directory will be the root of your new project
-2. Copy the `UNITS` folder, rename it as `SHARED` in your project
-3. Create a new `UNITS` folder. This is where your custom units will live
-4. Copy Turbo Pascal 7.0 into your new project, at the root
-
-The project structure should look more or less like this:
-
-```text
-- IMG\
-- SHARED\
-- UNITS\
-- TP\
-- CURSOR.BMP
-- PROJECT.LPI
-- GAME.PAS
-```
+Refer to this documentation: [docs/new_dos_project.md](docs/new_dos_project.md)
 
 ### Compiling
 
