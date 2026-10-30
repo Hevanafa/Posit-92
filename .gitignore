@@ -13,6 +13,7 @@ TESTS/FON/*.FON
 *.EXE
 *.TPU
 boilerplate/UNITS/
+BOOTDOS/
 
 # Turbo Pascal
 TP/
